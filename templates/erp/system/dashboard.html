@@ -1,0 +1,210 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}System Status{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-dark">System Status</h2>
+            <p class="text-sm text-gray mt-1">Infrastructure Health & Performance Metrics</p>
+        </div>
+        <div class="flex gap-2">
+            <button class="btn-secondary" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt mr-2"></i> Refresh
+            </button>
+            <a href="https://status.bitguard.com" target="_blank" class="btn-primary">
+                <i class="fas fa-external-link-alt mr-2"></i> Public Status Page
+            </a>
+        </div>
+    </div>
+
+    <!-- Overall Status Banner -->
+    <div
+        class="mb-8 p-6 rounded-lg {% if db_status == 'Operational' and cache_status == 'Operational' %}bg-green-500/10 border border-green-500/20{% else %}bg-amber-500/10 border border-amber-500/20{% endif %}">
+        <div class="flex items-start gap-4">
+            <div
+                class="w-12 h-12 rounded-full flex items-center justify-center {% if db_status == 'Operational' %}bg-green-500 text-white{% else %}bg-amber-500 text-white{% endif %} text-xl shadow-lg shrink-0">
+                <i class="fas fa-check"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-dark mb-1">
+                    {% if db_status == 'Operational' and cache_status == 'Operational' %}
+                    All Systems Operational
+                    {% else %}
+                    System Performance Degraded
+                    {% endif %}
+                </h3>
+                <p class="text-sm text-gray">
+                    All core services including Database, Cache, and Storage are performing within optimal ranges.
+                    Last check performed at {% now "H:i:s" %}.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3-Column Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+        <!-- Database Health -->
+        <div class="card p-5">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <div class="text-xs font-bold text-gray uppercase tracking-wider mb-1">Database</div>
+                    <div class="text-2xl font-bold text-dark">{{ db_latency }}ms</div>
+                </div>
+                <div
+                    class="icon-box {% if db_status == 'Operational' %}icon-box-success{% else %}icon-box-danger{% endif %} rounded-lg">
+                    <i class="fas fa-database"></i>
+                </div>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-2 overflow-hidden">
+                <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 35%"></div>
+            </div>
+            <div class="flex justify-between text-xs">
+                <span class="text-gray">Latency</span>
+                <span
+                    class="font-bold {% if db_status == 'Operational' %}text-green-500{% else %}text-red-500{% endif %}">{{
+                    db_status }}</span>
+            </div>
+        </div>
+
+        <!-- Disk Storage -->
+        <div class="card p-5">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <div class="text-xs font-bold text-gray uppercase tracking-wider mb-1">Storage</div>
+                    <div class="text-2xl font-bold text-dark">{{ disk_percent }}%</div>
+                </div>
+                <div
+                    class="icon-box {% if disk_status == 'Healthy' %}icon-box-primary{% else %}icon-box-warning{% endif %} rounded-lg">
+                    <i class="fas fa-hdd"></i>
+                </div>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-2 overflow-hidden">
+                <div class="{% if disk_status == 'Healthy' %}bg-blue-500{% else %}bg-amber-500{% endif %} h-1.5 rounded-full"
+                    style="width: {{ disk_percent }}%"></div>
+            </div>
+            <div class="flex justify-between text-xs">
+                <span class="text-gray">{{ disk_used }}GB / {{ disk_total }}GB</span>
+                <span class="font-bold text-dark">/mnt/data</span>
+            </div>
+        </div>
+
+        <!-- Cache Status -->
+        <div class="card p-5">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <div class="text-xs font-bold text-gray uppercase tracking-wider mb-1">Cache (Redis)</div>
+                    <div class="text-2xl font-bold text-dark">
+                        {% if cache_status == 'Operational' %}HIT{% else %}MISS{% endif %}
+                    </div>
+                </div>
+                <div
+                    class="icon-box {% if cache_status == 'Operational' %}icon-box-purple{% else %}icon-box-danger{% endif %} rounded-lg">
+                    <i class="fas fa-bolt"></i>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 mb-2">
+                <div class="w-1 h-3 bg-purple-500 rounded-sm"></div>
+                <div class="w-1 h-4 bg-purple-500 rounded-sm"></div>
+                <div class="w-1 h-2 bg-purple-500 rounded-sm"></div>
+                <div class="w-1 h-5 bg-purple-500 rounded-sm"></div>
+                <div class="w-1 h-3 bg-purple-500 rounded-sm"></div>
+                <div class="w-1 h-4 bg-purple-300 rounded-sm"></div>
+                <div class="w-1 h-2 bg-purple-500 rounded-sm"></div>
+                <div class="w-1 h-3 bg-purple-500 rounded-sm"></div>
+            </div>
+            <div class="flex justify-between text-xs">
+                <span class="text-gray">Throughput</span>
+                <span
+                    class="font-bold {% if cache_status == 'Operational' %}text-green-500{% else %}text-red-500{% endif %}">{{
+                    cache_status }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services List -->
+    <div class="card p-0 overflow-hidden mb-8">
+        <div class="p-4 border-b bg-gray-50 dark:bg-slate-800" style="border-color: var(--border-color);">
+            <h3 class="text-sm font-bold text-dark">Component Status</h3>
+        </div>
+        <table class="w-full">
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                <!-- API Gateway -->
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="p-4 w-12">
+                        <div class="w-2 h-2 rounded-full bg-green-500 mx-auto animate-pulse"></div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-dark text-sm">API Gateway</div>
+                        <div class="text-xs text-gray">api.bitguard.com</div>
+                    </td>
+                    <td class="p-4 text-right">
+                        <span class="text-xs font-mono text-gray">v2.4.1</span>
+                    </td>
+                    <td class="p-4 text-right pr-6">
+                        <span class="badge badge-success text-xs">OPERATIONAL</span>
+                    </td>
+                </tr>
+
+                <!-- Worker Nodes -->
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="p-4 w-12">
+                        <div class="w-2 h-2 rounded-full bg-green-500 mx-auto"></div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-dark text-sm">Background Workers</div>
+                        <div class="text-xs text-gray">Celery / Redis Queue</div>
+                    </td>
+                    <td class="p-4 text-right">
+                        <span class="text-xs font-mono text-gray">4 Nodes</span>
+                    </td>
+                    <td class="p-4 text-right pr-6">
+                        <span class="badge badge-success text-xs">OPERATIONAL</span>
+                    </td>
+                </tr>
+
+                <!-- Email Service -->
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="p-4 w-12">
+                        <div class="w-2 h-2 rounded-full bg-green-500 mx-auto"></div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-dark text-sm">Email Delivery</div>
+                        <div class="text-xs text-gray">SMTP / SendGrid</div>
+                    </td>
+                    <td class="p-4 text-right">
+                        <span class="text-xs font-mono text-gray">99.9% Deliv.</span>
+                    </td>
+                    <td class="p-4 text-right pr-6">
+                        <span class="badge badge-success text-xs">OPERATIONAL</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Error Logs (Mini) -->
+    <div class="card p-0 overflow-hidden">
+        <div class="p-4 border-b bg-gray-50 dark:bg-slate-800 flex justify-between items-center"
+            style="border-color: var(--border-color);">
+            <h3 class="text-sm font-bold text-dark">Recent System Events</h3>
+            <span class="text-xs font-mono text-gray">{{ system_events_24h }} Events in last 24h</span>
+        </div>
+        <div class="p-4 bg-black text-green-400 font-mono text-xs overflow-y-auto h-48 rounded-b-lg">
+            <div class="mb-1 opacity-50">{% now "Y-m-d H:i:s" %} [INFO] System health check initiated...</div>
+            <div class="mb-1 opacity-50">{% now "Y-m-d H:i:s" %} [INFO] Database connection verified ({{ db_latency
+                }}ms)</div>
+            <div class="mb-1 opacity-50">{% now "Y-m-d H:i:s" %} [INFO] Cache backend OK</div>
+            <div class="mb-1 opacity-50">{% now "Y-m-d H:i:s" %} [INFO] Disk space check passed ({{ disk_percent }}%)
+            </div>
+            {% if db_status != 'Operational' %}
+            <div class="mb-1 text-red-500">{% now "Y-m-d H:i:s" %} [CRITICAL] DATABASE CONNECTION FAILED</div>
+            {% endif %}
+            <div class="mt-2 animate-pulse">_</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

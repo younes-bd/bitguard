@@ -1,0 +1,130 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'crm_orders' %}"
+        style="color: #6b7280; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 5px;">
+        <i class="fas fa-arrow-left"></i> Back to Orders
+    </a>
+</div>
+
+<div class="flex-between mb-4">
+    <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <h1 class="text-2xl">Order #{{ order.id }}</h1>
+            <span
+                class="badge {% if order.status == 'paid' or order.status == 'completed' %}badge-low{% elif order.status == 'pending' %}badge-medium{% else %}badge-high{% endif %}">
+                {{ order.status|title }}
+            </span>
+        </div>
+        <div style="color: #6b7280; font-size: 13px;">Placed on {{ order.created_at|date:"F d, Y at H:i" }}</div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'crm_invoice_detail' order.id %}" target="_blank"
+            style="background-color: white; border: 1px solid #e5e7eb; color: #374151; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px;">
+            <i class="fas fa-print"></i> Print Invoice
+        </a>
+        <button
+            style="background-color: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;">
+            Refund / Action
+        </button>
+    </div>
+</div>
+
+<div class="grid-cols-3">
+    <!-- Main Info -->
+    <div class="col-span-2">
+        <div class="card">
+            <h3 class="text-lg mb-4">Order Summary</h3>
+            <table class="platform-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Type</th>
+                        <th style="text-align: right;">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ order.product.name|default:"Platform Subscription" }}
+                            </div>
+                            {% if order.product.description %}
+                            <div style="font-size: 11px; color: #6b7280;">{{ order.product.description|truncatechars:50
+                                }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge" style="background-color: #f3f4f6;">{{
+                                order.product.get_product_type_display|default:"Digital" }}</span>
+                        </td>
+                        <td style="text-align: right; font-weight: 600;">${{ order.amount }}</td>
+                    </tr>
+                    <!-- Tax/Total Rows -->
+                    <tr>
+                        <td colspan="2" style="text-align: right; padding-top: 20px; color: #6b7280;">Subtotal</td>
+                        <td style="text-align: right; padding-top: 20px;">${{ order.amount }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: right; color: #6b7280;">Tax (0%)</td>
+                        <td style="text-align: right;">$0.00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"
+                            style="text-align: right; font-weight: bold; font-size: 16px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                            Total</td>
+                        <td
+                            style="text-align: right; font-weight: bold; font-size: 16px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                            ${{ order.amount }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Customer & Payment -->
+    <div>
+        <div class="card">
+            <h3 class="text-lg mb-4">Customer Details</h3>
+            {% if order.user %}
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <div
+                    style="width: 40px; height: 40px; background-color: #e0e7ff; color: #4338ca; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    {{ order.user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <div style="font-weight: 600;">{{ order.user.username }}</div>
+                    <div style="font-size: 12px; color: #6b7280;">{{ order.user.email }}</div>
+                </div>
+            </div>
+
+            <div style="font-size: 13px;">
+                <div
+                    style="margin-bottom: 5px; color: #9ca3af; text-transform: uppercase; font-size: 11px; font-weight: 600;">
+                    Billing Address</div>
+                <div>No address on file (Digital Item)</div>
+            </div>
+            {% else %}
+            <p style="color: #6b7280;">Guest Checkout</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3 class="text-lg mb-4">Payment Info</h3>
+            <div style="font-size: 13px;">
+                <div style="margin-bottom: 8px;">
+                    <span style="color: #6b7280;">Method:</span> <span style="font-weight: 600;">{{
+                        order.payment_method|default:"Stripe"|upper }}</span>
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <span style="color: #6b7280;">Transaction ID:</span> <br>
+                    <span style="font-family: monospace; background: #f3f4f6; padding: 2px 4px; border-radius: 4px;">{{
+                        order.stripe_session|default:"N/A"|truncatechars:20 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

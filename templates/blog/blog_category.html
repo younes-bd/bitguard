@@ -1,0 +1,9 @@
+{% extends "blog/blog_list.html" %}
+
+{% block blog_title %}
+Category: <span class="tw-text-cyan-400">{{ category.name }}</span>
+{% endblock %}
+
+{% block blog_subtitle %}
+Browsing all valid posts in <strong>{{ category.name }}</strong>
+{% endblock %}

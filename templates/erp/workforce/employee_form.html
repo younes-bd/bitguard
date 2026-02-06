@@ -1,0 +1,116 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}{% if form.instance.pk %}Edit Profile: {{ form.instance.user.username }}{% else %}New Employee
+Profile{% endif %}{% endblock %}
+
+{% block erp_content %}
+<div class="max-w-3xl mx-auto">
+    <div class="flex items-center gap-4 mb-8">
+        <a href="{% url 'erp_workforce_list' %}" class="btn-text">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Team
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="flex items-center gap-4 mb-6 border-b border-gray-100 pb-6">
+            <div class="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 text-xl">
+                <i class="fas fa-user-edit"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-dark">
+                    Edit Profile: <span class="text-indigo-600">{{ employee_user.username }}</span>
+                </h1>
+                <p class="text-sm text-gray">Update roles, skills, and admin details.</p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="space-y-6">
+                <!-- Professional Info -->
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Professional Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Job Title</label>
+                        {{ form.job_title }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Department</label>
+                        {{ form.department }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Seniority Level</label>
+                        {{ form.seniority }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Start Date</label>
+                        {{ form.start_date }}
+                    </div>
+                </div>
+
+                <!-- Contact & Location -->
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 pt-4 border-t border-gray-50">
+                    Location & Contact</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Office / Location</label>
+                        {{ form.location }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Phone Number</label>
+                        {{ form.phone }}
+                    </div>
+                </div>
+
+                <!-- Capacity & Cost -->
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 pt-4 border-t border-gray-50">
+                    Capacity & Planning</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Internal Hourly Rate ($)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-gray-400">$</span>
+                            {{ form.internal_cost_rate }}
+                        </div>
+                        <p class="text-xs text-gray mt-1">Used for project cost estimation.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray mb-1">Current Workload (%)</label>
+                        {{ form.current_load }}
+                        <div class="h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                            <div class="h-full bg-blue-500" style="width: {{ form.instance.current_load }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center gap-3">
+                    {{ form.is_available }}
+                    <label for="{{ form.is_available.id_for_label }}"
+                        class="text-sm font-medium text-dark select-none cursor-pointer">
+                        Mark as Available for New Projects
+                    </label>
+                </div>
+
+
+                <!-- Skills -->
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 pt-4 border-t border-gray-50">
+                    Expertise</h3>
+                <div>
+                    <label class="block text-sm font-semibold text-gray mb-1">Skills Tags</label>
+                    {{ form.skills }}
+                    <p class="text-xs text-gray mt-1">Comma-separated (e.g. Python, Leadership, Sales).</p>
+                </div>
+
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
+                <a href="{% url 'erp_workforce_list' %}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save mr-2"></i> Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

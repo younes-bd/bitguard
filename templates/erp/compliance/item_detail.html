@@ -1,0 +1,60 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}{{ item.framework }} Control: {{ item.control_id }}{% endblock %}
+
+{% block erp_content %}
+<div class="max-w-4xl mx-auto">
+    <div class="flex items-center gap-4 mb-6">
+        <a href="{% url 'erp_compliance_items' %}" class="btn-text">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Controls
+        </a>
+        <div class="flex-grow"></div>
+        <a href="{% url 'erp_compliance_item_edit' item.pk %}" class="btn-primary">
+            <i class="fas fa-edit mr-2"></i> Edit Control
+        </a>
+    </div>
+
+    <div class="card mb-6">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <span class="text-sm font-semibold text-blue-600 mb-1 block">{{ item.framework }}</span>
+                <h1 class="text-2xl font-bold text-dark">{{ item.control_id }}</h1>
+            </div>
+            <div>
+                <span
+                    class="badge {% if item.status == 'compliant' %}badge-green{% elif item.status == 'non_compliant' %}badge-red{% else %}badge-yellow{% endif %}">
+                    {{ item.get_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <div class="prose max-w-none text-gray-700 mb-6">
+            <h3 class="text-lg font-semibold text-dark mb-2">Requirement Description</h3>
+            <p>{{ item.description|linebreaks }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <label class="text-xs text-gray uppercase font-semibold block mb-1">Last Audit</label>
+                <div class="text-dark font-medium">{{ item.last_audit_date|date:"M d, Y"|default:"Not audited yet" }}
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <label class="text-xs text-gray uppercase font-semibold block mb-1">Next Audit Due</label>
+                <div class="text-dark font-medium">{{ item.next_audit_date|date:"M d, Y"|default:"N/A" }}</div>
+            </div>
+        </div>
+
+        {% if item.evidence_link %}
+        <div class="mt-6 pt-6 border-t border-gray-100">
+            <h3 class="text-lg font-semibold text-dark mb-2">Evidence & Artifacts</h3>
+            <a href="{{ item.evidence_link }}" target="_blank"
+                class="text-blue-600 hover:text-blue-800 flex items-center gap-2">
+                <i class="fas fa-external-link-alt"></i> View Evidence Document
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

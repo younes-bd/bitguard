@@ -1,0 +1,207 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}{% if object %}Edit Project{% else %}New Project{% endif %}{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div style="display: flex; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 900px; padding: 32px;">
+            <div class="flex-between mb-6" style="padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <h2 class="text-xl font-bold text-dark">
+                        {% if object %}
+                        Edit Project
+                        {% else %}
+                        Create New Project
+                        {% endif %}
+                    </h2>
+                    <p class="text-sm text-gray mt-1">Define scope, timeline, and financials.</p>
+                </div>
+                <!-- a button that looks like text -->
+                <a href="{% url 'erp_project_list' %}"
+                    style="color: var(--text-secondary); text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Section: Basics -->
+                <div style="margin-bottom: 32px;">
+                    <h3 class="text-sm font-bold text-gray uppercase tracking-wide mb-4">Project Details</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <!-- Client -->
+                        <div class="form-group">
+                            <label class="form-label">Client Account</label>
+                            <div class="custom-select-wrapper">
+                                {{ form.client }}
+                            </div>
+                            <small class="text-xs text-gray" style="margin-top: 4px; display: block;">Billable entity
+                                for this project.</small>
+                        </div>
+
+                        <!-- Service Type -->
+                        <div class="form-group">
+                            <label class="form-label">Service Type</label>
+                            <div class="custom-select-wrapper">
+                                {{ form.service_type }}
+                            </div>
+                        </div>
+
+                        <!-- Contract -->
+                        <div class="form-group">
+                            <label class="form-label">Linked Contract</label>
+                            <div class="custom-select-wrapper">
+                                {{ form.contract }}
+                            </div>
+                            {% if form.client.value %}
+                            <small class="text-xs text-gray" style="margin-top: 4px; display: block;">
+                                <a href="{% url 'crm_client_detail' 999999 %}"
+                                    onclick="this.href=this.href.replace('999999', document.querySelector('[name=client]').value); return true;"
+                                    target="_blank" style="color: #0ea5e9;">
+                                    View Client Contracts
+                                </a>
+                            </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- CRM Project (Linked) -->
+                        <div class="form-group">
+                            <label class="form-label">Linked CRM Deal</label>
+                            <div class="custom-select-wrapper">
+                                {{ form.crm_project }}
+                            </div>
+                            <small class="text-xs text-gray" style="margin-top: 4px; display: block;">Link to a closed
+                                Sales Deal.</small>
+                        </div>
+
+                        <!-- Name -->
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Project Name</label>
+                            <input type="text" name="name" value="{{ form.name.value|default:'' }}" class="form-control"
+                                placeholder="e.g. Q4 Security Audit - Acme Corp">
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Description / Scope</label>
+                            <textarea name="description" rows="3" class="form-control"
+                                placeholder="Detailed scope of work...">{{ form.description.value|default:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Financials -->
+                <div style="margin-bottom: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                    <h3 class="text-sm font-bold text-gray uppercase tracking-wide mb-4">Financials</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div class="form-group">
+                            <label class="form-label">Total Revenue (Contract Value)</label>
+                            <div style="position: relative;">
+                                <span
+                                    style="position: absolute; left: 12px; top: 10px; color: var(--text-secondary);">$</span>
+                                <input type="number" step="0.01" name="revenue"
+                                    value="{{ form.revenue.value|default:'0.00' }}" class="form-control"
+                                    style="padding-left: 24px;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Budgeted Cost</label>
+                            <div style="position: relative;">
+                                <span
+                                    style="position: absolute; left: 12px; top: 10px; color: var(--text-secondary);">$</span>
+                                <input type="number" step="0.01" name="budget_cost"
+                                    value="{{ form.budget_cost.value|default:'0.00' }}" class="form-control"
+                                    style="padding-left: 24px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Timeline & Status -->
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                    <h3 class="text-sm font-bold text-gray uppercase tracking-wide mb-4">Timeline & Execution</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+                        <!-- Manager -->
+                        <div class="form-group">
+                            <label class="form-label">Project Manager</label>
+                            <div class="custom-select-wrapper">
+                                {{ form.manager }}
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <div class="custom-select-wrapper">
+                                {{ form.status }}
+                            </div>
+                        </div>
+
+                        <!-- Team -->
+                        <div class="form-group">
+                            <label class="form-label">Team Members</label>
+                            <div class="custom-select-wrapper">
+                                {{ form.team }}
+                            </div>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="form-group">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" name="start_date" value="{{ form.start_date.value|date:'Y-m-d' }}"
+                                class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Target Deadline</label>
+                            <input type="date" name="deadline" value="{{ form.deadline.value|date:'Y-m-d' }}"
+                                class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="flex-center gap-3"
+                    style="justify-content: flex-end; padding-top: 24px; border-top: 1px solid var(--border-color); margin-top: 32px;">
+                    <a href="{% url 'erp_project_list' %}" class="btn-secondary">Discard</a>
+                    <button type="submit" class="btn-primary" style="padding-left: 32px; padding-right: 32px;">
+                        {% if object %}
+                        Update Project
+                        {% else %}
+                        Create Project
+                        {% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Auto-style basic Django widgets
+        const inputs = document.querySelectorAll('input[type="text"], input[type="number"], select, textarea');
+        inputs.forEach(input => {
+            if (!input.classList.contains('form-control')) {
+                input.classList.add('form-control');
+            }
+            if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
+                input.style.width = '100%';
+            }
+        });
+
+        // Ensure SelectMultiple styling if relevant (e.g. for team)
+        const multipleSelects = document.querySelectorAll('select[multiple]');
+        multipleSelects.forEach(sel => {
+            sel.style.height = 'auto';
+            sel.style.minHeight = '100px';
+            sel.style.width = '100%';
+            sel.style.border = '1px solid var(--border-color)';
+            sel.style.borderRadius = '6px';
+            sel.style.padding = '8px';
+        });
+    });
+</script>
+{% endblock %}

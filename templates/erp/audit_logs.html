@@ -1,0 +1,95 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}System Audit Logs{% endblock %}
+
+{% block erp_content %}
+<div class="h-full flex flex-col">
+    <div class="flex-between mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-dark font-mono">>_ /var/log/syslog</h2>
+            <p class="text-sm text-gray mt-1 font-mono">System Audit Trail & Security Events</p>
+        </div>
+        <div class="flex gap-3">
+            <div class="relative">
+                <input type="text" placeholder="grep search..."
+                    class="bg-gray-100 border border-gray-200 text-sm rounded-md px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-gray-400 w-64">
+            </div>
+            <button class="btn-secondary font-mono text-sm">
+                <i class="fas fa-download mr-2"></i> export.log
+            </button>
+        </div>
+    </div>
+
+    <div
+        class="bg-[#1e1e1e] rounded-lg shadow-xl overflow-hidden flex-grow flex flex-col border border-gray-700 font-mono text-sm">
+        <!-- Terminal Header -->
+        <div class="bg-[#2d2d2d] px-4 py-2 flex items-center justify-between border-b border-gray-700 select-none">
+            <div class="flex gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+            </div>
+            <div class="text-gray-400 text-xs">user@bitguard-erp: ~</div>
+            <div class="w-10"></div> <!-- Spacer -->
+        </div>
+
+        <!-- Terminal Content -->
+        <div class="p-4 overflow-y-auto custom-scrollbar flex-grow bg-[#1e1e1e] text-gray-300">
+            {% for log in logs|default:object_list %}
+            <div
+                class="group hover:bg-[#2d2d2d] px-2 py-1 -mx-2 rounded transition-colors duration-150 flex items-start gap-3 leading-relaxed">
+                <!-- Timestamp -->
+                <div class="text-[#569cd6] min-w-[150px] whitespace-nowrap opacity-80">
+                    [{{ log.timestamp|date:"Y-m-d H:i:s" }}]
+                </div>
+
+                <!-- Level/Action -->
+                <div
+                    class="min-w-[80px] font-bold {% if 'DELETE' in log.action or 'CRITICAL' in log.action %}text-[#f44747]{% elif 'UPDATE' in log.action or 'WARNING' in log.action %}text-[#dcdcaa]{% else %}text-[#4ec9b0]{% endif %}">
+                    {{ log.action|upper }}
+                </div>
+
+                <!-- User -->
+                <div class="text-[#c586c0] min-w-[100px]">
+                    @{{ log.actor.username|default:"system" }}
+                </div>
+
+                <!-- Message -->
+                <div class="text-[#ce9178] flex-grow break-all">
+                    {{ log.object_repr }} <span class="text-gray-500 text-xs ml-2">from {{ log.ip_address }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-gray-500 italic p-4 text-center">
+                No log entries found. System is clean.
+            </div>
+            {% endfor %}
+
+            <!-- Blinking Cursor -->
+            <div class="mt-2 flex items-center gap-2 text-green-500">
+                <span class="text-blue-400">root@erp:</span><span class="text-white">~#</span> <span
+                    class="animate-pulse">_</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Scrollbar for the terminal look */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 10px;
+        background-color: #1e1e1e;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #424242;
+        border-radius: 5px;
+        border: 2px solid #1e1e1e;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+</style>
+{% endblock %}

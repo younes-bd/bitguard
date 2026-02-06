@@ -1,0 +1,175 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}Financial Overview{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between" style="margin-bottom: 24px;">
+        <div>
+            <h2 class="text-2xl font-bold text-dark">Financial Overview</h2>
+            <p class="text-sm text-gray mt-1">Profit & Loss Snapshot</p>
+        </div>
+        <div class="flex-center gap-2">
+            <button class="btn-secondary">
+                <i class="far fa-calendar" style="margin-right: 6px;"></i> This Month
+            </button>
+            <a href="{% url 'erp_financial_export' %}" class="btn-primary">
+                <i class="fas fa-download" style="margin-right: 6px;"></i> Export Report
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="stats-grid" style="margin-bottom: 24px;">
+        <!-- MRR -->
+        <div class="stat-card">
+            <div class="flex-between mb-4">
+                <div class="icon-box icon-box-primary">
+                    <i class="fas fa-sync"></i>
+                </div>
+                <div class="badge badge-success flex-center gap-1">
+                    <i class="fas fa-arrow-up"></i> {{ active_subs }} Subs
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-dark mb-1">${{ total_mrr|floatformat:0 }}</div>
+            <div class="text-sm text-gray">Recurring Revenue (MRR)</div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="stat-card">
+            <div class="flex-between mb-4">
+                <div class="icon-box icon-box-success">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-dark mb-1">${{ total_revenue|floatformat:0 }}</div>
+            <div class="text-sm text-gray">Total Revenue</div>
+        </div>
+
+        <!-- Total Costs -->
+        <div class="stat-card">
+            <div class="flex-between mb-4">
+                <div class="icon-box icon-box-danger">
+                    <i class="fas fa-coins"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-dark mb-1">${{ total_costs|floatformat:0 }}</div>
+            <div class="text-sm text-gray">Total Costs</div>
+        </div>
+
+        <!-- Net Profit -->
+        <div class="stat-card">
+            <div class="flex-between mb-4">
+                <div class="icon-box icon-box-purple">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <!-- Assuming badge-success etc are now available, but logic might need updating if margins are negative -->
+                <div
+                    class="badge {% if profit_margin > 20 %}badge-success{% elif profit_margin > 0 %}badge-warning{% else %}badge-critical{% endif %}">
+                    {{ profit_margin|floatformat:1 }}% Margin
+                </div>
+            </div>
+            <div class="text-3xl font-bold {% if net_profit > 0 %}text-dark{% else %}text-red{% endif %} mb-1">
+                ${{ net_profit|floatformat:0 }}
+            </div>
+            <div class="text-sm text-gray">Net Profit</div>
+        </div>
+    </div>
+
+    <!-- Detailed Breakdowns -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+        <!-- Revenue Breakdown -->
+        <div class="card">
+            <h3 class="text-lg font-bold text-dark mb-6">Revenue Mix</h3>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="flex-between p-4" style="border: 1px solid var(--border-color); border-radius: 8px;">
+                    <div class="flex-center gap-3" style="justify-content: flex-start;">
+                        <div class="icon-box icon-box-primary rounded-full">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-dark text-sm">Projects</div>
+                            <div class="text-xs text-gray">Services & Consulting</div>
+                        </div>
+                    </div>
+                    <div class="font-bold text-dark">${{ project_revenue|floatformat:0 }}</div>
+                </div>
+
+                <div class="flex-between p-4" style="border: 1px solid var(--border-color); border-radius: 8px;">
+                    <div class="flex-center gap-3" style="justify-content: flex-start;">
+                        <div class="icon-box icon-box-success rounded-full">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-dark text-sm">Store Sales</div>
+                            <div class="text-xs text-gray">eCommerce Orders</div>
+                        </div>
+                    </div>
+                    <div class="font-bold text-dark">${{ order_revenue|floatformat:0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="card">
+            <h3 class="text-lg font-bold text-dark mb-6">Cost Structure</h3>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="flex-between p-4" style="border: 1px solid var(--border-color); border-radius: 8px;">
+                    <div class="flex-center gap-3" style="justify-content: flex-start;">
+                        <div class="icon-box icon-box-warning rounded-full">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-dark text-sm">Labor Cost</div>
+                            <div class="text-xs text-gray">Internal Salaries</div>
+                        </div>
+                    </div>
+                    <div class="font-bold text-dark">${{ total_labor_cost|floatformat:0 }}</div>
+                </div>
+
+                <div class="flex-between p-4" style="border: 1px solid var(--border-color); border-radius: 8px;">
+                    <div class="flex-center gap-3" style="justify-content: flex-start;">
+                        <div class="icon-box icon-box-danger rounded-full">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-dark text-sm">Operational</div>
+                            <div class="text-xs text-gray">Bills & Expenses</div>
+                        </div>
+                    </div>
+                    <div class="font-bold text-dark">${{ total_bills|add:total_expenses|floatformat:0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" style="background: var(--bg-body); border: none; box-shadow: none;">
+            <h3 class="text-lg font-bold text-dark mb-6">Quick Actions</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="{% url 'erp_expense_create' %}" class="flex-center gap-3 p-4 card"
+                    style="justify-content: flex-start; transition: transform 0.2s; border: none; box-shadow: var(--shadow-sm);">
+                    <div class="icon-box icon-box-warning rounded-full">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-dark text-sm">Submit Expense</div>
+                        <div class="text-xs text-gray">Request reimbursement</div>
+                    </div>
+                </a>
+
+                <a href="{% url 'erp_bill_create' %}" class="flex-center gap-3 p-4 card"
+                    style="justify-content: flex-start; transition: transform 0.2s; border: none; box-shadow: var(--shadow-sm);">
+                    <div class="icon-box icon-box-primary rounded-full">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-dark text-sm">Upload Bill</div>
+                        <div class="text-xs text-gray">Record vendor invoice</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

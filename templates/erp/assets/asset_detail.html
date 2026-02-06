@@ -1,0 +1,160 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}Asset: {{ asset.name }}{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between" style="margin-bottom: 24px;">
+        <div>
+            <div class="flex-center gap-2" style="justify-content: flex-start; margin-bottom: 4px;">
+                <span class="text-xs font-bold uppercase text-gray">Asset Tag</span>
+                <span class="text-xs font-mono font-bold"
+                    style="background: #eef2ff; color: #4f46e5; padding: 2px 6px; border-radius: 4px; border: 1px solid #e0e7ff;">{{
+                    asset.asset_tag }}</span>
+            </div>
+            <h2 class="text-2xl font-bold text-dark">{{ asset.name }}</h2>
+            <div class="text-sm text-gray mt-1">
+                <i class="far fa-calendar-alt"></i> Acquired on {{ asset.purchase_date|default:"Unknown Date" }}
+            </div>
+        </div>
+        <div class="flex-center gap-2">
+            <a href="{% url 'erp_asset_edit' asset.pk %}" class="btn-secondary">
+                <i class="fas fa-edit" style="margin-right: 6px;"></i> Edit
+            </a>
+            <button class="btn-primary">
+                <i class="fas fa-exchange-alt" style="margin-right: 6px;"></i> Assign / Return
+            </button>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <!-- Left Column (Specs & History) -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Basic Info -->
+            <div class="card">
+                <h3 class="text-lg font-bold text-dark mb-4" style="margin-bottom: 20px;">Specs & Details</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <div class="text-xs font-bold text-gray uppercase tracking-wide mb-1">Asset Type</div>
+                        <div class="font-medium text-dark text-lg">{{ asset.get_asset_type_display }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-gray uppercase tracking-wide mb-1">Serial Number</div>
+                        <div
+                            class="font-mono text-medium text-dark bg-gray-50 border border-gray-200 px-2 py-1 rounded inline-block">
+                            {{ asset.serial_number|default:"N/A" }}
+                        </div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <div class="text-xs font-bold text-gray uppercase tracking-wide mb-2">Notes / Specs</div>
+                        <div class="text-sm text-dark bg-gray-50 p-4 rounded-lg border border-gray-200 leading-relaxed">
+                            {{ asset.notes|default:"No notes recorded for this asset."|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifecycle / History Placeholder -->
+            <div class="card">
+                <h3 class="text-lg font-bold text-dark mb-4" style="margin-bottom: 20px;">Lifecycle History</h3>
+                <div style="position: relative; padding-left: 20px;">
+                    <div
+                        style="position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; background: #e5e7eb;">
+                    </div>
+
+                    <!-- Current State -->
+                    <div style="position: relative; padding-left: 24px; margin-bottom: 24px;">
+                        <div
+                            style="position: absolute; left: -4px; top: 4px; width: 24px; height: 24px; border-radius: 50%; background: #3b82f6; border: 4px solid white; box-shadow: 0 0 0 1px #e5e7eb;">
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-dark">Current Status: <span class="text-blue-600">{{
+                                    asset.get_status_display }}</span></div>
+                            <div class="text-xs text-gray mt-1">Updated recently</div>
+                        </div>
+                    </div>
+
+                    <!-- Purchase Event -->
+                    <div style="position: relative; padding-left: 24px;">
+                        <div
+                            style="position: absolute; left: -4px; top: 4px; width: 24px; height: 24px; border-radius: 50%; background: #22c55e; border: 4px solid white; box-shadow: 0 0 0 1px #e5e7eb;">
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-dark">Asset Purchased</div>
+                            <div class="text-xs text-gray mt-1">{{ asset.purchase_date|default:"Date not recorded" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column (Assignment & Warranty) -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="card">
+                <h3 class="text-lg font-bold text-dark mb-4" style="margin-bottom: 20px;">Assignment</h3>
+
+                {% if asset.assigned_to_user %}
+                <div
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div
+                        style="width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin-bottom: 12px;">
+                        {{ asset.assigned_to_user.username|slice:":1"|upper }}
+                    </div>
+                    <div class="font-bold text-dark text-lg">{{ asset.assigned_to_user.username }}</div>
+                    <div class="text-sm text-gray mb-3">{{ asset.assigned_to_user.email }}</div>
+                    <span class="badge badge-active">Employee</span>
+                </div>
+                {% elif asset.assigned_to_client %}
+                <div
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div
+                        style="width: 64px; height: 64px; border-radius: 50%; background: #ffedd5; color: #c2410c; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin-bottom: 12px;">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="font-bold text-dark text-lg">{{ asset.assigned_to_client.name }}</div>
+                    <span class="badge badge-medium mt-3">Client Deployment</span>
+                </div>
+                {% elif asset.assigned_to_office %}
+                <div
+                    style="display: flex; flex-direction: column; align-items: center; padding: 16px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; text-align: center;">
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <span class="text-sm font-bold text-dark">{{ asset.assigned_to_office.name }}</span>
+                    <span class="badge badge-default mt-2">Office Deployment</span>
+                </div>
+                {% else %}
+                <div
+                    style="text-align: center; padding: 32px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                    <div class="text-gray-400 mb-3"><i class="fas fa-box-open text-3xl"></i></div>
+                    <div class="text-sm text-dark font-bold">Currently In Stock</div>
+                    <div class="text-xs text-gray mt-1">Available for assignment</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h3 class="text-lg font-bold text-dark mb-4" style="margin-bottom: 20px;">Warranty</h3>
+                <div class="flex-between mb-2">
+                    <span class="text-gray text-sm font-medium">Expiration Date</span>
+                    <span class="font-bold text-dark text-sm">{{ asset.warranty_expiry|default:"N/A" }}</span>
+                </div>
+
+                {% if asset.warranty_expiry %}
+                <!-- Progress Bar for Warranty -->
+                <div
+                    style="width: 100%; bg-color: #f3f4f6; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 12px;">
+                    <div style="width: 60%; height: 100%; background: linear-gradient(90deg, #22c55e, #3b82f6);"></div>
+                </div>
+                <div class="text-xs text-gray mt-2 text-right">Coverage Active</div>
+                {% else %}
+                <div class="text-xs text-gray mt-2 italic text-center">No warranty info</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

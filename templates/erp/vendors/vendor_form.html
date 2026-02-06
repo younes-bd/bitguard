@@ -1,0 +1,90 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}{% if object %}Edit Vendor{% else %}New Vendor{% endif %}{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div style="display: flex; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 800px; padding: 32px;">
+            <div class="flex-between"
+                style="margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); align-items: flex-start;">
+                <div>
+                    <h2 class="text-2xl font-bold text-dark mb-1">{% if object %}Edit Vendor{% else %}Add Vendor{% endif
+                        %}</h2>
+                    <p class="text-sm text-gray">Manage external partners and providers.</p>
+                </div>
+                <a href="{% url 'erp_vendor_list' %}" class="text-gray hover:text-red-500 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </a>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Basic Info -->
+                <div style="margin-bottom: 32px;">
+                    <h3 class="text-xs font-bold text-gray uppercase tracking-widest mb-6">Company Information</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="block text-sm font-bold text-dark mb-2">Vendor Name</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="form-group">
+                            <label class="block text-sm font-bold text-dark mb-2">Service Category</label>
+                            {{ form.service_provided }}
+                        </div>
+                        <div class="form-group">
+                            <label class="block text-sm font-bold text-dark mb-2">Website</label>
+                            {{ form.website }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div style="padding-top: 24px; border-top: 1px solid var(--border-color);">
+                    <h3 class="text-xs font-bold text-gray uppercase tracking-widest mb-6">Contact Details</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="block text-sm font-bold text-dark mb-2">Contact Person</label>
+                            {{ form.contact_name }}
+                        </div>
+                        <div class="form-group">
+                            <label class="block text-sm font-bold text-dark mb-2">Email</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="form-group">
+                            <label class="block text-sm font-bold text-dark mb-2">Phone</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex-center gap-4"
+                    style="justify-content: flex-end; padding-top: 24px; border-top: 1px solid var(--border-color); margin-top: 32px;">
+                    <a href="{% url 'erp_vendor_list' %}" class="btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-primary px-8">Save Vendor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (!input.classList.contains('form-control')) {
+                input.classList.add('form-control');
+            }
+            if (input.tagName === 'SELECT') {
+                // Ensure selects have height and padding
+                input.style.height = '42px';
+            }
+            // Ensure full width
+            input.style.width = '100%';
+        });
+    });
+</script>
+{% endblock %}

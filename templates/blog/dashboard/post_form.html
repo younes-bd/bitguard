@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'accounts/css/accounts.css' %}?v=6">
+
+<section class="bg-bitguard-light-blue hero-section tw-min-h-screen tw-p-8 tw-pt-24">
+    <!-- Glow Effect -->
+    <div class="purple-bg-grad reveal-up hero-glow-effect"></div>
+
+    <div class="tw-relative tw-z-10 tw-container tw-max-w-4xl tw-mx-auto">
+
+        <div class="tw-mb-8">
+            <a href="{% url 'blog:dashboard' %}"
+                class="tw-text-slate-500 hover:tw-text-cyan-600 tw-flex tw-items-center tw-gap-2 tw-mb-4 tw-font-medium tw-transition-colors">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1 class="tw-text-3xl bitguard-heading">
+                {% if form.instance.pk %}Edit Post{% else %}Create New Post{% endif %}
+            </h1>
+        </div>
+
+        <div class="bitguard-card tw-p-8">
+            <div class="bitguard-gradient-bg"></div>
+            <div class="tw-relative tw-z-10">
+                <form method="post" enctype="multipart/form-data" class="tw-space-y-6">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="tw-space-y-2">
+                        <label for="{{ field.id_for_label }}" class="bitguard-label">
+                            {{ field.label }}
+                        </label>
+                        <div class="tw-relative">
+                            {% if field.name == 'content' %}
+                            {# TinyMCE or similar usually replaces this textarea #}
+                            {{ field }}
+                            {% elif field.name == 'featured_image' %}
+                            {{ field }}
+                            <p class="tw-text-xs tw-text-slate-500 tw-mt-1">Upload a high-quality featured image.</p>
+                            {% elif field.name == 'is_featured' %}
+                            <div class="tw-flex tw-items-center tw-gap-2">
+                                {{ field }}
+                                <span class="tw-text-sm tw-text-slate-600">Feature this post on the homepage?</span>
+                            </div>
+                            {% else %}
+                            <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}"
+                                id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}"
+                                class="bitguard-input">
+                            {% endif %}
+                        </div>
+                        {% if field.errors %}
+                        <p class="tw-text-red-500 tw-text-xs tw-mt-1 tw-font-medium">{{ field.errors.0 }}</p>
+                        {% endif %}
+                        {% if field.help_text %}
+                        <p class="tw-text-slate-400 tw-text-xs mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="tw-flex tw-justify-end tw-gap-4 tw-pt-6 tw-border-t tw-border-slate-200">
+                        <a href="{% url 'blog:dashboard' %}"
+                            class="tw-px-6 tw-py-3 tw-border tw-border-slate-300 tw-text-slate-600 tw-rounded-lg hover:tw-bg-slate-50 tw-transition-colors tw-font-medium">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn-bitguard">
+                            {% if form.instance.pk %}Update Post{% else %}Publish Post{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Simple Script to fix input styling for non-custom inputs -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add bitguard-input class to standard inputs if they don't have it
+        const inputs = document.querySelectorAll('input:not([type="checkbox"]):not([type="file"]), textarea, select');
+        inputs.forEach(el => {
+            if (!el.classList.contains('bitguard-input') && !el.classList.contains('tw-hidden')) {
+                el.classList.add('bitguard-input');
+            }
+        });
+    });
+</script>
+{% endblock %}

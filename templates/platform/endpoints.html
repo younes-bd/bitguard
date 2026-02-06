@@ -1,0 +1,61 @@
+{% extends 'platform/base.html' %}
+
+{% block title %}Endpoints - BitGuard Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="flex-between mb-4">
+        <h2 class="text-xl font-bold text-dark">Monitored Endpoints</h2>
+    </div>
+
+    <table class="platform-table">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Hostname</th>
+                <th>IP Address</th>
+                <th>OS</th>
+                <th>Agent Version</th>
+                <th>Last Seen</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ep in endpoints %}
+            <tr>
+                <td>
+                    {% if ep.status == 'secure' %}
+                    <span class="badge badge-low">Secure</span>
+                    {% elif ep.status == 'compromised' %}
+                    <span class="badge badge-critical">Compromised</span>
+                    {% elif ep.status == 'isolated' %}
+                    <span class="badge badge-medium">Isolated</span>
+                    {% else %}
+                    <span class="badge badge-medium">{{ ep.status|title }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-dark font-bold">{{ ep.name }}</td>
+                <td class="text-gray font-mono">{{ ep.ip_address }}</td>
+                <td class="text-dark">{{ ep.os_version }}</td>
+                <td class="text-gray">{{ ep.agent_version }}</td>
+                <td class="text-gray text-sm">{{ ep.last_seen|timesince }} ago</td>
+                <td>
+                    {% if ep.status != 'isolated' %}
+                    <button class="btn-primary btn-sm" style="background-color: #ef4444;"
+                        onclick="alert('Endpoint isolation requested via API')">
+                        Isolate
+                    </button>
+                    {% else %}
+                    <span class="text-gray text-xs italic">Locked</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center p-8 text-gray">No endpoints found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock dashboard_content %}

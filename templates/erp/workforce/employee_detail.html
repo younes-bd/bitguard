@@ -1,0 +1,159 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}{{ profile.user.username }} - Profile{% endblock %}
+
+{% block erp_content %}
+<div class="grid grid-cols-12 gap-6 h-full">
+    <!-- Left Sidebar: Profile Info -->
+    <div class="col-span-12 lg:col-span-4 space-y-6">
+        <div class="card text-center p-8">
+            <div
+                class="w-32 h-32 rounded-full bg-indigo-100 mx-auto flex items-center justify-center text-indigo-700 font-bold text-4xl mb-6 ring-4 ring-indigo-50">
+                {{ profile.user.username|slice:":2"|upper }}
+            </div>
+            <h1 class="text-2xl font-bold text-dark">{{ profile.user.username }}</h1>
+            <p class="text-indigo-600 font-medium text-lg mb-2">{{ profile.job_title }}</p>
+            <p class="text-gray-500 text-sm mb-6">{{ profile.location }} &bull; {{ profile.get_seniority_display }}</p>
+
+            <div class="flex justify-center gap-3">
+                <a href="mailto:{{ profile.user.email }}" class="btn-secondary">
+                    <i class="fas fa-envelope mr-2"></i> Email
+                </a>
+                <a href="{% url 'erp_employee_edit' profile.pk %}" class="btn-primary">
+                    <i class="fas fa-edit mr-2"></i> Edit Profile
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="text-sm font-bold text-gray uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Info
+            </h3>
+            <div class="space-y-4">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Department</span>
+                    <span class="font-medium text-dark capitalize">{{ profile.department }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Joined</span>
+                    <span class="font-medium text-dark">{{ profile.start_date|date:"F Y"|default:"-" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Phone</span>
+                    <span class="font-medium text-dark">{{ profile.phone|default:"-" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Cost Rate</span>
+                    <span class="font-medium text-dark font-mono">${{ profile.internal_cost_rate }}/hr</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="text-sm font-bold text-gray uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Skills
+            </h3>
+            <div class="flex flex-wrap gap-2">
+                {% for skill in profile.skill_list %}
+                <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium">
+                    {{ skill }}
+                </span>
+                {% empty %}
+                <span class="text-sm text-gray-400 italic">No skills listed.</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Content: Activity & Tasks -->
+    <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+        <!-- Stats Row -->
+        <div class="grid grid-cols-2 gap-4">
+            <div
+                class="card flex items-center justify-between p-6 bg-gradient-to-r from-blue-50 to-white border-l-4 border-blue-500">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold uppercase">Current Load</p>
+                    <h3 class="text-3xl font-bold text-gray-800">{{ profile.current_load }}%</h3>
+                </div>
+                <div class="text-blue-200">
+                    <i class="fas fa-tachometer-alt text-4xl"></i>
+                </div>
+            </div>
+            <div
+                class="card flex items-center justify-between p-6 bg-gradient-to-r from-green-50 to-white border-l-4 border-green-500">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold uppercase">Active Tasks</p>
+                    <h3 class="text-3xl font-bold text-gray-800">{{ assigned_tasks.count }}</h3>
+                </div>
+                <div class="text-green-200">
+                    <i class="fas fa-check-circle text-4xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Tasks -->
+        <div class="card flex-grow">
+            <h3 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
+                <i class="fas fa-tasks text-gray-400"></i> Assigned Tasks
+            </h3>
+
+            {% if assigned_tasks %}
+            <div class="space-y-3">
+                {% for task in assigned_tasks %}
+                <div class="p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors flex justify-between items-center group cursor-pointer"
+                    onclick="window.location.href='{% url 'erp_task_detail' task.pk %}'">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs font-bold uppercase tracking-wider 
+                                {% if task.priority == 'high' or task.priority == 'critical' %}text-red-500 bg-red-50 px-2 py-0.5 rounded
+                                {% elif task.priority == 'medium' %}text-orange-500 bg-orange-50 px-2 py-0.5 rounded
+                                {% else %}text-blue-500 bg-blue-50 px-2 py-0.5 rounded{% endif %}">
+                                {{ task.priority }}
+                            </span>
+                            <h4 class="font-semibold text-dark group-hover:text-blue-600 transition-colors">{{
+                                task.title }}</h4>
+                        </div>
+                        <p class="text-sm text-gray">{{ task.project.name }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-500">{{ task.due_date|date:"M d" }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 text-gray-400">
+                <i class="fas fa-clipboard-check text-4xl mb-3 opacity-20"></i>
+                <p>No active tasks assigned.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Time Logs -->
+        <div class="card">
+            <h3 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
+                <i class="fas fa-history text-gray-400"></i> Recent Activity
+            </h3>
+            {% if recent_logs %}
+            <div class="space-y-4">
+                {% for log in recent_logs %}
+                <div class="flex items-start gap-3 text-sm">
+                    <div class="mt-1 min-w-[3rem] text-gray-400 font-mono text-xs">{{ log.date|date:"M d" }}</div>
+                    <div>
+                        <p class="text-dark">Logged <span class="font-bold">{{ log.hours }}h</span> on <span
+                                class="font-medium text-blue-600">{{ log.task.title }}</span></p>
+                        {% if log.notes %}
+                        <p class="text-gray-500 text-xs mt-0.5 italic">"{{ log.notes }}"</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-6 text-gray-400 text-sm">
+                No recent activity logged.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

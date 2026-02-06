@@ -1,0 +1,152 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}{{ vendor.name }} - Vendor{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between" style="margin-bottom: 24px;">
+        <div>
+            <div class="flex-center gap-2" style="justify-content: flex-start; margin-bottom: 4px;">
+                <h2 class="text-2xl font-bold text-dark">{{ vendor.name }}</h2>
+                <span class="badge badge-active">Active Partner</span>
+            </div>
+            <div class="text-sm text-gray flex-center gap-4" style="justify-content: flex-start;">
+                <span>
+                    <i class="fas fa-globe text-gray mr-1"></i>
+                    <a href="{{ vendor.website }}" target="_blank" class="hover:text-blue-600 hover:underline">{{
+                        vendor.website|default:"No website" }}</a>
+                </span>
+                <span>
+                    <i class="fas fa-tag text-gray mr-1"></i> {{ vendor.service_provided }}
+                </span>
+            </div>
+        </div>
+        <div class="flex-center gap-2">
+            <button class="btn-secondary">
+                <i class="fas fa-edit" style="margin-right: 6px;"></i> Edit Profile
+            </button>
+            <button class="btn-primary">
+                <i class="fas fa-file-contract" style="margin-right: 6px;"></i> Add Contract
+            </button>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <!-- Left Column (Contracts) -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Active Contracts -->
+            <div class="card">
+                <div class="flex-between" style="margin-bottom: 20px;">
+                    <h3 class="text-lg font-bold text-dark">Active Contracts</h3>
+                    <button class="text-sm text-blue-600 hover:underline font-medium">View History</button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    {% for contract in vendor.contracts.all %}
+                    <div style="padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: 0.2s;"
+                        onmouseover="this.style.borderColor='#3b82f6'"
+                        onmouseout="this.style.borderColor='var(--border-color)'">
+                        <div class="flex-between" style="margin-bottom: 12px; align-items: flex-start;">
+                            <div>
+                                <div class="font-bold text-dark text-lg">{{ contract.name }}</div>
+                                <div class="flex-center gap-4 text-sm text-gray mt-1"
+                                    style="justify-content: flex-start;">
+                                    <span><i class="far fa-calendar mr-1"></i> Ends: {{ contract.end_date }}</span>
+                                    {% if contract.auto_renew %}
+                                    <span
+                                        style="color: #16a34a; background: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;"><i
+                                            class="fas fa-sync mr-1"></i> Auto-Renew</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="text-xl font-bold text-dark">${{ contract.value|floatformat:0 }}</div>
+                        </div>
+
+                        <!-- Progress / Time Remaining -->
+                        <div
+                            style="width: 100%; background: #f1f5f9; border-radius: 4px; height: 8px; overflow: hidden; margin-top: 16px;">
+                            <div style="background: #3b82f6; height: 100%; width: 45%;"></div>
+                        </div>
+                        <div class="flex-between text-xs text-gray mt-2">
+                            <span>Started Jan 1, 2024</span>
+                            <span>45% Complete</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div
+                        style="text-align: center; padding: 32px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; color: #94a3b8;">
+                        <i class="fas fa-file-contract text-3xl mb-3"></i>
+                        <p>No active contracts on file.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Notes or history could go here -->
+        </div>
+
+        <!-- Right Column (Contact & Risk) -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="card">
+                <h3 class="text-lg font-bold text-dark mb-4" style="margin-bottom: 20px;">Contact Info</h3>
+
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span class="text-gray text-xs font-bold uppercase tracking-wider">Point of Contact</span>
+                        <div class="font-bold text-dark text-sm flex-center gap-2" style="justify-content: flex-start;">
+                            <div
+                                style="width: 24px; height: 24px; rounded-full; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #64748b;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {{ vendor.contact_name }}
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span class="text-gray text-xs font-bold uppercase tracking-wider">Email Address</span>
+                        {% with email_display=vendor.email|default:"-" %}
+                        <a href="mailto:{{ vendor.email }}"
+                            class="text-sm font-medium text-blue-600 hover:underline flex-center gap-2"
+                            style="justify-content: flex-start;">
+                            <i class="far fa-envelope text-gray"></i> {{ email_display }}
+                        </a>
+                        {% endwith %}
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span class="text-gray text-xs font-bold uppercase tracking-wider">Phone Number</span>
+                        <div class="text-sm text-dark font-medium flex-center gap-2"
+                            style="justify-content: flex-start;">
+                            <i class="fas fa-phone text-gray text-xs"></i> {{ vendor.phone|default:"-" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                    <button class="btn-secondary w-full" style="justify-content: center;">
+                        <i class="fas fa-paper-plane" style="margin-right: 8px;"></i> Send Email
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-lg font-bold text-dark mb-4" style="margin-bottom: 15px;">Risk Assessment</h3>
+                <div class="flex-between mb-2">
+                    <div style="display: flex; flex-direction: column;">
+                        <span class="text-4xl font-bold text-green">Low</span>
+                        <span class="text-xs text-gray font-medium uppercase tracking-wide">Risk Level</span>
+                    </div>
+                    <div
+                        style="width: 64px; height: 64px; border-radius: 50%; border: 4px solid #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-bold; font-size: 20px;">
+                        92
+                    </div>
+                </div>
+                <p class="text-xs text-gray bg-gray-50 p-3 rounded mt-2 border border-blue-50">
+                    Based on SLA compliance, security questionnaire, and historical uptime data.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

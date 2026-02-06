@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="tw-bg-slate-50 tw-min-h-screen tw-pt-32">
+    <div class="tw-container tw-mx-auto tw-px-4 tw-mb-12">
+        <h1 class="tw-text-3xl tw-font-bold tw-text-slate-900 tw-mb-8">My Subscriptions & Orders</h1>
+
+        <!-- Active Subscription -->
+        <div class="tw-mb-12">
+            <h2 class="tw-text-xl tw-font-bold tw-text-slate-800 tw-mb-4">Current Plan</h2>
+            <div class="bitguard-card tw-bg-white tw-p-8 tw-rounded-xl tw-shadow-sm tw-border tw-border-slate-100 tw-flex tw-justify-between tw-items-center">
+                {% if subscription and subscription.is_valid %}
+                    <div>
+                        <h3 class="tw-text-2xl tw-font-bold tw-text-indigo-600 tw-mb-1">{{ subscription.plan.name }} Plan</h3>
+                        <p class="tw-text-slate-500">
+                            Status: <span class="tw-font-bold tw-uppercase tw-text-emerald-600">{{ subscription.status }}</span>
+                        </p>
+                        <p class="tw-text-sm tw-text-slate-400 tw-mt-2">Renews on {{ subscription.current_period_end|date:"M d, Y" }}</p>
+                    </div>
+                    <div>
+                        <button class="btn-bitguard tw-bg-slate-100 tw-text-slate-700 hover:tw-bg-slate-200 tw-border-none">
+                            Manage Subscription
+                        </button>
+                    </div>
+                {% else %}
+                    <div>
+                        <p class="tw-text-slate-600 tw-mb-2">You do not have an active platform subscription.</p>
+                        <a href="{% url 'plans_page' %}" class="tw-text-indigo-600 tw-font-bold hover:tw-underline">
+                            View Plans <i class="fas fa-arrow-right tw-ml-1"></i>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Order History -->
+        <div>
+            <h2 class="tw-text-xl tw-font-bold tw-text-slate-800 tw-mb-4">Order History</h2>
+            <div class="bitguard-card tw-bg-white tw-overflow-hidden tw-rounded-xl tw-shadow-sm tw-border tw-border-slate-100">
+                <table class="tw-w-full tw-text-sm tw-text-left">
+                    <thead class="tw-bg-slate-50 tw-text-slate-500 tw-font-medium">
+                        <tr>
+                            <th class="tw-px-6 tw-py-4">Order #</th>
+                            <th class="tw-px-6 tw-py-4">Product</th>
+                            <th class="tw-px-6 tw-py-4">Date</th>
+                            <th class="tw-px-6 tw-py-4">Status</th>
+                            <th class="tw-px-6 tw-py-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tw-divide-y tw-divide-slate-100">
+                        {% for order in orders %}
+                        <tr class="hover:tw-bg-slate-50/50">
+                            <td class="tw-px-6 tw-py-4 tw-font-medium tw-text-slate-900">{{ order.id }}</td>
+                            <td class="tw-px-6 tw-py-4 tw-text-slate-900">{{ order.product.name }}</td>
+                            <td class="tw-px-6 tw-py-4 tw-text-slate-500">{{ order.created_at|date:"M d, Y" }}</td>
+                            <td class="tw-px-6 tw-py-4">
+                                <span class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-bold 
+                                    {% if order.status == 'paid' %}tw-bg-green-100 tw-text-green-700{% else %}tw-bg-amber-100 tw-text-amber-700{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="tw-px-6 tw-py-4">
+                                {% if order.status == 'paid' and order.product.file %}
+                                <a href="{% url 'secure_download' order.id %}" class="tw-text-indigo-600 hover:tw-underline">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="tw-px-6 tw-py-8 tw-text-center tw-text-slate-400">
+                                No purchase history found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

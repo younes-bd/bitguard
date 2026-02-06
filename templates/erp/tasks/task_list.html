@@ -1,0 +1,127 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}Tasks{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between" style="margin-bottom: 24px;">
+        <h2 class="text-2xl font-bold text-dark">Tasks</h2>
+        <a href="{% url 'erp_task_create' %}" class="btn-primary">
+            <i class="fas fa-plus" style="margin-right: 8px;"></i> New Task
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+        <div class="stat-card">
+            <div class="flex-between mb-4">
+                <div class="text-gray text-xs font-bold uppercase tracking-wider">Total Tasks</div>
+                <div class="icon-box icon-box-primary">
+                    <i class="fas fa-list"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-dark mb-1">{{ tasks.count }}</div>
+            <div class="flex-center gap-2 text-xs text-gray" style="justify-content: flex-start;">
+                <span class="text-green font-bold"><i class="fas fa-arrow-up"></i> 12%</span> from last month
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="flex-between mb-4">
+                <div class="text-gray text-xs font-bold uppercase tracking-wider">Pending</div>
+                <div class="icon-box icon-box-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-dark mb-1">{{ pending_count|default:0 }}</div>
+            <div class="text-xs text-gray">Action required soon</div>
+        </div>
+        <div class="stat-card">
+            <div class="flex-between mb-4">
+                <div class="text-gray text-xs font-bold uppercase tracking-wider">Critical</div>
+                <div class="icon-box icon-box-danger">
+                    <i class="fas fa-fire"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-dark mb-1">{{ critical_count|default:0 }}</div>
+            <div class="text-xs text-red font-bold">Needs immediate attention</div>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="flex-between" style="padding: 16px; border-bottom: 1px solid var(--border-color);">
+            <div class="flex-center gap-2">
+                <a href="#" class="badge badge-active">All</a>
+                <a href="#" class="badge badge-default">To Do</a>
+                <a href="#" class="badge badge-default">In Progress</a>
+            </div>
+            <!-- Search omitted for brevity -->
+        </div>
+
+        <table class="platform-table">
+            <thead>
+                <tr>
+                    <th style="padding-left: 24px;">Task</th>
+                    <th>Project</th>
+                    <th>Assigned To</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th style="text-align: right; padding-right: 24px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td style="padding-left: 24px;">
+                        <a href="{% url 'erp_task_detail' task.pk %}"
+                            class="font-bold text-dark hover:text-blue-600 transition-colors">
+                            {{ task.title }}
+                        </a>
+                    </td>
+                    <td class="text-sm text-gray">{{ task.project.name }}</td>
+                    <td>
+                        {% if task.assigned_to %}
+                        <div class="flex-center gap-2" style="justify-content: flex-start;">
+                            <div class="user-avatar-small" style="width: 24px; height: 24px; font-size: 10px;">
+                                {{ task.assigned_to.username|slice:":1"|upper }}
+                            </div>
+                            <span class="text-sm">{{ task.assigned_to.username }}</span>
+                        </div>
+                        {% else %}
+                        <span class="text-gray text-xs">Unassigned</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if task.priority == 'critical' %}
+                        <span class="badge badge-critical">Critical</span>
+                        {% elif task.priority == 'high' %}
+                        <span class="badge badge-high">High</span>
+                        {% elif task.priority == 'medium' %}
+                        <span class="badge badge-medium">Medium</span>
+                        {% else %}
+                        <span class="badge badge-default">Low</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-default">{{ task.get_status_display }}</span>
+                    </td>
+                    <td class="text-sm {% if task.due_date < today %}text-red{% else %}text-gray{% endif %}">
+                        {{ task.due_date|default:"-" }}
+                    </td>
+                    <td style="text-align: right; padding-right: 24px;">
+                        <a href="{% url 'erp_task_edit' task.pk %}" class="text-gray hover:text-dark">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center p-8 text-gray">No tasks found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

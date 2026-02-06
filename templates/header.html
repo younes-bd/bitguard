@@ -1,0 +1,604 @@
+{% load static %}
+
+<!-- Google Fonts - Oswald -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- BitGuard Header -->
+<header
+    style="position: sticky; top: 0; background-color: #034484; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 999;">
+    <!-- Main Header -->
+    <div style="background-color: #034484;">
+        <div class="tw-w-full tw-px-4 md:tw-px-8">
+            <div style="display: flex; align-items: center; justify-content: space-between; height: 64px;">
+                <!-- Logo -->
+                <div>
+                    <a href="{% url 'home' %}"
+                        style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                        <img src="{% static 'base/assets/logo/logo.png' %}" alt="BitGuard"
+                            style="height: 30px; filter: brightness(0) invert(1);">
+                        <span
+                            style="color: white; font-size: 24px; font-weight: 600; font-family: 'Oswald'; letter-spacing: 2px; transform: scaleY(1.4); display: inline-block; margin-top: -4px;">BITGUARD</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav id="desktopNav" style="display: flex; align-items: center; gap: 32px;">
+                    <!-- PLATFORM -->
+                    <div style="position: relative;"
+                        onmouseenter="document.getElementById('platformDrop').style.display='block'"
+                        onmouseleave="document.getElementById('platformDrop').style.display='none'">
+                        <button
+                            style="color: white; font-weight: 600; display: flex; align-items: center; background: none; border: none; cursor: pointer; padding: 8px 0;">
+                            PLATFORM
+                            <svg style="margin-left: 4px; width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="platformDrop"
+                            style="display:none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 16px; width: 250px; z-index: 1000;">
+                            <a href="{% url 'platform_detail' 'platform-overview' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Overview</a>
+                            <a href="{% url 'platform_detail' 'assess' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Assess</a>
+                            <a href="{% url 'platform_detail' 'defend' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Defend</a>
+                            <a href="{% url 'platform_detail' 'control' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Control</a>
+                            <a href="{% url 'platform_detail' 'security-advisor' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Security
+                                Advisor</a>
+                        </div>
+                    </div>
+
+                    <!-- SOLUTIONS with Multi-level Dropdown -->
+                    <div style="position: relative;"
+                        onmouseenter="document.getElementById('itDrop').style.display='block'"
+                        onmouseleave="document.getElementById('itDrop').style.display='none'">
+                        <button
+                            style="color: white; font-weight: 600; display: flex; align-items: center; background: none; border: none; cursor: pointer; padding: 8px 0;">
+                            SOLUTIONS
+                            <svg style="margin-left: 4px; width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="itDrop"
+                            style="display:none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 16px; width: 280px; z-index: 1000;">
+                            <!-- Managed IT with submenu -->
+                            <div style="position: relative;"
+                                onmouseenter="document.getElementById('managedITSub').style.display='block'"
+                                onmouseleave="document.getElementById('managedITSub').style.display='none'">
+                                <a href="#"
+                                    style="display: flex; align-items: center; justify-content: space-between; color: white; font-weight: 600; padding: 10px 12px; text-decoration: none; border-radius: 6px;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    Managed IT Services
+                                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                                <div id="managedITSub"
+                                    style="display:none; position: absolute; left: 100%; top: 0; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 12px; width: 250px; z-index: 1001;">
+                                    <a href="{% url 'service_detail' 'backup-disaster-recovery' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Backup
+                                        & Disaster Recovery</a>
+                                    <a href="{% url 'service_detail' 'managed-detection-response' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Managed
+                                        Detection & Response</a>
+                                    <a href="{% url 'service_detail' 'mfa' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Multi-Factor
+                                        Authentication</a>
+                                    <a href="{% url 'service_detail' 'voip-services' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">VoIP
+                                        Services</a>
+                                    <a href="{% url 'service_detail' 'noc' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Network
+                                        Operations Center</a>
+                                </div>
+                            </div>
+
+                            <!-- Cybersecurity with submenu -->
+                            <div style="position: relative;"
+                                onmouseenter="document.getElementById('professionalITSub').style.display='block'"
+                                onmouseleave="document.getElementById('professionalITSub').style.display='none'">
+                                <a href="#"
+                                    style="display: flex; align-items: center; justify-content: space-between; color: white; font-weight: 600; padding: 10px 12px; text-decoration: none; border-radius: 6px;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    Cybersecurity
+                                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                                <div id="professionalITSub"
+                                    style="display:none; position: absolute; left: 100%; top: 0; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 12px; width: 250px; z-index: 1001;">
+                                    <a href="{% url 'service_detail' 'bitguard-bundle' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">The
+                                        BITGUARD Security Bundle</a>
+                                    <a href="{% url 'service_detail' 'threat-detection' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Threat
+                                        Detection & Response</a>
+                                    <a href="{% url 'service_detail' 'edr' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Endpoint
+                                        Detection & Response</a>
+                                    <a href="{% url 'service_detail' 'incident-response' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Incident
+                                        Response</a>
+                                    <a href="{% url 'service_detail' 'vulnerability-scanning' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Vulnerability
+                                        Scanning</a>
+                                    <a href="{% url 'service_detail' 'compliance-audit' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Compliance
+                                        & Audit</a>
+                                </div>
+                            </div>
+
+                            <!-- Cloud Services with submenu -->
+                            <div style="position: relative;"
+                                onmouseenter="document.getElementById('cloudServicesSub').style.display='block'"
+                                onmouseleave="document.getElementById('cloudServicesSub').style.display='none'">
+                                <a href="#"
+                                    style="display: flex; align-items: center; justify-content: space-between; color: white; font-weight: 600; padding: 10px 12px; text-decoration: none; border-radius: 6px;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    Cloud Services
+                                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                                <div id="cloudServicesSub"
+                                    style="display:none; position: absolute; left: 100%; top: 0; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 12px; width: 250px; z-index: 1001;">
+                                    <a href="{% url 'service_detail' 'microsoft-365' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Microsoft
+                                        365 Services</a>
+                                    <a href="{% url 'service_detail' 'azure-aws' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Azure
+                                        and AWS</a>
+                                    <a href="{% url 'service_detail' 'cloud-storage' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Cloud
+                                        Storage</a>
+                                </div>
+                            </div>
+
+                            <!-- Digital Services with submenu -->
+                            <div style="position: relative;"
+                                onmouseenter="document.getElementById('digitalSub').style.display='block'"
+                                onmouseleave="document.getElementById('digitalSub').style.display='none'">
+                                <a href="#"
+                                    style="display: flex; align-items: center; justify-content: space-between; color: white; font-weight: 600; padding: 10px 12px; text-decoration: none; border-radius: 6px;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    Digital Services
+                                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                                <div id="digitalSub"
+                                    style="display:none; position: absolute; left: 100%; top: 0; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 12px; width: 250px; z-index: 1001;">
+                                    <a href="{% url 'service_detail' 'web-design' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Web
+                                        Design & Development</a>
+                                    <a href="{% url 'service_detail' 'design-services' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Design
+                                        Services</a>
+                                    <a href="{% url 'service_detail' 'full-stack' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Full
+                                        Stack Development</a>
+                                    <a href="{% url 'service_detail' 'app-development' %}"
+                                        style="display: block; color: white; font-size: 14px; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='white'">Application
+                                        Development</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RESOURCES -->
+                    <div style="position: relative;"
+                        onmouseenter="document.getElementById('resourcesDrop').style.display='block'"
+                        onmouseleave="document.getElementById('resourcesDrop').style.display='none'">
+                        <button
+                            style="color: white; font-weight: 600; display: flex; align-items: center; background: none; border: none; cursor: pointer; padding: 8px 0;">
+                            RESOURCES
+                            <svg style="margin-left: 4px; width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="resourcesDrop"
+                            style="display:none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 16px; width: 250px; z-index: 1000;">
+                            <a href="{% url 'blog:post_list' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Blog</a>
+                            <a href="#"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Events</a>
+                            <a href="#"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Free
+                                Tools</a>
+                            <a href="#"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Reports</a>
+                            <a href="#"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Podcasts</a>
+                        </div>
+                    </div>
+
+                    <!-- COMPANY -->
+                    <div style="position: relative;"
+                        onmouseenter="document.getElementById('companyDrop').style.display='block'"
+                        onmouseleave="document.getElementById('companyDrop').style.display='none'">
+                        <button
+                            style="color: white; font-weight: 600; display: flex; align-items: center; background: none; border: none; cursor: pointer; padding: 8px 0;">
+                            COMPANY
+                            <svg style="margin-left: 4px; width: 16px; height: 16px;" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="companyDrop"
+                            style="display:none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%; background: #034484; border-top: 2px solid #06b6d4; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); padding: 16px; width: 220px; z-index: 1000;">
+                            <a href="{% url 'about' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">About
+                                Us</a>
+                            <a href="{% url 'team' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Our
+                                Team</a>
+                            <a href="{% url 'careers' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Careers</a>
+                            <a href="{% url 'contact' %}"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Contact
+                                us</a>
+                            <a href="#"
+                                style="display: block; color: white; font-size: 14px; font-weight: 600; padding: 8px 12px; text-decoration: none; border-radius: 4px;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#06b6d4'"
+                                onmouseout="this.style.background='transparent'; this.style.color='white'">Terms
+                                of service</a>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'support' %}"
+                        style="color: white; font-weight: 600; text-decoration: none;">SUPPORT</a>
+                </nav>
+
+                <!-- CTA Buttons -->
+                <div id="ctaButtons" style="display: flex; align-items: center; gap: 12px;">
+                    <a href="#"
+                        style="padding: 8px 16px; border: 2px solid white; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">Under
+                        Attack?</a>
+                    {% if user.is_authenticated %}
+                    <!-- User Dropdown -->
+                    <div style="position: relative;"
+                        onmouseenter="document.getElementById('userDrop').style.display='block'"
+                        onmouseleave="document.getElementById('userDrop').style.display='none'">
+
+                        <button
+                            style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 4px 12px 4px 4px; border-radius: 24px; cursor: pointer;">
+                            <img src="{% if user.profile.photo %}{{ user.profile.photo.url }}{% else %}https://ui-avatars.com/api/?name={{ user.username }}&background=0ea5e9&color=fff{% endif %}"
+                                alt="User"
+                                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #0ea5e9;">
+                            <svg style="width: 16px; height: 16px; color: #fff;" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div id="userDrop"
+                            style="display:none; position: absolute; right: 0; top: 100%; padding-top: 10px; width: 240px; z-index: 1000;">
+
+                            <!-- Inner Content Card -->
+                            <div
+                                style="background: #0f172a; border: 1px solid #334155; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden;">
+                                <!-- User Header -->
+                                <div style="padding: 16px; border-bottom: 1px solid #334155; background: #1e293b;">
+                                    <div style="font-weight: 600; color: white; margin-bottom: 2px;">{{ user.username }}
+                                    </div>
+                                    <div
+                                        style="font-size: 12px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ user.email }}</div>
+                                </div>
+
+                                <!-- Menu Items -->
+                                <div style="padding: 8px;">
+                                    {% if user.is_staff %}
+                                    <a href="/admin/"
+                                        style="display: flex; align-items: center; gap: 10px; color: #facc15; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(250, 204, 21, 0.1)'; this.style.color='#fde047'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#facc15'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        Admin Panel
+                                    </a>
+                                    {% endif %}
+
+                                    {% if request.user.is_staff %}
+                                    <a href="{% url 'crm_dashboard' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #818cf8; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(99, 102, 241, 0.1)'; this.style.color='#a5b4fc'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#818cf8'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                                            </path>
+                                        </svg>
+                                        Staff Portal
+                                    </a>
+
+                                    <a href="{% url 'erp_overview' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #10b981; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(16, 185, 129, 0.1)'; this.style.color='#34d399'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#10b981'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            </path>
+                                        </svg>
+                                        ERP Console
+                                    </a>
+                                    {% endif %}
+
+                                    <a href="{% url 'dashboard_home' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #e2e8f0; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(14, 165, 233, 0.1)'; this.style.color='#38bdf8'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#e2e8f0'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                                            </path>
+                                        </svg>
+                                        Platform
+                                    </a>
+
+                                    <a href="{% url 'account_dashboard' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #e2e8f0; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(14, 165, 233, 0.1)'; this.style.color='#38bdf8'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#e2e8f0'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                            </path>
+                                        </svg>
+                                        Dashboard
+                                    </a>
+
+                                    <a href="{% url 'client_portal' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #e2e8f0; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(14, 165, 233, 0.1)'; this.style.color='#38bdf8'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#e2e8f0'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            </path>
+                                        </svg>
+                                        Client Portal
+                                    </a>
+
+                                    <a href="{% url 'my_subscriptions' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #e2e8f0; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(14, 165, 233, 0.1)'; this.style.color='#38bdf8'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#e2e8f0'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                            </path>
+                                        </svg>
+                                        My Subscriptions
+                                    </a>
+
+                                    <a href="{% url 'profile' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #e2e8f0; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(14, 165, 233, 0.1)'; this.style.color='#38bdf8'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#e2e8f0'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                            </path>
+                                        </svg>
+                                        My Profile
+                                    </a>
+
+                                    <a href="{% url 'security_center' %}"
+                                        style="display: flex; align-items: center; gap: 10px; color: #e2e8f0; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px;"
+                                        onmouseover="this.style.background='rgba(14, 165, 233, 0.1)'; this.style.color='#38bdf8'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#e2e8f0'">
+                                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                                            </path>
+                                        </svg>
+                                        Security Center
+                                    </a>
+                                </div>
+
+                                <!-- Logout -->
+                                <div style="padding: 8px; border-top: 1px solid #334155;">
+                                    <form action="{% url 'logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                            style="width: 100%; display: flex; align-items: center; gap: 10px; color: #ef4444; background: transparent; border: none; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-align: left;"
+                                            onmouseover="this.style.background='rgba(239, 68, 68, 0.1)'"
+                                            onmouseout="this.style.background='transparent'">
+                                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                                </path>
+                                            </svg>
+                                            Sign Out
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}"
+                        style="padding: 8px 16px; background: white; color: #034484; border-radius: 8px; font-weight: 600; text-decoration: none;">Sign
+                        In</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn"
+                    onclick="document.getElementById('mobileMenu').style.display = document.getElementById('mobileMenu').style.display === 'none' ? 'block' : 'none'"
+                    style="display: none; padding: 8px; background: none; border: none; color: white; cursor: pointer;">
+                    <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" style="display: none; background: white; border-top: 1px solid #e5e7eb;">
+        <div class="tw-container tw-mx-auto tw-px-4 tw-py-4">
+            <a href="#"
+                style="display: block; color: #111; font-weight: 600; padding: 12px 0; text-decoration: none;">Platform</a>
+            <a href="#"
+                style="display: block; color: #111; font-weight: 600; padding: 12px 0; text-decoration: none;">Solutions</a>
+            <a href="#"
+                style="display: block; color: #111; font-weight: 600; padding: 12px 0; text-decoration: none;">Resources</a>
+            <a href="#"
+                style="display: block; color: #111; font-weight: 600; padding: 12px 0; text-decoration: none;">Company</a>
+            <a href="#"
+                style="display: block; color: #111; font-weight: 600; padding: 12px 0; text-decoration: none;">Support</a>
+            <div style="padding-top: 16px; display: flex; flex-direction: column; gap: 12px;">
+                <a href="#"
+                    style="display: block; width: 100%; padding: 12px; border: 2px solid #2563eb; color: #2563eb; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none;">Under
+                    Attack?</a>
+                <a href="#"
+                    style="display: block; width: 100%; padding: 12px; background: #2563eb; color: white; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none;">Sign
+                    In</a>
+                {% if request.user.is_staff %}
+                <a href="{% url 'crm_dashboard' %}"
+                    style="display: block; width: 100%; padding: 12px; background: #312e81; color: white; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none;">Staff
+                    Portal</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>
+
+<style>
+    /* Hide mobile menu button on desktop */
+    @media (min-width: 1024px) {
+        #mobileMenuBtn {
+            display: none !important;
+        }
+
+        #desktopNav {
+            display: flex !important;
+        }
+
+        #ctaButtons {
+            display: flex !important;
+        }
+    }
+
+    /* Show mobile menu button on mobile, hide desktop nav */
+    @media (max-width: 1023px) {
+        #mobileMenuBtn {
+            display: block !important;
+        }
+
+        #desktopNav {
+            display: none !important;
+        }
+
+        #ctaButtons {
+            display: none !important;
+        }
+    }
+</style>

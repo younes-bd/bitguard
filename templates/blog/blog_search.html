@@ -1,0 +1,13 @@
+{% extends "blog/blog_list.html" %}
+
+{% block blog_title %}
+Search Results
+{% endblock %}
+
+{% block blog_subtitle %}
+{% if query %}
+Found {{ posts.count }} results for "<span class="tw-text-cyan-400">{{ query }}</span>"
+{% else %}
+Please enter a search term provided.
+{% endif %}
+{% endblock %}

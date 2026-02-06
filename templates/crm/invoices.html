@@ -1,0 +1,87 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="dashboard-header-wrapper" style="margin-bottom: 30px;">
+    <h1 style="font-size: 24px; font-weight: bold; color: var(--text-dashboard);">Invoices</h1>
+    <p style="color: #6b7280; margin-top: 5px;">Generated invoices from paid orders.</p>
+</div>
+
+<div class="card">
+    <div class="flex-between mb-4">
+        <h2 class="text-xl">Paid Invoices</h2>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="platform-table">
+            <thead>
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Source</th>
+                    <th>To</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td>
+                        <span style="font-weight: 600;">{{ invoice.display_id }}</span>
+                        <!-- Source-specific subtext -->
+                        {% if invoice.is_saas %}
+                        <div style="font-size: 11px; color: #6b7280;">Order #{{ invoice.id }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if invoice.is_saas %}
+                        <span class="badge" style="background-color: #e0f2fe; color: #0369a1;">SaaS / Product</span>
+                        {% else %}
+                        <span class="badge" style="background-color: #f3e8ff; color: #7e22ce;">Professional
+                            Services</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if invoice.user %}
+                        <div style="font-weight: 600; font-size: 13px;">{{ invoice.user.username }}</div>
+                        {% elif invoice.client %}
+                        <div style="font-weight: 600; font-size: 13px;">{{ invoice.client.name }}</div>
+                        {% else %}
+                        <span style="color: #9ca3af;">Guest</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ invoice.created_at|date:"M d, Y" }}</td>
+                    <td>${{ invoice.final_amount }}</td>
+                    <td>
+                        {% if invoice.status == 'paid' or invoice.status == 'active' %}
+                        <span class="badge badge-low">{{ invoice.status|title }}</span>
+                        {% elif invoice.status == 'overdue' %}
+                        <span class="badge badge-critical">{{ invoice.status|title }}</span>
+                        {% else %}
+                        <span class="badge badge-medium">{{ invoice.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if invoice.is_saas %}
+                        <a href="{% url 'crm_invoice_detail' invoice.id %}"
+                            style="color: #0ea5e9; text-decoration: none; font-weight: 600; font-size: 13px;">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        {% else %}
+                        <!-- Link to ERP Invoice Detail (we need to ensure this URL exists or falls back safely) -->
+                        <span style="color: #6b7280; font-size: 13px;">(ERP View)</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #9ca3af; padding: 40px;">No invoices found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

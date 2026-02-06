@@ -1,0 +1,172 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}
+{% if form.instance.pk %}Edit Invoice{% else %}Create Invoice{% endif %}
+{% endblock %}
+
+{% block erp_content %}
+<div class="max-w-3xl mx-auto">
+    <div class="flex-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-dark">
+                {% if form.instance.pk %}Edit Invoice{% else %}Create New Invoice{% endif %}
+            </h1>
+            <p class="text-gray text-sm mt-1">
+                {% if linked_contract %}
+                Billing against Contract: <strong>{{ linked_contract.name }}</strong>
+                {% else %}
+                Issue a manual invoice for professional services.
+                {% endif %}
+            </p>
+        </div>
+        <a href="{% url 'erp_invoice_list' %}" class="btn-secondary">Cancel</a>
+    </div>
+
+    <div class="card">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="p-4 mb-4 bg-red-50 text-red-600 rounded-lg">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Client -->
+                <div class="form-group col-span-2">
+                    <label class="form-label">Client</label>
+                    <div class="custom-select-wrapper">
+                        {{ form.client }}
+                    </div>
+                </div>
+
+                <!-- Contract -->
+                <div class="form-group col-span-2">
+                    <label class="form-label">Linked Contract</label>
+                    <div class="custom-select-wrapper">
+                        {{ form.contract }}
+                    </div>
+                    {% if linked_contract %}
+                    <small class="text-blue-600 block mt-1">
+                        <i class="fas fa-link mr-1"></i>
+                        Linked to {{ linked_contract.name }} ({{ linked_contract.value|default:"$0" }})
+                    </small>
+                    {% endif %}
+                </div>
+
+                <!-- Project -->
+                <div class="form-group col-span-2">
+                    <label class="form-label">Project (Optional)</label>
+                    <div class="custom-select-wrapper">
+                        {{ form.project }}
+                    </div>
+                </div>
+
+                <!-- Invoice Number -->
+                <div class="form-group">
+                    <label class="form-label">Invoice Number</label>
+                    {{ form.invoice_number }}
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <div class="custom-select-wrapper">
+                        {{ form.status }}
+                    </div>
+                </div>
+
+                <!-- Dates -->
+                <div class="form-group">
+                    <label class="form-label">Issue Date</label>
+                    {{ form.issue_date }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    {{ form.due_date }}
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 my-6 pt-6"></div>
+
+            <div class="grid grid-cols-3 gap-6">
+                <!-- Amounts -->
+                <div class="form-group">
+                    <label class="form-label">Subtotal ($)</label>
+                    {{ form.subtotal }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tax ($)</label>
+                    {{ form.tax }}
+                    {% if form.tax.errors %}
+                    <div class="text-red-600 text-xs mt-1">{{ form.tax.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label font-bold">Total ($)</label>
+                    {{ form.total }}
+                    <small class="text-gray text-xs mt-1">Calculated unless set manually.</small>
+                    {% if form.total.errors %}
+                    <div class="text-red-600 text-xs mt-1">{{ form.total.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Notes -->
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                    <div class="text-red-600 text-xs mt-1">{{ form.notes.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8">
+                <a href="{% url 'erp_invoice_list' %}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save mr-2"></i> Save Invoice
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 0.625rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: border-color 0.15s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="dashboard-header-wrapper" style="margin-bottom: 30px;">
+    <h1 style="font-size: 24px; font-weight: bold; color: var(--text-dashboard);">Orders Management</h1>
+    <p style="color: #6b7280; margin-top: 5px;">Track and manage customer orders.</p>
+</div>
+
+<div class="card">
+    <div class="flex-between mb-4">
+        <h2 class="text-xl">All Orders</h2>
+        <!-- Basic Filter Placeholder -->
+        <div style="display: flex; gap: 10px;">
+            <input type="text" placeholder="Search orders..."
+                style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px;">
+            <select style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px;">
+                <option value="">Status: All</option>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="canceled">Canceled</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="platform-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Product / Plan</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>
+                        <span style="font-weight: 600;">#{{ order.id }}</span>
+                    </td>
+                    <td>
+                        {% if order.user %}
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div
+                                style="width: 24px; height: 24px; background-color: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                                {{ order.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 13px;">{{ order.user.username }}</div>
+                                <div style="font-size: 11px; color: #6b7280;">{{ order.user.email }}</div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <span style="color: #9ca3af;">Guest</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ order.product.name|default:"Standard Plan" }}
+                    </td>
+                    <td>${{ order.amount }}</td>
+                    <td>
+                        <span
+                            class="badge {% if order.status == 'paid' or order.status == 'completed' %}badge-low{% elif order.status == 'pending' %}badge-medium{% else %}badge-high{% endif %}">
+                            {{ order.status|title }}
+                        </span>
+                    </td>
+                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'crm_order_detail' order.id %}"
+                            style="color: #0ea5e9; text-decoration: none; font-weight: 600; font-size: 13px;">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #9ca3af; padding: 40px;">No orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

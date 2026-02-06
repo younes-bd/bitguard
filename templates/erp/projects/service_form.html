@@ -1,0 +1,60 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}{% if form.instance.pk %}Edit Service: {{ form.instance.name }}{% else %}Add New Service{% endif
+%}{% endblock %}
+
+{% block erp_content %}
+<div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-4 mb-8">
+        <a href="{% url 'erp_service_list' %}" class="btn-text">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Catalog
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="flex items-center gap-4 mb-6 border-b border-gray-100 pb-6">
+            <div class="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 text-xl">
+                <i class="fas fa-concierge-bell"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-dark">
+                    {% if form.instance.pk %}Edit Service{% else %}New Service Offering{% endif %}
+                </h1>
+                <p class="text-sm text-gray">Define standard services for project templates.</p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray mb-1">Service Name</label>
+                    {{ form.name }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray mb-1">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center gap-3">
+                    {{ form.is_active }}
+                    <label for="{{ form.is_active.id_for_label }}"
+                        class="text-sm font-medium text-dark select-none cursor-pointer">
+                        Active (Avaiable for new projects)
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
+                <a href="{% url 'erp_service_list' %}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save mr-2"></i> Save Service
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

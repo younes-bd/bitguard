@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice.id }} - BitGuard</title>
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+            background-color: #f9fafb;
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo-area h1 {
+            color: #1e1b4b;
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .invoice-details {
+            text-align: right;
+        }
+
+        .invoice-details h2 {
+            margin: 0;
+            color: #6b7280;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        .meta {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .billing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .billing-col h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .billing-col p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 2px solid #eee;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        .total-area {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .total-table {
+            width: 300px;
+        }
+
+        .total-table td {
+            text-align: right;
+            border: none;
+            padding: 5px 10px;
+        }
+
+        .final-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e1b4b;
+            padding-top: 10px;
+            border-top: 2px solid #1e1b4b;
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="invoice-container">
+        <div class="header">
+            <div class="logo-area">
+                <h1>BITGUARD</h1>
+                <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Cyber Security Solutions</p>
+            </div>
+            <div class="invoice-details">
+                <h2>Invoice</h2>
+                <div class="meta">#INV-{{ invoice.created_at|date:"Y" }}-{{ invoice.id }}</div>
+                <div class="meta">Date: {{ invoice.created_at|date:"M d, Y" }}</div>
+                <div class="meta" style="color: #10b981; font-weight: bold; margin-top: 5px;">PAID</div>
+            </div>
+        </div>
+
+        <div class="billing-grid">
+            <div class="billing-col">
+                <h3>From</h3>
+                <p><strong>BitGuard Inc.</strong><br>
+                    123 Security Way<br>
+                    Tech City, TC 90210<br>
+                    billing@bitguard.com</p>
+            </div>
+            <div class="billing-col">
+                <h3>Bill To</h3>
+                {% if invoice.user %}
+                <p><strong>{{ invoice.user.username }}</strong><br>
+                    {{ invoice.user.email }}<br>
+                    <i>Digital Delivery</i>
+                </p>
+                {% else %}
+                <p>Guest User</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th style="text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>{{ invoice.product.name|default:"Standard Subscription" }}</strong>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Digital Service / License</div>
+                    </td>
+                    <td style="text-align: right;">${{ invoice.amount }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="total-area">
+            <table class="total-table">
+                <tr>
+                    <td>Subtotal</td>
+                    <td>${{ invoice.amount }}</td>
+                </tr>
+                <tr>
+                    <td>Tax (0%)</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td class="final-total">Total</td>
+                    <td class="final-total">${{ invoice.amount }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for your business. For support, verify your payment is reflected in your dashboard.</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto print prompt
+        window.onload = function () {
+            // setTimeout(() => window.print(), 500);
+        }
+    </script>
+</body>
+
+</html>

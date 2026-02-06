@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Standardized Hero Section -->
+<section
+  class="bg-bitguard-light-blue tw-relative tw-min-h-[350px] tw-flex tw-items-center tw-justify-center tw-overflow-hidden">
+
+  <!-- Background Patterns -->
+  <div class="tw-absolute tw-inset-0 tw-opacity-20"
+    style="background-image: radial-gradient(#034484 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+  <div class="tw-container tw-mx-auto tw-px-4 tw-relative tw-z-10 tw-text-center">
+    <span
+      class="tw-inline-block tw-py-1 tw-px-3 tw-rounded-full tw-bg-sky-500/20 tw-border tw-border-sky-400/30 tw-text-sky-700 tw-text-sm tw-font-semibold tw-mb-6 tw-uppercase tw-tracking-wider">
+      Get In Touch
+    </span>
+    <h1 class="tw-text-5xl md:tw-text-6xl tw-font-bold tw-mb-6 bitguard-heading" style="color: #034484 !important;">
+      Contact Us
+    </h1>
+    <p class="tw-text-xl tw-text-slate-600 tw-max-w-2xl tw-mx-auto">
+      Ready to transform your business? Our team is here to help you every step of the way.
+    </p>
+  </div>
+</section>
+
+<!-- Contact Content -->
+<section class="tw-py-24 tw-bg-white">
+  <div class="tw-container tw-mx-auto tw-px-4">
+    <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-20">
+
+      <!-- Left Column: Contact Info & Offices -->
+      <div>
+        <div class="tw-inline-block tw-mb-4">
+          <span class="tw-text-sky-500 tw-font-bold tw-uppercase tw-tracking-widest tw-text-xs">Reach Out</span>
+          <div class="tw-h-0.5 tw-w-full tw-bg-sky-500 tw-mt-1"></div>
+        </div>
+        <h2 class="tw-text-4xl tw-font-extrabold tw-text-slate-900 tw-mb-8 bitguard-heading tw-leading-tight">
+          We'd love to hear from you
+        </h2>
+        <div class="tw-prose tw-prose-lg tw-text-slate-600 tw-mb-12">
+          <p>
+            Whether you have a question about our services, pricing, or need technical support, our team is ready to
+            answer all your questions.
+          </p>
+        </div>
+
+        <div class="tw-space-y-10">
+          <!-- Phone -->
+          <div class="tw-flex tw-items-start tw-group">
+            <div
+              class="tw-w-14 tw-h-14 tw-bg-white tw-border tw-border-slate-200 tw-shadow-sm tw-rounded-md tw-flex tw-items-center tw-justify-center tw-mr-6 tw-flex-shrink-0 group-hover:tw-border-sky-500 group-hover:tw-text-sky-500 tw-transition-colors">
+              <i
+                class="bi bi-telephone tw-text-slate-400 group-hover:tw-text-sky-500 tw-text-xl tw-transition-colors"></i>
+            </div>
+            <div>
+              <h4 class="tw-text-lg tw-font-bold tw-text-slate-900 tw-mb-2">Phone</h4>
+              <p class="tw-text-slate-600 tw-mb-1"><span
+                  class="tw-font-semibold tw-text-slate-800 tw-w-20 tw-inline-block">Sales:</span> <a
+                  href="tel:+13123601900" class="tw-text-slate-600 hover:tw-text-sky-600 tw-transition-colors">(312)
+                  360-1900</a></p>
+              <p class="tw-text-slate-600"><span
+                  class="tw-font-semibold tw-text-slate-800 tw-w-20 tw-inline-block">Support:</span> <a
+                  href="tel:+13124452124" class="tw-text-slate-600 hover:tw-text-sky-600 tw-transition-colors">(312)
+                  445-2124</a></p>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="tw-flex tw-items-start tw-group">
+            <div
+              class="tw-w-14 tw-h-14 tw-bg-white tw-border tw-border-slate-200 tw-shadow-sm tw-rounded-md tw-flex tw-items-center tw-justify-center tw-mr-6 tw-flex-shrink-0 group-hover:tw-border-sky-500 group-hover:tw-text-sky-500 tw-transition-colors">
+              <i
+                class="bi bi-envelope tw-text-slate-400 group-hover:tw-text-sky-500 tw-text-xl tw-transition-colors"></i>
+            </div>
+            <div>
+              <h4 class="tw-text-lg tw-font-bold tw-text-slate-900 tw-mb-2">Email</h4>
+              <p class="tw-text-slate-600 tw-mb-1"><span
+                  class="tw-font-semibold tw-text-slate-800 tw-w-20 tw-inline-block">General:</span> <a
+                  href="mailto:info@bitguard.com"
+                  class="tw-text-slate-600 hover:tw-text-sky-600 tw-transition-colors">info@bitguard.com</a></p>
+              <p class="tw-text-slate-600"><span
+                  class="tw-font-semibold tw-text-slate-800 tw-w-20 tw-inline-block">Support:</span> <a
+                  href="mailto:support@bitguard.com"
+                  class="tw-text-slate-600 hover:tw-text-sky-600 tw-transition-colors">support@bitguard.com</a></p>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="tw-flex tw-items-start tw-group">
+            <div
+              class="tw-w-14 tw-h-14 tw-bg-white tw-border tw-border-slate-200 tw-shadow-sm tw-rounded-md tw-flex tw-items-center tw-justify-center tw-mr-6 tw-flex-shrink-0 group-hover:tw-border-sky-500 group-hover:tw-text-sky-500 tw-transition-colors">
+              <i
+                class="bi bi-geo-alt tw-text-slate-400 group-hover:tw-text-sky-500 tw-text-xl tw-transition-colors"></i>
+            </div>
+            <div>
+              <h4 class="tw-text-lg tw-font-bold tw-text-slate-900 tw-mb-2">Headquarters</h4>
+              <p class="tw-text-slate-600 tw-leading-relaxed">
+                55 W. Monroe St.<br>
+                Suite 1200<br>
+                Chicago, IL 60603
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Contact Form -->
+      <div class="tw-relative">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="tw-mb-6">
+          {% for message in messages %}
+          <div
+            class="tw-p-4 tw-rounded-lg {% if message.tags == 'success' %}tw-bg-green-100 tw-text-green-700{% else %}tw-bg-red-100 tw-text-red-700{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Use BitGuard Card Structure -->
+        <div
+          class="bitguard-card bitguard-auth-card tw-w-full tw-p-8 md:tw-p-10 tw-relative tw-overflow-hidden tw-shadow-2xl">
+          <div class="bitguard-gradient-bg"></div>
+
+          <div class="tw-relative tw-z-10">
+            <h3 class="bitguard-heading tw-text-2xl tw-font-bold tw-mb-6">Send us a message</h3>
+            <p class="tw-text-sm tw-text-slate-500 tw-mb-6">For general inquiries, sales, and partnerships.</p>
+
+            <form method="POST" class="tw-space-y-6">
+              {% csrf_token %}
+
+              <!-- Render Django Form Fields Manually to match style -->
+              {% for field in form %}
+              <div>
+                <label class="bitguard-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <p class="tw-text-red-500 tw-text-xs tw-mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+              </div>
+              {% endfor %}
+
+              <button type="submit" class="btn-bitguard tw-w-full tw-justify-center tw-shadow-lg">
+                Send Message
+              </button>
+
+              <p class="tw-text-xs tw-text-slate-500 tw-text-center tw-mt-4">
+                By submitting this form, you agree to our <a href="#" class="tw-text-sky-600 hover:tw-underline">Privacy
+                  Policy</a>.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Map Section (Optional Visual) -->
+<section class="tw-h-96 tw-bg-slate-200 tw-relative tw-overflow-hidden">
+  <!-- Placeholder for Map - Using an image or pattern -->
+  <div class="tw-absolute tw-inset-0 text-center tw-flex tw-items-center tw-justify-center tw-bg-slate-300">
+    <!-- Interactive map would go here. Using a static image for now if available, otherwise a placeholder -->
+    <i class="bi bi-map tw-text-6xl tw-text-slate-400"></i>
+    <span class="tw-ml-4 tw-text-xl tw-text-slate-500 tw-font-bold">Interactive Map Component</span>
+  </div>
+</section>
+
+<link rel="stylesheet" href="{% static 'accounts/css/accounts.css' %}?v=6">
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'accounts/css/accounts.css' %}?v=6">
+
+<section class="bg-bitguard-light-blue hero-section tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-p-4">
+
+    <!-- Glow Effect -->
+    <div class="purple-bg-grad reveal-up hero-glow-effect"></div>
+
+    <!-- Main Card -->
+    <div class="bitguard-card bitguard-auth-card tw-w-full tw-p-8 tw-relative tw-overflow-hidden reveal-up">
+        <div class="bitguard-gradient-bg"></div>
+
+        <div class="tw-relative tw-z-10">
+            <!-- Header -->
+            <div class="tw-text-center tw-mb-8">
+                <h2 class="bitguard-heading tw-text-3xl tw-mb-2">Two-Factor Auth</h2>
+                <p class="tw-text-slate-500">Enter the code sent to your email</p>
+            </div>
+
+            <!-- Form -->
+            <form method="post" class="tw-space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div
+                    class="tw-bg-red-50 tw-border tw-border-red-200 tw-text-red-600 tw-p-3 tw-rounded-lg tw-text-sm tw-font-medium">
+                    {{ form.non_field_errors.0 }}
+                </div>
+                {% endif %}
+
+                <div class="tw-flex tw-flex-col tw-items-center">
+                    {{ form.code }}
+                    <!-- Ensure field has class bitguard-input via script or widget tweak -->
+                    {% if form.code.errors %}
+                    <p class="tw-text-xs tw-text-center tw-text-red-500 tw-mt-2">{{ form.code.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn-bitguard tw-w-full tw-justify-center tw-shadow-lg">
+                    VERIFY
+                </button>
+            </form>
+
+            <p class="tw-text-center tw-mt-8 tw-text-slate-500 tw-text-sm">
+                Didn't receive code?
+                <a href="{% url 'resend_otp' %}" class="tw-text-[#0ea5e9] hover:tw-underline tw-font-medium">Resend</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+        inputs.forEach(input => {
+            input.classList.add('bitguard-input');
+            input.style.textAlign = 'center';
+            input.style.letterSpacing = '0.5em';
+            input.style.fontSize = '1.5rem';
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}Vendor Management{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between" style="margin-bottom: 24px;">
+        <h2 class="text-2xl font-bold text-dark">Vendors & Partners</h2>
+        <a href="{% url 'erp_vendor_create' %}" class="btn-primary">
+            <i class="fas fa-plus" style="margin-right: 8px;"></i> Add Vendor
+        </a>
+    </div>
+
+    <!-- Vendor Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="text-sm font-bold uppercase text-gray"
+                style="letter-spacing: 0.05em; margin-bottom: 8px;">Total Vendors</span>
+            <div class="text-3xl font-bold text-dark">{{ vendors.count }}</div>
+        </div>
+        <div class="stat-card">
+            <span class="text-sm font-bold uppercase text-gray"
+                style="letter-spacing: 0.05em; margin-bottom: 8px;">Active Contracts</span>
+            <div class="text-3xl font-bold text-dark">5</div>
+        </div>
+        <div class="stat-card">
+            <span class="text-sm font-bold uppercase text-gray"
+                style="letter-spacing: 0.05em; margin-bottom: 8px;">Monthly Spend</span>
+            <div class="text-3xl font-bold text-dark">$12.4k</div>
+        </div>
+        <div class="stat-card">
+            <span class="text-sm font-bold uppercase text-gray"
+                style="letter-spacing: 0.05em; margin-bottom: 8px;">Compliance</span>
+            <div class="text-3xl font-bold text-green">100%</div>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden; margin-top: 24px;">
+        <!-- Filter Bar -->
+        <div class="flex-between" style="padding: 16px; border-bottom: 1px solid var(--border-color);">
+            <div class="flex-center gap-2">
+                <button class="badge badge-active" style="cursor: pointer;">All Vendors</button>
+                <button class="badge badge-default" style="cursor: pointer;">SaaS</button>
+                <button class="badge badge-default" style="cursor: pointer;">Hardware</button>
+                <button class="badge badge-default" style="cursor: pointer;">Services</button>
+            </div>
+            <div style="position: relative;">
+                <input type="text" placeholder="Search vendors..." class="form-control"
+                    style="padding-left: 36px; padding-top: 6px; padding-bottom: 6px; width: 250px; font-size: 13px;">
+                <i class="fas fa-search"
+                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 12px;"></i>
+            </div>
+        </div>
+
+        <table class="platform-table">
+            <thead>
+                <tr>
+                    <th style="padding-left: 24px;">Vendor Name</th>
+                    <th>Service Provided</th>
+                    <th>Contact Person</th>
+                    <th>Status</th>
+                    <th style="text-align: right; padding-right: 24px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vendor in vendors %}
+                <tr>
+                    <td style="padding-left: 24px;">
+                        <div class="flex-center gap-3" style="justify-content: flex-start;">
+                            <div
+                                style="width: 36px; height: 36px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #64748b;">
+                                {{ vendor.name|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <a href="{% url 'erp_vendor_detail' vendor.pk %}"
+                                    class="font-bold text-dark hover:text-blue-600 transition-colors block">
+                                    {{ vendor.name }}
+                                </a>
+                                <a href="{{ vendor.website }}" target="_blank"
+                                    class="text-xs text-gray hover:text-blue-500 hover:underline mt-0.5 block truncate"
+                                    style="max-width: 150px;">
+                                    {{ vendor.website|default:"" }}
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-default">
+                            {{ vendor.get_category_display }}
+                        </span>
+                    </td>
+                    <td class="text-sm text-gray">
+                        <div class="font-bold text-dark">{{ vendor.contact_name }}</div>
+                        <div class="text-xs">{{ vendor.email|default:"-" }}</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-low">Active</span>
+                    </td>
+                    <td style="text-align: right; padding-right: 24px;">
+                        <a href="{% url 'erp_vendor_detail' vendor.pk %}" class="btn-cyber"
+                            style="padding: 6px 10px; font-size: 12px;">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center p-8 text-gray">No vendors found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

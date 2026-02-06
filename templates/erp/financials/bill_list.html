@@ -1,0 +1,124 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block page_title %}Vendor Bills{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-dark">Vendor Bills</h2>
+            <p class="text-sm text-gray mt-1">Accounts Payable & Payment Schedule</p>
+        </div>
+        <a href="{% url 'erp_bill_create' %}" class="btn-primary">
+            <i class="fas fa-file-upload" style="margin-right: 8px;"></i> Upload Bill
+        </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-grid mb-8">
+        <div class="stat-card">
+            <div class="flex-between mb-2">
+                <div class="text-xs font-bold text-gray uppercase tracking-wider">Total Payable</div>
+                <div class="icon-box icon-box-warning text-xs"><i class="fas fa-file-invoice-dollar"></i></div>
+            </div>
+            <div class="text-2xl font-bold text-dark">$8,450</div>
+            <div class="text-xs text-gray">Outstanding Bills</div>
+        </div>
+        <div class="stat-card">
+            <div class="flex-between mb-2">
+                <div class="text-xs font-bold text-gray uppercase tracking-wider">Overdue</div>
+                <div class="icon-box icon-box-danger text-xs"><i class="fas fa-exclamation-triangle"></i></div>
+            </div>
+            <div class="text-2xl font-bold text-red-500">$0</div>
+            <div class="text-xs text-red-400 font-bold">Immediate Action</div>
+        </div>
+        <div class="stat-card">
+            <div class="flex-between mb-2">
+                <div class="text-xs font-bold text-gray uppercase tracking-wider">Paid YTD</div>
+                <div class="icon-box icon-box-success text-xs"><i class="fas fa-check-double"></i></div>
+            </div>
+            <div class="text-2xl font-bold text-dark">$42,120</div>
+            <div class="text-xs text-green-500 font-bold">On Schedule</div>
+        </div>
+    </div>
+
+    <div class="card p-0 overflow-hidden">
+        <!-- Filters -->
+        <div class="p-4 border-b flex-between bg-gray-50 dark:bg-slate-800" style="border-color: var(--border-color);">
+            <div class="flex gap-2">
+                <input type="text" placeholder="Search bills..." class="px-3 py-2 rounded-md border text-sm"
+                    style="background: var(--bg-card); color: var(--text-primary); border-color: var(--border-color); width: 250px;">
+                <select class="px-3 py-2 rounded-md border text-sm"
+                    style="background: var(--bg-card); color: var(--text-primary); border-color: var(--border-color);">
+                    <option value="">All Statuses</option>
+                    <option value="received">Received</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="paid">Paid</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="platform-table w-full">
+            <thead>
+                <tr>
+                    <th class="pl-6 py-3 text-left">Due Date</th>
+                    <th class="py-3 text-left">Vendor</th>
+                    <th class="py-3 text-left">Reference</th>
+                    <th class="py-3 text-right">Amount</th>
+                    <th class="py-3 text-center">Status</th>
+                    <th class="pr-6 py-3 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr class="hover:bg-gray-50 transition-colors border-b last:border-0"
+                    style="border-color: var(--border-color);">
+                    <td class="pl-6 py-4">
+                        <div
+                            class="font-medium {% if bill.due_date < today and bill.status != 'paid' %}text-red-500 font-bold{% else %}text-gray-500{% endif %}">
+                            {{ bill.due_date|date:"M d, Y" }}
+                        </div>
+                    </td>
+                    <td class="py-4 font-bold text-dark">
+                        {{ bill.vendor.name }}
+                    </td>
+                    <td class="py-4 text-sm text-gray font-mono">{{ bill.reference_number|default:"-" }}</td>
+                    <td class="py-4 text-right font-bold text-dark">${{ bill.amount|floatformat:2|intcomma }}</td>
+                    <td class="py-4 text-center">
+                        <span class="badge 
+                            {% if bill.status == 'paid' %}badge-success
+                            {% elif bill.status == 'overdue' %}badge-critical
+                            {% elif bill.status == 'scheduled' %}badge-info
+                            {% else %}badge-default{% endif %} text-xs">
+                            {{ bill.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="pr-6 py-4 text-right">
+                        <a href="{% url 'erp_bill_edit' bill.pk %}"
+                            class="text-gray-400 hover:text-blue-600 px-2 transition-colors">
+                            <i class="fas fa-file-invoice"></i>
+                        </a>
+                        <a href="{% url 'erp_bill_edit' bill.pk %}"
+                            class="text-gray-400 hover:text-dark px-2 transition-colors">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-12">
+                        <div class="flex flex-col items-center justify-center text-gray-400">
+                            <i class="fas fa-file-invoice text-4xl mb-3"></i>
+                            <p>No bills found.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

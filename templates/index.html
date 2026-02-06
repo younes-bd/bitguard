@@ -1,0 +1,1407 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="bg-bitguard-light-blue hero-section" id="hero-section">
+
+    <!-- video container -->
+    <div class="video-modal-overlay" id="video-container-bg">
+
+        <div class="video-modal-content" id="video-container">
+            <div class="video-modal-header">
+                <button type="button" onclick="closeVideo()" class="video-modal-close" title="close">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </div>
+            <div class="video-frame-container">
+
+                <div class="video-frame-wrapper">
+                    <!-- add your youtube video link here -->
+                    <iframe class="video-iframe"
+                        src="https://www.youtube.com/embed/6j4fPVkA3EA?si=llcTrXPRM-MRXDZB&amp;controls=0&rel=0&showinfo=0&autoplay=1&loop=1&mute=1"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-content">
+
+        <div class="purple-bg-grad reveal-up hero-glow-effect">
+        </div>
+
+        <div class="hero-text-container">
+            <h2 class="reveal-up hero-title">
+                <span class=""> The Leading IT & </span>
+                <br />
+                <span class="hero-title-sub"> Cyber security Solution </span>
+            </h2>
+            <div class="reveal-up hero-description">
+                <!-- Test, Develop and Deploy all your AI models in one place, with Pixa seamless playground interface -->
+                AI-powered cybersecurity, secure IT infrastructure, IoT protection, cloud services, and digital
+                transformation, designed for SMEs, enterprises, and institutions.
+            </div>
+
+            <div class="reveal-up hero-buttons">
+
+                <button onclick="openVideo()" class="btn btn-hero btn-hero-outline tw-group">
+
+                    <div class="tw-relative tw-flex tw-place-items-center tw-place-content-center tw-w-6 tw-h-6">
+                        <div class="btn-hero-circle">
+                        </div>
+                        <span class="bi bi-play-circle-fill"></span>
+                    </div>
+                    <span> Why BITGUARD </span>
+                </button>
+
+                <a class="btn btn-hero btn-bitguard tw-group" href="#">
+                    <span> See Live Demo </span>
+                    <i class="bi bi-arrow-right btn-hero-icon"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard / Prompt Container Section -->
+<section class="dashboard-section-bg bg-bitguard-light-blue tw-pb-24">
+    <h2 class="reveal-up tw-text-center tw-text-4xl tw-font-medium tw-mt-8 tw-mb-6 tw-uppercase max-md:tw-text-2xl"
+        style="margin-top: 0 !important; padding-top: 2rem !important;">
+        One Dashboard for Everything
+    </h2>
+    <div class="reveal-up dashboard-outer-container tw-mt-20" id="dashboard-container">
+        <div class="purple-bg-grad reveal-up dashboard-glow-top">
+        </div>
+
+        <div class="dashboard-main" id="dashboard">
+
+            <div class="purple-bg-grad reveal-up dashboard-glow-inner">
+            </div>
+            <div class="animated-border dashboard-border-wrapper">
+                <div class="dashboard-inner"
+                    style="padding: 0 !important; background: transparent !important; border: none !important;">
+
+                    <div class="dashboard-device-frame">
+                        <div class="device-camera-notch"></div>
+                        <div class="dashboard-new-layout">
+                            <!-- Sidebar -->
+                            <!-- Sidebar -->
+                            <div class="dashboard-sidebar-new">
+                                <div class="sidebar-logo-area">
+                                    <i class="bi bi-hexagon-fill tw-text-white tw-text-2xl"></i>
+                                </div>
+
+                                <div class="sidebar-icon-btn active">
+                                    <i class="bi bi-grid-fill"></i>
+                                    <span class="sidebar-label">Actionboard</span>
+                                </div>
+                                <div class="sidebar-icon-btn">
+                                    <i class="bi bi-layout-text-window-reverse"></i>
+                                    <span class="sidebar-label">Views</span>
+                                </div>
+                                <div class="sidebar-icon-btn">
+                                    <i class="bi bi-shield-check"></i>
+                                    <span class="sidebar-label">Sec. Gaps</span>
+                                </div>
+                                <div class="sidebar-icon-btn">
+                                    <i class="bi bi-lightning-charge"></i>
+                                    <span class="sidebar-label">Insights</span>
+                                </div>
+                                <div class="sidebar-icon-btn">
+                                    <i class="bi bi-sliders"></i>
+                                    <span class="sidebar-label">Control Panel</span>
+                                </div>
+                                <div class="sidebar-icon-btn">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                    <span class="sidebar-label">More</span>
+                                </div>
+
+                                <div class="sidebar-bottom-area">
+                                    <div class="sidebar-icon-btn">
+                                        <i class="bi bi-bell"></i>
+                                        <span class="sidebar-label">Messages</span>
+                                    </div>
+                                    <div class="sidebar-avatar">
+                                        OA
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content -->
+                            <div class="dashboard-content-new">
+                                <!-- Header -->
+                                <div class="dashboard-header-new">
+                                    <div class="view-toggle">
+                                        <div class="view-btn">Global view</div>
+                                        <div class="view-btn active">Workspace view</div>
+                                    </div>
+                                    <div class="tw-flex tw-items-center tw-gap-3">
+                                        <span class="tw-text-sm tw-text-gray-600">Workspace:
+                                            <strong>Coro</strong></span>
+                                        <div
+                                            class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                                            <i class="bi bi-person-fill tw-text-gray-500"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Stats Row -->
+                                <div class="stats-row">
+                                    <div class="stat-card">
+                                        <div class="stat-header">
+                                            <i class="bi bi-exclamation-circle stat-icon text-red"></i>
+                                            <div class="stat-value">12</div>
+                                        </div>
+                                        <div class="stat-label">Open Tickets</div>
+                                        <div class="stat-meta">No change from last month</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-header">
+                                            <i class="bi bi-check-circle stat-icon text-green"></i>
+                                            <div class="stat-value">9</div>
+                                        </div>
+                                        <div class="stat-label">Auto-Resolved</div>
+                                        <div class="stat-meta text-green">See more insights</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-header">
+                                            <i class="bi bi-people stat-icon"></i>
+                                            <div class="stat-value">71</div>
+                                        </div>
+                                        <div class="stat-label">Protected Users</div>
+                                        <div class="stat-meta text-green">+8% from last month</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-header">
+                                            <i class="bi bi-laptop stat-icon"></i>
+                                            <div class="stat-value">206</div>
+                                        </div>
+                                        <div class="stat-label">Protected Devices</div>
+                                        <div class="stat-meta text-green">+1% from last month</div>
+                                    </div>
+                                </div>
+
+                                <!-- Main Grid -->
+                                <div class="dashboard-grid">
+                                    <!-- Left Column -->
+                                    <div class="tw-flex tw-flex-col tw-gap-4">
+                                        <div class="section-header">OPEN TICKETS</div>
+
+                                        <!-- Open Tickets Widget -->
+                                        <div class="widget-card">
+                                            <div class="widget-header">
+                                                <div class="widget-title">Summary</div>
+                                                <a href="#" class="tw-text-sm tw-text-blue-600 hover:tw-underline">View
+                                                    all ></a>
+                                            </div>
+                                            <div class="donut-widget-content">
+                                                <div class="donut-chart-container">
+                                                    <div class="donut-chart">
+                                                        <div class="donut-hole">
+                                                            <div class="donut-value">12</div>
+                                                            <div class="donut-label">Open tickets</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="legend-list">
+                                                    <div class="legend-item">
+                                                        <div class="legend-info">
+                                                            <div class="dot" style="background-color: #f59e0b;"></div>
+                                                            <span>Endpoint Data Governance</span>
+                                                        </div>
+                                                        <div class="tw-flex tw-items-center tw-gap-3">
+                                                            <span class="tw-font-bold text-red">1</span>
+                                                            <button class="btn-review">REVIEW</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="legend-item">
+                                                        <div class="legend-info">
+                                                            <div class="dot" style="background-color: #10b981;"></div>
+                                                            <span>Endpoint Security</span>
+                                                        </div>
+                                                        <div class="tw-flex tw-items-center tw-gap-3">
+                                                            <span class="tw-font-bold text-red">1</span>
+                                                            <button class="btn-review">REVIEW</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="legend-item">
+                                                        <div class="legend-info">
+                                                            <div class="dot" style="background-color: #a855f7;"></div>
+                                                            <span>Cloud Security</span>
+                                                        </div>
+                                                        <div class="tw-flex tw-items-center tw-gap-3">
+                                                            <span class="tw-font-bold text-red">6</span>
+                                                            <button class="btn-review">REVIEW</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="legend-item">
+                                                        <div class="legend-info">
+                                                            <div class="dot" style="background-color: #ef4444;"></div>
+                                                            <span>Email Security</span>
+                                                        </div>
+                                                        <div class="tw-flex tw-items-center tw-gap-3">
+                                                            <span class="tw-font-bold text-red">4</span>
+                                                            <button class="btn-review">REVIEW</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cloud Security Widget -->
+                                        <div class="widget-card">
+                                            <div class="widget-header">
+                                                <div class="widget-title">Cloud Security</div>
+                                                <i class="bi bi-gear tw-text-gray-400"></i>
+                                            </div>
+                                            <div class="cloud-sec-row">
+                                                <div class="cloud-status">
+                                                    <i class="bi bi-microsoft cloud-icon"></i>
+                                                    <div>
+                                                        <div class="tw-font-bold">Microsoft 365</div>
+                                                        <div class="tw-text-sm text-green"><i
+                                                                class="bi bi-circle-fill tw-text-[8px] tw-mr-1"></i>
+                                                            Connected</div>
+                                                    </div>
+                                                </div>
+                                                <div class="priority-list">
+                                                    <div class="tw-flex tw-justify-between tw-mb-2">
+                                                        <span class="tw-font-bold tw-text-sm">Top Priority</span>
+                                                        <a href="#" class="tw-text-sm tw-text-blue-600">All</a>
+                                                    </div>
+                                                    <div class="legend-item">
+                                                        <div class="legend-info">
+                                                            <div class="dot" style="background-color: #ef4444;"></div>
+                                                            <span>Suspected Identity Compromise</span>
+                                                        </div>
+                                                        <div class="tw-flex tw-items-center tw-gap-3">
+                                                            <span class="tw-font-bold text-red">4</span>
+                                                            <button class="btn-review">REVIEW</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="legend-item">
+                                                        <div class="legend-info">
+                                                            <div class="dot" style="background-color: #ef4444;"></div>
+                                                            <span>Impossible Traveler</span>
+                                                        </div>
+                                                        <div class="tw-flex tw-items-center tw-gap-3">
+                                                            <span class="tw-font-bold text-red">1</span>
+                                                            <button class="btn-review">REVIEW</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="legend-item">
+                                                        <div class="legend-info">
+                                                            <div class="dot" style="background-color: #ef4444;"></div>
+                                                            <span>Access Permissions Violation</span>
+                                                        </div>
+                                                        <div class="tw-flex tw-items-center tw-gap-3">
+                                                            <span class="tw-font-bold text-red">1</span>
+                                                            <button class="btn-review">REVIEW</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Column -->
+                                    <div class="tw-flex tw-flex-col tw-gap-4">
+                                        <div class="section-header">SECURITY UPDATES</div>
+                                        <!-- Workspace Health Widget -->
+                                        <div class="widget-card">
+                                            <div class="widget-header">
+                                                <div class="widget-title">Workspace Health Score</div>
+                                                <i class="bi bi-info-circle tw-text-gray-400"></i>
+                                            </div>
+                                            <div class="gauge-container">
+                                                <div class="gauge-chart"></div>
+                                                <div class="gauge-hole">
+                                                    <div class="gauge-value">87</div>
+                                                    <div class="gauge-label">/100</div>
+                                                </div>
+                                            </div>
+                                            <div class="progress-list">
+                                                <div class="progress-item">
+                                                    <div class="progress-header">
+                                                        <span>Tickets Management</span>
+                                                        <span>71%</span>
+                                                    </div>
+                                                    <div class="progress-track">
+                                                        <div class="progress-fill"
+                                                            style="width: 71%; background-color: #06b6d4;"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="progress-item">
+                                                    <div class="progress-header">
+                                                        <span>Security Gaps</span>
+                                                        <span>98%</span>
+                                                    </div>
+                                                    <div class="progress-track">
+                                                        <div class="progress-fill"
+                                                            style="width: 98%; background-color: #a855f7;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Security Gaps Widget -->
+                                        <div class="widget-card">
+                                            <div class="widget-header">
+                                                <div class="widget-title">Security Gaps</div>
+                                                <a href="#" class="tw-text-sm tw-text-blue-600 hover:tw-underline">View
+                                                    all
+                                                    ></a>
+                                            </div>
+                                            <div class="tw-flex tw-items-baseline tw-gap-2 tw-mb-4">
+                                                <span class="tw-text-4xl tw-font-bold tw-text-gray-800">1</span>
+                                                <span class="tw-text-gray-600">Misconfigurations</span>
+                                            </div>
+                                            <div class="tw-flex tw-justify-between tw-text-sm tw-mb-2">
+                                                <div class="tw-flex tw-items-center tw-gap-2">
+                                                    <div class="dot" style="background-color: #10b981;"></div>
+                                                    <span>Active</span>
+                                                </div>
+                                                <span>1</span>
+                                            </div>
+                                            <div class="tw-flex tw-justify-between tw-text-sm">
+                                                <div class="tw-flex tw-items-center tw-gap-2">
+                                                    <div class="dot" style="background-color: #ef4444;"></div>
+                                                    <span>Ignored</span>
+                                                </div>
+                                                <span>0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+</section>
+
+<section class="bg-bitguard-light-blue protect-section"
+    style="justify-content: flex-start !important; padding-top: 3rem !important;">
+    <div class="protect-content">
+        <div class="purple-bg-grad reveal-up protect-glow"></div>
+        <h2 class="reveal-up protect-title">
+
+            <span class="protect-title-main">Protect Your Business </span>
+            <br>
+            <span class="protect-title-sub">with a BitGuard </span>
+        </h2>
+        <p class="reveal-up protect-description"
+            style="margin-top: 0.5rem !important; font-size: 1.125rem !important; text-align: center !important;">
+            BITGUARD gives your company a real-time view of its security posture from threat detection and system
+            monitoring to automated incident alerts.
+            Subscribe and start managing your digital risks with a unified dashboard designed for SMEs.
+        </p>
+        <div class="reveal-up protect-btn-container">
+            <a href="#" target="_blank" rel="noopener" class="btn-protect">
+                Get Started with BITGUARD
+            </a>
+        </div>
+    </div>
+
+    <!-- Trusted Brands Carousel integrated into this section -->
+    <div style="margin-top: 1rem;">
+        <h2 class="reveal-up trusted-brands-title">
+            Trusted by brands you love
+        </h2>
+
+        <div class="reveal-up carousel-container">
+            <div class="carousel trusted-brands-track">
+                <!-- add the brands using your app  -->
+                <div class="carousel-img trusted-brands-item">
+                    <img src="{% static 'base/assets/images/brand-logos/google.svg' %}" alt="Google"
+                        class="trusted-brands-img" srcset="" />
+                </div>
+                <div class="carousel-img trusted-brands-item">
+                    <img src="{% static 'base/assets/images/brand-logos/microsoft.svg' %}" alt="Microsoft"
+                        class="trusted-brands-img" srcset="" />
+                </div>
+                <div class="carousel-img trusted-brands-item">
+                    <img src="{% static 'base/assets/images/brand-logos/adobe.svg' %}" alt="Adobe"
+                        class="trusted-brands-img" srcset="" />
+                </div>
+                <div class="carousel-img trusted-brands-item">
+                    <img src="{% static 'base/assets/images/brand-logos/airbnb.svg' %}" alt="Airbnb"
+                        class="trusted-brands-img" srcset="" />
+                </div>
+                <div class="carousel-img trusted-brands-item">
+                    <img src="{% static 'base/assets/images/brand-logos/stripe.svg' %}" alt="Stripe"
+                        class="trusted-brands-img" srcset="" />
+                </div>
+                <div class="carousel-img trusted-brands-item">
+                    <img src="{% static 'base/assets/images/brand-logos/reddit.svg' %}" alt="Reddit"
+                        class="trusted-brands-img" srcset="" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-bitguard-light-cyan benefits-section">
+
+
+    <div class="benefits-content">
+        <div class="reveal-up benefits-header">
+            <h2 class="benefits-title">
+                Experience all the benefits of BITGUARD
+            </h2>
+        </div>
+        <div class="benefits-grid-container">
+
+            <div class="benefits-grid-top">
+                <div class="reveal-up benefits-card-wrapper">
+                    <a href="#" class="benefits-card tw-group/card">
+                        <div class="benefits-card-img-container">
+                            <img src="{% static 'base/assets/images/home/api.png' %}" class="benefits-card-img"
+                                alt="unified interface">
+                            <!-- <i class="bi bi-grid-1x2-fill"></i> -->
+                        </div>
+                        <h2 class="benefits-card-title">Unified Dashboard</h2>
+                        <p class="benefits-card-desc">
+                            All-In-One Security Platform: Monitor endpoints, networks, logs, and incidents from one
+                            centralized dashboard — no switching tools, no complexity.
+                        </p>
+                        <div class="benefits-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-right benefits-card-arrow"></i>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="reveal-up benefits-card-wrapper">
+                    <a href="#" class="benefits-card tw-group/card">
+                        <div class="benefits-card-img-container">
+                            <img src="{% static 'base/assets/images/home/api.png' %}" alt="API"
+                                class="benefits-card-img">
+                            <!-- <i class="bi bi-grid-1x2-fill"></i> -->
+                        </div>
+                        <h2 class="benefits-card-title"> Automated Defense </h2>
+                        <p class="benefits-card-desc">
+                            BitGuard automates threat detection, incident alerts,risk scoring.
+                            and faster response times with AI-driven workflows built for SMEs and enterprises.
+                        </p>
+                        <div class="benefits-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-right benefits-card-arrow"></i>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="reveal-up benefits-card-wrapper">
+                    <a href="#" class="benefits-card tw-group/card">
+                        <div class="benefits-card-img-container">
+                            <img src="{% static 'base/assets/images/home/integrations1.png' %}"
+                                class="benefits-card-img" alt="Prebuilt integrations">
+                        </div>
+                        <h2 class="benefits-card-title">Pre-built Tools</h2>
+                        <p class="benefits-card-desc">
+                            BitGuard includes modules for monitoring, asset management, event logging, and vulnerability
+                            insights.
+                            Deploy them instantly to strengthen your infrastructure no complex setup needed.
+                        </p>
+                        <div class="benefits-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-right benefits-card-arrow"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="reveal-up benefits-grid-bottom">
+                <a href="#" class="benefits-card-wide tw-group/card">
+                    <div class="benefits-wide-img-container">
+                        <img src="{% static 'base/assets/images/home/ai-models.png' %}" class="benefits-wide-img"
+                            alt="AI models">
+                        <!-- <i class="bi bi-grid-1x2-fill"></i> -->
+                    </div>
+                    <div class="benefits-wide-text">
+                        <h2 class="benefits-card-title"> Adaptive Security Intelligence </h2>
+                        <p class="benefits-card-desc">
+                            AI That Works for Your Business: BitGuard uses machine learning to detect anomalies,
+                            classify risks, and highlight suspicious activities in real time.
+                            Your security stays ahead—adaptive, automated, and always learning.
+                        </p>
+                        <div class="benefits-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-right benefits-card-arrow"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="bg-bitguard-gradient ai-tools-section">
+
+    <div class="reveal-up ai-tools-content">
+
+        <div class="ai-tools-left-col">
+            <div class="ai-tools-sticky-container">
+                <h2 class="ai-tools-title">
+                    Pre-built AI Tools
+                </h2>
+
+                <a href="http://" class="btn btn-ai-tools-chat">
+                    Explore AI Features
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="ai-tools-right-col">
+            <div class="reveal-up ai-tools-card-wrapper">
+                <a href="#" class="ai-tools-card tw-group/card">
+                    <div class="ai-tools-card-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+
+                    <div class="ai-tools-card-text">
+                        <h3 class="ai-tools-card-title">
+                            AI Security Assistant
+                        </h3>
+                        <p class="ai-tools-card-desc">
+                            Get instant guidance on threats, alerts, system issues, and best practices using BitGuard’s
+                            built-in AI Security Assistant.
+                        </p>
+
+                        <div class="ai-tools-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-up-right ai-tools-card-arrow"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="reveal-up ai-tools-card-wrapper">
+                <a href="#" class="ai-tools-card tw-group/card">
+                    <div class="ai-tools-card-icon">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                    </div>
+
+                    <div class="ai-tools-card-text">
+                        <h3 class="ai-tools-card-title">
+                            AI Log Intelligence
+                        </h3>
+                        <p class="ai-tools-card-desc">
+                            Automatically analyze system logs, detect anomalies, and extract key events to support
+                            faster investigations and audits.
+                        </p>
+
+                        <div class="ai-tools-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-up-right ai-tools-card-arrow"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="reveal-up ai-tools-card-wrapper">
+                <a href="#" class="ai-tools-card tw-group/card">
+                    <div class="ai-tools-card-icon">
+                        <i class="bi bi-clipboard-data"></i>
+                    </div>
+
+                    <div class="ai-tools-card-text">
+                        <h3 class="ai-tools-card-title">
+                            AI Incident Reports
+                        </h3>
+                        <p class="ai-tools-card-desc">
+                            Generate clear, automated summaries for incidents, alerts, and security events to streamline
+                            documentation and response workflows.
+                        </p>
+
+                        <div class="ai-tools-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-up-right ai-tools-card-arrow"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="reveal-up ai-tools-card-wrapper">
+                <a href="#" class="ai-tools-card tw-group/card">
+                    <div class="ai-tools-card-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+
+                    <div class="ai-tools-card-text">
+                        <h3 class="ai-tools-card-title">
+                            AI Risk & Behavior Insights
+                        </h3>
+                        <p class="ai-tools-card-desc">
+                            Create tailored security guidelines, access policies, best-practice procedures, and
+                            compliance-ready documentation.
+                        </p>
+
+                        <div class="ai-tools-card-footer">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-up-right ai-tools-card-arrow"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="reveal-up tw-h-[240px] tw-w-[450px] max-md:tw-w-full">
+                <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl dark:tw-shadow-[#171717] hover:tw-shadow-lg tw-duration-300 
+                      tw-transition-all tw-p-8 tw-group/card">
+                    <div class="tw-text-4xl max-md:tw-text-2xl">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+
+                    <div class="tw-flex tw-flex-col tw-gap-4">
+                        <h3 class="tw-text-2xl max-md:tw-text-xl">
+                            AI Asset Evaluation
+                        </h3>
+                        <p class="tw-text-gray-800 dark:tw-text-gray-100 max-md:tw-text-sm">
+                            Analyze devices, users, and systems to detect vulnerable endpoints and receive actionable
+                            recommendations to improve security.
+
+                        <div class="tw-mt-auto tw-flex tw-gap-2 tw-underline tw-underline-offset-4">
+                            <span>Learn more</span>
+                            <i class="bi bi-arrow-up-right group-hover/card:tw--translate-y-1
+                                      group-hover/card:tw-translate-x-1 tw-duration-300 tw-transition-transform"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+
+<section
+    class="bg-bitguard-light-cyan tw-relative tw-flex  tw-w-full tw-min-h-[110vh] max-md:tw-min-h-[80vh] tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden">
+    <div class="tw-w-full max-lg:tw-max-w-full tw-place-content-center tw-items-center 
+              tw-flex tw-flex-col tw-max-w-[80%] tw-gap-4 tw-p-4">
+
+        <h3 class="reveal-up tw-text-5xl tw-font-medium max-md:tw-text-3xl tw-text-center tw-leading-normal">
+            Additional Features
+        </h3>
+        <!-- <p class="reveal-up tw-mt-3 tw-max-w-[600px] tw-text-center ">
+      </p> -->
+
+        <div style="gap: 2rem 5rem !important;"
+            class="tw-mt-8 tw-relative tw-p-4 tw-grid tw-place-items-center tw-grid-cols-3 max-lg:tw-flex max-lg:tw-flex-col">
+
+
+            <div class="feature-card reveal-up tw-w-[350px] tw-h-[400px] tw-place-items-center tw-p-4
+                        max-md:tw-w-[320px] tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                          tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/prompts2.png' %}" alt="Prompt library"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    Core Cyber & IT Capabilities
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    BitGuard integrates cybersecurity, AI analytics, IT modernization, and secure cloud systems —
+                    enabling businesses to operate safely and confidently.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                          tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/search.png' %}" alt="Web search"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    AI Threat Detection
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    Real-time anomaly detection, smart threat intelligence, and continuous monitoring powered by machine
+                    learning models.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                          tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/image.png' %}" alt="Image generation"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    Secure Infrastructure
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    Enterprise-grade IT systems for SMEs, including network hardening, secure cloud, backups, and
+                    endpoint protection.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                            tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/history.png' %}" alt="History"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    SOC & Managed Services
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    24/7 monitoring, incident response, compliance support, and ongoing digital risk management.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                          tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/import.png' %}" alt="Import content"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    Live Demo — BITGUARD Command
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    Experience real-time security monitoring, automated response workflows, AI-driven threat
+                    classification, and executive-level cyber health reporting.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                          tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/multilingual.png' %}" alt="Multilingual"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    Executive Reporting
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    Automated incident summaries, trend analysis, and compliance-ready documentation.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                          tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/multilingual.png' %}" alt="Multilingual"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    Real-Time Monitoring
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    Live system metrics, network analytics, endpoint activity, and dynamic threat scoring.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                            tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/history.png' %}" alt="History"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    AI-Based Threat Detection
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    Machine learning identifies anomalies and classifies threats with automated prioritization.
+                </p>
+            </div>
+
+            <div class="feature-card reveal-up tw-w-[350px] max-md:tw-w-[320px] tw-h-[400px] tw-place-items-center tw-p-4
+                        tw-flex tw-flex-col tw-gap-3">
+
+                <div class="tw-w-full tw-h-[250px]
+                          tw-p-4
+                          tw-rounded-xl 
+                            tw-backdrop-blur-2xl
+                            tw-overflow-hidden tw-flex tw-place-content-center">
+                    <img src="{% static 'base/assets/images/home/search.png' %}" alt="Web search"
+                        class="tw-w-auto tw-h-full tw-object-contain">
+                </div>
+                <h3 class="tw-text-2xl">
+                    Automated Response
+                </h3>
+                <p class="tw-text-gray-700 dark:tw-text-gray-300 tw-px-4 tw-text-center tw-text-sm">
+                    Isolation, rollback, alerts, and response workflows executed instantly when a threat is detected.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section
+    class="bg-bitguard-light-cyan tw-relative tw-flex  tw-w-full tw-min-h-[100vh] max-md:tw-min-h-[80vh] tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden">
+    <div class="tw-w-full max-lg:tw-max-w-full tw-place-content-center tw-place-items-center 
+              tw-flex tw-flex-col tw-max-w-[80%] tw-gap-4 tw-p-4">
+
+        <h3 class="reveal-up tw-text-5xl tw-font-medium max-md:tw-text-3xl tw-text-center tw-leading-normal">
+            One Subscription for it all
+        </h3>
+        <p class="reveal-up tw-mt-3 tw-max-w-[600px] tw-text-center ">
+            Why pay for multiple expensive subscriptions when one subscription can do it all?
+            Access multiple AI models and save 1000's of dollar per year.
+        </p>
+
+        <div class="tw-mt-8 tw-relative tw-flex max-lg:tw-flex-col tw-gap-5">
+
+            <div
+                class="reveal-up tw-flex tw-w-full tw-max-w-[650px] max-md:tw-max-w-full tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-[1px]
+                  tw-border-outlineColor tw-bg-white dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-2 tw-shadow-xl max-lg:tw-w-[320px]">
+                <img src="{% static 'base/assets/images/home/multi-sub.png' %}" alt="Multi sub">
+            </div>
+
+            <div
+                class="reveal-up tw-flex tw-w-full tw-max-w-[650px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-[1px]
+                  tw-border-outlineColor tw-bg-white dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-2 tw-shadow-xl max-lg:tw-w-[320px]">
+                <img src="{% static 'base/assets/images/home/single-sub.jpg' %}" alt="Single sub">
+            </div>
+
+        </div>
+
+        <a href="#" class="reveal-up tw-group tw-shadow-xl btn tw-flex tw-gap-2 tw-mt-10">
+            <span>Start Chat</span>
+            <i class="bi bi-arrow-right tw-duration-300 group-hover:tw-translate-x-1"></i>
+        </a>
+
+    </div>
+</section>
+
+<section
+    class="bg-bitguard-light-blue tw-flex tw-min-h-[100vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-p-[2%]">
+    <h3 class="reveal-up tw-text-4xl tw-font-medium tw-text-center max-md:tw-text-2xl">
+        Join the professionals using Pixa
+    </h3>
+    <!-- Testimonials -->
+    <div class="tw-mt-20 tw-gap-10 tw-space-y-8  max-md:tw-columns-1 lg:tw-columns-2 xl:tw-columns-3">
+        <div class="reveal-up tw-flex tw-h-fit tw-w-[350px] tw-break-inside-avoid 
+              tw-flex-col tw-gap-4 tw-rounded-lg tw-border-[1px] 
+              tw-bg-[#f6f7fb] dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-4 max-lg:tw-w-[320px]">
+
+            <div class="tw-flex tw-place-items-center tw-gap-3">
+                <div class="tw-h-[50px] tw-w-[50px] tw-overflow-hidden tw-rounded-full">
+                    <img src="{% static 'base/assets/images/people/man2.jpg' %}"
+                        class="tw-h-full tw-w-full tw-object-cover" alt="man" />
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-1">
+                    <div class="tw-font-semibold">Mante</div>
+                    <div class="tw-text-gray-700 dark:tw-text-gray-300">Glu, cto</div>
+                </div>
+            </div>
+
+            <p class="tw-mt-4 tw-text-gray-800 dark:tw-text-gray-200">
+                Lorem ipsum dolor sit amet consectetur, adipisicing
+                elit. Beatae, vero. Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam dolore deleniti
+                iusto Numquam!
+            </p>
+        </div>
+
+        <div class="reveal-up tw-flex tw-h-fit tw-w-[350px] tw-break-inside-avoid 
+              tw-flex-col tw-gap-4 tw-rounded-lg tw-border-[1px] 
+              tw-bg-[#f6f7fb] dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-4 max-lg:tw-w-[320px]">
+
+            <div class="tw-flex tw-place-items-center tw-gap-3">
+                <div class="tw-h-[50px] tw-w-[50px] tw-overflow-hidden tw-rounded-full">
+                    <img src="{% static 'base/assets/images/people/women.jpg' %}"
+                        class="tw-h-full tw-w-full tw-object-cover" alt="women" />
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-1">
+                    <div class="tw-font-semibold">Trich B</div>
+                    <div class="tw-text-gray-700 dark:tw-text-gray-300">AMI, ceo</div>
+                </div>
+            </div>
+
+            <p class="tw-mt-4 tw-text-gray-800 dark:tw-text-gray-200">
+                Lorem ipsum dolor sit amet consectetur, adipisicing
+                elit. Beatae, vero. Lorem ipsum dolor sit amet.
+            </p>
+        </div>
+
+        <div class="reveal-up tw-flex tw-h-fit tw-w-[350px] tw-break-inside-avoid 
+              tw-flex-col tw-gap-4 tw-rounded-lg tw-border-[1px] 
+              tw-bg-[#f6f7fb] dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-4 max-lg:tw-w-[320px]">
+
+            <div class="tw-flex tw-place-items-center tw-gap-3">
+                <div class="tw-h-[50px] tw-w-[50px] tw-overflow-hidden tw-rounded-full">
+                    <img src="{% static 'base/assets/images/people/man.jpg' %}"
+                        class="tw-h-full tw-w-full tw-object-cover" alt="man" />
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-1">
+                    <div class="tw-font-semibold">John B</div>
+                    <div class="tw-text-gray-700 dark:tw-text-gray-300">Benz, ceo</div>
+                </div>
+            </div>
+
+            <p class="tw-mt-4 tw-text-gray-800 dark:tw-text-gray-200">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea, expedita nihil repellendus accusamus itaque
+                facere labore, suscipit tempore in harum repellat. Doloribus, dolor facere dolorem impedit facilis rerum
+                beatae exercitationem aliquid porro ea architecto similique illo omnis odio consequatur modi.
+            </p>
+        </div>
+
+        <div class="reveal-up tw-flex tw-h-fit tw-w-[350px] tw-break-inside-avoid 
+              tw-flex-col tw-gap-4 tw-rounded-lg tw-border-[1px] 
+              tw-bg-[#f6f7fb] dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-4 max-lg:tw-w-[320px]">
+
+            <div class="tw-flex tw-place-items-center tw-gap-3">
+                <div class="tw-h-[50px] tw-w-[50px] tw-overflow-hidden tw-rounded-full">
+                    <img src="{% static 'base/assets/images/people/man2.jpg' %}"
+                        class="tw-h-full tw-w-full tw-object-cover" alt="man" />
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-1">
+                    <div class="tw-font-semibold">Ben Alfert B</div>
+                    <div class="tw-text-gray-700 dark:tw-text-gray-300">XZ tech, cto</div>
+                </div>
+            </div>
+
+            <p class="tw-mt-4 tw-text-gray-800 dark:tw-text-gray-200">
+                Lorem ipsum dolor sit amet consectetur, adipisicing
+                elit. Beatae, vero.
+            </p>
+        </div>
+
+        <div class="reveal-up tw-flex tw-h-fit tw-w-[350px] tw-break-inside-avoid 
+              tw-flex-col tw-gap-4 tw-rounded-lg tw-border-[1px] 
+              tw-bg-[#f6f7fb] dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-4 max-lg:tw-w-[320px]">
+
+            <div class="tw-flex tw-place-items-center tw-gap-3">
+                <div class="tw-h-[50px] tw-w-[50px] tw-overflow-hidden tw-rounded-full">
+                    <img src="{% static 'base/assets/images/people/women.jpg' %}"
+                        class="tw-h-full tw-w-full tw-object-cover" alt="women" />
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-1">
+                    <div class="tw-font-semibold">Rachel</div>
+                    <div class="tw-text-gray-700 dark:tw-text-gray-300">Gem, cto</div>
+                </div>
+            </div>
+
+            <p class="tw-mt-4 tw-text-gray-800 dark:tw-text-gray-200">
+                Lorem ipsum dolor sit amet consectetur, adipisicing
+                elit. Beatae, vero. Lorem, ipsum dolor.
+            </p>
+        </div>
+
+        <div class="reveal-up tw-flex tw-h-fit tw-w-[350px] tw-break-inside-avoid 
+              tw-flex-col tw-gap-4 tw-rounded-lg tw-border-[1px] 
+              tw-bg-[#f6f7fb] dark:tw-bg-[#080808] dark:tw-border-[#1f2123] tw-p-4 max-lg:tw-w-[320px]">
+
+            <div class="tw-flex tw-place-items-center tw-gap-3">
+                <div class="tw-h-[50px] tw-w-[50px] tw-overflow-hidden tw-rounded-full">
+                    <img src="{% static 'base/assets/images/people/man.jpg' %}"
+                        class="tw-h-full tw-w-full tw-object-cover" alt="man" />
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-1">
+                    <div class="tw-font-semibold">Jamie</div>
+                    <div class="tw-text-gray-700 dark:tw-text-gray-300">SnapFist.ai, ceo</div>
+                </div>
+            </div>
+
+            <p class="tw-mt-4 tw-text-gray-800 dark:tw-text-gray-200">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Est, nihil vitae fuga ab reiciendis optio et
+                corporis dolorem alias deserunt, molestias in iusto! Ratione, quisquam incidunt. Reprehenderit ipsam
+                officiis enim.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+
+<section class="bg-bitguard-light-cyan tw-flex tw-w-full tw-flex-col tw-gap-6 tw-place-items-center tw-p-[2%]"
+    id="pricing">
+    <h3 class="reveal-up tw-text-5xl tw-font-medium max-md:tw-text-2xl">
+        Choose the right plan for you
+    </h3>
+    <!-- pricing -->
+    <div class="tw-mt-10 tw-flex tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
+        <div
+            class="feature-card reveal-up tw-flex tw-w-[350px] tw-flex-col tw-place-items-center tw-gap-2 tw-p-8 max-lg:tw-w-[320px]">
+            <h3 class="">
+                <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold">$9</span>
+                <span class="tw-text-2xl">/mo</span>
+            </h3>
+            <p class="tw-mt-3 tw-text-center">
+                Starter Security Package
+            </p>
+            <hr />
+            <ul class="tw-mt-4 tw-flex tw-flex-col tw-gap-4 tw-text-base">
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Essential protection for small teams getting started.</span>
+                </li>
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>AI-powered threat detection </span>
+                </li>
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Real-time security dashboard</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill tw-text-gray-400 dark:tw-text-gray-500"></i>
+                    <span>Basic incident alerts</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill tw-text-gray-400 dark:tw-text-gray-500"></i>
+                    <span>10 monitored endpoints</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill tw-text-gray-400 dark:tw-text-gray-500"></i>
+                    <span>Weekly security summaries</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill tw-text-gray-400 dark:tw-text-gray-500"></i>
+                    <span> Email support </span>
+                </li>
+
+            </ul>
+            <a href="#" class="btn btn-bitguard tw-mt-auto !tw-w-full">
+                Choose plan
+            </a>
+        </div>
+
+        <div
+            class="feature-card reveal-up tw-flex tw-w-[350px] tw-flex-col tw-place-items-center tw-gap-2 tw-p-8 max-lg:tw-w-[320px]">
+            <h3 class="">
+                <span class="tw-text-5xl max-md:tw-text-3xl  tw-font-semibold">$17</span>
+                <span class="tw-text-2xl max-md:tw-text-xl">/mo</span>
+            </h3>
+            <p class="tw-mt-3 tw-text-center">
+                Professional Security Suite
+            </p>
+            <hr />
+            <ul class="tw-mt-4 tw-flex tw-flex-col tw-gap-4  tw-text-base">
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Advanced monitoring for growing businesses.</span>
+                </li>
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span> Enhanced AI threat detection </span>
+                </li>
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span> Network, endpoint & user monitoring</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span> Automated incident classification </span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill tw-text-gray-400 dark:tw-text-gray-500"></i>
+                    <span> 25 monitored endpoints </span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill tw-text-gray-400 dark:tw-text-gray-500"></i>
+                    <span> Daily security insights </span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill tw-text-gray-400 dark:tw-text-gray-500"></i>
+                    <span> Priority support </span>
+                </li>
+
+            </ul>
+            <a href="#" class="btn btn-bitguard tw-mt-auto !tw-w-full">
+                Choose plan
+            </a>
+        </div>
+
+        <div
+            class="feature-card reveal-up tw-flex tw-w-[350px] tw-flex-col tw-place-items-center tw-gap-2 tw-p-8 max-lg:tw-w-[320px]">
+            <h3 class="">
+                <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold">$29</span>
+                <span class="tw-text-2xl">/mo</span>
+            </h3>
+            <p class="tw-mt-3 tw-text-center">
+                Enterprise Security Platform
+            </p>
+            <hr />
+            <ul class="tw-mt-4 tw-flex tw-flex-col tw-gap-4 tw-text-base">
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Full-scale visibility for high-demand environments.</span>
+                </li>
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Full AI threat intelligence engine</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Unlimited alerts & incident analysis</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Advanced risk scoring & anomaly detection</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill "></i>
+                    <span>50+ monitored endpoints</span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill "></i>
+                    <span> Executive reporting </span>
+                </li>
+
+                <li class="tw-flex tw-gap-2 ">
+                    <i class="bi bi-check-circle-fill "></i>
+                    <span> Dedicated support </span>
+                </li>
+
+            </ul>
+            <a href="#" class="btn btn-bitguard tw-mt-8 !tw-w-full">
+                Choose plan
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<section
+    class="bg-bitguard-light-cyan tw-flex tw-min-h-[80vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-p-[2%] max-lg:tw-p-3">
+    <h3 class="reveal-up tw-text-4xl tw-font-medium max-md:tw-text-2xl">
+        Read resources by experts ✨
+    </h3>
+    <!-- articles -->
+
+    <div class="reveal-up tw-mt-10 tw-flex tw-flex-wrap tw-place-content-center tw-gap-10 max-lg:tw-flex-col">
+        <a href="#"
+            class="tw-flex tw-h-[500px] tw-w-[400px] tw-flex-col tw-gap-2 tw-overflow-clip tw-rounded-lg tw-p-4 max-lg:tw-w-[350px]">
+            <div class="tw-h-[350px] tw-min-h-[350px] tw-w-full tw-overflow-hidden tw-rounded-2xl">
+                <img src="{% static 'base/assets/images/home/article1.png' %}" alt="article image"
+                    class="tw-h-full tw-w-full tw-object-cover tw-transition-transform tw-duration-700 hover:tw-scale-[1.3]"
+                    srcset="" />
+            </div>
+
+            <div class="tw-text-gray-600 dark:tw-text-gray-300 tw-justify-between tw-flex tw-gap-2">
+                <div class="tw-text-gray-800 dark:tw-text-gray-200">
+                    Machine learning
+                </div>
+                <div class="tw-text-gray-600 dark:tw-text-gray-400">
+                    Jul, 17, 2024
+                </div>
+            </div>
+            <h3 class="tw-mt-1 tw-font-medium tw-text-xl max-md:tw-text-xl">
+                Latest AI tools
+            </h3>
+
+        </a>
+
+        <a href="#"
+            class="tw-flex tw-h-[500px] tw-w-[400px] tw-flex-col tw-gap-2 tw-overflow-clip tw-rounded-lg tw-p-4 max-lg:tw-w-[350px]">
+            <div class="tw-h-[350px] tw-min-h-[350px] tw-w-full tw-overflow-hidden tw-rounded-2xl">
+                <img src="{% static 'base/assets/images/home/article2.jpg' %}" alt="article image"
+                    class="tw-h-full tw-w-full tw-object-cover tw-transition-transform tw-duration-700 hover:tw-scale-[1.3]"
+                    srcset="" />
+            </div>
+
+            <div class="tw-text-gray-600 dark:tw-text-gray-300 tw-justify-between tw-flex tw-gap-2">
+                <div class="tw-text-gray-800 dark:tw-text-gray-200">
+                    Announcement
+                </div>
+                <div class="tw-text-gray-600 dark:tw-text-gray-400">
+                    June, 22, 2024
+                </div>
+            </div>
+            <h3 class="tw-mt-1 tw-font-medium tw-text-xl max-md:tw-text-xl">
+                Pixa Unveils new technology
+            </h3>
+
+        </a>
+
+        <a href="#"
+            class="tw-flex tw-h-[500px] tw-w-[400px] tw-flex-col tw-gap-2 tw-overflow-clip tw-rounded-lg tw-p-4 max-lg:tw-w-[350px]">
+            <div class="tw-h-[350px] tw-min-h-[350px] tw-w-full tw-overflow-hidden tw-rounded-2xl">
+                <img src="{% static 'base/assets/images/home/article3.png' %}" alt="article image"
+                    class="tw-h-full tw-w-full tw-object-cover tw-transition-transform tw-duration-700 hover:tw-scale-[1.3]"
+                    srcset="" />
+            </div>
+
+            <div class="tw-text-gray-600 dark:tw-text-gray-300 tw-justify-between tw-flex tw-gap-2">
+                <div class="tw-text-gray-800 dark:tw-text-gray-200">
+                    Announcement
+                </div>
+                <div class="tw-text-gray-600 dark:tw-text-gray-400">
+                    Apr, 27, 2024
+                </div>
+            </div>
+            <h3 class="tw-mt-1 tw-font-medium tw-text-xl max-md:tw-text-xl">
+                Launching Pixa playground
+            </h3>
+
+        </a>
+
+    </div>
+</section>
+
+<section
+    class="bg-bitguard-blue tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-[10%] tw-p-[5%] tw-px-[10%]">
+
+
+    <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">
+        Frequently Asked Questions
+    </h3>
+    <div class="tw-mt-5 tw-flex tw-min-h-[300px] tw-w-full tw-max-w-[850px] tw-flex-col tw-gap-4">
+        <div class="faq tw-w-full">
+            <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
+                <span>What does BITGUARD provide?</span>
+                <i class="bi bi-plus tw-text-xl tw-origin-center tw-duration-300 tw-transition-transform 
+                          tw-ml-auto tw-font-semibold"></i>
+            </h4>
+            <div class="content max-lg:tw-text-sm">
+                BitGuard offers AI-driven cybersecurity, secure IT infrastructure, SOC-as-a-service, cloud solutions,
+                IoT protection,
+                and digital transformation support for Algerian SMEs and institutions.
+            </div>
+        </div>
+        <hr>
+        <div class="faq tw-w-full">
+            <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
+                <span>Do you provide onsite support?</span>
+                <i class="bi bi-plus tw-text-xl tw-origin-center tw-duration-300 tw-transition-transform 
+                          tw-ml-auto tw-font-semibold"></i>
+            </h4>
+            <div class="content max-lg:tw-text-sm">
+                Yes. Our team offers onsite and remote support for installations, system audits, network deployments,
+                and maintenance.
+            </div>
+        </div>
+        <hr>
+        <div class="faq tw-w-full">
+            <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
+                <span>Who is BITGUARD designed for?</span>
+                <i class="bi bi-plus tw-text-xl tw-origin-center tw-duration-300 tw-transition-transform 
+                          tw-ml-auto tw-font-semibold"></i>
+            </h4>
+            <div class="content max-lg:tw-text-sm">
+                BitGuard is built for SMEs, enterprises, public institutions,
+                and organizations seeking secure IT infrastructure and proactive cybersecurity
+            </div>
+        </div>
+        <hr>
+
+        <div class="faq tw-w-full">
+            <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
+                <span>Do you provide training?</span>
+                <i class="bi bi-plus tw-text-xl tw-origin-center tw-duration-300 tw-transition-transform 
+                          tw-ml-auto tw-font-semibold"></i>
+            </h4>
+            <div class="content max-lg:tw-text-sm">
+                Yes. BitGuard offers nationwide cyber awareness workshops, digital literacy programs,
+                and specialized training for employees and IT teams.
+            </div>
+        </div>
+        <hr>
+
+    </div>
+    <div class="purple-bg-grad max-md:tw-hidden reveal-up tw-absolute tw-bottom-14 tw-right-[20%] 
+                        tw-h-[150px] tw-w-[150px] tw-rounded-full"></div>
+
+</section>
+
+<section
+    class="bg-bitguard-light-blue tw-relative tw-flex tw-p-2  tw-w-full tw-min-h-[60vh]  tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden">
+    <div class="reveal-up tw-w-full tw-h-full max-lg:tw-max-w-full tw-rounded-md lg:tw-py-[2%] tw-place-content-center tw-items-center 
+              tw-flex tw-flex-col tw-max-w-[80%] tw-gap-4 tw-p-4"
+        style="background-color: white !important; border: 1px solid #034484 !important; box-shadow: 0 10px 15px -3px rgba(3, 68, 132, 0.1), 0 4px 6px -2px rgba(3, 68, 132, 0.05) !important;">
+
+        <h3 class="reveal-up tw-text-5xl tw-font-medium max-md:tw-text-3xl tw-text-center tw-leading-normal"
+            style="color: #034484 !important;">
+            Access and compare multiple AI models
+        </h3>
+
+        <div class="tw-mt-8 tw-relative tw-flex max-lg:tw-flex-col tw-gap-5">
+
+            <a href="#" class="btn btn-bitguard reveal-up !tw-rounded-full !tw-p-4 tw-font-medium">
+                Launch Playground
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<section
+    class="bg-bitguard-light-blue tw-flex tw-w-full tw-min-h-[60vh] tw-flex-col tw-place-content-center tw-place-items-center tw-gap-[10%] tw-p-[2%] tw-px-[10%] max-md:tw-px-2">
+    <div class="tw-flex tw-w-full tw-max-w-[80%] tw-h-full lg:tw-py-[2%] tw-place-content-center tw-place-items-center tw-justify-between tw-gap-3 
+              tw-rounded-lg tw-p-6 max-md:tw-max-w-full max-md:tw-flex-col"
+        style="background-color: white !important; border: 1px solid #034484 !important; box-shadow: 0 10px 15px -3px rgba(3, 68, 132, 0.1), 0 4px 6px -2px rgba(3, 68, 132, 0.05) !important;">
+        <div class="tw-flex tw-flex-col max-lg:tw-text-center tw-gap-1">
+            <h2 class="tw-text-2xl max-md:tw-text-xl" style="color: #034484 !important;">
+                Join our newsletter
+            </h2>
+            <div style="color: #034484 !important;">Get product insights and updates.</div>
+        </div>
+
+        <div class="tw-flex tw-h-[60px] tw-place-items-center tw-gap-2 tw-overflow-hidden tw-p-2">
+            <input type="email" class="input tw-h-full tw-w-full !tw-border-gray-600 tw-p-2 tw-outline-none"
+                placeholder="email" />
+            <a class="btn btn-bitguard !tw-rounded-full tw-transition-colors tw-duration-[0.3s]" href="">
+                Signup
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

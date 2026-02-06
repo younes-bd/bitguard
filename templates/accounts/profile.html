@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'accounts/css/accounts.css' %}?v=6">
+
+<style>
+    .avatar-fallback-text {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white !important;
+    }
+
+    .avatar-fallback-box {
+        display: flex !important;
+        width: 100%;
+        height: 100%;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: #0ea5e9;
+        color: white !important;
+    }
+</style>
+
+<section class="bg-bitguard-light-blue hero-section tw-min-h-screen tw-p-8 tw-pt-24">
+
+    <!-- Glow Effect -->
+    <div class="purple-bg-grad reveal-up hero-glow-effect"></div>
+
+    <div class="tw-relative tw-z-10 tw-container tw-mx-auto">
+        <div class="bitguard-layout">
+
+            <!-- Sidebar -->
+            <div class="bitguard-sidebar-col">
+                <div class="tw-space-y-2">
+                    <a href="{% url 'account_dashboard' %}" class="bitguard-sidebar-link">
+                        <i class="bi bi-house-door"></i> Home
+                    </a>
+                    <a href="{% url 'profile' %}" class="bitguard-sidebar-link active">
+                        <i class="bi bi-person-gear"></i> Profile Settings
+                    </a>
+                    <a href="{% url 'security_center' %}" class="bitguard-sidebar-link">
+                        <i class="bi bi-shield-lock"></i> Security Center
+                    </a>
+                    <a href="{% url 'client_portal' %}" class="bitguard-sidebar-link">
+                        <i class="bi bi-person-badge"></i> Client Portal
+                    </a>
+                    <a href="{% url 'my_subscriptions' %}" class="bitguard-sidebar-link">
+                        <i class="bi bi-credit-card"></i> My Subscriptions
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="bitguard-content-col">
+                <div class="bitguard-card tw-p-8 tw-relative tw-overflow-hidden">
+                    <!-- Gradient Enhancement -->
+                    <div class="bitguard-gradient-bg"></div>
+
+                    <div class="tw-relative tw-z-10">
+                        <!-- User Avatar & Info (Moved here) -->
+                        <div class="tw-text-center tw-mb-10">
+                            <div class="profile-avatar tw-mx-auto tw-mb-4">
+                                <label for="id_photo" class="avatar-overlay">
+                                    <i
+                                        class="bi bi-camera-fill tw-text-white tw-text-2xl tw-mb-1 tw-drop-shadow-md"></i>
+                                </label>
+                                {% if user.profile.photo %}
+                                <img src="{{ user.profile.photo.url }}" alt="{{ user.username }}"
+                                    class="tw-w-full tw-h-full tw-object-cover"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="tw-hidden avatar-fallback-box">
+                                    <span class="avatar-fallback-text">{{ user.username|slice:":2"|upper }}</span>
+                                </div>
+                                {% else %}
+                                <div class="avatar-fallback-box">
+                                    <span class="avatar-fallback-text">{{ user.username|slice:":2"|upper }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <h3 class="tw-text-2xl bitguard-heading tw-mb-1">{{ user.username }}</h3>
+                            <p class="tw-text-slate-500 tw-text-sm">{{ user.email }}</p>
+                        </div>
+                        <h2 class="tw-text-2xl bitguard-heading tw-mb-8 tw-flex tw-items-center tw-gap-3">
+                            <span
+                                class="tw-w-10 tw-h-10 tw-rounded-lg tw-bg-[#0A3A7E] tw-text-white tw-flex tw-items-center tw-justify-center tw-text-lg tw-shadow-lg">
+                                <i class="bi bi-person-vcard"></i>
+                            </span>
+                            Edit Profile
+                        </h2>
+
+                        <!-- Status Card -->
+                        <div
+                            class="tw-bg-white tw-border tw-border-slate-200 tw-rounded-xl tw-p-6 tw-mb-8 tw-shadow-sm">
+                            <div class="tw-flex tw-justify-between tw-items-center">
+                                <div>
+                                    <h3 class="tw-text-lg tw-font-bold tw-text-slate-900 tw-mb-1">Account Status
+                                    </h3>
+                                    <p class="tw-text-slate-500 tw-text-sm">Dashboard Access Level</p>
+                                </div>
+                                <div class="tw-text-right">
+                                    <span class="tw-text-2xl tw-font-bold tw-text-[#0A3A7E] tw-block">
+                                        {{ user.profile.get_account_type_display }}
+                                    </span>
+                                    {% if user.profile.account_type == 'free_trial' %}
+                                    <span
+                                        class="tw-inline-block tw-text-xs tw-text-yellow-700 tw-bg-yellow-50 tw-border tw-border-yellow-200 tw-px-2 tw-py-1 tw-rounded tw-mt-1 tw-font-medium">
+                                        Trial Active
+                                    </span>
+                                    {% else %}
+                                    <span
+                                        class="tw-inline-block tw-text-xs tw-text-green-700 tw-bg-green-50 tw-border tw-border-green-200 tw-px-2 tw-py-1 tw-rounded tw-mt-1 tw-font-medium">
+                                        Premium Plan
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <!-- User Info -->
+                            <h3 class="tw-text-sm bitguard-label tw-border-b tw-border-slate-100 tw-pb-2 tw-mb-6">
+                                <i class="bi bi-person tw-mr-2"></i> User Information
+                            </h3>
+                            <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6 tw-mb-10">
+                                {% for field in user_form %}
+                                <div>
+                                    <label class="bitguard-label tw-mb-1 tw-block">
+                                        {{ field.label }}
+                                    </label>
+                                    <div class="tw-relative">
+                                        {{ field }}
+                                        <!-- Field will be styled via widget tweaks or JS, but we rely on CSS descendant selectors mostly or ensure widgets have class -->
+                                    </div>
+                                    {% if field.errors %}
+                                    <p class="tw-text-xs tw-text-red-500 tw-mt-1 tw-font-medium">{{ field.errors.0
+                                        }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Profile Info -->
+                            <h3 class="tw-text-sm bitguard-label tw-border-b tw-border-slate-100 tw-pb-2 tw-mb-6">
+                                <i class="bi bi-card-text tw-mr-2"></i> Profile Details
+                            </h3>
+                            <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
+                                {% for field in profile_form %}
+                                <div class="{% if field.name == 'photo' %}tw-hidden{% endif %}">
+                                    <label class="bitguard-label">
+                                        {{ field.label }}
+                                    </label>
+                                    <div class="tw-relative">
+                                        {{ field }}
+                                    </div>
+                                    {% if field.errors %}
+                                    <p class="tw-text-xs tw-text-red-500 tw-mt-1 tw-font-medium">{{ field.errors.0
+                                        }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="tw-mt-10 tw-pt-6 tw-border-t tw-border-slate-200 tw-flex tw-justify-end">
+                                <button type="submit" class="btn-bitguard">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Helper to add classes to rendered Django form fields since we can't easily modify widget attrs from template
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea, select');
+        inputs.forEach(input => {
+            if (!input.classList.contains('tw-hidden')) {
+                input.classList.add('bitguard-input');
+            }
+        });
+    });
+</script>
+{% endblock %}

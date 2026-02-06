@@ -1,0 +1,50 @@
+{% extends 'platform/base.html' %}
+
+{% block title %}Alerts - BitGuard Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="flex-between mb-4">
+        <h2 class="text-xl font-bold text-dark">Security Alerts</h2>
+        <div class="flex gap-2">
+            <a href="?severity=critical" class="badge badge-critical" style="text-decoration: none;">Critical</a>
+            <a href="?severity=high" class="badge badge-high" style="text-decoration: none;">High</a>
+            <a href="?severity=medium" class="badge badge-medium" style="text-decoration: none;">Medium</a>
+            <a href="?" class="text-sm text-gray" style="margin-left: 8px; text-decoration: none;">Clear</a>
+        </div>
+    </div>
+
+    <table class="platform-table">
+        <thead>
+            <tr>
+                <th>Severity</th>
+                <th>Score</th>
+                <th>Title</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alert in alerts %}
+            <tr>
+                <td><span class="badge badge-{{ alert.severity }}">{{ alert.severity }}</span></td>
+                <td class="font-bold text-dark">{{ alert.score }}</td>
+                <td class="text-dark font-medium">{{ alert.title }}</td>
+                <td class="text-gray capitalize">{{ alert.source_module|capfirst }}</td>
+                <td><span class="text-sm uppercase tracking-wide text-gray">{{ alert.status }}</span></td>
+                <td class="text-gray text-sm">{{ alert.created_at|timesince }} ago</td>
+                <td>
+                    <a href="{% url 'alert_detail' alert.pk %}" class="btn-primary btn-sm">View</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center p-8 text-gray">No alerts found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock dashboard_content %}

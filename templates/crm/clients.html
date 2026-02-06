@@ -1,0 +1,103 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="dashboard-header-wrapper" style="margin-bottom: 30px;">
+    <h1 style="font-size: 24px; font-weight: bold; color: var(--text-dashboard);">Client Management</h1>
+    <p style="color: #6b7280; margin-top: 5px;">Manage your clients, their details, and related tickets.</p>
+</div>
+
+<!-- Stats Overview (Optional, maybe for later) -->
+
+<!-- Clients Table -->
+<div class="card">
+    <div class="flex-between mb-4">
+        <h2 class="text-xl">Clients List</h2>
+        <a href="{% url 'admin:crm_client_add' %}" target="_blank"
+            style="background-color: #0ea5e9; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px;">
+            <i class="fas fa-plus"></i> Add Client
+        </a>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="platform-table">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>SLA</th>
+                    <th>Tickets</th>
+                    <th>Projects</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div
+                                style="width: 32px; height: 32px; background-color: #e0f2fe; color: #0369a1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">
+                                {{ client.name|slice:":2"|upper }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">{{ client.name }}</div>
+                                {% if client.company_name %}
+                                <div style="font-size: 11px; color: #6b7280;">{{ client.company_name }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge" style="background-color: #f3f4f6; color: #374151;">
+                            {{ client.get_client_type_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if client.status == 'active' %}
+                        <span class="badge badge-low">Active</span>
+                        {% elif client.status == 'lead' %}
+                        <span class="badge badge-medium">Lead</span>
+                        {% elif client.status == 'churned' %}
+                        <span class="badge badge-critical">Churned</span>
+                        {% else %}
+                        <span class="badge">{{ client.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span style="font-size: 12px; font-weight: 600; 
+                            {% if client.sla_level == 'platinum' %}color: #7c3aed;
+                            {% elif client.sla_level == 'gold' %}color: #d97706;
+                            {% elif client.sla_level == 'silver' %}color: #9ca3af;
+                            {% else %}color: #9ca3af;{% endif %}">
+                            <i class="fas fa-shield-alt"></i> {{ client.sla_level|title }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="font-weight: 600;">{{ client.total_tickets }}</span>
+                    </td>
+                    <td>
+                        <span style="font-weight: 600;">{{ client.active_projects_count }}</span>
+                    </td>
+                    <td>{{ client.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'crm_client_detail' client.id %}"
+                            style="color: #0ea5e9; text-decoration: none; font-weight: 600; font-size: 13px;">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: #6b7280;">
+                        No clients found in the database.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

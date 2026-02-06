@@ -1,0 +1,145 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block page_title %}{{ policy.title }}{% endblock %}
+
+{% block erp_content %}
+<div class="flex flex-col lg:flex-row gap-6 h-[calc(100vh-140px)]">
+
+    <!-- Left: Policy Content -->
+    <div class="flex-1 card p-0 overflow-hidden flex flex-col h-full">
+        <!-- Header -->
+        <div class="p-6 border-b flex-between bg-white dark:bg-gray-800 shrink-0"
+            style="border-color: var(--border-color);">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="badge badge-default uppercase tracking-wider text-[10px]">Policy</span>
+                    <span class="text-xs text-gray">POL-{{ policy.pk|stringformat:"03d" }}</span>
+                </div>
+                <h1 class="text-2xl font-bold text-dark">{{ policy.title }}</h1>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="window.print()" class="btn-secondary">
+                    <i class="fas fa-print mr-2"></i> Print
+                </button>
+                <button class="btn-secondary">
+                    <i class="fas fa-edit mr-2"></i> Edit
+                </button>
+            </div>
+        </div>
+
+        <!-- Document Viewer (Scrollable) -->
+        <div class="flex-1 overflow-y-auto p-8 bg-gray-50 dark:bg-slate-900 custom-scrollbar">
+            <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-sm p-12 min-h-[800px]"
+                style="border: 1px solid var(--border-color);">
+                <!-- Document Header -->
+                <div class="border-b pb-6 mb-8 flex justify-between items-end"
+                    style="border-color: var(--border-color);">
+                    <div>
+                        <div class="text-2xl font-bold text-dark uppercase tracking-widest mb-1">BITGUARD</div>
+                        <div class="text-xs text-gray">Corporate Policy</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-bold text-dark">Version {{ policy.version }}</div>
+                        <div class="text-xs text-gray">Effective: {{ policy.updated_at|date:"Y-m-d" }}</div>
+                    </div>
+                </div>
+
+                <!-- Markdown Content Rendered -->
+                <div class="prose dark:prose-invert max-w-none text-dark">
+                    {% if policy.content %}
+                    {{ policy.content|linebreaks }}
+                    {% else %}
+                    <div class="text-center text-gray py-20 italic">
+                        This policy draft currently has no content.
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Document Footer -->
+                <div class="mt-20 pt-8 border-t text-center text-xs text-gray"
+                    style="border-color: var(--border-color);">
+                    Confidential • Internal Use Only • {{ policy.title }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Meta & History -->
+    <div class="w-full lg:w-80 shrink-0 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
+
+        <!-- Status Card -->
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-gray uppercase tracking-wider mb-4">Status</h3>
+            <div class="flex items-center gap-3 mb-4">
+                <div
+                    class="w-3 h-3 rounded-full {% if policy.status == 'published' %}bg-green-500{% elif policy.status == 'review' %}bg-yellow-500{% else %}bg-gray-400{% endif %}">
+                </div>
+                <span class="text-lg font-bold text-dark">{{ policy.get_status_display }}</span>
+            </div>
+
+            <div class="space-y-3 mb-4">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray">Version</span>
+                    <span class="text-dark font-medium">{{ policy.version }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray">Last Updated</span>
+                    <span class="text-dark font-medium">{{ policy.updated_at|date:"M d, Y" }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray">Next Review</span>
+                    <span class="text-dark font-medium">{{ policy.next_review_date|default:"TBD" }}</span>
+                </div>
+            </div>
+
+            {% if policy.status == 'review' %}
+            <button class="btn-primary w-full justify-center">
+                <i class="fas fa-check mr-2"></i> Approve
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- Owner -->
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-gray uppercase tracking-wider mb-4">Ownership</h3>
+            <div class="flex items-center gap-3 mb-4">
+                {% if policy.owner %}
+                <div class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold">
+                    {{ policy.owner.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <div class="font-bold text-dark text-sm">{{ policy.owner.username }}</div>
+                    <div class="text-xs text-gray">Policy Owner</div>
+                </div>
+                {% else %}
+                <div class="text-sm text-gray italic">No owner assigned</div>
+                {% endif %}
+            </div>
+            <button class="btn-secondary w-full justify-center text-xs">
+                Reassign
+            </button>
+        </div>
+
+        <!-- Related Files -->
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-gray uppercase tracking-wider mb-4">Attachments</h3>
+            {% if policy.document %}
+            <a href="{{ policy.document.url }}" target="_blank"
+                class="flex items-center gap-3 p-3 rounded bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors border text-decoration-none"
+                style="border-color: var(--border-color);">
+                <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                <div class="overflow-hidden">
+                    <div class="text-sm font-bold text-dark truncate">Original Document</div>
+                    <div class="text-[10px] text-gray uppercase">PDF</div>
+                </div>
+            </a>
+            {% else %}
+            <div class="text-sm text-gray italic">No attachments</div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,475 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<!-- CSS -->
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<link rel="stylesheet" href="{% static 'platform/css/platform.css' %}?v=3002">
+<!-- CRM Specific Styles override/extension -->
+<link rel="stylesheet" href="{% static 'crm/css/crm.css' %}?v=3002">
+
+<script>
+    // Immediate Sidebar State Restoration to prevent FOUC
+    if (localStorage.getItem('sidebar-collapsed') === 'true') {
+        document.body.classList.add('sidebar-collapsed');
+    }
+
+    // Immediate Theme Restoration to prevent FOUC (Restored here for now)
+    (function () {
+        const savedTheme = localStorage.theme || 'system';
+        if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    })();
+</script>
+
+<div class="dashboard-container" id="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <a href="{% url 'dashboard_home' %}"
+                style="display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none;">
+                <!-- Renamed class to avoid height: 100% conflict -->
+                <img src="{% static 'base/assets/logo/logo.png' %}" alt="BitGuard Logo"
+                    style="height: 30px; filter: brightness(0) invert(1);">
+                <span
+                    style="color: white; font-size: 24px; font-weight: 600; font-family: 'Oswald'; letter-spacing: 2px; transform: scaleY(1.4); display: inline-block; margin-top: -4px;">BITGUARD</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav" style="flex: 1;">
+            <ul>
+                <li>
+                    <a href="{% url 'crm_dashboard' %}"
+                        class="{% if request.resolver_match.url_name == 'crm_dashboard' %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'crm_clients' %}"
+                        class="{% if request.resolver_match.url_name == 'crm_clients' or request.resolver_match.url_name == 'crm_client_detail' %}active{% endif %}">
+                        <i class="fas fa-users"></i>
+                        <span>Clients</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'crm_tickets' %}"
+                        class="{% if request.resolver_match.url_name == 'crm_tickets' or request.resolver_match.url_name == 'crm_ticket_detail' %}active{% endif %}">
+                        <i class="fas fa-life-ring"></i>
+                        <span>Tickets</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'crm_orders' %}"
+                        class="{% if request.resolver_match.url_name == 'crm_orders' or request.resolver_match.url_name == 'crm_order_detail' %}active{% endif %}">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'crm_invoices' %}"
+                        class="{% if request.resolver_match.url_name == 'crm_invoices' or request.resolver_match.url_name == 'crm_invoice_detail' %}active{% endif %}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Invoices</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+
+        <!-- Sidebar Footer (Messages & OA) -->
+        <div class="sidebar-footer" style="margin-top: auto; padding: 0;">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li>
+                    <a href="#" class="dashboard-sidebar-link">
+                        <i class="fas fa-bell"></i>
+                        <span>Messages</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- Sidebar Footer (User Profile) -->
+            <div class="user-profile-container">
+                <div id="sidebarUserMenu" onclick="toggleSidebarUserMenu(event)">
+
+                    <!-- Avatar -->
+                    <div class="user-avatar-wrapper"
+                        style="width: 38px; height: 38px; background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); border: 2px solid rgba(255, 255, 255, 0.1); overflow: hidden;">
+                        {% if request.user.profile.photo %}
+                        <img src="{{ request.user.profile.photo.url }}" alt="Profile"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                        {{ request.user.username|slice:":2"|upper }}
+                        {% endif %}
+                    </div>
+
+                    <!-- Name & Role -->
+                    <div class="user-info-wrapper" style="flex: 1; overflow: hidden;">
+                        <div class="user-name-display"
+                            style="color: white; font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ request.user.username }}</div>
+                        <div class="user-profile-link" style="color: rgba(255, 255, 255, 0.5); font-size: 11px;">View
+                            Profile</div>
+                    </div>
+
+                    <!-- Chevron -->
+                    <i class="fas fa-chevron-up chevron-icon"
+                        style="color: rgba(255, 255, 255, 0.5); font-size: 12px;"></i>
+                </div>
+
+                <!-- Canva-Style Popover Menu -->
+                <div id="sidebarUserDropup" class="canva-menu">
+
+                    <!-- Section 1: Profile -->
+                    <div class="canva-section">
+                        <div class="canva-header-label">Accounts</div>
+                        <div class="canva-profile-item" style="cursor: pointer; position: relative;"
+                            onclick="toggleNestedMenu('accountsNestedMenu', event)">
+                            <div class="canva-avatar-large">
+                                {% if request.user.profile.photo %}
+                                <img src="{{ request.user.profile.photo.url }}" alt="Profile"
+                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                {% else %}
+                                {{ request.user.username|slice:":2"|upper }}
+                                {% endif %}
+                            </div>
+                            <div class="canva-user-info">
+                                <div class="canva-user-name">{{ request.user.username }}</div>
+                                <div class="canva-user-email">{{ request.user.email }}</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="font-size: 12px; color: #cbd5e1;"></i>
+
+                            <!-- Nested Accounts Menu -->
+                            <div id="accountsNestedMenu" class="canva-nested-menu nested-menu-wide">
+                                <div class="nested-menu-header">Switch accounts</div>
+
+                                <!-- Current Account -->
+                                <div class="canva-nested-item active nested-account-item-wrapper">
+                                    <div class="nested-account-content">
+                                        <div class="nested-account-avatar">
+                                            {{ request.user.username|slice:":2"|upper }}
+                                        </div>
+                                        <div class="nested-account-details">
+                                            <div class="nested-account-name">{{ request.user.username }}</div>
+                                            <div class="nested-account-email">{{ request.user.email }}</div>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-check check-icon nested-check-icon"></i>
+                                </div>
+
+                                <div class="nested-divider"></div>
+
+                                <!-- Options -->
+                                <div class="canva-nested-item">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fas fa-plus"></i> Add another account
+                                    </div>
+                                </div>
+                                <div class="canva-nested-item">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fas fa-user-cog"></i> Manage accounts
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Actions -->
+                    <div class="canva-section">
+                        <a href="{% url 'account_dashboard' %}" class="canva-menu-item">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-cog"></i> Settings
+                            </div>
+                        </a>
+
+                        <div class="canva-menu-item" style="cursor: pointer; position: relative;"
+                            onclick="toggleNestedMenu('themeNestedMenu', event)">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-moon"></i> Theme
+                            </div>
+                            <i class="fas fa-chevron-right arrow"></i>
+
+                            <!-- Nested Menu -->
+                            <div id="themeNestedMenu" class="canva-nested-menu">
+                                <div class="canva-nested-item" data-theme="light" onclick="setTheme('light', event)">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fas fa-sun"></i> Light
+                                    </div>
+                                    <i class="fas fa-check check-icon"></i>
+                                </div>
+                                <div class="canva-nested-item" data-theme="dark" onclick="setTheme('dark', event)">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fas fa-moon"></i> Dark
+                                    </div>
+                                    <i class="fas fa-check check-icon"></i>
+                                </div>
+                                <div class="canva-nested-item" data-theme="system" onclick="setTheme('system', event)">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fas fa-desktop"></i> Sync with system
+                                    </div>
+                                    <i class="fas fa-check check-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="{% url 'client_portal' %}" class="canva-menu-item">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-users-cog"></i> Client Portal
+                            </div>
+                        </a>
+
+                        <a href="{% url 'plans_page' %}" class="canva-menu-item">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-briefcase"></i> Plans and pricing
+                            </div>
+                        </a>
+
+                        <a href="{% url 'my_subscriptions' %}" class="canva-menu-item">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-shopping-cart"></i> Purchase history
+                            </div>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                        <a href="/admin/" target="_blank" class="canva-menu-item">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-shield-alt"></i> Admin Panel
+                            </div>
+                            <i class="fas fa-external-link-alt arrow" style="font-size: 10px;"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Section 3: Logout -->
+                    <div class="canva-section">
+                        <a href="{% url 'logout' %}" class="canva-menu-item logout">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-sign-out-alt"></i> Log out
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="dashboard-main-wrapper">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <!-- Sidebar Toggle Button -->
+            <button id="sidebarToggle" onclick="toggleSidebar()"
+                style="border: none; background: transparent; color: var(--text-secondary); cursor: pointer; padding: 8px; margin-right: 15px; border-radius: 8px; transition: background 0.2s;">
+                <i class="fas fa-bars" style="font-size: 20px;"></i>
+            </button>
+
+            <div class="header-platform-label"
+                style="margin-right: auto; font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 500; color: var(--text-primary); letter-spacing: 0.5px; text-transform: uppercase;">
+                CRM Portal
+            </div>
+
+            <!-- Header Right Section -->
+            <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="theme-toggle"
+                    style="background: transparent; border: 1px solid #e5e7eb; padding: 6px 10px; border-radius: 8px; cursor: pointer; color: #64748b;">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+
+                <!-- Workspace/Label (Simplified for CRM) -->
+                <div class="header-highlight-btn">
+                    BITGUARD CRM
+                </div>
+            </div>
+        </header>
+
+        <script>
+            // Theme Logic
+            // Enhanced Theme Logic
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+
+            // Initialize
+            const savedTheme = localStorage.theme || 'system';
+            // applyTheme(savedTheme); // Removed to prevent double-apply/flicker, handled by head script
+            updateThemeChecks(savedTheme);
+
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    html.classList.add('dark');
+                    if (themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+                } else if (theme === 'light') {
+                    html.classList.remove('dark');
+                    if (themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+                } else {
+                    // System
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        html.classList.add('dark');
+                        if (themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+                    } else {
+                        html.classList.remove('dark');
+                        if (themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+                    }
+                }
+                updateThemeChecks(theme);
+            }
+
+            function updateThemeChecks(activeTheme) {
+                document.querySelectorAll('.canva-nested-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.theme === activeTheme) item.classList.add('active');
+                });
+            }
+
+            function setTheme(theme, e) {
+                if (e) e.stopPropagation();
+                localStorage.theme = theme;
+                applyTheme(theme);
+            }
+
+            function toggleTheme() {
+                // Legacy toggle
+                const current = localStorage.theme === 'dark' ? 'dark' : 'light';
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+            }
+
+            function toggleNestedMenu(menuId, e) {
+                if (e) e.stopPropagation();
+
+                // Close all other nested menus first
+                document.querySelectorAll('.canva-nested-menu').forEach(m => {
+                    if (m.id !== menuId) m.style.display = 'none';
+                });
+
+                const menu = document.getElementById(menuId);
+                const trigger = e.currentTarget;
+
+                if (menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                } else {
+                    if (menuId === 'themeNestedMenu') {
+                        updateThemeChecks(localStorage.theme || 'system');
+                    }
+
+                    // Fixed Positioning Logic
+                    // Calculate position before showing to avoid jump
+                    const rect = trigger.getBoundingClientRect();
+
+                    menu.style.visibility = 'hidden'; // Hide while calculating
+                    menu.style.display = 'block';
+                    menu.style.position = 'fixed';
+                    menu.style.left = (rect.right + 10) + 'px';
+                    menu.style.top = rect.top + 'px';
+                    menu.style.zIndex = '9999';
+                    // Re-enable visibility
+                    menu.style.visibility = 'visible';
+
+                    // Adjust if going off bottom edge
+                    const menuRect = menu.getBoundingClientRect();
+                    if (menuRect.bottom > window.innerHeight) {
+                        menu.style.top = (window.innerHeight - menuRect.height - 20) + 'px';
+                    }
+                }
+            }
+
+            // Close menu logic
+            function closeNestedMenus() {
+                document.querySelectorAll('.canva-nested-menu').forEach(menu => {
+                    menu.style.display = 'none';
+                });
+            }
+
+            document.addEventListener('click', closeNestedMenus);
+            // Close on scroll and resize
+            window.addEventListener('scroll', closeNestedMenus, true);
+            window.addEventListener('resize', closeNestedMenus, true);
+
+            // Sidebar User Menu Logic
+            function toggleSidebarUserMenu(e) {
+                e.stopPropagation();
+                const menu = document.getElementById('sidebarUserDropup');
+                const trigger = document.getElementById('sidebarUserMenu');
+
+                // Close if already open
+                if (menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                    return;
+                }
+
+                // Close other menus
+                closeNestedMenus();
+
+                // Calculate position
+                const rect = trigger.getBoundingClientRect();
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+
+                menu.style.display = 'block';
+                menu.style.position = 'fixed'; // Break out of overflow: hidden
+                menu.style.zIndex = '10000'; // Ensure on top
+
+                // Reset any previous top/bottom/left/right styles to be safe
+                menu.style.top = 'auto';
+                menu.style.right = 'auto';
+
+                if (isCollapsed) {
+                    // Collapsed: Show to the RIGHT of the sidebar
+                    menu.style.left = (rect.right + 10) + 'px';
+                    menu.style.bottom = (window.innerHeight - rect.bottom) + 'px';
+                } else {
+                    // Expanded: Show ABOVE the profile section
+                    menu.style.left = (rect.left + 10) + 'px'; // Indent slightly
+                    menu.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
+                }
+            }
+
+            document.addEventListener('click', function (e) {
+                const menu = document.getElementById('sidebarUserDropup');
+                if (menu && menu.style.display === 'block' && !menu.contains(e.target)) {
+                    menu.style.display = 'none';
+                }
+            });
+
+            // Sidebar Toggle Logic
+            function toggleSidebar() {
+                document.body.classList.toggle('sidebar-collapsed');
+
+                // Save state
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                localStorage.setItem('sidebar-collapsed', isCollapsed);
+            }
+
+            // Explicitly expose to window
+            window.toggleSidebar = toggleSidebar;
+        </script>
+
+        <!-- Main Content Area -->
+        <main class="dashboard-content">
+            {% block dashboard_content %}
+            {% endblock %}
+        </main>
+    </div>
+</div>
+
+<script>
+    // Fallback JS to ensure full height
+    function forceDashboardHeight() {
+        const container = document.getElementById('dashboard-container');
+        if (container) {
+            container.style.minHeight = window.innerHeight + 'px';
+        }
+    }
+    window.addEventListener('load', forceDashboardHeight);
+    window.addEventListener('resize', forceDashboardHeight);
+    forceDashboardHeight();
+</script>
+{% endblock %}

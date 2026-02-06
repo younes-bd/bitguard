@@ -1,0 +1,93 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="dashboard-header-wrapper" style="margin-bottom: 30px;">
+    <h1 style="font-size: 24px; font-weight: bold; color: var(--text-dashboard);">Support Tickets</h1>
+    <p style="color: #6b7280; margin-top: 5px;">Manage and resolve client support requests.</p>
+</div>
+
+<div class="card">
+    <div class="flex-between mb-4">
+        <h2 class="text-xl">All Tickets</h2>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="platform-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assigned To</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>#{{ ticket.id }}</td>
+                    <td>
+                        <div style="font-weight: 600;">{{ ticket.summary }}</div>
+                        <div style="font-size: 11px; color: #6b7280;">{{ ticket.get_ticket_type_display }}</div>
+                    </td>
+                    <td>
+                        {% if ticket.client %}
+                        <a href="{% url 'crm_client_detail' ticket.client.id %}"
+                            style="color: #0ea5e9; text-decoration: none; font-weight: 500;">
+                            {{ ticket.client.name }}
+                        </a>
+                        {% else %}
+                        <span style="color: #9ca3af;">Unknown</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span
+                            class="badge {% if ticket.status == 'open' %}badge-high{% elif ticket.status == 'resolved' %}badge-low{% else %}badge-medium{% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="font-size: 12px; font-weight: 600;
+                            {% if ticket.priority == 'critical' %}color: #ef4444;
+                            {% elif ticket.priority == 'high' %}color: #f97316;
+                            {% else %}color: #6b7280;{% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if ticket.assigned_to %}
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div
+                                style="width: 24px; height: 24px; background-color: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                                {{ ticket.assigned_to.username|slice:":1"|upper }}
+                            </div>
+                            <span>{{ ticket.assigned_to.username }}</span>
+                        </div>
+                        {% else %}
+                        <span style="color: #9ca3af; font-style: italic;">Unassigned</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ ticket.created_at|timesince }} ago</td>
+                    <td>
+                        <a href="{% url 'crm_ticket_detail' ticket.id %}"
+                            style="color: #0ea5e9; text-decoration: none; font-weight: 600; font-size: 13px;">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: #6b7280;">
+                        No support tickets found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'erp/base.html' %}
+{% load static %}
+
+{% block page_title %}Projects{% endblock %}
+
+{% block erp_content %}
+<div>
+    <div class="flex-between" style="margin-bottom: 24px;">
+        <h2 class="text-2xl font-bold text-dark">Projects</h2>
+        <a href="{% url 'erp_project_create' %}" class="btn-primary">
+            <i class="fas fa-plus" style="margin-right: 8px;"></i> New Project
+        </a>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="flex-between" style="padding: 16px; border-bottom: 1px solid var(--border-color);">
+            <div class="flex-center gap-2">
+                <a href="?status=" class="badge badge-active" style="cursor: pointer; text-decoration: none;">All</a>
+                <a href="?status=active" class="badge badge-default"
+                    style="cursor: pointer; text-decoration: none;">Active</a>
+                <a href="?status=planning" class="badge badge-default"
+                    style="cursor: pointer; text-decoration: none;">Planning</a>
+            </div>
+            <div style="position: relative;">
+                <input type="text" placeholder="Search projects..." class="form-control"
+                    style="padding-left: 36px; padding-top: 6px; padding-bottom: 6px; width: 250px; font-size: 13px;">
+                <i class="fas fa-search"
+                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 12px;"></i>
+            </div>
+        </div>
+
+        <table class="platform-table">
+            <thead>
+                <tr>
+                    <th style="padding-left: 24px;">Project Name</th>
+                    <th>Client</th>
+                    <th>Revenue</th>
+                    <th>Margin</th>
+                    <th>Manager</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+                    <th style="text-align: right; padding-right: 24px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td style="padding-left: 24px;">
+                        <a href="{% url 'erp_project_detail' project.pk %}"
+                            class="font-bold text-dark hover:text-blue-600 transition-colors">
+                            {{ project.name }}
+                        </a>
+                    </td>
+                    <td class="text-gray">{{ project.client.name }}</td>
+                    <td class="text-gray">${{ project.revenue|floatformat:0 }}</td>
+                    <td class="text-right">
+                        {% with pm=project.profit_margin %}
+                        <span
+                            class="badge {% if pm > 40 %}badge-low{% elif pm > 20 %}badge-medium{% else %}badge-critical{% endif %}">
+                            {{ pm|floatformat:0 }}%
+                        </span>
+                        {% endwith %}
+                    </td>
+                    <td class="text-gray">
+                        {% if project.manager %}
+                        <div class="flex-center gap-2" style="justify-content: flex-start;">
+                            <div class="user-avatar-small" style="width: 24px; height: 24px; font-size: 10px;">
+                                {{ project.manager.username|slice:":1"|upper }}
+                            </div>
+                            <span class="text-sm">{{ project.manager.username }}</span>
+                        </div>
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>
+                        <span
+                            class="badge {% if project.status == 'active' %}badge-active{% elif project.status == 'planning' %}badge-default{% else %}badge-default{% endif %}">
+                            {{ project.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="text-gray text-sm">{{ project.deadline|default:"-" }}</td>
+                    <td style="text-align: right; padding-right: 24px;">
+                        <a href="{% url 'erp_project_detail' project.pk %}" class="btn-cyber"
+                            style="padding: 6px 10px; font-size: 12px; margin-right: 4px;">
+                            View
+                        </a>
+                        <a href="{% url 'erp_project_edit' project.pk %}" class="text-gray hover:text-dark">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center p-8 text-gray">No projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

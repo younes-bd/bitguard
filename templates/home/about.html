@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section
+    class="bg-bitguard-light-blue tw-relative tw-min-h-[350px] tw-flex tw-items-center tw-justify-center tw-text-white tw-overflow-hidden">
+    <!-- Background Patterns -->
+    <div class="tw-absolute tw-inset-0 tw-opacity-20"
+        style="background-image: radial-gradient(#034484 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+    <div class="tw-container tw-mx-auto tw-px-4 tw-relative tw-z-10 tw-text-center">
+        <span
+            class="tw-inline-block tw-py-1 tw-px-3 tw-rounded-full tw-bg-sky-500/20 tw-border tw-border-sky-400/30 tw-text-sky-700 tw-text-sm tw-font-semibold tw-mb-6 tw-uppercase tw-tracking-wider">
+            Who We Are
+        </span>
+        <h1 class="tw-text-5xl md:tw-text-7xl tw-font-bold tw-mb-6 tw-tracking-tight bitguard-heading"
+            style="color: #034484 !important;">
+            Empowering Your <br class="md:tw-hidden" /> Digital Future
+        </h1>
+        <p class="tw-text-xl tw-text-slate-600 tw-max-w-3xl tw-mx-auto tw-leading-relaxed">
+            BitGuard is a technology partner dedicated to helping businesses navigate the complex digital landscape with
+            confidence, security, and innovation.
+        </p>
+    </div>
+</section>
+
+<!-- Who We Are -->
+<section class="tw-py-24 tw-bg-white">
+    <div class="tw-container tw-mx-auto tw-px-4">
+        <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-16 tw-items-center">
+            <div>
+                <span class="tw-text-sky-600 tw-font-bold tw-uppercase tw-tracking-wide tw-mb-2 tw-block">About
+                    Us</span>
+                <h2 class="tw-text-4xl lg:tw-text-5xl tw-font-bold tw-text-slate-900 tw-mb-6 bitguard-heading">
+                    Why BitGuard is the choice for you
+                </h2>
+                <div class="tw-prose tw-prose-lg tw-text-slate-600">
+                    <p class="tw-mb-6">
+                        At BitGuard, we fuel businesses with the technology they need to succeed.
+                    </p>
+                    <p class="tw-mb-6">
+                        BitGuard leads Managed IT Services with innovation and excellence, fueling businesses to
+                        succeed.
+                        We offer a comprehensive suite of services that range from Managed IT Services, Cybersecurity,
+                        and Cloud Services to Digital Transformation and Web/App Development.
+                    </p>
+                    <p>
+                        With a focus on proactive support and strategic planning, we aim to solve your current IT
+                        challenges
+                        and anticipate future needs.
+                    </p>
+                </div>
+            </div>
+            <div class="tw-relative">
+                <div
+                    class="tw-absolute -tw-inset-4 tw-bg-gradient-to-tr tw-from-sky-100 tw-to-blue-50 tw-rounded-2xl tw-transform tw-rotate-2">
+                </div>
+                <div
+                    class="tw-relative tw-bg-white tw-border tw-border-slate-100 tw-shadow-xl tw-rounded-xl tw-overflow-hidden">
+                    <img src="{% static 'base/assets/images/people/man.jpg' %}" alt="BitGuard Team"
+                        class="tw-w-full tw-h-auto tw-object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Strategic Partnerships -->
+<section class="tw-py-24 bg-bitguard-light-cyan">
+    <div class="tw-container tw-mx-auto tw-px-4 tw-text-center">
+        <h2 class="tw-text-3xl lg:tw-text-4xl tw-font-bold tw-text-slate-900 tw-mb-6 bitguard-heading">
+            Strategic Partnerships for Unmatched Solutions
+        </h2>
+        <p class="tw-text-lg tw-text-slate-600 tw-max-w-4xl tw-mx-auto tw-mb-12">
+            Our collaborations with industry-leading partners reinforce our commitment to delivering the best IT
+            solutions.
+            These partnerships enable us to offer a broader range of services and access cutting-edge technologies.
+        </p>
+
+        <!-- Partner Logos Grid -->
+        <div
+            class="tw-flex tw-flex-wrap tw-justify-center tw-gap-8 md:tw-gap-12 tw-opacity-70 tw-grayscale hover:tw-grayscale-0 tw-transition-all tw-duration-500">
+            <i class="bi bi-microsoft tw-text-5xl tw-text-blue-600"></i>
+            <i class="bi bi-amazon tw-text-5xl tw-text-slate-800"></i>
+            <i class="bi bi-google tw-text-5xl tw-text-red-500"></i>
+            <i class="bi bi-cloud-check-fill tw-text-5xl tw-text-sky-500" title="Salesforce"></i>
+            <i class="bi bi-slack tw-text-5xl tw-text-purple-600"></i>
+        </div>
+    </div>
+</section>
+
+<!-- Diversity & Inclusion -->
+<section class="tw-py-24 tw-bg-white">
+    <div class="tw-container tw-mx-auto tw-px-4">
+        <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-16 tw-items-center">
+            <div class="lg:tw-order-2">
+                <h2 class="tw-text-4xl lg:tw-text-5xl tw-font-bold tw-text-slate-900 tw-mb-6 bitguard-heading">
+                    Diversity & Inclusion at BitGuard
+                </h2>
+                <div class="tw-prose tw-prose-lg tw-text-slate-600">
+                    <p class="tw-mb-6">
+                        At BitGuard, we believe that diversity fuels innovation and creativity. Our commitment to
+                        fostering
+                        an inclusive workplace is unwavering.
+                    </p>
+                    <p>
+                        We strive to create an environment where every team member feels valued, respected, and
+                        empowered.
+                    </p>
+                    <a href="{% url 'careers' %}"
+                        class="tw-inline-flex tw-items-center tw-font-bold tw-text-sky-600 hover:tw-text-sky-700 tw-mt-4">
+                        Join Our Team <i class="bi bi-arrow-right tw-ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="lg:tw-order-1">
+                <div class="tw-relative tw-bg-slate-900 tw-rounded-2xl tw-overflow-hidden tw-shadow-2xl">
+                    <img src="{% static 'base/assets/images/people/women.jpg' %}" alt="Diversity"
+                        class="tw-w-full tw-h-full tw-object-cover tw-opacity-80">
+                    <div class="tw-absolute tw-inset-0 tw-bg-gradient-to-t tw-from-slate-900/80 tw-to-transparent">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
