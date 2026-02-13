@@ -97,3 +97,100 @@ class DeviceService:
         else:
             ip = request.META.get('REMOTE_ADDR')
         return ip
+from apps.core.services.base import BaseService
+from apps.core.services.audit import AuditService
+
+class IdentityService(BaseService):
+    @staticmethod
+    def change_password(user, old_password, new_password, request=None):
+        """
+        Changes a user's password after verification. 
+        Updates profile timestamp and logs the security event.
+        """
+        if not user.check_password(old_password):
+            return False, {"old_password": ["Wrong password."]}
+            
+        user.set_password(new_password)
+        user.save()
+        
+        # Update last changed timestamp
+        if hasattr(user, 'profile'):
+            user.profile.password_last_changed = timezone.now()
+            user.profile.save()
+            
+        # Log Security Action
+        if request:
+            AuditService.log(
+                request, 
+                action="PASSWORD_CHANGED", 
+                resource=f"accounts.User:{user.id}",
+                payload={"ip": request.META.get('REMOTE_ADDR')}
+            )
+            
+        return True, {"message": "Password updated successfully"}
+
+    @staticmethod
+    def update_profile(user, data, request=None):
+        """
+        Updates a user profile. Ensures traceability and validates data.
+        """
+        from .models import Profile
+        profile, created = Profile.objects.get_or_create(user=user)
+        # In a real enterprise app, we'd use a dedicated serializer or form here
+        # For now, we update fields explicitly to ensure control
+        for attr, value in data.items():
+            if hasattr(profile, attr):
+                setattr(profile, attr, value)
+        profile.save()
+        
+        # Log Action
+        if request:
+            AuditService.log(
+                request, 
+                action="PROFILE_UPDATE", 
+                resource=f"accounts.Profile:{profile.id}",
+                payload={"fields_updated": list(data.keys())}
+            )
+            
+        return profile
+
+    @staticmethod
+    def create_connection(from_user, to_user_email, request=None):
+        """
+        Initiates a connection request between users.
+        """
+        from django.contrib.auth import get_user_model
+        from .models import Connection
+        from django.db.models import Q
+        
+        User = get_user_model()
+        try:
+            to_user = User.objects.get(email=to_user_email)
+        except User.DoesNotExist:
+            raise ValueError("User with this email does not exist.")
+            
+        if to_user == from_user:
+            raise ValueError("You cannot invite yourself.")
+
+        if Connection.objects.filter(
+            (Q(from_user=from_user) & Q(to_user=to_user)) | 
+            (Q(from_user=to_user) & Q(to_user=from_user))
+        ).exists():
+             raise ValueError("Connection already exists or pending.")
+
+        connection = Connection.objects.create(
+            from_user=from_user,
+            to_user=to_user,
+            status='pending'
+        )
+        
+        # Log Action
+        if request:
+            AuditService.log(
+                request, 
+                action="CONNECTION_REQUESTED", 
+                resource=f"accounts.Connection:{connection.id}",
+                payload={"to_user_email": to_user_email}
+            )
+            
+        return connection

@@ -45,7 +45,7 @@ import DataPrivacy from '../pages/accounts/DataPrivacy';
 import Payments from '../pages/accounts/Payments';
 
 // Core Routing
-import { AppRoutes } from './routes/AppRoutes';
+import { EnterpriseRouter } from './routes/EnterpriseRouter';
 import { useAuth } from '../shared/core/hooks/useAuth';
 import { PortalRoutes } from './routes/PortalRoutes';
 
@@ -122,7 +122,7 @@ const AppContent = () => {
                     
                     PortalRoutes contains Store, CRM, ERP, etc.
                  */}
-                {isAdmin ? AppRoutes : PortalRoutes}
+                {isAdmin ? EnterpriseRouter : PortalRoutes}
             </Route>
 
             {/* Redirects for legacy routes */}

@@ -1,6 +1,16 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from apps.core.signals import order_paid
 from .models import InternalProject
+
+@receiver(order_paid)
+def handle_order_fulfillment(sender, order, request=None, **kwargs):
+    """
+    Section 16: Create Delivery Obligation.
+    De-coupled from Store module via explicit signals.
+    """
+    from .services import EnterpriseService
+    EnterpriseService.create_delivery_obligation(order, request=request)
 
 @receiver(post_save, sender=InternalProject)
 def sync_erp_to_crm(sender, instance, created, **kwargs):

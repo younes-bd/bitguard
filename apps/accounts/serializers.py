@@ -54,12 +54,24 @@ class AddressSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     photo = serializers.ImageField(source='profile.photo', read_only=True)
-    addresses = AddressSerializer(many=True, read_only=True)
+    permissions = serializers.SerializerMethodField()
     
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'is_verified', 'photo', 'addresses', 'is_staff')
-        read_only_fields = ('is_verified',)
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'is_verified', 'photo', 'addresses', 'is_staff', 'is_superuser', 'permissions')
+        read_only_fields = ('is_verified', 'is_staff', 'is_superuser')
+
+    def get_permissions(self, obj):
+        if obj.is_superuser:
+            return [] # Superuser has all, but frontend checks is_superuser flag first. 
+                      # We could return all valid strings if we wanted to be explicit, 
+                      # but avoiding the DB hit is better if frontend handles is_superuser.
+        
+        # Get all permissions (group + direct)
+        # Format: "app_label.codename"
+        perms = obj.get_all_permissions()
+        # Return just the codename to match frontend menu.js config (e.g. 'view_product')
+        return [p.split('.')[-1] for p in perms]
 
 class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)

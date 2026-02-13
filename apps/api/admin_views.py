@@ -36,9 +36,12 @@ class AdminMetadataView(APIView):
         
         return Response(data)
 
+from apps.core.services.audit import AuditService
+
 class AdminModelView(APIView):
     """
-    Generic CRUD for any model.
+    Generic CRUD for any model with mandatory system auditing.
+    Charter Compliance: Section 11 (Auditability).
     """
     permission_classes = [IsAdminUser]
 
@@ -48,36 +51,130 @@ class AdminModelView(APIView):
         except LookupError:
             return None
 
-    def get(self, request, app_label, model_name):
+    def get(self, request, app_label, model_name, pk=None):
         model = self.get_model(app_label, model_name)
         if not model:
             return Response({'error': 'Model not found'}, status=404)
 
+        if pk:
+            obj = get_object_or_404(model, pk=pk)
+            # Simple serialization
+            data = {f.name: getattr(obj, f.name) for f in model._meta.fields}
+            return Response(data)
+
         # Pagination logic could be added here
-        # For now, return top 100
-        objects = model.objects.all()[:100]
-        
-        # Serialize simply using values()
-        # We need to handle non-serializable fields (like relations or datetimes)
-        # .values() handles most, but relations are just IDs. That's fine for "Review".
-        data = list(objects.values())
-        
-        # Add 'id' if not present (usually generic views need specific ID)
-        # .values() includes 'id' or pk_field usually.
+        queryset = model.objects.all().order_by('-pk')[:100]
+        data = list(queryset.values())
         
         return Response({
             'model': model.__name__,
             'count': model.objects.count(),
             'data': data,
-            # Start metadata about fields for the table headers
             'fields': [f.name for f in model._meta.fields] 
         })
+
+    def post(self, request, app_label, model_name):
+        model = self.get_model(app_label, model_name)
+        if not model:
+            return Response({'error': 'Model not found'}, status=404)
+
+        from apps.core.services.control import ControlService
+        if not ControlService.enforce_policy(request.user, "CREATE", f"{app_label}.{model_name}"):
+            return Response({'error': 'Policy violation'}, status=403)
+
+        obj = model.objects.create(**request.data)
+        
+        AuditService.log(
+            request,
+            action="ADMIN_CREATE",
+            resource=f"{app_label}.{model_name}:{obj.pk}",
+            payload=request.data
+        )
+        
+        return Response({'status': 'created', 'id': obj.pk}, status=201)
+
+    def patch(self, request, app_label, model_name, pk):
+        model = self.get_model(app_label, model_name)
+        if not model:
+            return Response({'error': 'Model not found'}, status=404)
+
+        from apps.core.services.control import ControlService
+        if not ControlService.enforce_policy(request.user, "UPDATE", f"{app_label}.{model_name}:{pk}"):
+            return Response({'error': 'Policy violation'}, status=403)
+            
+        obj = get_object_or_404(model, pk=pk)
+        for attr, value in request.data.items():
+            setattr(obj, attr, value)
+        obj.save()
+
+        AuditService.log(
+            request,
+            action="ADMIN_UPDATE",
+            resource=f"{app_label}.{model_name}:{obj.pk}",
+            payload=request.data
+        )
+        
+        return Response({'status': 'updated'})
 
     def delete(self, request, app_label, model_name, pk):
         model = self.get_model(app_label, model_name)
         if not model:
             return Response({'error': 'Model not found'}, status=404)
+
+        from apps.core.services.control import ControlService
+        if not ControlService.enforce_policy(request.user, "DELETE", f"{app_label}.{model_name}:{pk}"):
+            return Response({'error': 'Policy violation'}, status=403)
             
         obj = get_object_or_404(model, pk=pk)
+        resource_ref = f"{app_label}.{model_name}:{obj.pk}"
+        
         obj.delete()
+
+        AuditService.log(
+            request,
+            action="ADMIN_DELETE",
+            resource=resource_ref,
+            payload={"deleted_pk": pk}
+        )
+        
         return Response({'status': 'deleted'})
+
+class AuditLogView(APIView):
+    """
+    Dedicated view for reviewing system audit logs.
+    Charter Compliance: Section 11 (Auditability).
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        from apps.core.models import AuditLog
+        
+        # Pagination and filtering
+        queryset = AuditLog.objects.all().order_by('-timestamp')[:200]
+        
+        data = []
+        for log in queryset:
+            data.append({
+                'id': log.id,
+                'timestamp': log.timestamp,
+                'user': log.user.username if log.user else 'System',
+                'tenant': log.tenant.name if log.tenant else 'Global',
+                'action': log.action,
+                'resource': log.resource,
+                'payload': log.payload,
+                'ip_address': log.ip_address
+            })
+            
+        return Response(data)
+
+class SystemHealthView(APIView):
+    """
+    Command Center Health (Section 19).
+    Exposes workflow states and pending obligations.
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        from apps.core.services.control import ControlService
+        health_data = ControlService.get_system_health()
+        return Response(health_data)

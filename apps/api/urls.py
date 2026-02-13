@@ -4,16 +4,16 @@ from . import admin_views
 
 
 urlpatterns = [
-    path('store/', include('apps.store.api_urls')),
-    path('erp/', include('apps.erp.api_urls')),
-    path('crm/', include('apps.crm.api_urls')),
-    path('security/', include('apps.security.api_urls')),
+    path('store/', include('apps.store.urls')),
+    path('erp/', include('apps.erp.urls')),
+    path('crm/', include('apps.crm.urls')),
+    path('security/', include('apps.security.urls')),
 
-    path('blog/', include('apps.blog.api_urls')),
-    path('ai/', include('apps.ai_engine.api_urls')),
-    path('automation/', include('apps.automation.api_urls')),
+    path('blog/', include('apps.blog.urls')),
+    path('ai/', include('apps.ai_engine.urls')),
+    path('automation/', include('apps.automation.urls')),
     path('accounts/', include('apps.accounts.urls')),
-    path('home/', include('apps.home.api_urls')),
+    path('home/', include('apps.home.urls')),
     path('core/', include('apps.core.urls')),
     path('access/', include('apps.access.urls')),
     path('tenants/', include('apps.tenants.urls')),

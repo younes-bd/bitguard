@@ -36,12 +36,26 @@ const ConsoleLayout = () => {
         logout(); // Use context logout
     };
 
-    // Filter Menu based on Bundle
+    // Filter Menu based on Bundle AND Permissions
     // We only show the MAIN ADMIN MENU here.
-    // Sub-apps (CRM, etc) have their own Layouts now.
     const adminItems = adminMenu.filter(item => {
-        if (!item.requiredProduct) return true;
-        return hasProduct(item.requiredProduct);
+        // 1. Check Product/Bundle Access
+        if (item.requiredProduct && !hasProduct(item.requiredProduct)) {
+            return false;
+        }
+
+        // 2. Check RBAC Permissions
+        // If user is superuser, they see everything
+        if (user?.is_superuser) return true;
+
+        // If item has permissions defined, check if user has at least one
+        if (item.permissions && item.permissions.length > 0) {
+            const userPermissions = user?.permissions || []; // backend must send this
+            const hasPerm = item.permissions.some(p => userPermissions.includes(p));
+            if (!hasPerm) return false;
+        }
+
+        return true;
     });
 
     return (

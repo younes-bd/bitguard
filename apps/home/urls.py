@@ -1,32 +1,26 @@
-from django.urls import path
-from . import views
-from .views import email_list_signup
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
-    index,
-    IndexView,
+    AnnouncementViewSet, 
+    SignupViewSet, 
+    WebsiteInquiryViewSet, 
+    ServicePageViewSet,
+    SupportTicketView,
+    RemoteSessionView,
+    GenerateSessionView,
+    ClientDashboardView
 )
 
+router = DefaultRouter()
+router.register(r'announcements', AnnouncementViewSet)
+router.register(r'signups', SignupViewSet)
+router.register(r'inquiries', WebsiteInquiryViewSet)
+router.register(r'services', ServicePageViewSet)
+
 urlpatterns = [
-    #path('', views.landing, name='landing'),
-    path('', IndexView.as_view(), name='home'),
-    path('email-signup/', email_list_signup, name='email-list-signup'),
-    path('about/', views.about, name='about'),
-    path('contact/', views.contact, name='contact'),
-    path('support/', views.support, name='support'),
-    path('support/session/', views.remote_session, name='remote_session'), # Remote support session
-    path('support/session/generate/', views.generate_session, name='generate_session'), # Tech generator
-    path('portal/', views.client_portal, name='client_portal'), # Dedicated Client Portal - Reload Trigger
-    path('team/', views.team, name='team'),
-    path('careers/', views.careers, name='careers'),
-    path('managed-it/', views.managed_it, name='managed_it'),
-    path('cybersecurity/', views.cybersecurity, name='cybersecurity'),
-    path('cloud/', views.cloud, name='cloud'),
-    path('vciso/', views.vciso, name='vciso'),
-    
-    # Dynamic Service Pages
-    path('solutions/<slug:service_slug>/', views.service_detail, name='service_detail'),
-    path('platform/<slug:service_slug>/', views.service_detail, name='platform_detail'), # Re-use same view
-
-    
-
+    path('', include(router.urls)),
+    path('support/ticket/', SupportTicketView.as_view(), name='support-ticket'),
+    path('support/session/join/', RemoteSessionView.as_view(), name='session-join'),
+    path('support/session/generate/', GenerateSessionView.as_view(), name='session-generate'),
+    path('dashboard/', ClientDashboardView.as_view(), name='client-dashboard'),
 ]

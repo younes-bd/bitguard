@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import client from '../../shared/core/services/client';
+import { authService } from '../../shared/core/services/authService';
+import { iamService } from '../../shared/core/services/iamService';
 import { User, ChevronRight, Camera } from 'lucide-react';
 
 const PersonalInfo = () => {
@@ -10,22 +12,17 @@ const PersonalInfo = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            // Fetch User
+            // Fetch User & Profile via Services
             try {
-                const userRes = await client.get('accounts/me/');
-                setUser(userRes.data);
-            } catch (err) {
-                console.error("Error fetching user:", err);
-            }
-
-            // Fetch Profile
-            try {
-                const profileRes = await client.get('accounts/profile/');
+                const [userData, profileRes] = await Promise.all([
+                    authService.getCurrentUser(),
+                    client.get('accounts/profile/') // Profile still direct or needs service
+                ]);
+                setUser(userData);
                 const profileData = Array.isArray(profileRes.data) ? (profileRes.data[0] || {}) : (profileRes.data || {});
                 setProfile(profileData);
             } catch (err) {
-                console.error("Error fetching profile:", err);
-                setProfile({}); // Default to empty object on error
+                console.error("Error fetching data:", err);
             } finally {
                 setLoading(false);
             }

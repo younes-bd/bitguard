@@ -1,9 +1,24 @@
 from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.dispatch import receiver, Signal
 from django.apps import apps
 import logging
 
 logger = logging.getLogger(__name__)
+
+# --- Commerce Events (Section 20) ---
+# Sent when an order is successfully paid via Stripe
+# Providing: order, request (optional)
+order_paid = Signal()
+
+# --- Customer Lifecycle Events (Section 15, 20) ---
+# Sent when a client's status changes
+# Providing: client, old_status, new_status, request (optional)
+lifecycle_transition = Signal()
+
+# --- Service Delivery Events (Section 16, 20) ---
+# Sent when a new project/obligation is created from an order
+# Providing: project, order, request (optional)
+obligation_created = Signal()
 
 @receiver(post_save, sender='crm.Deal')
 def create_project_agreement_from_deal(sender, instance, created, **kwargs):
@@ -61,3 +76,35 @@ def sync_crm_client_from_order(sender, instance, created, **kwargs):
                 role='Customer'
             )
             logger.info(f"Created CRM Client & Contact for Order User {instance.user.username}")
+
+@receiver(order_paid)
+def log_accounting_event(sender, order, request=None, **kwargs):
+    """
+    Section 18: Payments generate accounting events.
+    Ensures commerce UI does not equal financial truth.
+    """
+    from apps.core.services.audit import AuditService
+    AuditService.log(
+        request,
+        action="ACCOUNTING_EVENT",
+        resource=f"commerce.Order:{order.id}",
+        payload={
+            "type": "REVENUE",
+            "amount": float(order.amount) if hasattr(order, 'amount') else 0,
+            "currency": order.user.currency if hasattr(order.user, 'currency') else "USD",
+            "source": sender.__name__ if sender else "Stripe"
+        }
+    )
+
+@receiver(lifecycle_transition)
+def handle_systemic_lifecycle_change(sender, client, old_status, new_status, request=None, **kwargs):
+    """
+    Section 15: React to client status changes system-wide.
+    """
+    from apps.core.services.audit import AuditService
+    AuditService.log(
+        request,
+        action="LIFECYCLE_TRANSITION",
+        resource=f"crm.Client:{client.pk}",
+        payload={"old": old_status, "new": new_status}
+    )

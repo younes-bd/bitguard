@@ -4,28 +4,31 @@ import {
     Layers, Database, Key, PieChart
 } from 'lucide-react';
 
-// Main Admin Apps (Clicking them goes to their Dashboard)
+// Main Admin Suite (The "Hub" - Switching between major modules)
 export const adminMenu = [
-    // Overview
-    { label: 'Overview', icon: null, path: null }, // Header
+    // 1. Command Center
+    { label: 'Command Center', icon: null, path: null },
     { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
 
-    // Core Business Modules
-    { label: 'Business Modules', icon: null, path: null }, // Header
-    { label: 'Clients & CRM', icon: Building2, path: '/admin/crm' },
-    { label: 'ERP & Finance', icon: PieChart, path: '/admin/erp' },
-    { label: 'Store Management', icon: ShoppingBag, path: '/admin/store' },
+    // 2. Business & Revenue
+    { label: 'Business & Revenue', icon: null, path: null },
+    { label: 'CRM / Sales', icon: Users, path: '/admin/crm', permissions: ['view_client'] },
+    { label: 'Commerce', icon: ShoppingBag, path: '/admin/store', permissions: ['view_product'] },
 
-    // Security & Infrastructure
-    { label: 'Platform & Security', icon: null, path: null }, // Header
-    { label: 'Security (SOC)', icon: ShieldCheck, path: '/admin/security' },
-    { label: 'Access & Identity (IAM)', icon: Key, path: '/admin/iam' },
+    // 3. Operations & Resources
+    { label: 'Operations & Resources', icon: null, path: null },
+    { label: 'ERP / Finance', icon: PieChart, path: '/admin/erp', permissions: ['view_internalproject'] },
+    { label: 'Supply Chain', icon: Layers, path: '/admin/scm', permissions: ['view_vendor'] },
+    { label: 'Human Capital', icon: Building2, path: '/admin/hrm', permissions: ['view_employeeprofile'] },
 
-    // System Administration
-    { label: 'System Admin', icon: null, path: null }, // Header
-    { label: 'User Management', icon: Users, path: '/admin/users' },
-    { label: 'System Logs', icon: AlertCircle, path: '/admin/logs' },
-    { label: 'Platform Settings', icon: Server, path: '/admin/settings' }
+    // 4. Governance & Security
+    { label: 'Governance & Security', icon: null, path: null },
+    { label: 'Security Operations', icon: ShieldCheck, path: '/admin/security', permissions: ['view_incident'] },
+    { label: 'Identity & Access', icon: Key, path: '/admin/iam', permissions: ['view_user'] },
+
+    // 5. System Core
+    { label: 'Platform Core', icon: null, path: null },
+    { label: 'System Admin', icon: Server, path: '/admin/system' }
 ];
 
 export const productMenu = {
@@ -38,6 +41,8 @@ export const productMenu = {
                 { label: 'Leads & Deals', icon: Layers, path: '/admin/crm/leads' },
                 { label: 'Tickets', icon: AlertCircle, path: '/admin/crm/tickets' },
                 { label: 'Contracts', icon: FileText, path: '/admin/crm/contracts' },
+                { label: 'Reports', icon: PieChart, path: '/admin/crm/reports' },
+                { label: 'Settings', icon: Server, path: '/admin/crm/settings' },
             ]
         }
     ],
@@ -50,16 +55,21 @@ export const productMenu = {
                 { label: 'Invoices', icon: FileText, path: '/admin/erp/invoices' },
                 { label: 'Revenue', icon: PieChart, path: '/admin/erp/revenue' },
                 { label: 'Payroll', icon: Users, path: '/admin/erp/payroll' },
+                { label: 'Reports', icon: PieChart, path: '/admin/erp/reports' },
+                { label: 'Settings', icon: Server, path: '/admin/erp/settings' },
             ]
         }
     ],
     store: [
         {
-            title: 'Store',
+            title: 'Commerce',
             items: [
-                { label: 'Product Catalog', icon: LayoutDashboard, path: '/store' },
-                { label: 'My Products', icon: Layers, path: '/store/products' }, // Feature pending
-                { label: 'Orders', icon: FileText, path: '/store/orders' },     // Feature pending
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/store' },
+                { label: 'Products', icon: Layers, path: '/admin/store/products' },
+                { label: 'Orders', icon: FileText, path: '/admin/store/orders' },
+                { label: 'Customers', icon: Users, path: '/admin/store/customers' },
+                { label: 'Reports', icon: PieChart, path: '/admin/store/reports' },
+                { label: 'Settings', icon: Server, path: '/admin/store/settings' },
             ]
         }
     ],
@@ -72,6 +82,45 @@ export const productMenu = {
                 { label: 'Assets', icon: Server, path: '/admin/security/assets' },
                 { label: 'Threat Intel', icon: ShieldCheck, path: '/admin/security/threat-intel' },
                 { label: 'Vulnerabilities', icon: Database, path: '/admin/security/vulns' },
+                { label: 'Reports', icon: PieChart, path: '/admin/security/reports' },
+                { label: 'Settings', icon: Server, path: '/admin/security/settings' },
+            ]
+        }
+    ],
+    scm: [
+        {
+            title: 'Supply Chain',
+            items: [
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/scm' },
+                { label: 'Vendors', icon: Users, path: '/admin/scm/vendors' },
+                { label: 'Inventory', icon: Database, path: '/admin/scm/inventory' },
+                { label: 'Reports', icon: PieChart, path: '/admin/scm/reports' },
+                { label: 'Settings', icon: Server, path: '/admin/scm/settings' },
+            ]
+        }
+    ],
+    hrm: [
+        {
+            title: 'Human Capital',
+            items: [
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/hrm' },
+                { label: 'Employees', icon: Users, path: '/admin/hrm/employees' },
+                { label: 'Payroll', icon: PieChart, path: '/admin/hrm/payroll' },
+                { label: 'Reports', icon: PieChart, path: '/admin/hrm/reports' },
+                { label: 'Settings', icon: Server, path: '/admin/hrm/settings' },
+            ]
+        }
+    ],
+    iam: [
+        {
+            title: 'Identity & Access',
+            items: [
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/iam' },
+                { label: 'Users', icon: Users, path: '/admin/iam/users' },
+                { label: 'Roles & Permissions', icon: Key, path: '/admin/iam/roles' },
+                { label: 'Tenants', icon: Building2, path: '/admin/iam/tenants' },
+                { label: 'Audit Logs', icon: FileText, path: '/admin/iam/audit' },
+                { label: 'Settings', icon: Server, path: '/admin/iam/settings' },
             ]
         }
     ]

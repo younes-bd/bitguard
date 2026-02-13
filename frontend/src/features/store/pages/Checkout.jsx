@@ -21,15 +21,26 @@ const Checkout = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Mock checkout process
-            await storeService.createOrder({
-                product_id: product?.id,
-                plan_id: plan?.id,
-                amount: price,
-                payment_method: 'credit_card'
-            });
-            alert('Order placed successfully! In a real app, you would be redirected to Stripe.');
-            navigate('/dashboard'); // Or my-account order history
+            let data;
+            if (product) {
+                data = await storeService.checkout(product.id, {
+                    success_url: window.location.origin + '/dashboard',
+                    cancel_url: window.location.origin + '/store/products'
+                });
+            } else if (plan) {
+                data = await storeService.subscribe(plan.id, {
+                    success_url: window.location.origin + '/dashboard',
+                    cancel_url: window.location.origin + '/store/pricing'
+                });
+            }
+
+            if (data?.checkout_url) {
+                // In a real app with Stripe, we redirect
+                window.location.href = data.checkout_url;
+            } else {
+                alert('Order placed successfully (Internal Flow).');
+                navigate('/dashboard');
+            }
         } catch (error) {
             console.error(error);
             alert('Checkout failed.');

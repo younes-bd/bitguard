@@ -1,8 +1,10 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import AnalysisResultViewSet
+
+router = DefaultRouter()
+router.register(r'results', AnalysisResultViewSet)
 
 urlpatterns = [
-    path('analysis/', views.analysis, name='ai_engine_analysis'),
-    path('reports/', views.reports, name='ai_engine_reports'),
-    path('api/', views.api, name='{name}_api'),
+    path('', include(router.urls)),
 ]

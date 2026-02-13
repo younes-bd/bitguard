@@ -10,7 +10,7 @@ from .serializers import (
     DeviceSerializer, RegisterSerializer, OTPSerializer, VerifyOTPSerializer, PasswordChangeSerializer,
     AddressSerializer, ConnectionSerializer, SharedResourceSerializer
 )
-from .services import OTPService, EmailService, DeviceService
+from .services import OTPService, EmailService, DeviceService, IdentityService
 
 User = get_user_model()
 
@@ -59,18 +59,17 @@ class ChangePasswordView(generics.UpdateAPIView):
         serializer = self.get_serializer(data=request.data, context={'request': request})
 
         if serializer.is_valid():
-            if not self.object.check_password(serializer.data.get("old_password")):
-                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            success, result = IdentityService.change_password(
+                user=self.object,
+                old_password=serializer.data.get("old_password"),
+                new_password=serializer.data.get("new_password"),
+                request=request
+            )
             
-            self.object.set_password(serializer.data.get("new_password"))
-            self.object.save()
-            
-            # Update last changed timestamp
-            if hasattr(self.object, 'profile'):
-                self.object.profile.password_last_changed = timezone.now()
-                self.object.profile.save()
+            if not success:
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
                 
-            return Response({"status": "success", "message": "Password updated successfully"}, status=status.HTTP_200_OK)
+            return Response(result, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -125,14 +124,13 @@ class ProfileViewSet(viewsets.ModelViewSet):
         if request.user.is_authenticated:
             DeviceService.track_device(request.user, request)
             
-        profile, created = Profile.objects.get_or_create(user=request.user)
         if request.method == 'GET':
+            profile, created = Profile.objects.get_or_create(user=request.user)
             serializer = self.get_serializer(profile)
             return Response(serializer.data)
         elif request.method in ['PATCH', 'PUT']:
-            serializer = self.get_serializer(profile, data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+            profile = IdentityService.update_profile(request.user, request.data, request=request)
+            serializer = self.get_serializer(profile)
             return Response(serializer.data)
 
 class LoginActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -174,30 +172,11 @@ class ConnectionViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            to_user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-            
-        if to_user == request.user:
-            return Response({'error': 'You cannot invite yourself.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if already connected
-        if Connection.objects.filter(
-            (Q(from_user=request.user) & Q(to_user=to_user)) | 
-            (Q(from_user=to_user) & Q(to_user=request.user))
-        ).exists():
-             return Response({'error': 'Connection already exists or pending.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        connection = Connection.objects.create(
-            from_user=request.user,
-            to_user=to_user,
-            status='pending'
-        )
-        
-        # Optionally send email notification here
-        
-        serializer = self.get_serializer(connection)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            connection = IdentityService.create_connection(request.user, email, request=request)
+            serializer = self.get_serializer(connection)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post'])
     def accept(self, request, pk=None):

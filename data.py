@@ -12,6 +12,7 @@ django.setup()
 
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from django.core.files.base import ContentFile
 
 # Import Models
@@ -78,7 +79,31 @@ def create_users():
         'Store': Group.objects.get_or_create(name='Store Managers')[0],
         'Engineering': Group.objects.get_or_create(name='Engineering')[0],
         'SOC': Group.objects.get_or_create(name='SOC Analysts')[0],
+        # Enterprise Roles (RBAC)
+        'HR Manager': Group.objects.get_or_create(name='HR Manager')[0],
+        'Supply Chain Manager': Group.objects.get_or_create(name='Supply Chain Manager')[0],
+        'Sales Manager': Group.objects.get_or_create(name='Sales Manager')[0],
+        'Security Analyst': Group.objects.get_or_create(name='Security Analyst')[0],
     }
+
+    # Assign Enterprise Permissions
+    rbac_config = {
+        'HR Manager': ['view_employeeprofile', 'add_employeeprofile', 'change_employeeprofile', 'view_payroll', 'add_payroll'],
+        'Supply Chain Manager': ['view_vendor', 'add_vendor', 'change_vendor', 'view_inventory', 'change_inventory', 'view_purchaseorder'],
+        'Sales Manager': ['view_client', 'add_client', 'change_client', 'view_deal', 'view_contract'],
+        'Security Analyst': ['view_incident', 'add_incident', 'view_vulnerability', 'view_auditlog']
+    }
+    
+    print("  - Configuring Enterprise Permissions...")
+    for role, perms in rbac_config.items():
+        group = groups.get(role)
+        if group:
+            for code in perms:
+                try:
+                    p = Permission.objects.get(codename=code)
+                    group.permissions.add(p)
+                except Permission.DoesNotExist:
+                    pass
 
     # Detailed Staff List with Roles and Permissions
     # Format: (username, Full Name, Job Title, Skills, is_staff_manager, is_engineer, [GroupNames])
@@ -88,20 +113,20 @@ def create_users():
         ('david.cto', 'David Lightman', 'Chief Technology Officer', 'Architecture, AI', True, True, ['Executives', 'Engineering']),
         
         # Operations & Management
-        ('charlie.ops', 'Charlie Davis', 'Operations Director', 'ITIL, Agile', True, False, ['Operations']),
-        ('pam.admin', 'Pam Beesly', 'Office Administrator', 'HR, Logistics', True, False, ['Operations']),
+        ('charlie.ops', 'Charlie Davis', 'Operations Director', 'ITIL, Agile', True, False, ['Operations', 'Supply Chain Manager']),
+        ('pam.admin', 'Pam Beesly', 'Office Administrator', 'HR, Logistics', True, False, ['Operations', 'HR Manager']),
         
         # Sales & CRM
-        ('emily.sales', 'Emily Blunt', 'Sales Director', 'CRM, Negotiation', True, False, ['Sales']),
+        ('emily.sales', 'Emily Blunt', 'Sales Director', 'CRM, Negotiation', True, False, ['Sales', 'Sales Manager']),
         ('jim.sales', 'Jim Halpert', 'Account Manager', 'Sales, Client Relations', False, False, ['Sales']),
         
         # Store & Inventory
-        ('kevin.store', 'Kevin Malone', 'Store Manager', 'Inventory, Logistics', True, False, ['Store']),
+        ('kevin.store', 'Kevin Malone', 'Store Manager', 'Inventory, Logistics', True, False, ['Store', 'Supply Chain Manager']),
         
         # Security Operations Center (SOC)
-        ('alice.engineer', 'Alice Chen', 'Senior Security Engineer', 'SIEM, Python, AWS', False, True, ['Engineering', 'SOC']),
-        ('bob.analyst', 'Bob Miller', 'SOC Analyst', 'Wireshark, Splunk', False, True, ['SOC']),
-        ('elliot.sec', 'Elliot Alderson', 'Lead Security Researcher', 'Pentesting, Reverse Engineering', False, True, ['Engineering']),
+        ('alice.engineer', 'Alice Chen', 'Senior Security Engineer', 'SIEM, Python, AWS', False, True, ['Engineering', 'SOC', 'Security Analyst']),
+        ('bob.analyst', 'Bob Miller', 'SOC Analyst', 'Wireshark, Splunk', False, True, ['SOC', 'Security Analyst']),
+        ('elliot.sec', 'Elliot Alderson', 'Lead Security Researcher', 'Pentesting, Reverse Engineering', False, True, ['Engineering', 'Security Analyst']),
         ('trent.boyett', 'Trent Boyett', 'Junior Analyst', 'Monitoring, Triage', False, True, ['SOC']),
         
         # DevOps & Cloud

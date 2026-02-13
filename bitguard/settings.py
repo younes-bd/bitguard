@@ -60,7 +60,7 @@ MIDDLEWARE = ['corsheaders.middleware.CorsMiddleware','django.middleware.securit
 ROOT_URLCONF = 'bitguard.urls'
 
 TEMPLATES = [{'BACKEND':'django.template.backends.django.DjangoTemplates',
-              'DIRS':[BASE_DIR/'templates'],
+              'DIRS':[],
               'APP_DIRS':True,
               'OPTIONS':{'context_processors':['django.template.context_processors.debug',
               'django.template.context_processors.request',
@@ -91,7 +91,6 @@ else:
 AUTH_USER_MODEL = 'accounts.User'
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

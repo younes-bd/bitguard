@@ -1,8 +1,10 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import WorkflowViewSet
+
+router = DefaultRouter()
+router.register(r'workflows', WorkflowViewSet)
 
 urlpatterns = [
-    path('workflows/', views.workflows, name='automation_workflows'),
-    path('workflow_detail/', views.workflow_detail, name='automation_workflow_detail'),
-    path('api/', views.api, name='{name}_api'),
+    path('', include(router.urls)),
 ]

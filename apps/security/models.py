@@ -181,20 +181,28 @@ class SecurityIncident(models.Model):
     Can be created from one or more Alerts.
     """
     workspace = models.ForeignKey('tenants.Workspace', on_delete=models.CASCADE, related_name='security_incidents', null=True, blank=True)
+    client = models.ForeignKey('crm.Client', on_delete=models.SET_NULL, null=True, blank=True, related_name='incidents')
     
     title = models.CharField(max_length=200)
     description = models.TextField()
-    severity = models.CharField(max_length=50)
-    status = models.CharField(max_length=50, default='open') # Open, Containment, Closed
+    severity = models.CharField(max_length=50, default='medium')
+    status = models.CharField(max_length=50, default='new') # new, investigating, containment, resolved, closed
     
     assignee = models.ForeignKey('accounts.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_incidents')
+    
+    # SLA & Escalation
+    sla_deadline = models.DateTimeField(null=True, blank=True)
+    escalation_level = models.IntegerField(default=0)
+    is_breached = models.BooleanField(default=False)
     
     alerts = models.ManyToManyField(SecurityAlert, related_name='incidents', blank=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     closed_at = models.DateTimeField(null=True, blank=True)
     
     playbook_logs = models.JSONField(default=list, blank=True)
+    resolution_summary = models.TextField(blank=True)
     
     def __str__(self):
         return f"INC-{self.id} {self.title}"

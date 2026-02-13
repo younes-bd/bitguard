@@ -1,20 +1,35 @@
-from rest_framework.permissions import BasePermission
-from .services import has_permission
+from rest_framework import permissions
+from apps.core.services.control import ControlService
 
-class HasRBACPermission(BasePermission):
+class ConstitutionPermission(permissions.BasePermission):
     """
-    Checks if user has the permission specified in `view.required_permission`.
+    Centralized Access Control (Section 21).
+    Delegates all permission checks to the Unified Control Plane.
     """
+
     def has_permission(self, request, view):
-        required_perm = getattr(view, 'required_permission', None)
+        # Determine the action type
+        action_map = {
+            'GET': 'VIEW',
+            'POST': 'CREATE',
+            'PUT': 'UPDATE',
+            'PATCH': 'UPDATE',
+            'DELETE': 'DELETE'
+        }
+        action = action_map.get(request.method, 'UNKNOWN')
         
-        # If view doesn't specify a permission, allow access (or use IsAuthenticated separately)
-        if not required_perm:
-            return True
+        # Determine the resource
+        # For simplicity, we use the view's model or name
+        resource = getattr(view, 'queryset', None)
+        if resource is not None:
+            resource_name = resource.model._meta.label
+        else:
+            resource_name = view.__class__.__name__
 
-        tenant = getattr(request, 'tenant', None)
-        if not tenant:
-            # Permissions restrict access only within a tenant context
-            return False
+        return ControlService.enforce_policy(request.user, action, resource_name)
 
-        return has_permission(request.user, required_perm, tenant)
+    def has_object_permission(self, request, view, obj):
+        # We delegate per-object checks to the ControlService as well if needed.
+        # For now, we assume if you have permission for the resource, 
+        # the queryset filtering handles row-level isolation.
+        return self.has_permission(request, view)

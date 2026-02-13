@@ -113,6 +113,9 @@ class InternalProject(models.Model):
     # Financials
     revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, help_text="Total Contract Value")
     budget_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, help_text="Total Internal Budget")
+    
+    # Enterprise Readiness
+    is_service_obligation = models.BooleanField(default=False, help_text="True if this project fulfills a customer service purchase")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

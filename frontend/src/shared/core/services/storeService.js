@@ -18,12 +18,16 @@ export const storeService = {
     },
 
     // --- Orders & Checkout ---
-    getOrders: async () => {
-        const response = await client.get('store/orders/');
+    checkout: async (productId, checkoutData) => {
+        const response = await client.post(`store/products/${productId}/checkout/`, checkoutData);
         return response.data;
     },
-    createOrder: async (orderData) => {
-        const response = await client.post('store/orders/', orderData);
+    subscribe: async (planId, subscribeData) => {
+        const response = await client.post(`store/plans/${planId}/subscribe/`, subscribeData);
+        return response.data;
+    },
+    getOrders: async () => {
+        const response = await client.get('store/orders/');
         return response.data;
     },
     deleteOrder: async (id) => {

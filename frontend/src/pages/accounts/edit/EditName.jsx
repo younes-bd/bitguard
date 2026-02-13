@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import client from '../../../shared/core/services/client';
+import { authService } from '../../../shared/core/services/authService';
+import { iamService } from '../../../shared/core/services/iamService';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const EditName = () => {
@@ -13,9 +14,9 @@ const EditName = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await client.get('accounts/me/');
-                setFirstName(res.data.first_name || '');
-                setLastName(res.data.last_name || '');
+                const userData = await authService.getCurrentUser();
+                setFirstName(userData.first_name || '');
+                setLastName(userData.last_name || '');
             } catch (err) {
                 console.error("Failed to fetch user", err);
             } finally {
@@ -29,7 +30,7 @@ const EditName = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            await client.patch('accounts/me/', {
+            await iamService.updateMe({
                 first_name: firstName,
                 last_name: lastName
             });

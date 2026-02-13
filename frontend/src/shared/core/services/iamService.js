@@ -18,6 +18,10 @@ export const iamService = {
         const response = await client.patch(`accounts/users/${id}/`, userData);
         return response.data;
     },
+    updateMe: async (userData) => {
+        const response = await client.patch('accounts/profile/me/', userData);
+        return response.data;
+    },
     deleteUser: async (id) => {
         const response = await client.delete(`accounts/users/${id}/`);
         return response.data;
