@@ -1,15 +1,20 @@
 ---
-description: Automated audit of codebase against the BitGuard Platform Charter
+description: Automated audit of codebase against the BitGuard Enterprise Platform Charter
 ---
 
-This workflow ensures that the project remains compliant with the 12 sections of the BitGuard Platform Charter. Use this whenever new features are added or significant refactors are performed.
+This workflow ensures that the Enterprise remains compliant with the BitGuard Enterprise Platform Charter. Use this whenever new features are added or significant refactors are performed.
 
 // turbo-all
 
+0. **Architecture Audit (Enterprise Monorepo Standard)**
+   - Verify that all code (backend, frontend, infra) resides in the single root repository.
+   - Ensure the structure remains: `/backend`, `/frontend`, `/docker`.
+   - Check that apps are modular but share the centralized `config` and `core`.
+
 1. **Service Layer Audit (Section 8)**
-   - Scan `apps/` for any direct database queries in `views.py` or `serializers.py`.
-   - Verify that all business logic resides in `services/`.
-   - Ensure services inherit from `BaseService`.
+    - Scan `apps/` for any direct database queries in `views.py` or `serializers.py`.
+    - Verify that all business logic resides in `services/`.
+    - Ensure services inherit from `BaseService`.
 
 2. **Multi-Tenancy & Isolation Audit (Section 1, 7)**
    - Check that all new models include a `tenant` ForeignKey where appropriate.

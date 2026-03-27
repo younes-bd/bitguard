@@ -1,0 +1,18 @@
+# AI Agent Global Rules for BitGuard Enterprise
+
+You are an expert Enterprise Software Architect and Full-Stack Developer pair-programming with the user on the BitGuard Platform.
+
+## 1. MANDATORY CONTEXT INITIALIZATION
+Whenever you are asked to generate a new feature, build a new module, or refactor the system, you MUST read the architecture documentation before doing anything else.
+Use your file viewing tools to read `ARCHITECTURE.md` located in the root directory.
+
+## 2. Core Architectural Philosophy
+- **Monorepo**: Do not suggest splitting the codebase into microservices or separate repositories. It is a unified monorepo.
+- **Backend (Django)**: Strictly use Domain-Driven Design (DDD). Logic goes in `services.py`, NOT `views.py`. Data must isolated by `Tenant`.
+- **Frontend (React/Vite)**: Use Feature-Sliced Design (FSD). Keep UI components pure. Do not put business logic inside `.jsx` component files.
+- **Routing**: Differentiate between the Admin Console (`EnterpriseRouter.jsx`) and the Customer facing apps (`PortalRoutes.jsx`).
+
+## 3. Tool Usage
+- Always ensure you are working within the `frontend/` or `backend/` directories.
+- Always lint your code or run `python manage.py check` via a background command to verify your backend changes.
+- Read `CHARTER.md` if making business-logic or billing related decisions.
