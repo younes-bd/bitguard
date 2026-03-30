@@ -24,6 +24,57 @@ Frontend: cd frontend; npm install; npm start
 
 Load and apply the BitGuard Platform Charter (CHARTER.md).
 
+Step 1 — Create a public repo on GitHub
+
+Go to GitHub and log in.
+Click "+" → "New repository".
+Give it a name (e.g., bitguard).
+Set Public.
+Don't initialize with README (we'll push your local code).
+Click Create repository.
+After creation, GitHub will show commands to push existing repo — copy those.
+
+Step 2 — Open Git Bash (or terminal) on your PC
+
+Navigate to your project folder:
+cd path/to/your/project
+Check if it's already a git repo:
+git status
+If you see fatal: not a git repository, run:
+git init
+If it's already a repo, skip this.
+
+Step 3 — Add your files
+
+git add .
+git commit -m "Initial commit - BitGuard project"
+This stages and commits all files.
+
+
+Step 4 — Connect to GitHub
+
+Use the URL from Step 1. It will look like:
+https://github.com/younes-bd/bitguard.git
+
+Note: To authenticate silently, paste your Personal Access Token in the URL:
+git remote set-url origin https://<YOUR_GITHUB_TOKEN>@github.com/younes-bd/bitguard.git
+
+Step 5 — Push your code to GitHub
+
+git branch -M main
+git push -u origin main
+This sends your code to GitHub.
+Now your repo is public.
+
+Step 6 — Copy the repo link
+
+Once pushed, your repo URL will be:
+
+https://github.com/younes-bd/bitguard
+
+This is the link you give me.
+
+
 3️⃣ Recommended Production-Ready Structure
 
 Here’s a professional, industry-standard structure for a BitGuard tech platform:
