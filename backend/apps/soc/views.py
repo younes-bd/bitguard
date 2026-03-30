@@ -21,7 +21,7 @@ from .services import (
     WorkspaceService, ManagedEndpointService, CloudAppService, SystemMonitorService,
     NetworkEventService, CloudIntegrationService, RemoteSessionService,
 )
-from apps.core.permissions import HasRole, IsSuperAdmin, ConstitutionPermission
+from apps.core.permissions import HasRole, IsSuperAdmin
 
 
 # ─── Internal SOC ViewSets ───────────────────────────────────

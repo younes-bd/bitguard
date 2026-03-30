@@ -38,5 +38,4 @@ urlpatterns = [
     # Integrations
     path('blog/', include('integrations.blog.urls')),
     path('ai/', include('integrations.ai_engine.urls')),
-    path('automation/', include('integrations.automation.urls')),
 ]
