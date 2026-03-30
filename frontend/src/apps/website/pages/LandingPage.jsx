@@ -3,14 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import client from '../../../core/api/client';
 import SectionDivider from '../../../core/components/SectionDivider';
+import SolutionReveal from '../components/SolutionReveal';
 import '../../../core/styles/landing.css';
 
 const LandingPage = () => {
     const [videoOpen, setVideoOpen] = useState(false);
     const [activeAccordion, setActiveAccordion] = useState(null);
 
-    const openVideo = () => setVideoOpen(true);
-    const closeVideo = () => setVideoOpen(false);
+    const openVideo = () => { console.log('Opening Video Modal'); setVideoOpen(true); };
+    const closeVideo = () => { console.log('Closing Video Modal'); setVideoOpen(false); };
     
     const toggleAccordion = (index) => {
         setActiveAccordion(activeAccordion === index ? null : index);
@@ -124,21 +125,7 @@ const LandingPage = () => {
                 
                 {/* Video Modal */}
                 {videoOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-4 animate-in fade-in zoom-in duration-300">
-                        <div className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl shadow-2xl overflow-hidden border border-slate-800 ring-4 ring-slate-900/50">
-                            <button onClick={closeVideo} className="absolute top-4 right-4 w-10 h-10 bg-slate-900/50 hover:bg-red-500 text-white flex items-center justify-center rounded-full z-10 transition-colors backdrop-blur">
-                                <i className="bi bi-x-lg text-xl"></i>
-                            </button>
-                            <iframe 
-                                className="w-full h-full" 
-                                src="https://www.youtube.com/embed/uYp8C4P1g6w?si=llcTrXPRM-MRXDZB&controls=0&rel=0&showinfo=0&autoplay=1&mute=1" 
-                                title="BitGuard Platform Overview" 
-                                frameBorder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
-                    </div>
+                    <SolutionReveal onClose={closeVideo} />
                 )}
             </section>
 
