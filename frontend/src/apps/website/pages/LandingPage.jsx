@@ -29,7 +29,7 @@ const LandingPage = () => {
 
         setNewsletterStatus({ type: 'loading', message: 'Subscribing...' });
         try {
-            await axios.post('http://127.0.0.1:8000/api/home/signups/', { email: newsletterEmail });
+            await client.post('home/signups/', { email: newsletterEmail });
             setNewsletterStatus({ type: 'success', message: 'Thanks for subscribing!' });
             setNewsletterEmail('');
             setTimeout(() => setNewsletterStatus({ type: '', message: '' }), 3000);

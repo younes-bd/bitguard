@@ -46,17 +46,17 @@ const ErpDashboard = () => {
                 </div>
                 <div className="flex gap-3">
                     <button
-                        onClick={() => navigate('/erp/projects')}
+                        onClick={() => navigate('/admin/erp/invoices')}
                         className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
                     >
-                        All Projects
+                        All Invoices
                     </button>
                     <button
-                        onClick={() => navigate('/erp/projects/create')}
+                        onClick={() => navigate('/admin/erp/invoices/create')}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
                     >
                         <Plus size={18} />
-                        <span>New Project</span>
+                        <span>New Invoice</span>
                     </button>
                 </div>
             </div>
@@ -72,9 +72,9 @@ const ErpDashboard = () => {
                             <ArrowUpRight size={14} />
                         </span>
                     </div>
-                    <div className="text-2xl font-bold text-white mb-1">{kpi.active_projects}</div>
+                    <div className="text-2xl font-bold text-white mb-1">{kpi.active_projects || 0}</div>
                     <div className="text-xs text-slate-400">Active Projects</div>
-                    <div className="text-xs text-slate-600 mt-1">{kpi.planning_projects} in planning</div>
+                    <div className="text-xs text-slate-600 mt-1">Pending Sync</div>
                 </div>
 
                 <div className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-purple-500/30 transition-colors group">

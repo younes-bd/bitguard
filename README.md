@@ -23,6 +23,12 @@ Quick start:
 Frontend: cd frontend; npm install; npm start
 
 Load and apply the BitGuard Platform Charter (CHARTER.md).
+git status
+git add .
+git commit -am "Update: Describe what you changed here"
+git push origin main
+
+
 
 Step 1 — Create a public repo on GitHub
 
@@ -132,3 +138,9 @@ API Routes:
 /api/tenants/      ← Multi-tenancy
 /api/dashboard/    ← BFF Command Center
 /api/marketing/    ← Campaigns
+
+"Run /scaffold-module for a new Support app"
+"Run /scaffold-module for a new Marketing Campaign App"
+
+
+Workflow Diagram showing how your platform should operate as a unified tech company management system: Website Visitor → CRM Lead → Deal Pipeline → Contract → Invoice → Billing → Client Portal → Support → SOC → Projects → HRM → SCM → ITAM → Reports.

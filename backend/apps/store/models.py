@@ -46,6 +46,19 @@ class Product(models.Model):
     sku = models.CharField(max_length=100, blank=True, null=True)
     stripe_price_id = models.CharField(max_length=100, blank=True, help_text="Stripe Price ID for Checkout")
     file = models.FileField(upload_to='products/', null=True, blank=True)
+    image = models.ImageField(upload_to='products/images/', null=True, blank=True)
+    brand = models.CharField(max_length=100, blank=True, help_text="Hardware or software vendor (e.g., Cisco, Microsoft)")
+    vendor = models.CharField(max_length=100, blank=True, help_text="Distributor (e.g., Ingram Micro, TD SYNNEX)")
+    weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Weight for shipping calculations")
+    dimensions = models.CharField(max_length=100, blank=True, help_text="L x W x H for shipping")
+    warranty_months = models.IntegerField(default=12, help_text="Warranty period in months")
+    license_type = models.CharField(max_length=50, blank=True, help_text="Perpetual, Subscription, Trial, OEM")
+    delivery_type = models.CharField(max_length=50, choices=[('instant', 'Instant Download'), ('email', 'Email Delivery'), ('shipping', 'Physical Shipping')], default='instant')
+    min_quantity = models.IntegerField(default=1, help_text="Minimum B2B order quantity")
+    max_quantity = models.IntegerField(null=True, blank=True, help_text="Maximum B2B order quantity")
+    is_featured = models.BooleanField(default=False)
+    sort_order = models.IntegerField(default=0)
+    specifications = models.JSONField(default=dict, blank=True, help_text="Hardware specs (CPU, RAM, Storage)")
     features = models.JSONField(default=list, blank=True, help_text="List of features")
     stock_quantity = models.IntegerField(default=0, help_text="Available stock")
     track_stock = models.BooleanField(default=False, help_text="Auto-decrement stock on sale?")
@@ -93,7 +106,7 @@ class CustomerProfile(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='store_orders')
     tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='store_orders', null=True, blank=True)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True) # Legacy 1:1 format, keeping for backwards compatibility
     status = models.CharField(max_length=50, default='pending')
     payment_status = models.CharField(max_length=50, default='pending')
     fulfillment_status = models.CharField(max_length=50, default='unfulfilled')
@@ -104,6 +117,17 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    quantity = models.IntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    options = models.JSONField(default=dict, blank=True)
+
+    def __str__(self):
+        return f"{self.quantity}x {self.product.name if self.product else 'Deleted Product'} (Order #{self.order.id})"
 
 class OrderTimeline(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='timeline')
@@ -164,3 +188,20 @@ class StoreSetting(models.Model):
     email_templates = models.JSONField(default=dict, blank=True)
     policies = models.JSONField(default=dict, blank=True)
     api_keys = models.JSONField(default=dict, blank=True)
+
+class PartnerRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    company_name = models.CharField(max_length=255)
+    contact_person = models.CharField(max_length=255)
+    email = models.EmailField()
+    interest_areas = models.JSONField(default=list)
+    notes = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.company_name} ({self.status})"

@@ -16,9 +16,67 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
 
-    // ... richContent ...
+    const richContent = {
+        soc: {
+            tagline: "Proactive threat detection and response for the modern enterprise.",
+            features: [
+                { title: "Uptime Guaranteed", val: "99.9%", icon: Activity },
+                { title: "Response Time", val: "< 15m", icon: Zap },
+                { title: "Security Protocols", val: "Zero Trust", icon: Shield }
+            ],
+            benefits: ["24/7 Monitoring", "Automated Remediation", "Compliance Reporting (SOC2/HIPAA)", "SIEM Integration"]
+        },
+        vpn: {
+            tagline: "Ultra-secure, low-latency private networking for distributed teams.",
+            features: [
+                { title: "Global Edges", val: "250+", icon: Globe },
+                { title: "Encryption", val: "AES-256", icon: Lock },
+                { title: "Speed", val: "10Gbps", icon: Zap }
+            ],
+            benefits: ["No-Log Policy", "Dedicated IPs", "Split Tunneling", "One-Click Deployment"]
+        },
+        hardware: {
+            tagline: "High-performance infrastructure tailored for scale.",
+            features: [
+                { title: "Warranty", val: "5 Year", icon: Shield },
+                { title: "Architecture", val: "ARM64", icon: Server },
+                { title: "Efficiency", val: "80+ Gold", icon: Zap }
+            ],
+            benefits: ["Hot-Swappable Parts", "Redundant Power", "Remote Management (IPMI)", "On-site Support"]
+        }
+    };
 
-    // ... loadProduct ...
+    useEffect(() => {
+        loadProduct();
+    }, [slug]);
+
+    const loadProduct = async () => {
+        try {
+            // Using slug or name to fetch. Adjusting to search by name/slug
+            const products = await storeService.getProducts();
+            const found = products.find(p => 
+                p.slug === slug || 
+                p.id.toString() === slug || 
+                p.name.toLowerCase().includes(slug?.toLowerCase())
+            );
+            
+            if (found) {
+                setProduct(found);
+            } else {
+                // Fallback to direct fetch if ID
+                try {
+                    const direct = await storeService.getProductById(slug);
+                    setProduct(direct);
+                } catch {
+                    setProduct(null);
+                }
+            }
+        } catch (error) {
+            console.error("Load failed", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleAction = async (type) => {
         if (actionLoading || authLoading) return;
@@ -89,8 +147,28 @@ const ProductDetail = () => {
                                 {product.name}
                             </h1>
                             <p className="text-xl text-slate-400 leading-relaxed max-w-lg">
-                                {content.tagline}
+                                {product.description || content.tagline}
                             </p>
+                            
+                            {(product.brand || product.license_type || product.warranty_months) && (
+                                <div className="flex flex-wrap gap-3 mt-6">
+                                    {product.brand && (
+                                        <span className="px-3 py-1 bg-slate-800 rounded-lg text-sm font-semibold border border-slate-700">
+                                            Brand: {product.brand}
+                                        </span>
+                                    )}
+                                    {product.license_type && (
+                                        <span className="px-3 py-1 bg-slate-800 rounded-lg text-sm font-semibold border border-slate-700">
+                                            License: {product.license_type}
+                                        </span>
+                                    )}
+                                    {product.warranty_months && (
+                                        <span className="px-3 py-1 bg-slate-800 rounded-lg text-sm font-semibold border border-slate-700">
+                                            Warranty: {product.warranty_months} Mo
+                                        </span>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4">

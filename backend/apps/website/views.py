@@ -165,7 +165,7 @@ class RemoteSessionView(views.APIView):
         if not code:
             return Response({"error": "Session code required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        from apps.tenants.models import RemoteSession
+        from apps.soc.models import RemoteSession
         
         try:
             session = RemoteSession.objects.get(session_code=code)
@@ -197,7 +197,7 @@ class GenerateSessionView(views.APIView):
 
         import random
         import string
-        from apps.tenants.models import RemoteSession
+        from apps.soc.models import RemoteSession
 
         new_code = ''.join(random.choices(string.digits, k=6))
         
@@ -217,7 +217,7 @@ class ClientDashboardView(views.APIView):
 
     def get(self, request):
         from apps.crm.models import Ticket, Contact, Project
-        from apps.erp.models import Invoice
+        from apps.billing.models import Invoice
         # We need serializers for these, ideally imported. 
         # For now we'll return raw data or use simple inline serialization if serializers aren't available globally.
         # Assuming we can grab them, or just return values.

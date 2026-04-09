@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import (
     StoreCustomization, Category, Product, LicenseKey, CustomerProfile,
-    Order, OrderTimeline, ShippingSetting, LandingPage, TrackingConfig,
-    AddOn, SubscriptionPlan, Subscription, StoreSetting
+    Order, OrderItem, OrderTimeline, ShippingSetting, LandingPage, TrackingConfig,
+    AddOn, SubscriptionPlan, Subscription, StoreSetting, PartnerRequest
 )
 
 class StoreCustomizationSerializer(serializers.ModelSerializer):
@@ -45,8 +45,15 @@ class OrderTimelineSerializer(serializers.ModelSerializer):
         model = OrderTimeline
         fields = '__all__'
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    product_details = ProductSerializer(source='product', read_only=True)
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
 class OrderSerializer(serializers.ModelSerializer):
     timeline = OrderTimelineSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True, read_only=True)
     product_details = ProductSerializer(source='product', read_only=True)
     customer_name = serializers.CharField(source='user.username', read_only=True)
 
@@ -90,4 +97,9 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 class StoreSettingSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoreSetting
+        fields = '__all__'
+
+class PartnerRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartnerRequest
         fields = '__all__'

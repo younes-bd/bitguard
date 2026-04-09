@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Ticket, TicketMessage
+from .models import Ticket, TicketMessage, KnowledgeArticle
 
 class TicketMessageSerializer(serializers.ModelSerializer):
     sender_email = serializers.ReadOnlyField(source='sender.email')
@@ -19,6 +19,11 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'status', 'priority', 'tenant',
             'customer', 'customer_email', 'assigned_to', 'assigned_to_email', 
-            'created_at', 'updated_at', 'messages'
+            'created_at', 'updated_at', 'messages', 'due_date', 'related_articles', 'is_converted_to_kb'
         ]
-        read_only_fields = ['id', 'tenant', 'created_at', 'updated_at', 'customer']
+        read_only_fields = ['id', 'tenant', 'created_at', 'updated_at', 'customer', 'related_articles', 'is_converted_to_kb']
+
+class KnowledgeArticleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = KnowledgeArticle
+        fields = ['id', 'title', 'category', 'content', 'views', 'created_at', 'updated_at']

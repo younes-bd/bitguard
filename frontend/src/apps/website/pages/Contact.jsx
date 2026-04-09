@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import SectionDivider from '../../../core/components/SectionDivider';
+import client from '../../../core/api/client';
+import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import '../../../core/styles/landing.css';
 
 const Contact = () => {
@@ -9,15 +11,32 @@ const Contact = () => {
         subject: '',
         message: ''
     });
+    const [status, setStatus] = useState('idle'); // idle, submitting, success, error
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here
-        alert('Message sent! (Mock implementation)');
+        setStatus('submitting');
+        setErrorMessage('');
+        
+        try {
+            await client.post('home/inquiries/', {
+                full_name: formData.fullName,
+                email: formData.email,
+                subject: formData.subject,
+                message: formData.message
+            });
+            setStatus('success');
+            setFormData({ fullName: '', email: '', subject: '', message: '' });
+        } catch (error) {
+            console.error("Submission failed", error);
+            setStatus('error');
+            setErrorMessage("Failed to send your message. Please try again later.");
+        }
     };
 
     return (
@@ -168,8 +187,28 @@ const Contact = () => {
                                 </div>
 
                                 <div className="pt-4">
-                                    <button type="submit" className="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transform active:scale-[0.98] transition-all uppercase tracking-wider text-sm">
-                                        Send Message
+                                    {status === 'success' && (
+                                        <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+                                            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                                            <p className="text-emerald-500 font-medium">Message sent successfully! We will contact you soon.</p>
+                                        </div>
+                                    )}
+
+                                    {status === 'error' && (
+                                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+                                            <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+                                            <p className="text-red-500 font-medium">{errorMessage}</p>
+                                        </div>
+                                    )}
+
+                                    <button 
+                                        type="submit" 
+                                        disabled={status === 'submitting'}
+                                        className="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transform active:scale-[0.98] transition-all uppercase tracking-wider text-sm disabled:opacity-70 flex items-center justify-center gap-2"
+                                    >
+                                        {status === 'submitting' ? (
+                                            <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
+                                        ) : 'Send Message'}
                                     </button>
                                     <p className="dark:text-slate-400 text-slate-500 text-sm mt-6">By submitting this form, you agree to our <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</a>.</p>
                                 </div>

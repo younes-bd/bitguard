@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY','change-me')
-DEBUG = os.getenv('DEBUG','True') == 'True'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-development-key-314159')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = ['127.0.0.1','localhost', 'mysite.com', 'testserver']
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
 
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'apps.soc',
     'apps.auth',
     'apps.website',
-    'integrations.blog',
+    'apps.blog',
     'apps.store',
     'apps.billing',
     'apps.crm',
@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     'apps.projects',    # Dedicated Project Management (PSA)
     'apps.itam',        # IT Asset Management
     'apps.sysadmin',    # System Administration
+    'apps.itsm',        # Next-Gen IT Service Management
+    'apps.documents',   # Next-Gen Document Vault
+    'apps.approvals',   # Next-Gen Enterprise Approvals
 ]
 
 # Django Channels — WebSocket layer (install: pip install channels daphne)
@@ -115,20 +118,23 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'EXCEPTION_HANDLER': 'apps.core.exceptions.custom_exception_handler',
 }
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY','sk_test_replace')
-STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY','pk_test_replace')
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://bitguard.tech',
+]
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -194,7 +200,7 @@ SITE_ID = 1
 
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'bitguard.tech@gmail.COM'
-EMAIL_HOST_PASSWORD = 'agwriikxfrmtblcx'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

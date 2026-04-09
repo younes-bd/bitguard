@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Plan, Subscription, Order, BillingSettings
+from .models import Plan, Subscription, Invoice, BillingSettings
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
@@ -14,17 +14,17 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__email', 'stripe_subscription_id')
     readonly_fields = ('stripe_subscription_id',)
 
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'product_name', 'amount', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
-    search_fields = ('user__username', 'stripe_session', 'id')
-    readonly_fields = ('stripe_session',)
-    actions = ['mark_completed']
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ('invoice_number', 'user', 'amount', 'status', 'due_date')
+    list_filter = ('status', 'due_date')
+    search_fields = ('user__username', 'invoice_number', 'stripe_invoice_id')
+    readonly_fields = ('stripe_invoice_id', 'pdf_url')
+    actions = ['mark_paid']
 
-    def mark_completed(self, request, queryset):
-        queryset.update(status='completed')
-    mark_completed.short_description = "Mark selected orders as completed"
+    def mark_paid(self, request, queryset):
+        queryset.update(status='paid')
+    mark_paid.short_description = "Mark selected invoices as paid"
 
 @admin.register(BillingSettings)
 class BillingSettingsAdmin(admin.ModelAdmin):

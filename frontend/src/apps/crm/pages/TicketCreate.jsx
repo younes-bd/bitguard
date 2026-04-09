@@ -39,7 +39,7 @@ const TicketCreate = () => {
         setLoading(true);
         try {
             await crmService.createTicket(formData);
-            navigate('/crm/tickets');
+            navigate('/admin/crm/tickets');
         } catch (error) {
             console.error("Failed to create ticket", error);
             alert("Failed to create ticket");
@@ -59,7 +59,7 @@ const TicketCreate = () => {
                     <p className="text-slate-400">Log a new issue or request for a client.</p>
                 </div>
                 <button
-                    onClick={() => navigate('/crm/tickets')}
+                    onClick={() => navigate('/admin/crm/tickets')}
                     className="p-2 text-slate-400 hover:text-white transition-colors"
                 >
                     <X size={24} />
@@ -144,7 +144,7 @@ const TicketCreate = () => {
                 <div className="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-slate-700/50">
                     <button
                         type="button"
-                        onClick={() => navigate('/crm/tickets')}
+                        onClick={() => navigate('/admin/crm/tickets')}
                         className="px-6 py-2 text-slate-400 hover:text-white font-bold transition-colors"
                     >
                         Cancel

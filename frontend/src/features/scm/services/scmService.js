@@ -3,7 +3,7 @@ import client from '../../../shared/core/services/client';
 const scmService = {
     // Vendors
     getVendors: async () => {
-        // Placeholder: Replace with client.get('/scm/vendors/') when ready
+        // Placeholder: Replace with client.get('scm/vendors/') when ready
         return new Promise(resolve => setTimeout(() => resolve({
             data: [
                 { id: 1, name: 'Global Tech Supplies', rating: 'A', active: true },

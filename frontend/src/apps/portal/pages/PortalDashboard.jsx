@@ -11,9 +11,9 @@ const PortalDashboard = () => {
 
     useEffect(() => {
         Promise.all([
-            client.get('/support/tickets/?limit=5').catch(() => ({ data: { results: [] } })),
-            client.get('/erp/invoices/?limit=5').catch(() => ({ data: { results: [] } })),
-            client.get('/contracts/contracts/?limit=3').catch(() => ({ data: { results: [] } })),
+            client.get('support/tickets/?limit=5').catch(() => ({ data: { results: [] } })),
+            client.get('billing/invoices/?limit=5').catch(() => ({ data: { results: [] } })),
+            client.get('contracts/service-contracts/?limit=3').catch(() => ({ data: { results: [] } })),
         ]).then(([t, i, c]) => {
             setData({
                 tickets: t.data?.results ?? [],

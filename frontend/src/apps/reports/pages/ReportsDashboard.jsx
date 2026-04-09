@@ -25,10 +25,10 @@ const ReportsDashboard = () => {
     useEffect(() => {
         // Fetch minimal stats for each report tile
         Promise.all([
-            client.get('/reports/revenue/').catch(() => ({ data: { data: {} } })),
-            client.get('/reports/crm/').catch(() => ({ data: { data: {} } })),
-            client.get('/reports/support/').catch(() => ({ data: { data: {} } })),
-            client.get('/reports/security/').catch(() => ({ data: { data: {} } })),
+            client.get('reports/revenue/').catch(() => ({ data: { data: {} } })),
+            client.get('reports/crm/').catch(() => ({ data: { data: {} } })),
+            client.get('reports/support/').catch(() => ({ data: { data: {} } })),
+            client.get('reports/security/').catch(() => ({ data: { data: {} } })),
         ]).then(([rev, crm, sup, sec]) => {
             setSummary({
                 monthlyRevenue: rev.data?.data?.monthly?.slice(-1)[0]?.store_revenue,

@@ -1,31 +1,85 @@
 import client from './client';
 
-const base = '/scm';
+class SCMService {
+    async getStats() {
+        const response = await client.get('scm/vendors/stats/');
+        return response.data?.data ?? response.data ?? {};
+    }
 
-export const scmService = {
-    // Dashboard
-    getStats: () => client.get(`${base}/stats/`).then(r => r.data?.data ?? r.data ?? {}),
+    async getVendors(params = {}) {
+        const response = await client.get('scm/vendors/', { params });
+        return response.data.data;
+    }
 
-    // Vendors
-    getVendors: (params = {}) => client.get(`${base}/vendors/`, { params }).then(r => r.data),
-    getVendor: (id) => client.get(`${base}/vendors/${id}/`).then(r => r.data),
-    createVendor: (data) => client.post(`${base}/vendors/`, data).then(r => r.data),
-    updateVendor: (id, data) => client.patch(`${base}/vendors/${id}/`, data).then(r => r.data),
-    deleteVendor: (id) => client.delete(`${base}/vendors/${id}/`),
+    async getVendor(id) {
+        const response = await client.get(`scm/vendors/${id}/`);
+        return response.data.data;
+    }
 
-    // Inventory
-    getInventoryItems: (params = {}) => client.get(`${base}/inventory/`, { params }).then(r => r.data),
-    getInventoryItem: (id) => client.get(`${base}/inventory/${id}/`).then(r => r.data),
-    createInventoryItem: (data) => client.post(`${base}/inventory/`, data).then(r => r.data),
-    updateInventoryItem: (id, data) => client.patch(`${base}/inventory/${id}/`, data).then(r => r.data),
-    adjustStock: (id, qty) => client.post(`${base}/inventory/${id}/adjust/`, { quantity: qty }).then(r => r.data),
+    async createVendor(data) {
+        const response = await client.post('scm/vendors/', data);
+        return response.data.data;
+    }
 
-    // Purchase Orders
-    getPurchaseOrders: (params = {}) => client.get(`${base}/purchase-orders/`, { params }).then(r => r.data),
-    getPurchaseOrder: (id) => client.get(`${base}/purchase-orders/${id}/`).then(r => r.data),
-    createPurchaseOrder: (data) => client.post(`${base}/purchase-orders/`, data).then(r => r.data),
-    receivePurchaseOrder: (id) => client.post(`${base}/purchase-orders/${id}/receive/`).then(r => r.data),
-    updatePurchaseOrder: (id, data) => client.patch(`${base}/purchase-orders/${id}/`, data).then(r => r.data),
-};
+    async updateVendor(id, data) {
+        const response = await client.patch(`scm/vendors/${id}/`, data);
+        return response.data.data;
+    }
 
+    async deleteVendor(id) {
+        return client.delete(`scm/vendors/${id}/`);
+    }
+
+    async getInventoryItems(params = {}) {
+        const response = await client.get('scm/inventory/', { params });
+        return response.data.data;
+    }
+
+    async getInventoryItem(id) {
+        const response = await client.get(`scm/inventory/${id}/`);
+        return response.data.data;
+    }
+
+    async createInventoryItem(data) {
+        const response = await client.post('scm/inventory/', data);
+        return response.data.data;
+    }
+
+    async updateInventoryItem(id, data) {
+        const response = await client.patch(`scm/inventory/${id}/`, data);
+        return response.data.data;
+    }
+
+    async adjustStock(id, quantity) {
+        const response = await client.post(`scm/inventory/${id}/adjust/`, { quantity });
+        return response.data.data;
+    }
+
+    async getPurchaseOrders(params = {}) {
+        const response = await client.get('scm/purchase-orders/', { params });
+        return response.data.data;
+    }
+
+    async getPurchaseOrder(id) {
+        const response = await client.get(`scm/purchase-orders/${id}/`);
+        return response.data.data;
+    }
+
+    async createPurchaseOrder(data) {
+        const response = await client.post('scm/purchase-orders/', data);
+        return response.data.data;
+    }
+
+    async receivePurchaseOrder(id) {
+        const response = await client.post(`scm/purchase-orders/${id}/receive/`);
+        return response.data.data;
+    }
+
+    async updatePurchaseOrder(id, data) {
+        const response = await client.patch(`scm/purchase-orders/${id}/`, data);
+        return response.data.data;
+    }
+}
+
+export const scmService = new SCMService();
 export default scmService;

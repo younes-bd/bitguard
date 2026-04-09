@@ -4,7 +4,9 @@ import {
     Users, ShieldCheck, ShieldAlert, PieChart, Activity,
     AlertTriangle, Truck, FileText, Megaphone, LifeBuoy,
     TrendingUp, Package, Clock, CheckCircle2, ArrowUpRight,
-    RefreshCw, Server, Building2, Zap, DollarSign
+    RefreshCw, Server, Building2, Zap, DollarSign,
+    FolderKanban, Monitor, FolderOpen, CheckSquare, GitBranch, Bell,
+    PlusCircle
 } from 'lucide-react';
 import { dashboardService } from '../api/dashboardService';
 
@@ -160,14 +162,14 @@ const CommandCenter = () => {
             sub: `${metrics.contracts?.sla_breaches ?? 0} SLA breaches`,
             icon: FileText,
             color: (metrics.contracts?.sla_breaches > 0) ? 'rose' : 'violet',
-            to: '/admin/erp',
+            to: '/admin/contracts',
         },
     ];
 
     // ── Module Tiles (all 9 operational modules) ───────────────────────────
     const moduleTiles = [
         {
-            title: 'CRM / Sales',
+            title: 'Sales & CRM',
             path: '/admin/crm',
             icon: Users, color: 'blue',
             kpi: metrics.crm?.active_clients,
@@ -175,7 +177,7 @@ const CommandCenter = () => {
             status: (metrics.crm?.active_clients > 0) ? 'active' : 'idle',
         },
         {
-            title: 'Commerce / Store',
+            title: 'Service Catalog',
             path: '/admin/store',
             icon: Package, color: 'indigo',
             kpi: metrics.store?.pending_orders,
@@ -183,7 +185,7 @@ const CommandCenter = () => {
             status: (metrics.store?.pending_orders > 0) ? 'active' : 'idle',
         },
         {
-            title: 'Finance & ERP',
+            title: 'Finance & Billing',
             path: '/admin/erp',
             icon: DollarSign, color: 'emerald',
             kpi: metrics.erp?.overdue_invoices,
@@ -191,7 +193,7 @@ const CommandCenter = () => {
             status: (metrics.erp?.overdue_invoices > 0) ? 'warning' : 'active',
         },
         {
-            title: 'Security Operations',
+            title: 'SOC (Security)',
             path: '/admin/security',
             icon: ShieldCheck, color: 'rose',
             kpi: metrics.security?.open_alerts,
@@ -199,7 +201,7 @@ const CommandCenter = () => {
             status: (metrics.security?.open_alerts > 0) ? 'warning' : 'active',
         },
         {
-            title: 'Support & Help Desk',
+            title: 'Service Desk',
             path: '/admin/support',
             icon: LifeBuoy, color: 'amber',
             kpi: metrics.support?.open_tickets,
@@ -215,7 +217,7 @@ const CommandCenter = () => {
             status: (metrics.marketing?.active_campaigns > 0) ? 'active' : 'idle',
         },
         {
-            title: 'Human Capital',
+            title: 'People & HR',
             path: '/admin/hrm',
             icon: Building2, color: 'pink',
             kpi: metrics.hrm?.headcount,
@@ -223,12 +225,12 @@ const CommandCenter = () => {
             status: (metrics.hrm?.headcount > 0) ? 'active' : 'idle',
         },
         {
-            title: 'Supply Chain',
+            title: 'Procurement',
             path: '/admin/scm',
             icon: Truck, color: 'orange',
-            kpi: metrics.scm?.pending_orders,
+            kpi: metrics.scm?.pending_pos,
             kpiLabel: 'pending POs',
-            status: (metrics.scm?.low_stock_items > 0) ? 'warning' : 'active',
+            status: (metrics.scm?.low_stock > 0) ? 'warning' : 'active',
         },
         {
             title: 'Identity & Access',
@@ -238,9 +240,109 @@ const CommandCenter = () => {
             kpiLabel: '',
             status: 'active',
         },
+        {
+            title: 'Contracts & SLAs',
+            path: '/admin/contracts',
+            icon: FileText, color: 'amber',
+            kpi: metrics.contracts?.active_contracts,
+            kpiLabel: 'active',
+            status: (metrics.contracts?.active_contracts > 0) ? 'active' : 'idle',
+        },
+        {
+            title: 'Project Management',
+            path: '/admin/projects',
+            icon: FolderKanban, color: 'cyan',
+            kpi: metrics.projects?.active_projects,
+            kpiLabel: 'active',
+            status: (metrics.projects?.active_projects > 0) ? 'active' : 'idle',
+        },
+        {
+            title: 'IT Asset Management',
+            path: '/admin/itam',
+            icon: Monitor, color: 'teal',
+            kpi: metrics.itam?.total_assets,
+            kpiLabel: 'assets',
+            status: (metrics.itam?.total_assets > 0) ? 'active' : 'idle',
+        },
+        {
+            title: 'Document Vault',
+            path: '/admin/documents',
+            icon: FolderOpen, color: 'cyan',
+            kpi: metrics.documents?.total,
+            kpiLabel: 'documents',
+            status: (metrics.documents?.total > 0) ? 'active' : 'idle',
+        },
+        {
+            title: 'Approval Center',
+            path: '/admin/approvals',
+            icon: CheckSquare, color: 'amber',
+            kpi: metrics.approvals?.pending,
+            kpiLabel: 'pending',
+            status: (metrics.approvals?.pending > 0) ? 'warning' : 'active',
+        },
+        {
+            title: 'Change Management',
+            path: '/admin/itsm',
+            icon: GitBranch, color: 'indigo',
+            kpi: metrics.itsm?.open_changes,
+            kpiLabel: 'changes',
+            status: (metrics.itsm?.open_changes > 0) ? 'active' : 'idle',
+        },
     ];
 
     const dbHealthy = health?.database?.status === 'Healthy';
+
+    const renderNeedsAttention = () => {
+        const issues = [];
+        if (metrics.security?.open_alerts > 0) issues.push({ text: `${metrics.security.open_alerts} Unresolved Security Alerts`, to: '/admin/security/alerts' });
+        if (metrics.contracts?.sla_breaches > 0) issues.push({ text: `${metrics.contracts.sla_breaches} SLA Breaches`, to: '/admin/contracts/sla-breaches' });
+        if (metrics.erp?.overdue_invoices > 0) issues.push({ text: `${metrics.erp.overdue_invoices} Overdue Invoices`, to: '/admin/erp/invoices' });
+        if (metrics.approvals?.pending > 0) issues.push({ text: `${metrics.approvals.pending} Pending Approvals`, to: '/admin/approvals' });
+        if (metrics.scm?.low_stock > 0) issues.push({ text: `${metrics.scm.low_stock} Low Stock Items`, to: '/admin/scm/inventory' });
+        if (metrics.itsm?.high_risk > 0) issues.push({ text: `${metrics.itsm.high_risk} High-Risk Changes`, to: '/admin/itsm' });
+        
+        if (issues.length === 0) return null;
+        return (
+            <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-5 mb-8">
+                <div className="flex items-center gap-2 text-rose-400 font-bold mb-3">
+                    <AlertTriangle size={18} />
+                    <h3>Needs Attention</h3>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                    {issues.map((iss, i) => (
+                        <Link key={i} to={iss.to} className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-sm font-semibold px-4 py-2 rounded-lg transition-colors border border-rose-500/20">
+                            {iss.text}
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    const QuickActions = () => (
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden mb-6">
+            <div className="px-5 py-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Zap size={14} className="text-yellow-500" />
+                    Quick Actions
+                </h3>
+            </div>
+            <div className="p-4 grid grid-cols-2 gap-3">
+                <Link to="/admin/crm/onboarding" className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/50 hover:bg-sky-500/20 hover:text-sky-400 border border-slate-700/50 hover:border-sky-500/30 transition-all text-sm font-medium text-slate-300">
+                    <PlusCircle size={16} /> Onboard Client
+                </Link>
+                <Link to="/admin/support/tickets/create" className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/50 hover:bg-amber-500/20 hover:text-amber-400 border border-slate-700/50 hover:border-amber-500/30 transition-all text-sm font-medium text-slate-300">
+                    <LifeBuoy size={16} /> New Ticket
+                </Link>
+                <Link to="/admin/contracts/quotes" className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/50 hover:bg-emerald-500/20 hover:text-emerald-400 border border-slate-700/50 hover:border-emerald-500/30 transition-all text-sm font-medium text-slate-300">
+                    <FileText size={16} /> Create Quote
+                </Link>
+                <Link to="/admin/iam/users" className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/50 hover:bg-purple-500/20 hover:text-purple-400 border border-slate-700/50 hover:border-purple-500/30 transition-all text-sm font-medium text-slate-300">
+                    <Users size={16} /> Add User
+                </Link>
+            </div>
+        </div>
+    );
 
     return (
         <div className="p-6 lg:p-8 space-y-8 animate-in fade-in duration-500">
@@ -282,6 +384,9 @@ const CommandCenter = () => {
                 </div>
             </div>
 
+            {/* ── Needs Attention Strip ────────────────────────────────────── */}
+            {renderNeedsAttention()}
+
             {/* ── KPI Strip ──────────────────────────────────────────────── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                 {kpiCards.map((card) => (
@@ -305,8 +410,10 @@ const CommandCenter = () => {
                     </div>
                 </div>
 
-                {/* Right column: Health + Activity */}
+                {/* Right column: Actions + Health + Activity */}
                 <div className="space-y-6">
+
+                    <QuickActions />
 
                     {/* System Health */}
                     <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">

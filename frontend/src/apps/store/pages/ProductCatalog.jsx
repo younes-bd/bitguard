@@ -16,15 +16,8 @@ const ProductCatalog = () => {
     const loadData = async () => {
         try {
             // Mock data if service fails or for demo
-            const mockProducts = [
-                { id: '1', name: 'SOC Platform', price: 299, product_type: 'subscription', description: 'Complete Security Operations Center.' },
-                { id: '2', name: 'CRM Suite', price: 49, product_type: 'subscription', description: 'Customer Relationship Management.' },
-                { id: '3', name: 'ERP System', price: 199, product_type: 'subscription', description: 'Enterprise Resource Planning.' },
-            ];
-
-            // Try fetch, fallback to mock
-            // const data = await storeService.getProducts();
-            setProducts(mockProducts);
+            const data = await storeService.getProducts();
+            setProducts(data);
         } catch (error) {
             console.error(error);
         } finally {
@@ -70,17 +63,34 @@ const ProductCatalog = () => {
                             <div className="p-6 flex-1 flex flex-col">
                                 <div className="mb-4">
                                     <div className="flex justify-between items-start mb-2">
-                                        <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
-                                            {product.name}
-                                        </h3>
+                                        <div>
+                                            {product.brand && (
+                                                <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">
+                                                    {product.brand}
+                                                </div>
+                                            )}
+                                            <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                                                {product.name}
+                                            </h3>
+                                        </div>
                                         <div className="flex bg-slate-800 rounded px-2 py-1 items-center gap-1">
                                             <Star size={12} className="text-yellow-400 fill-yellow-400" />
                                             <span className="text-xs font-bold text-white">4.9</span>
                                         </div>
                                     </div>
-                                    <p className="text-slate-400 text-sm line-clamp-2 min-h-[40px]">
+                                    <p className="text-slate-400 text-sm line-clamp-2 min-h-[40px] mb-3">
                                         {product.description || "High-performance security solution."}
                                     </p>
+                                    <div className="flex gap-2">
+                                        <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] font-bold uppercase border border-slate-700">
+                                            {product.product_type}
+                                        </span>
+                                        {product.license_type && (
+                                            <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase border border-indigo-500/20">
+                                                {product.license_type}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="mt-auto pt-6 border-t border-slate-800 flex items-center justify-between">

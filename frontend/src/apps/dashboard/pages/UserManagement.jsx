@@ -1,16 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Users, Search, UserPlus, MoreVertical, Shield,
-    CheckCircle, XCircle
+    Users as UsersIcon, Search, UserPlus, MoreVertical, Shield,
+    CheckCircle, XCircle, Loader2, AlertCircle
 } from 'lucide-react';
+import client from '../../../core/api/client';
 
 const UserManagement = () => {
-    // Mock Data (Replace with client.get('/users'))
-    const [users, setUsers] = useState([
-        { id: 1, name: 'Admin User', email: 'admin@bitguard.com', role: 'Super Admin', status: 'Active', avatar: null },
-        { id: 2, name: 'John Doe', email: 'john@store.com', role: 'Store Manager', status: 'Active', avatar: null },
-        { id: 3, name: 'Jane Smith', email: 'jane@crm.com', role: 'Sales Agent', status: 'Inactive', avatar: null },
-    ]);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await client.get('users/');
+                const data = response.data.data.results ? response.data.data.results : (response.data.data.users ? response.data.data.users : response.data.data);
+                const mappedUsers = data.map(u => ({
+                    id: u.id,
+                    name: (u.first_name || u.last_name) ? `${u.first_name} ${u.last_name}`.trim() : (u.email ? u.email.split('@')[0] : 'Unknown'),
+                    email: u.email,
+                    role: u.is_staff ? 'Super Admin' : (u.role || 'User'),
+                    status: u.is_active ? 'Active' : 'Inactive',
+                    avatar: u.avatar || null
+                }));
+                setUsers(mappedUsers);
+            } catch (err) {
+                console.error("Failed to fetch users", err);
+                setError("Failed to load users from the server.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+    const filteredUsers = users.filter(u => 
+        u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
     return (
         <div className="space-y-6">
@@ -33,11 +61,20 @@ const UserManagement = () => {
                     <input
                         type="text"
                         placeholder="Search users..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-slate-950 border border-slate-800 text-slate-200 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:border-blue-500/50"
                     />
                 </div>
-                {/* Add Role/Status filters here later */}
             </div>
+
+            {/* Error State */}
+            {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-center gap-2 mb-6">
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                    <p className="text-red-500 font-medium">{error}</p>
+                </div>
+            )}
 
             {/* Table */}
             <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg shadow-black/20">
@@ -51,7 +88,22 @@ const UserManagement = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800">
-                        {users.map(user => (
+                        {loading && (
+                            <tr>
+                                <td colSpan="4" className="p-8 text-center text-slate-500">
+                                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                                    Loading users...
+                                </td>
+                            </tr>
+                        )}
+                        {!loading && filteredUsers.length === 0 && !error && (
+                            <tr>
+                                <td colSpan="4" className="p-8 text-center text-slate-500">
+                                    No users found matching your search.
+                                </td>
+                            </tr>
+                        )}
+                        {!loading && filteredUsers.map(user => (
                             <tr key={user.id} className="hover:bg-slate-800/50 transition-colors group">
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">

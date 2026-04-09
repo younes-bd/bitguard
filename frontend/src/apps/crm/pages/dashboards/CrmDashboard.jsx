@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../../core/api/crmService';
 import {
-    Users, Ticket, FileText, TrendingUp, AlertCircle, Clock
+    Users, Target, DollarSign, TrendingUp, Activity, Clock
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,33 +9,39 @@ const CrmDashboard = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalClients: 0,
-        activeTickets: 0,
-        pendingContracts: 0
+        activeLeads: 0,
+        openDeals: 0,
+        pipelineValue: 0
     });
-    const [recentTickets, setRecentTickets] = useState([]);
+    const [recentActivities, setRecentActivities] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Parallel fetch for dashboard data
-                const [clients, tickets, contracts] = await Promise.all([
+                // Parallel fetch for dashboard data using valid CRM endpoints
+                const [clientsResult, leadsResult, dealsResult, activitiesResult] = await Promise.all([
                     crmService.getClients(),
-                    crmService.getTickets(),
-                    crmService.getContracts()
+                    crmService.getLeads(),
+                    crmService.getDeals(),
+                    crmService.getActivities()
                 ]);
 
-                const clientList = Array.isArray(clients) ? clients : clients.results || [];
-                const ticketList = Array.isArray(tickets) ? tickets : tickets.results || [];
-                const contractList = Array.isArray(contracts) ? contracts : contracts.results || [];
+                const clients = Array.isArray(clientsResult) ? clientsResult : clientsResult.results || [];
+                const leads = Array.isArray(leadsResult) ? leadsResult : leadsResult.results || [];
+                const deals = Array.isArray(dealsResult) ? dealsResult : dealsResult.results || [];
+                const activities = Array.isArray(activitiesResult) ? activitiesResult : activitiesResult.results || [];
 
+                const openDealsList = deals.filter(d => ['discovery', 'proposal', 'negotiation'].includes(d.stage));
+                
                 setStats({
-                    totalClients: clientList.length,
-                    activeTickets: ticketList.filter(t => t.status !== 'resolved').length,
-                    pendingContracts: contractList.filter(c => c.status === 'pending').length
+                    totalClients: clients.length,
+                    activeLeads: leads.filter(l => l.status === 'new' || l.status === 'contacted').length,
+                    openDeals: openDealsList.length,
+                    pipelineValue: openDealsList.reduce((sum, deal) => sum + parseFloat(deal.amount || 0), 0)
                 });
 
-                setRecentTickets(ticketList.slice(0, 5));
+                setRecentActivities(activities.slice(0, 5));
             } catch (error) {
                 console.error("Failed to load dashboard data", error);
             } finally {
@@ -56,51 +62,61 @@ const CrmDashboard = () => {
             <h1 className="text-3xl font-bold text-white mb-2">CRM Overview</h1>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-blue-900/20 to-slate-900/50">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-blue-500/20 rounded-lg text-blue-400">
                             <Users size={24} />
                         </div>
                         <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                            <TrendingUp size={12} /> +12%
+                            <TrendingUp size={12} />
                         </span>
                     </div>
                     <div className="text-3xl font-bold text-white mb-1">{stats.totalClients}</div>
                     <div className="text-sm text-slate-400 font-medium uppercase">Total Clients</div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-pink-900/20 to-slate-900/50">
+                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-purple-900/20 to-slate-900/50">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-pink-500/20 rounded-lg text-pink-400">
-                            <Ticket size={24} />
+                        <div className="p-3 bg-purple-500/20 rounded-lg text-purple-400">
+                            <Target size={24} />
                         </div>
                         <span className="text-xs font-bold text-slate-500">Active</span>
                     </div>
-                    <div className="text-3xl font-bold text-white mb-1">{stats.activeTickets}</div>
-                    <div className="text-sm text-slate-400 font-medium uppercase">Open Tickets</div>
+                    <div className="text-3xl font-bold text-white mb-1">{stats.activeLeads}</div>
+                    <div className="text-sm text-slate-400 font-medium uppercase">New Leads</div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-indigo-900/20 to-slate-900/50">
+                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-amber-900/20 to-slate-900/50">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-indigo-500/20 rounded-lg text-indigo-400">
-                            <FileText size={24} />
+                        <div className="p-3 bg-amber-500/20 rounded-lg text-amber-400">
+                            <Activity size={24} />
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-white mb-1">{stats.pendingContracts}</div>
-                    <div className="text-sm text-slate-400 font-medium uppercase">Pending Contracts</div>
+                    <div className="text-3xl font-bold text-white mb-1">{stats.openDeals}</div>
+                    <div className="text-sm text-slate-400 font-medium uppercase">Open Deals</div>
+                </div>
+
+                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-emerald-900/20 to-slate-900/50">
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="p-3 bg-emerald-500/20 rounded-lg text-emerald-400">
+                            <DollarSign size={24} />
+                        </div>
+                    </div>
+                    <div className="text-3xl font-bold text-white mb-1">${stats.pipelineValue.toLocaleString()}</div>
+                    <div className="text-sm text-slate-400 font-medium uppercase">Pipeline Value</div>
                 </div>
             </div>
 
-            {/* Recent Activity / Tickets */}
+            {/* Recent Activity */}
             <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <AlertCircle className="text-pink-400" size={20} />
-                        Recent Support Requests
+                        <Activity className="text-blue-400" size={20} />
+                        Recent Activities
                     </h2>
                     <button
-                        onClick={() => navigate('/crm/tickets')}
+                        onClick={() => navigate('/admin/crm/activities')}
                         className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
                     >
                         View All
@@ -108,33 +124,33 @@ const CrmDashboard = () => {
                 </div>
 
                 <div className="space-y-4">
-                    {recentTickets.map(ticket => (
+                    {recentActivities.map(activity => (
                         <div
-                            key={ticket.id}
-                            onClick={() => navigate(`/crm/tickets/${ticket.id}`)}
-                            className="flex items-center justify-between p-4 rounded-lg bg-slate-800/40 border border-slate-700/30 hover:border-pink-500/30 cursor-pointer transition-all"
+                            key={activity.id}
+                            className="flex items-center justify-between p-4 rounded-lg bg-slate-800/40 border border-slate-700/30 hover:border-blue-500/30 transition-all"
                         >
                             <div className="flex items-center gap-4">
-                                <div className={`w-2 h-10 rounded-full ${ticket.priority === 'high' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
+                                <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-slate-300">
+                                    <Clock size={18} />
+                                </div>
                                 <div>
-                                    <h3 className="font-bold text-white">{ticket.subject}</h3>
-                                    <div className="text-xs text-slate-500">{ticket.client_name || 'Unknown Client'}</div>
+                                    <h3 className="font-bold text-white">{activity.subject || activity.type}</h3>
+                                    <div className="text-xs text-slate-500">{activity.description || 'Interaction logged'}</div>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
-                                <span className={`px-2 py-1 rounded text-xs font-bold uppercase bg-slate-700 text-slate-300`}>
-                                    {ticket.status}
+                                <span className="px-2 py-1 rounded text-xs font-bold uppercase bg-slate-700 text-slate-300">
+                                    {activity.type}
                                 </span>
                                 <div className="text-slate-500 text-xs flex items-center gap-1">
-                                    <Clock size={12} />
-                                    <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                                    <span>{new Date(activity.created_at || new Date()).toLocaleDateString()}</span>
                                 </div>
                             </div>
                         </div>
                     ))}
 
-                    {recentTickets.length === 0 && (
-                        <div className="text-center py-8 text-slate-500">No active tickets.</div>
+                    {recentActivities.length === 0 && (
+                        <div className="text-center py-8 text-slate-500">No recent activities.</div>
                     )}
                 </div>
             </div>

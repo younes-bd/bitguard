@@ -119,11 +119,11 @@ const ProductLayout = () => {
                             <button className="flex items-center bg-transparent border-none p-0 cursor-pointer group hover:opacity-100 transition-opacity">
                                 <div className="w-9 h-9 relative">
                                     <div className="absolute inset-0 bg-blue-500 blur-sm opacity-20 group-hover:opacity-50 transition-opacity rounded-full"></div>
-                                    {user.avatar ? (
+                                    {user?.avatar ? (
                                         <img src={user.avatar} alt="User" className="w-full h-full object-cover rounded-full border border-slate-900 relative z-10" />
                                     ) : (
                                         <div className="w-full h-full rounded-full border border-slate-900 relative z-10 bg-slate-800 flex items-center justify-center text-xs font-bold text-white">
-                                            {(user.first_name?.[0] || 'A').toUpperCase()}
+                                            {(user?.first_name?.[0] || 'A').toUpperCase()}
                                         </div>
                                     )}
                                 </div>

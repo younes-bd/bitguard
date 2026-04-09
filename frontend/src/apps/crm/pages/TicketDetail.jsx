@@ -48,7 +48,7 @@ const TicketDetail = () => {
             <div className="flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-4">
                     <button
-                        onClick={() => navigate('/crm/tickets')}
+                        onClick={() => navigate('/admin/crm/tickets')}
                         className="text-slate-400 hover:text-white transition-colors"
                     >
                         <ArrowLeft size={24} />

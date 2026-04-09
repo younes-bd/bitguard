@@ -60,7 +60,7 @@ const ClientDetail = () => {
     const handleDeleteClient = async () => {
         try {
             await crmService.deleteClient(id);
-            navigate('/crm/clients');
+            navigate('/admin/crm/clients');
         } catch (error) {
             console.error("Delete failed", error);
             alert("Failed to delete client. They may have active orders or contracts.");
@@ -91,7 +91,7 @@ const ClientDetail = () => {
     return (
         <div className="space-y-6">
             <button
-                onClick={() => navigate('/crm/clients')}
+                onClick={() => navigate('/admin/crm/clients')}
                 className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
             >
                 <ArrowLeft size={18} />

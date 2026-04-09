@@ -19,6 +19,24 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.select_related('user', 'department').all()
 
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Aggregated HRM KPIs for the dashboard."""
+        from django.db.models import Sum
+        employees = Employee.objects.all()
+        tenant = getattr(request, 'tenant', None)
+        if tenant:
+            employees = employees.filter(tenant=tenant)
+        headcount = employees.filter(status='active').count()
+        total_salary = employees.filter(status='active').aggregate(total=Sum('salary'))['total'] or 0
+        return Response({'status': 'success', 'data': {
+            'headcount': headcount,
+            'pending_leaves': LeaveRequest.objects.filter(status='pending').count(),
+            'departments': Department.objects.count(),
+            'active_certs': Certification.objects.filter(is_active=True).count(),
+            'total_salary': float(total_salary),
+        }})
+
 class LeaveRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = LeaveRequestSerializer

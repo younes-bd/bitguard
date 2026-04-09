@@ -25,7 +25,7 @@ const PricingPage = () => {
     };
 
     const handleSelect = (plan) => {
-        navigate('/store/checkout', { state: { plan, interval: annual ? 'year' : 'month' } });
+        navigate('/admin/store/checkout', { state: { plan, interval: annual ? 'year' : 'month' } });
     };
 
     return (

@@ -1,6 +1,8 @@
 import stripe
 from django.conf import settings
-from .models import Order, Plan, Subscription
+from django.db import transaction
+from django.utils import timezone
+from .models import Invoice, Plan, Subscription
 from apps.core.services.base import BaseService
 from apps.core.services.audit import AuditService
 
@@ -61,40 +63,93 @@ class SubscriptionService(BaseService):
 
 class BillingService(BaseService):
     """
-    Handles financial records and orders within the billing context.
+    Handles financial records and invoices within the billing context.
     """
     @classmethod
-    def create_order(cls, user, product_id, product_name, amount, payment_method='stripe', stripe_session=None, request=None):
+    @transaction.atomic
+    def create_invoice(cls, user, amount, payment_method='stripe', stripe_invoice_id=None, request=None, due_date=None, notes=""):
         """
-        Transactional order creation with Charter compliance (Section 8, 18).
+        Transactional invoice creation with Charter compliance.
         """
         tenant = cls.get_tenant_context(request)
+        import uuid
+        invoice_num = f"INV-{str(uuid.uuid4())[:8].upper()}"
         
-        order = Order.objects.create(
+        invoice = Invoice.objects.create(
             user=user,
-            product_id=product_id,
-            product_name=product_name,
+            invoice_number=invoice_num,
             amount=amount,
             payment_method=payment_method,
-            stripe_session=stripe_session,
+            stripe_invoice_id=stripe_invoice_id if stripe_invoice_id else "",
             tenant=tenant,
-            status='pending'
+            status='pending',
+            due_date=due_date
         )
         
         if request:
             AuditService.log_action(
                 request,
-                action="BILLING_ORDER_CREATED",
-                resource=f"billing.Order:{order.id}",
-                payload={"amount": float(amount), "product": product_name}
+                action="BILLING_INVOICE_CREATED",
+                resource=f"billing.Invoice:{invoice.id}",
+                payload={"amount": float(amount), "invoice_number": invoice_num}
             )
             
-        return order
+        return invoice
+
+    @classmethod
+    @transaction.atomic
+    def create_invoice_from_quote(cls, request, quote_id: str) -> Invoice:
+        """
+        Cross-module integration: Generates a billing Invoice when a CRM/Contract Quote is accepted.
+        """
+        from apps.contracts.models import Quote
+        tenant = cls.get_tenant_context(request)
+        
+        quote = Quote.objects.get(id=quote_id)
+        
+        # Security: ensure cross-tenant data safety
+        if tenant and quote.tenant and quote.tenant != tenant:
+            raise ValueError("Cross-tenant violation: Quote does not belong to active tenant.")
+            
+        if quote.status != 'accepted':
+            raise ValueError("Invoice can only be generated from an accepted quote.")
+            
+        # Optional: verify an invoice doesn't already exist for this quote, 
+        # but right now we don't have a direct link on Invoice. We can just create it.
+        
+        # Calculate amount from quote
+        amount = quote.total
+        
+        # Use the client's associated user if available, or request user
+        user = None
+        if quote.client and quote.client.assigned_to:
+             user = quote.client.assigned_to
+        if not user:
+             user = request.user
+             
+        import datetime
+        due_date = timezone.now() + datetime.timedelta(days=30)
+        
+        invoice = cls.create_invoice(
+            user=user,
+            amount=amount,
+            request=request,
+            due_date=due_date,
+            notes=f"Generated from Quote {quote.id}"
+        )
+        
+        AuditService.log_action(
+            request,
+            action="BILLING_QUOTE_TO_INVOICE",
+            resource=f"billing.Invoice:{invoice.id}",
+            payload={"quote_id": str(quote.id), "amount": float(amount)}
+        )
+        return invoice
 
     @staticmethod
-    def get_order_revenue(user=None):
+    def get_invoice_revenue(user=None):
         from django.db.models import Sum
-        queryset = Order.objects.all()
+        queryset = Invoice.objects.filter(status='paid')
         if user:
             queryset = queryset.filter(user=user)
         return queryset.aggregate(total=Sum('amount'))['total'] or 0

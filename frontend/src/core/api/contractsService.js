@@ -1,13 +1,13 @@
 import client from './client';
 
-const base = '/contracts';
+const base = 'contracts';
 
 export const contractsService = {
     // Service Contracts
-    getContracts: (params = {}) => client.get(`${base}/contracts/`, { params }).then(r => r.data),
-    getContract: (id) => client.get(`${base}/contracts/${id}/`).then(r => r.data),
-    createContract: (data) => client.post(`${base}/contracts/`, data).then(r => r.data),
-    updateContract: (id, data) => client.patch(`${base}/contracts/${id}/`, data).then(r => r.data),
+    getContracts: (params = {}) => client.get(`${base}/service-contracts/`, { params }).then(r => r.data),
+    getContract: (id) => client.get(`${base}/service-contracts/${id}/`).then(r => r.data),
+    createContract: (data) => client.post(`${base}/service-contracts/`, data).then(r => r.data),
+    updateContract: (id, data) => client.patch(`${base}/service-contracts/${id}/`, data).then(r => r.data),
 
     // Quotes
     getQuotes: (params = {}) => client.get(`${base}/quotes/`, { params }).then(r => r.data),

@@ -12,7 +12,7 @@ const PortalInvoices = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        client.get('/erp/invoices/').then(r => { setInvoices(r.data?.results ?? r.data ?? []); setLoading(false); }).catch(() => setLoading(false));
+        client.get('erp/invoices/').then(r => { setInvoices(r.data?.results ?? r.data ?? []); setLoading(false); }).catch(() => setLoading(false));
     }, []);
 
     return (

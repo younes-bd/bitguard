@@ -19,6 +19,9 @@ urlpatterns = [
     path('scm/', include('apps.scm.urls')),
     path('projects/', include('apps.projects.urls')),
     path('itam/', include('apps.itam.urls')),      # IT Asset Management
+    path('approvals/', include('apps.approvals.urls')),
+    path('documents/', include('apps.documents.urls')),
+    path('itsm/', include('apps.itsm.urls')),
 
     # Platform Infrastructure
     path('auth/', include('apps.auth.urls')),
@@ -36,6 +39,6 @@ urlpatterns = [
     path('home/', include('apps.website.urls')),
 
     # Integrations
-    path('blog/', include('integrations.blog.urls')),
+    path('blog/', include('apps.blog.urls')),
     path('ai/', include('integrations.ai_engine.urls')),
 ]

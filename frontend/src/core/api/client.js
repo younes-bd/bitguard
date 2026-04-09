@@ -18,12 +18,20 @@ client.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+            if (config.headers.set) {
+                config.headers.set('Authorization', `Bearer ${token}`);
+            } else {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
         }
 
         // Dynamic Tenant Resolution (Fallback to bitguard.tech for now)
         const tenantId = localStorage.getItem('tenant_id') || 'bitguard.tech';
-        config.headers['X-Tenant-ID'] = tenantId;
+        if (config.headers.set) {
+            config.headers.set('X-Tenant-ID', tenantId);
+        } else {
+            config.headers['X-Tenant-ID'] = tenantId;
+        }
 
         return config;
     },
@@ -49,9 +57,22 @@ client.interceptors.response.use(
                     });
 
                     if (res.status === 200) {
-                        localStorage.setItem('access_token', res.data.access);
-                        client.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`;
-                        originalRequest.headers['Authorization'] = `Bearer ${res.data.access}`;
+                        const newAccessToken = res.data.access || res.data.data?.access;
+                        localStorage.setItem('access_token', newAccessToken);
+                        
+                        // Axios 1.x requires .set() for AxiosHeaders instances
+                        if (client.defaults.headers.common.set) {
+                            client.defaults.headers.common.set('Authorization', `Bearer ${newAccessToken}`);
+                        } else {
+                            client.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+                        }
+
+                        if (originalRequest.headers.set) {
+                            originalRequest.headers.set('Authorization', `Bearer ${newAccessToken}`);
+                        } else {
+                            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                        }
+                        
                         return client(originalRequest);
                     }
                 }

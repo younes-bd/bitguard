@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
+import OnboardingWizard from '../pages/OnboardingWizard';
 import CrmDashboard from '../pages/dashboards/CrmDashboard';
 import ClientList from '../pages/ClientList';
 import ClientCreate from '../pages/ClientCreate';
@@ -22,6 +23,7 @@ export const crmRoutes = (
     <>
         <Route path="overview" element={<CrmDashboard />} />
         <Route path="clients" element={<ClientList />} />
+        <Route path="onboarding" element={<OnboardingWizard />} />
         <Route path="clients/create" element={<ClientCreate />} />
         <Route path="clients/:id" element={<ClientDetail />} />
 

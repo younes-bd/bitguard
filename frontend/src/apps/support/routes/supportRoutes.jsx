@@ -8,7 +8,9 @@ import SupportSettings from '../pages/SupportSettings';
 
 export const supportRoutes = (
     <>
+        <Route path="overview" element={<SupportDashboard />} />
         <Route path="tickets" element={<TicketList />} />
+        <Route path="tickets/create" element={<TicketList />} />
         <Route path="sla-breaches" element={<SlaBreachLog />} />
         <Route path="escalations" element={<EscalationList />} />
         <Route path="knowledge-base" element={<KnowledgeBase />} />

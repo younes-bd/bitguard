@@ -26,6 +26,7 @@ const TicketList = () => {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [selectedTicket, setSelectedTicket] = useState(null);
 
     useEffect(() => {
         client.get('support/tickets/')
@@ -77,21 +78,105 @@ const TicketList = () => {
                         ) : filtered.map(t => (
                             <tr key={t.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors">
                                 <td className="px-5 py-4 text-slate-400 font-mono text-xs">#{t.id?.toString().slice(0, 8)}</td>
-                                <td className="px-5 py-4 text-white font-medium max-w-[240px] truncate">{t.subject}</td>
+                                <td className="px-5 py-4 text-white font-medium max-w-[240px] truncate">{t.subject || t.title}</td>
                                 <td className="px-5 py-4 text-slate-400">{t.client?.name ?? t.client ?? '—'}</td>
                                 <td className="px-5 py-4">{priorityBadge(t.priority)}</td>
                                 <td className="px-5 py-4">{statusBadge(t.status)}</td>
                                 <td className="px-5 py-4 text-slate-400">{t.created_at?.split('T')[0] ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-400">{t.due_date ? t.due_date.split('T')[0] : 'None'}</td>
                                 <td className="px-5 py-4">
-                                    <ChevronRight size={16} className="text-slate-600 hover:text-blue-400 cursor-pointer transition-colors" />
+                                    <button onClick={() => setSelectedTicket(t)} className="text-blue-400 hover:text-blue-300 transition-colors">
+                                        View
+                                    </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+
+            {/* Ticket Detail Modal with KB Integration */}
+            {selectedTicket && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+                        <div className="flex justify-between items-center p-6 border-b border-slate-700/50">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-1">Ticket #{selectedTicket.id?.toString().slice(0, 8)}</h3>
+                                <p className="text-slate-400 text-sm">{selectedTicket.subject || selectedTicket.title}</p>
+                            </div>
+                            <button onClick={() => setSelectedTicket(null)} className="text-slate-400 hover:text-white transition-colors">
+                                &times;
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto flex-1 text-slate-300 text-sm space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-slate-500 uppercase text-xs font-bold mb-1">Status</p>
+                                    <div>{statusBadge(selectedTicket.status)}</div>
+                                </div>
+                                <div>
+                                    <p className="text-slate-500 uppercase text-xs font-bold mb-1">Due Date</p>
+                                    <p className="font-mono text-white">{selectedTicket.due_date ? new Date(selectedTicket.due_date).toLocaleString() : 'No SLA Match'}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-slate-500 uppercase text-xs font-bold mb-1">Description</p>
+                                <div className="bg-slate-800/50 p-4 rounded-lg">{selectedTicket.description || 'No description provided.'}</div>
+                            </div>
+                            
+                            {/* KB Integration Section */}
+                            <div className="bg-blue-900/10 border border-blue-500/20 rounded-xl p-5">
+                                <h4 className="text-white font-bold mb-3 flex items-center gap-2"><CheckCircle size={16} className="text-blue-400"/> Knowledge Base Integration</h4>
+                                {selectedTicket.is_converted_to_kb ? (
+                                    <p className="text-emerald-400 text-sm flex items-center gap-2"><CheckCircle size={14}/> Successfully converted to KB Article.</p>
+                                ) : (
+                                    <div className="flex gap-3">
+                                        {selectedTicket.status === 'resolved' && (
+                                            <button 
+                                                onClick={async () => {
+                                                    try {
+                                                        await client.post(`support/tickets/${selectedTicket.id}/create_kb_from_ticket/`);
+                                                        alert('Converted to KB successfully');
+                                                        setSelectedTicket({...selectedTicket, is_converted_to_kb: true});
+                                                    } catch (e) {
+                                                        alert('Error converting to KB');
+                                                    }
+                                                }}
+                                                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                                            >
+                                                Convert to KB Article
+                                            </button>
+                                        )}
+                                        <button onClick={() => {
+                                            const id = prompt('Enter KB Article ID to link:');
+                                            if (id) {
+                                                client.post(`support/tickets/${selectedTicket.id}/link_article/`, { article_id: id })
+                                                    .then(() => alert('Linked!'))
+                                                    .catch(() => alert('Failed to link article.'));
+                                            }
+                                        }} className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold border border-slate-700 transition-colors">
+                                            Link Existing KB Article
+                                        </button>
+                                    </div>
+                                )}
+                                {selectedTicket.related_articles?.length > 0 && (
+                                    <div className="mt-4">
+                                        <p className="text-slate-400 text-xs uppercase font-bold mb-2">Linked Articles</p>
+                                        <ul className="space-y-1">
+                                            {selectedTicket.related_articles.map(id => (
+                                                <li key={id} className="text-blue-400 text-sm cursor-pointer hover:underline">Article ID: {id}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 export default TicketList;
+

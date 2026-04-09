@@ -1,13 +1,9 @@
-"""
-HRM Models — Human Resource Management.
-Tracks BitGuard employees, departments, skills, time, and availability.
-"""
 from django.db import models
 from django.conf import settings
-from apps.core.models import UUIDPrimaryKeyModel, TimeStampedModel, SoftDeleteModel
+from apps.core.models import UUIDPrimaryKeyModel, TimeStampedModel, SoftDeleteModel, TenantAwareModel
 
 
-class Department(UUIDPrimaryKeyModel, TimeStampedModel):
+class Department(TenantAwareModel, UUIDPrimaryKeyModel, TimeStampedModel):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     manager = models.ForeignKey(
@@ -19,7 +15,7 @@ class Department(UUIDPrimaryKeyModel, TimeStampedModel):
         return self.name
 
 
-class Employee(UUIDPrimaryKeyModel, TimeStampedModel, SoftDeleteModel):
+class Employee(TenantAwareModel, UUIDPrimaryKeyModel, TimeStampedModel, SoftDeleteModel):
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('on_leave', 'On Leave'),
@@ -47,7 +43,7 @@ class Employee(UUIDPrimaryKeyModel, TimeStampedModel, SoftDeleteModel):
         verbose_name = 'Employee'
 
 
-class LeaveRequest(UUIDPrimaryKeyModel, TimeStampedModel):
+class LeaveRequest(TenantAwareModel, UUIDPrimaryKeyModel, TimeStampedModel):
     TYPE_CHOICES = [
         ('annual', 'Annual Leave'),
         ('sick', 'Sick Leave'),
@@ -79,7 +75,7 @@ class LeaveRequest(UUIDPrimaryKeyModel, TimeStampedModel):
         verbose_name = 'Leave Request'
 
 
-class Certification(UUIDPrimaryKeyModel, TimeStampedModel):
+class Certification(TenantAwareModel, UUIDPrimaryKeyModel, TimeStampedModel):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='certifications')
     title = models.CharField(max_length=255, help_text="e.g. CISSP, AWS Solutions Architect")
     issuer = models.CharField(max_length=100)
@@ -92,7 +88,7 @@ class Certification(UUIDPrimaryKeyModel, TimeStampedModel):
         return f"{self.title} ({self.employee})"
 
 
-class TimeEntry(UUIDPrimaryKeyModel, TimeStampedModel):
+class TimeEntry(TenantAwareModel, UUIDPrimaryKeyModel, TimeStampedModel):
     """Billable and non-billable time entries for projects and clients."""
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='time_entries')
     # Links to ERP InternalProject
@@ -110,3 +106,25 @@ class TimeEntry(UUIDPrimaryKeyModel, TimeStampedModel):
 
     def __str__(self):
         return f"{self.employee} — {self.hours}h on {self.entry_date}"
+
+
+class PayrollPeriod(TenantAwareModel, UUIDPrimaryKeyModel, TimeStampedModel):
+    name = models.CharField(max_length=100) # e.g. "April 2024"
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_closed = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.name
+
+class PayrollRecord(TenantAwareModel, UUIDPrimaryKeyModel, TimeStampedModel):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='payroll_records')
+    period = models.ForeignKey(PayrollPeriod, on_delete=models.CASCADE, related_name='records')
+    gross_salary = models.DecimalField(max_digits=12, decimal_places=2)
+    deductions = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    net_pay = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('paid', 'Paid')], default='pending')
+    payment_date = models.DateField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.employee.employee_id} - {self.period.name}"

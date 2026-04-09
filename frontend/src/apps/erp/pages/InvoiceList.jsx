@@ -75,7 +75,7 @@ const InvoiceList = () => {
                         <div className="text-xl font-bold text-red-400">${overdueAmount.toLocaleString()}</div>
                     </div>
                     <button
-                        onClick={() => navigate('/erp/invoices/create')}
+                        onClick={() => navigate('/admin/erp/invoices/create')}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors shadow-lg shadow-blue-500/20 h-fit"
                     >
                         <Plus size={20} />

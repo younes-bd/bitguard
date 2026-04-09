@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     StoreCustomizationViewSet, CategoryViewSet, ProductViewSet, LicenseKeyViewSet,
     CustomerProfileViewSet, OrderViewSet, ShippingSettingViewSet, LandingPageViewSet,
-    TrackingConfigViewSet, AddOnViewSet, SubscriptionPlanViewSet, SubscriptionViewSet, StoreSettingViewSet
+    TrackingConfigViewSet, AddOnViewSet, SubscriptionPlanViewSet, SubscriptionViewSet,
+    StoreSettingViewSet, PartnerRequestViewSet
 )
 
 router = DefaultRouter()
@@ -20,6 +21,7 @@ router.register(r'addons', AddOnViewSet, basename='addon')
 router.register(r'subscription-plans', SubscriptionPlanViewSet, basename='subscriptionplan')
 router.register(r'subscriptions', SubscriptionViewSet, basename='subscription')
 router.register(r'settings', StoreSettingViewSet, basename='storesetting')
+router.register(r'partner-requests', PartnerRequestViewSet, basename='partnerrequest')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -7,7 +7,7 @@ const RevenueReport = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        client.get('/reports/revenue/')
+        client.get('reports/revenue/')
             .then(r => { setData(r.data?.data ?? {}); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);

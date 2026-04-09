@@ -8,7 +8,7 @@ import {
     Award, Download
 } from 'lucide-react';
 
-// Main Admin Suite (The "Hub" - Switching between major modules)
+// Main Admin Suite
 export const adminMenu = [
     // 1. Command Center
     { label: 'Command Center', icon: null, path: null },
@@ -18,37 +18,43 @@ export const adminMenu = [
     // 2. Revenue & Growth
     { label: 'Revenue & Growth', icon: null, path: null },
     { label: 'Sales & CRM', icon: Users, path: '/admin/crm', permissions: ['view_client'] },
-    { label: 'Commerce', icon: ShoppingBag, path: '/admin/store', permissions: ['view_product'] },
-    { label: 'Billing', icon: CreditCard, path: '/admin/billing', permissions: ['view_plan'] },
-    { label: 'Marketing Automation', icon: Megaphone, path: '/admin/marketing', permissions: ['view_campaign'] },
+    { label: 'Service Catalog', icon: ShoppingBag, path: '/admin/store', permissions: ['view_product'] },
+    { label: 'Billing & Subscriptions', icon: CreditCard, path: '/admin/billing', permissions: ['view_plan'] },
+    { label: 'Marketing', icon: Megaphone, path: '/admin/marketing', permissions: ['view_campaign'] },
 
-    // 3. Operations
-    { label: 'Operations', icon: null, path: null },
+    // 3. Service Operations
+    { label: 'Service Operations', icon: null, path: null },
     { label: 'Service Desk', icon: LifeBuoy, path: '/admin/support', permissions: ['view_ticket'] },
-    { label: 'Contracts', icon: FileText, path: '/admin/contracts', permissions: ['view_servicecontract'] },
-    { label: 'Finance & Operations', icon: PieChart, path: '/admin/erp', permissions: ['view_internalproject'] },
-    { label: 'Projects', icon: FolderKanban, path: '/admin/projects', permissions: ['view_internalproject'] },
-    { label: 'Asset Management', icon: Monitor, path: '/admin/itam', permissions: ['view_managedendpoint'] },
-    { label: 'Procurement', icon: Layers, path: '/admin/scm', permissions: ['view_vendor'] },
-    { label: 'People & HR', icon: Building2, path: '/admin/hrm', permissions: ['view_employeeprofile'] },
-    { label: 'Document Management', icon: FolderOpen, path: '/admin/documents', permissions: ['view_document'] },
-    { label: 'Approval Center', icon: CheckSquare, path: '/admin/approvals', permissions: ['view_approval'] },
+    { label: 'Contracts & SLAs', icon: FileText, path: '/admin/contracts', permissions: ['view_servicecontract'] },
+    { label: 'Project Management', icon: FolderKanban, path: '/admin/projects', permissions: ['view_internalproject'] },
     { label: 'Change Management', icon: GitBranch, path: '/admin/itsm', permissions: ['view_changerequest'] },
+    { label: 'IT Asset Management', icon: Monitor, path: '/admin/itam', permissions: ['view_managedendpoint'] },
+    { label: 'Procurement', icon: Layers, path: '/admin/scm', permissions: ['view_vendor'] },
 
-    // 4. Intelligence & Analytics
-    { label: 'Intelligence & Analytics', icon: null, path: null },
-    { label: 'Analytics & Reports', icon: BarChart3, path: '/admin/reports', permissions: ['view_dashboard'] },
+    // 4. People & Governance
+    { label: 'People & Governance', icon: null, path: null },
+    { label: 'People & HR', icon: Building2, path: '/admin/hrm', permissions: ['view_employeeprofile'] },
+    { label: 'Approval Center', icon: CheckSquare, path: '/admin/approvals', permissions: ['view_approval'] },
+    { label: 'Document Management', icon: FolderOpen, path: '/admin/documents', permissions: ['view_document'] },
 
-    // 5. Security & Compliance
+    // 5. Finance
+    { label: 'Finance', icon: null, path: null },
+    { label: 'Finance & Billing', icon: PieChart, path: '/admin/erp', permissions: ['view_internalproject'] },
+
+    // 6. Security & Compliance
     { label: 'Security & Compliance', icon: null, path: null },
-    { label: 'Security', icon: ShieldCheck, path: '/admin/security', permissions: ['view_incident'] },
+    { label: 'SOC (Security)', icon: ShieldCheck, path: '/admin/security', permissions: ['view_incident'] },
     { label: 'Identity & Access', icon: Key, path: '/admin/iam', permissions: ['view_user'] },
 
-    // 6. Platform
+    // 7. Intelligence
+    { label: 'Intelligence', icon: null, path: null },
+    { label: 'Analytics & Reports', icon: BarChart3, path: '/admin/reports', permissions: ['view_dashboard'] },
+
+    // 8. Platform
     { label: 'Platform', icon: null, path: null },
-    { label: 'Customer Portal', icon: Globe, path: '/portal', permissions: ['view_tenant'] },
-    { label: 'Platform Admin', icon: Server, path: '/admin/system', permissions: ['view_tenant'] },
-    { label: 'Website Builder', icon: Globe, path: '/admin/cms', permissions: ['view_page'] }
+    { label: 'System Admin', icon: Server, path: '/admin/system', permissions: ['view_tenant'] },
+    { label: 'Website & CMS', icon: Globe, path: '/admin/cms', permissions: ['view_page'] },
+    { label: 'Client Portal', icon: Globe, path: '/portal', permissions: ['view_tenant'] }
 ];
 
 export const productMenu = {
@@ -120,6 +126,7 @@ export const productMenu = {
             title: 'Sales & CRM',
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/crm' },
+                { label: 'Onboard Client', icon: Plus, path: '/admin/crm/onboarding' },
                 { label: 'Clients', icon: Users, path: '/admin/crm/clients' },
                 { label: 'Contacts', icon: Users, path: '/admin/crm/contacts' },
                 { label: 'Leads', icon: AlertCircle, path: '/admin/crm/leads' },
@@ -149,15 +156,11 @@ export const productMenu = {
             items: [
                 { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/store/dashboard' },
                 { label: 'Service Catalog', icon: Tag, path: '/admin/store/services' },
-                { label: 'Store Customization', icon: Paintbrush, path: '/admin/store/customization' },
                 { label: 'Categories', icon: Tags, path: '/admin/store/categories' },
                 { label: 'Products', icon: Box, path: '/admin/store/products' },
                 { label: 'Orders', icon: ShoppingCart, path: '/admin/store/orders' },
                 { label: 'Customers', icon: Users, path: '/admin/store/customers' },
                 { label: 'Shipping Settings', icon: Truck, path: '/admin/store/shipping' },
-                { label: 'Landing Pages', icon: FileText, path: '/admin/store/landing-pages' },
-                { label: 'Pixel & Tracking', icon: Activity, path: '/admin/store/tracking' },
-                { label: 'Add-ons', icon: Puzzle, path: '/admin/store/addons' },
                 { label: 'Subscriptions', icon: RefreshCw, path: '/admin/store/subscriptions' },
                 { label: 'Settings', icon: Settings, path: '/admin/store/settings' },
             ]
@@ -261,6 +264,7 @@ export const productMenu = {
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/cms' },
                 { label: 'All Pages', icon: FileText, path: '/admin/cms' },
+                { label: 'Landing Pages', icon: LayoutDashboard, path: '/admin/cms/landing-pages' },
                 { label: 'Create New Page', icon: Plus, path: '/admin/cms/pages/new' },
                 { label: 'Inquiries', icon: Activity, path: '/admin/cms/inquiries' },
                 { label: 'Settings', icon: Settings, path: '/admin/cms/settings' },

@@ -1,10 +1,10 @@
 import client from './client';
 
-const base = '/hrm';
+const base = 'hrm';
 
 export const hrmService = {
     // Dashboard stats
-    getStats: () => client.get(`${base}/stats/`).then(r => r.data?.data ?? r.data ?? {}),
+    getStats: () => client.get(`${base}/employees/stats/`).then(r => r.data?.data ?? r.data ?? {}),
 
     // Employees
     getEmployees: (params = {}) => client.get(`${base}/employees/`, { params }).then(r => r.data),

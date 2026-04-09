@@ -1,17 +1,28 @@
 import client from './client';
 
 export const erpService = {
-    // Legacy Stubs for UI Stability
-    getDashboardStats: async () => ({
-        kpi: { active_projects: 0, planning_projects: 0, my_tasks: 0, overdue_tasks: 0, high_risks: 0, new_invoices: 0, budget_usage: 0, resource_utilization: 0, sla_health: 100 },
-        financials: { total_revenue: 0, mrr: 0, total_costs: 0, net_profit: 0, profit_margin: 0 },
-        system: { core: 'Operational', database: 'Operational' }
-    }),
-    getProjects: async () => [],
-    getProject: async () => ({}),
-    getEmployees: async () => [],
-    getRisks: async () => [],
-    getAssets: async () => [],
+    // Dashboard Stats calculated from real data
+    getDashboardStats: async () => {
+        try {
+            const [invoices, payments, expenses] = await Promise.all([
+                client.get('erp/invoices/').then(r => r.data.data?.results || r.data.data || []),
+                client.get('erp/payments/').then(r => r.data.data?.results || r.data.data || []),
+                client.get('erp/expenses/').then(r => r.data.data?.results || r.data.data || [])
+            ]);
+            
+            const total_revenue = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + parseFloat(i.total), 0);
+            const total_costs = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+
+            return {
+                financials: { total_revenue, mrr: 0, total_costs, net_profit: total_revenue - total_costs, profit_margin: total_revenue ? ((total_revenue - total_costs)/total_revenue * 100) : 0 },
+                kpi: { new_invoices: invoices.length, overdue_tasks: 0, active_projects: 0 },
+                system: { core: 'Operational', database: 'Operational' }
+            };
+        } catch (e) {
+            console.error(e);
+            return { financials: {}, kpi: {}, system: {} };
+        }
+    },
 
     // Invoices
     getInvoices: async (params = {}) => {

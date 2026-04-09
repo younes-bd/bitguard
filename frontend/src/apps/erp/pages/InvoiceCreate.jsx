@@ -85,7 +85,7 @@ const InvoiceCreate = () => {
 
         try {
             await erpService.createInvoice(payload);
-            navigate('/erp/invoices');
+            navigate('/admin/erp/invoices');
         } catch (error) {
             console.error("Create failed", error);
             alert("Failed to create invoice.");
@@ -97,7 +97,7 @@ const InvoiceCreate = () => {
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center gap-4">
                 <button
-                    onClick={() => navigate('/erp/invoices')}
+                    onClick={() => navigate('/admin/erp/invoices')}
                     className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"
                 >
                     <ArrowLeft size={20} />
@@ -242,7 +242,7 @@ const InvoiceCreate = () => {
                 <div className="flex justify-end gap-4 pt-4">
                     <button
                         type="button"
-                        onClick={() => navigate('/erp/invoices')}
+                        onClick={() => navigate('/admin/erp/invoices')}
                         className="px-6 py-2.5 rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-800 transition-colors"
                     >
                         Cancel

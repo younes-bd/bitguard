@@ -1,4 +1,4 @@
-import client from '../client';
+import client from './client';
 
 /**
  * Enterprise Control Plane Service (Section 13)
@@ -10,16 +10,16 @@ const controlService = {
      * Section 19 (Observability).
      */
     getSystemHealth: async () => {
-        const response = await client.get('/api/admin/system/health/');
-        return response.data;
+        const response = await client.get('dashboard/health/');
+        return response.data?.data ?? response.data ?? {};
     },
 
     /**
-     * Placeholder for future control plane policy updates.
+     * Retrieves platform policy configuration.
      */
     updatePolicy: async (policyData) => {
-        const response = await client.patch('/api/admin/system/policy/', policyData);
-        return response.data;
+        const response = await client.patch('sysadmin/policy/', policyData);
+        return response.data?.data ?? response.data ?? {};
     }
 };
 

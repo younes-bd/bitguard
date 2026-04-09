@@ -65,7 +65,7 @@ const TicketList = () => {
                     <p className="text-slate-400">Track and resolve customer issues.</p>
                 </div>
                 <button
-                    onClick={() => navigate('/crm/tickets/create')}
+                    onClick={() => navigate('/admin/crm/tickets/create')}
                     className="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-lg shadow-lg shadow-pink-500/20 transition-all"
                 >
                     New Ticket

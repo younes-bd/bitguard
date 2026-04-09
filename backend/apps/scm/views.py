@@ -18,6 +18,20 @@ class VendorViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return BaseService.filter_by_context(Vendor.objects.all(), self.request)
 
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Aggregated SCM KPIs for the dashboard."""
+        qs_vendor = BaseService.filter_by_context(Vendor.objects.all(), request)
+        qs_inv = BaseService.filter_by_context(InventoryItem.objects.all(), request)
+        qs_po = BaseService.filter_by_context(PurchaseOrder.objects.all(), request)
+        low_stock = sum(1 for i in qs_inv if i.is_low_stock)
+        return Response({'status': 'success', 'data': {
+            'vendors': qs_vendor.filter(status='active').count(),
+            'inventory_count': qs_inv.count(),
+            'pending_pos': qs_po.filter(status__in=['draft', 'sent']).count(),
+            'low_stock': low_stock,
+        }})
+
 class InventoryItemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = InventoryItemSerializer

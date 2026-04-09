@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../core/styles/landing.css';
 import SectionDivider from '../../../core/components/SectionDivider';
+import client from '../../../core/api/client';
+import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 const Support = () => {
     const [formData, setFormData] = useState({
@@ -10,14 +12,47 @@ const Support = () => {
         subject: '',
         message: ''
     });
+    
+    // Asynchronous state management for CRM API logic
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error'
+    const [submitMessage, setSubmitMessage] = useState('');
+    const [ticketId, setTicketId] = useState(null);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert('Support ticket submitted! (Mock)');
+        setIsSubmitting(true);
+        setSubmitStatus(null);
+        setSubmitMessage('');
+        
+        try {
+            const payload = {
+                full_name: formData.fullName,
+                email: formData.email,
+                subject: formData.subject,
+                message: formData.message
+            };
+            
+            const response = await client.post('website/support/ticket/', payload);
+            
+            setSubmitStatus('success');
+            setTicketId(response.data.ticket_id);
+            setSubmitMessage('Your ticket has been securely submitted to our CRM systems.');
+            setFormData({ fullName: '', email: '', subject: '', message: '' });
+        } catch (error) {
+            console.error('Ticket submission failed:', error);
+            setSubmitStatus('error');
+            setSubmitMessage(
+                error.response?.data?.error || 
+                'An unexpected error occurred while submitting your ticket. Please try again.'
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -62,7 +97,7 @@ const Support = () => {
                             </div>
                             <h3 className="text-2xl font-bold dark:text-white text-slate-900 mb-3 tracking-tight transition-colors duration-300">Remote Support</h3>
                             <p className="dark:text-slate-400 text-slate-600 mb-6 leading-relaxed transition-colors duration-300">Connect with a technician securely for immediate remote assistance with your device.</p>
-                            <Link to="/platform/remote" className="inline-flex items-center text-blue-600 font-bold hover:text-blue-700 tracking-wide uppercase text-sm">
+                            <Link to="/support/remote" className="inline-flex items-center text-blue-600 font-bold hover:text-blue-700 tracking-wide uppercase text-sm">
                                 Join Session <i className="bi bi-arrow-right ml-2 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all"></i>
                             </Link>
                         </div>
@@ -133,35 +168,77 @@ const Support = () => {
                         <div className="lg:w-2/3 w-full">
                             <div className="dark:bg-slate-800 bg-slate-50 p-8 md:p-10 rounded-xl border dark:border-slate-700 border-slate-100 shadow-sm transition-colors duration-300">
                                 <form onSubmit={handleSubmit} className="space-y-6">
+                                    {/* Success Banner */}
+                                    {submitStatus === 'success' && (
+                                        <div className="p-6 mb-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500">
+                                            <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                                                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                                            </div>
+                                            <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">Ticket Submitted Securely</h3>
+                                            <p className="dark:text-slate-400 text-slate-600 mb-5">{submitMessage}</p>
+                                            {ticketId && (
+                                                <div className="px-5 py-2.5 bg-slate-900 dark:bg-slate-950 rounded-xl border border-slate-700/50 font-mono text-sm text-blue-400 font-bold block shadow-inner">
+                                                    Ticket Ref: #{ticketId}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Error Banner */}
+                                    {submitStatus === 'error' && (
+                                        <div className="p-4 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                            <AlertCircle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
+                                            <div>
+                                                <h4 className="font-bold text-red-500 mb-1">Submission Failed</h4>
+                                                <p className="text-sm dark:text-red-400 text-red-600">{submitMessage}</p>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className="block text-xs font-bold dark:text-slate-400 text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
-                                            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange}
-                                                className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                                            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} disabled={isSubmitting}
+                                                className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all disabled:opacity-50"
                                                 placeholder="John Doe" required />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold dark:text-slate-400 text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
-                                            <input type="email" name="email" value={formData.email} onChange={handleChange}
-                                                className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                                            <input type="email" name="email" value={formData.email} onChange={handleChange} disabled={isSubmitting}
+                                                className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all disabled:opacity-50"
                                                 placeholder="john@company.com" required />
                                         </div>
                                     </div>
                                     <div>
                                         <label className="block text-xs font-bold dark:text-slate-400 text-slate-500 uppercase tracking-wider mb-2">Subject</label>
-                                        <input type="text" name="subject" value={formData.subject} onChange={handleChange}
-                                            className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                                        <input type="text" name="subject" value={formData.subject} onChange={handleChange} disabled={isSubmitting}
+                                            className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all disabled:opacity-50"
                                             placeholder="Brief summary of the issue" required />
                                     </div>
                                     <div>
                                         <label className="block text-xs font-bold dark:text-slate-400 text-slate-500 uppercase tracking-wider mb-2">Description</label>
-                                        <textarea name="message" value={formData.message} onChange={handleChange} rows="5"
-                                            className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all resize-none"
+                                        <textarea name="message" value={formData.message} onChange={handleChange} rows="5" disabled={isSubmitting}
+                                            className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all resize-none disabled:opacity-50"
                                             placeholder="Please describe the issue in detail..." required></textarea>
                                     </div>
-                                    <button type="submit" className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transform active:scale-[0.98] transition-all uppercase tracking-wider text-sm">
-                                        Submit Ticket
-                                    </button>
+                                    
+                                    {/* Submit Action or Complete Status */}
+                                    {!submitStatus || submitStatus === 'error' ? (
+                                        <button type="submit" disabled={isSubmitting} className="w-full flex justify-center items-center py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transform active:scale-[0.98] transition-all uppercase tracking-wider text-sm disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
+                                            {isSubmitting ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                                                    Transmitting Payload...
+                                                </>
+                                            ) : (
+                                                'Submit Ticket'
+                                            )}
+                                        </button>
+                                    ) : (
+                                        <button type="button" onClick={() => setSubmitStatus(null)} className="w-full py-4 dark:bg-slate-700 bg-slate-200 dark:hover:bg-slate-600 hover:bg-slate-300 dark:text-white text-slate-900 font-bold rounded-xl transition-all uppercase tracking-wider text-sm">
+                                            Submit Another Ticket
+                                        </button>
+                                    )}
                                 </form>
                             </div>
                         </div>

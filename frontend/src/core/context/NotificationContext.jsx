@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { notificationService } from '../api/notificationService';
+import { useAuth } from '../hooks/useAuth';
 
 const NotificationContext = createContext();
 
@@ -7,20 +8,27 @@ export const NotificationProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
+    const { isAuthenticated } = useAuth();
+
     // Initial Load + Polling (Basic implementation, WebSocket would be better for standard)
     useEffect(() => {
-        loadNotifications();
-        const interval = setInterval(loadNotifications, 30000); // Poll every 30s
-        return () => clearInterval(interval);
-    }, []);
+        if (isAuthenticated) {
+            loadNotifications();
+            const interval = setInterval(loadNotifications, 30000); // Poll every 30s
+            return () => clearInterval(interval);
+        }
+    }, [isAuthenticated]);
 
     const loadNotifications = async () => {
         try {
             const data = await notificationService.getAll();
-            setNotifications(data);
-            setUnreadCount(data.filter(n => !n.is_read).length);
+            const notificationsArray = Array.isArray(data) ? data : [];
+            setNotifications(notificationsArray);
+            setUnreadCount(notificationsArray.filter(n => !n.is_read).length);
         } catch (error) {
             console.error("Failed to load notifications", error);
+            // On error, keep existing notifications but ensure we don't crash
+            setUnreadCount(prev => prev || 0);
         }
     };
 

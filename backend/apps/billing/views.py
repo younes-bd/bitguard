@@ -10,9 +10,9 @@ from datetime import datetime, timezone as dt_timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Order, Plan, Subscription, BillingSettings
+from .models import Invoice, Plan, Subscription, BillingSettings
 from .serializers import (
-    OrderSerializer, PlanSerializer, SubscriptionSerializer, BillingSettingsSerializer
+    InvoiceSerializer, PlanSerializer, SubscriptionSerializer, BillingSettingsSerializer
 )
 
 
@@ -81,9 +81,9 @@ class PlanViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
 
-class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all().order_by('-created_at')
-    serializer_class = OrderSerializer
+class InvoiceViewSet(viewsets.ModelViewSet):
+    queryset = Invoice.objects.all().order_by('-created_at')
+    serializer_class = InvoiceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):

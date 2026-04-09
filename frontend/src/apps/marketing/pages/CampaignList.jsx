@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
-import { Megaphone, Search, Plus, Calendar, Users, TrendingUp, Pause, Play } from 'lucide-react';
-
-const MOCK_CAMPAIGNS = [
-    { id: 1, name: 'Q1 Product Launch', status: 'active', type: 'email', reach: 12500, conversions: 340, start_date: '2026-01-15', end_date: '2026-03-31' },
-    { id: 2, name: 'MSP Partner Webinar', status: 'active', type: 'event', reach: 850, conversions: 62, start_date: '2026-03-01', end_date: '2026-03-15' },
-    { id: 3, name: 'Black Friday SaaS Sale', status: 'completed', type: 'ad', reach: 45000, conversions: 1200, start_date: '2025-11-20', end_date: '2025-11-30' },
-    { id: 4, name: 'Security Awareness Week', status: 'draft', type: 'content', reach: 0, conversions: 0, start_date: '2026-04-01', end_date: '2026-04-07' },
-];
+import React, { useState, useEffect } from 'react';
+import { Megaphone, Search, Plus, Calendar, Users, TrendingUp, Pause, Play, Loader2 } from 'lucide-react';
+import client from '../../../core/api/client';
 
 const STATUS_BADGE = {
     active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -17,7 +11,20 @@ const STATUS_BADGE = {
 
 const CampaignList = () => {
     const [search, setSearch] = useState('');
-    const filtered = MOCK_CAMPAIGNS.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+    const [campaigns, setCampaigns] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        client.get('marketing/campaigns/')
+            .then(res => {
+                const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
+                setCampaigns(data);
+            })
+            .catch(err => console.error("Failed to fetch campaigns", err))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const filtered = campaigns.filter(c => (c.name || '').toLowerCase().includes(search.toLowerCase()));
 
     return (
         <div className="space-y-6">
@@ -33,14 +40,14 @@ const CampaignList = () => {
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Active Campaigns', value: MOCK_CAMPAIGNS.filter(c => c.status === 'active').length, icon: Play, color: 'text-emerald-400' },
-                    { label: 'Total Reach', value: MOCK_CAMPAIGNS.reduce((s, c) => s + c.reach, 0).toLocaleString(), icon: Users, color: 'text-blue-400' },
-                    { label: 'Conversions', value: MOCK_CAMPAIGNS.reduce((s, c) => s + c.conversions, 0).toLocaleString(), icon: TrendingUp, color: 'text-purple-400' },
-                    { label: 'Drafts', value: MOCK_CAMPAIGNS.filter(c => c.status === 'draft').length, icon: Pause, color: 'text-slate-400' },
+                    { label: 'Active Campaigns', value: campaigns.filter(c => c.status === 'active').length, icon: Play, color: 'text-emerald-400' },
+                    { label: 'Total Reach', value: campaigns.reduce((s, c) => s + (c.reach || 0), 0).toLocaleString(), icon: Users, color: 'text-blue-400' },
+                    { label: 'Conversions', value: campaigns.reduce((s, c) => s + (c.conversions || 0), 0).toLocaleString(), icon: TrendingUp, color: 'text-purple-400' },
+                    { label: 'Drafts', value: campaigns.filter(c => c.status === 'draft').length, icon: Pause, color: 'text-slate-400' },
                 ].map(kpi => (
                     <div key={kpi.label} className="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors">
                         <kpi.icon size={20} className={`${kpi.color} mb-2`} />
-                        <div className="text-2xl font-bold text-white">{kpi.value}</div>
+                        <div className="text-2xl font-bold text-white">{loading ? '...' : kpi.value}</div>
                         <div className="text-slate-400 text-xs uppercase font-bold mt-1">{kpi.label}</div>
                     </div>
                 ))}
@@ -62,16 +69,30 @@ const CampaignList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.map(c => (
-                            <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors cursor-pointer">
-                                <td className="px-5 py-4 text-white font-medium">{c.name}</td>
-                                <td className="px-5 py-4"><span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-xs uppercase font-mono">{c.type}</span></td>
-                                <td className="px-5 py-4"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${STATUS_BADGE[c.status]}`}>{c.status}</span></td>
-                                <td className="px-5 py-4 text-slate-400">{c.reach.toLocaleString()}</td>
-                                <td className="px-5 py-4 text-emerald-400 font-semibold">{c.conversions.toLocaleString()}</td>
-                                <td className="px-5 py-4 text-slate-500 text-xs"><Calendar size={12} className="inline mr-1" />{c.start_date} → {c.end_date}</td>
+                        {loading && (
+                            <tr>
+                                <td colSpan="6" className="px-5 py-8 text-center text-slate-500">
+                                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-500" />
+                                    Loading campaigns...
+                                </td>
                             </tr>
-                        ))}
+                        )}
+                        {!loading && filtered.length > 0 ? filtered.map(c => (
+                            <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors cursor-pointer">
+                                <td className="px-5 py-4 text-white font-medium">{c.name || `Campaign #${c.id}`}</td>
+                                <td className="px-5 py-4"><span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-xs uppercase font-mono">{c.type || 'email'}</span></td>
+                                <td className="px-5 py-4"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${STATUS_BADGE[c.status] || STATUS_BADGE.draft}`}>{c.status || 'draft'}</span></td>
+                                <td className="px-5 py-4 text-slate-400">{(c.reach || 0).toLocaleString()}</td>
+                                <td className="px-5 py-4 text-emerald-400 font-semibold">{(c.conversions || 0).toLocaleString()}</td>
+                                <td className="px-5 py-4 text-slate-500 text-xs"><Calendar size={12} className="inline mr-1" />{c.start_date || '-'} → {c.end_date || '-'}</td>
+                            </tr>
+                        )) : !loading && (
+                            <tr>
+                                <td colSpan="6" className="px-5 py-8 text-center text-slate-500">
+                                    No campaigns found.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

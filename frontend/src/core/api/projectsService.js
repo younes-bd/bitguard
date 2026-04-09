@@ -1,6 +1,6 @@
 import client from './client';
 
-const base = '/projects';
+const base = 'projects';
 
 export const projectsService = {
     // Projects

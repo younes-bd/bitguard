@@ -1,14 +1,14 @@
-﻿from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import (
     StoreCustomization, Category, Product, LicenseKey, CustomerProfile,
-    Order, ShippingSetting, LandingPage, TrackingConfig, AddOn, SubscriptionPlan, Subscription, StoreSetting
+    Order, ShippingSetting, LandingPage, TrackingConfig, AddOn, SubscriptionPlan, Subscription, StoreSetting, PartnerRequest
 )
 from .serializers import (
     StoreCustomizationSerializer, CategorySerializer, ProductSerializer, LicenseKeySerializer,
     CustomerProfileSerializer, OrderSerializer, ShippingSettingSerializer, LandingPageSerializer,
-    TrackingConfigSerializer, AddOnSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, StoreSettingSerializer
+    TrackingConfigSerializer, AddOnSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, StoreSettingSerializer, PartnerRequestSerializer
 )
 from .services import CommerceService
 
@@ -20,7 +20,7 @@ class StoreCustomizationViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         CommerceService.create_category(serializer.validated_data, self.request)
@@ -28,7 +28,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def checkout(self, request, pk=None):
@@ -113,3 +113,8 @@ class StoreSettingViewSet(viewsets.ModelViewSet):
     queryset = StoreSetting.objects.all()
     serializer_class = StoreSettingSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+class PartnerRequestViewSet(viewsets.ModelViewSet):
+    queryset = PartnerRequest.objects.all().order_by('-created_at')
+    serializer_class = PartnerRequestSerializer
+    permission_classes = [permissions.AllowAny] # Allow public submission

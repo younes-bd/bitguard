@@ -1,21 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     LineChart, Line, AreaChart, Area
 } from 'recharts';
-import { DollarSign, ShoppingBag, Users, TrendingUp, Package } from 'lucide-react';
-
-const mockSalesData = [
-    { name: 'Jan', revenue: 4000, orders: 24 },
-    { name: 'Feb', revenue: 3000, orders: 18 },
-    { name: 'Mar', revenue: 5000, orders: 32 },
-    { name: 'Apr', revenue: 2780, orders: 15 },
-    { name: 'May', revenue: 1890, orders: 40 },
-    { name: 'Jun', revenue: 6390, orders: 55 },
-    { name: 'Jul', revenue: 8490, orders: 60 },
-];
+import { DollarSign, ShoppingBag, Users, TrendingUp, Package, Loader2 } from 'lucide-react';
+import client from '../../../../core/api/client';
+import { storeService } from '../../../../core/api/storeService';
 
 const StoreAdminDashboard = () => {
+    const [metrics, setMetrics] = useState(null);
+    const [chartData, setChartData] = useState([]);
+    const [recentOrders, setRecentOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                const [metricsRes, chartRes, ordersRes] = await Promise.all([
+                    client.get('dashboard/metrics/'),
+                    client.get('dashboard/mrr/'),
+                    storeService.getOrders()
+                ]);
+                
+                setMetrics(metricsRes.data.data);
+                if (chartRes.data.data?.monthly_history) {
+                    setChartData(chartRes.data.data.monthly_history);
+                }
+                
+                const ordersData = ordersRes.results ? ordersRes.results : ordersRes;
+                setRecentOrders(ordersData.slice(0, 5));
+            } catch (error) {
+                console.error("Failed to load store dashboard data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen w-full">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            </div>
+        );
+    }
+
+    const storeMetrics = metrics?.store || {};
+    const totalRev = storeMetrics.lifetime_revenue || 0;
+    const totalOrders = storeMetrics.total_orders || 0;
+    const aov = totalOrders > 0 ? (totalRev / totalOrders) : 0;
+    const pendingOrders = storeMetrics.pending_orders || 0;
     return (
         <div className="space-y-8 p-6">
             <div className="flex justify-between items-center">
@@ -30,10 +66,10 @@ const StoreAdminDashboard = () => {
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <KpiCard title="Total Revenue" value="$45,231" change="+20.1%" icon={DollarSign} color="indigo" />
-                <KpiCard title="Active Trials" value="340" change="+12.5%" icon={Users} color="emerald" />
-                <KpiCard title="Total Orders" value="1,245" change="+4.3%" icon={ShoppingBag} color="blue" />
-                <KpiCard title="Avg. Order Value" value="$82.00" change="-1.2%" icon={TrendingUp} color="amber" />
+                <KpiCard title="Total Revenue" value={`$${totalRev.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} change="Live" icon={DollarSign} color="indigo" />
+                <KpiCard title="Pending Orders" value={pendingOrders} change="Active" icon={Package} color="emerald" />
+                <KpiCard title="Total Orders" value={totalOrders.toLocaleString()} change="All Time" icon={ShoppingBag} color="blue" />
+                <KpiCard title="Avg. Order Value" value={`$${aov.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} change="Estimated" icon={TrendingUp} color="amber" />
             </div>
 
             {/* Charts Section */}
@@ -45,7 +81,7 @@ const StoreAdminDashboard = () => {
                     </h3>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={mockSalesData}>
+                            <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
@@ -53,13 +89,13 @@ const StoreAdminDashboard = () => {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                                <XAxis dataKey="month" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value/1000}k`} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', color: '#f8fafc' }}
                                     itemStyle={{ color: '#fff' }}
                                 />
-                                <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                                <Area type="monotone" dataKey="mrr" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -72,15 +108,15 @@ const StoreAdminDashboard = () => {
                     </h3>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={mockSalesData}>
+                            <BarChart data={chartData}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                                <XAxis dataKey="month" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
                                 <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
                                 <Tooltip
                                     cursor={{ fill: '#1e293b' }}
                                     contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', color: '#f8fafc' }}
                                 />
-                                <Bar dataKey="orders" fill="#10b981" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="mrr" fill="#10b981" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -104,19 +140,28 @@ const StoreAdminDashboard = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800">
-                            {[1, 2, 3, 4, 5].map((i) => (
-                                <tr key={i} className="hover:bg-slate-800/50 transition-colors">
-                                    <td className="p-4 font-mono text-indigo-400">#ORD-2024-00{i}</td>
-                                    <td className="p-4 font-medium text-white">Tech Corp Inc.</td>
-                                    <td className="p-4">SOC Platform (Enterprise)</td>
+                            {recentOrders.length > 0 ? recentOrders.map((order) => (
+                                <tr key={order.id} className="hover:bg-slate-800/50 transition-colors">
+                                    <td className="p-4 font-mono text-indigo-400">#{order.order_number || `ORD-${order.id}`}</td>
+                                    <td className="p-4 font-medium text-white">{order.customer_name || 'Anonymous User'}</td>
+                                    <td className="p-4 text-slate-300">{order.items?.length || 0} items</td>
                                     <td className="p-4">
-                                        <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold">
-                                            Completed
+                                        <span className={`px-2 py-1 rounded border text-xs font-bold uppercase
+                                            ${order.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                                              order.status === 'pending' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
+                                              'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
+                                            {order.status || 'unknown'}
                                         </span>
                                     </td>
-                                    <td className="p-4 text-right text-white font-mono">$299.00</td>
+                                    <td className="p-4 text-right text-white font-mono">${parseFloat(order.total_amount || 0).toFixed(2)}</td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="5" className="p-8 text-center text-slate-500">
+                                        No recent orders found.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

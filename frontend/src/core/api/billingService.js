@@ -1,6 +1,6 @@
 import client from './client';
 
-const base = '/billing';
+const base = 'billing';
 
 export const billingService = {
     // Plans
@@ -15,7 +15,7 @@ export const billingService = {
     cancelSubscription: (id) => client.post(`${base}/subscriptions/${id}/cancel/`).then(r => r.data),
 
     // Billing history / orders
-    getOrders: (params = {}) => client.get(`${base}/orders/`, { params }).then(r => r.data),
+    getOrders: (params = {}) => client.get(`${base}/invoices/`, { params }).then(r => r.data),
 
     // Settings
     getSettings: () => client.get(`${base}/settings/`).then(r => r.data?.results?.[0] ?? r.data ?? {}),

@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Search, Plus, ChevronRight, Tag } from 'lucide-react';
-
-const MOCK_ARTICLES = [
-    { id: 1, title: 'How to reset your password', category: 'Account', views: 1240, updated: '2026-03-01' },
-    { id: 2, title: 'Setting up MFA / Two-Factor Authentication', category: 'Security', views: 890, updated: '2026-02-20' },
-    { id: 3, title: 'Understanding your SLA tier', category: 'Contracts', views: 560, updated: '2026-02-15' },
-    { id: 4, title: 'How to submit a support ticket', category: 'Support', views: 2100, updated: '2026-03-05' },
-    { id: 5, title: 'Managed endpoint onboarding guide', category: 'MSP', views: 430, updated: '2026-01-30' },
-];
+import { BookOpen, Search, Plus, ChevronRight, Tag, Loader2 } from 'lucide-react';
+import client from '../../../core/api/client';
 
 const KnowledgeBase = () => {
     const [search, setSearch] = useState('');
-    const filtered = MOCK_ARTICLES.filter(a =>
-        a.title.toLowerCase().includes(search.toLowerCase()) ||
-        a.category.toLowerCase().includes(search.toLowerCase())
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        client.get('support/articles/')
+            .then(res => {
+                const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
+                setArticles(data);
+            })
+            .catch(err => console.error("Failed to load articles", err))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const filtered = articles.filter(a =>
+        (a.title || '').toLowerCase().includes(search.toLowerCase()) ||
+        (a.category || '').toLowerCase().includes(search.toLowerCase())
     );
 
     return (
@@ -51,9 +57,13 @@ const KnowledgeBase = () => {
                 ))}
             </div>
 
-            {/* Articles List */}
             <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden divide-y divide-slate-800">
-                {filtered.length === 0 ? (
+                {loading ? (
+                    <div className="py-16 text-center text-slate-500">
+                        <Loader2 size={36} className="mx-auto mb-2 animate-spin text-blue-500" />
+                        Loading knowledge base...
+                    </div>
+                ) : filtered.length === 0 ? (
                     <div className="py-16 text-center text-slate-500">
                         <BookOpen size={36} className="mx-auto mb-2 opacity-30" />
                         No articles found
@@ -63,13 +73,13 @@ const KnowledgeBase = () => {
                         <div className="flex items-start gap-4">
                             <BookOpen size={18} className="text-blue-400 mt-0.5 flex-shrink-0" />
                             <div>
-                                <div className="text-white font-medium group-hover:text-blue-400 transition-colors">{article.title}</div>
+                                <div className="text-white font-medium group-hover:text-blue-400 transition-colors">{article.title || `Article #${article.id}`}</div>
                                 <div className="flex items-center gap-3 mt-1">
                                     <span className="flex items-center gap-1 text-xs text-slate-500">
-                                        <Tag size={10} /> {article.category}
+                                        <Tag size={10} /> {article.category || 'General'}
                                     </span>
-                                    <span className="text-xs text-slate-500">{article.views.toLocaleString()} views</span>
-                                    <span className="text-xs text-slate-600">Updated {article.updated}</span>
+                                    <span className="text-xs text-slate-500">{(article.views || 0).toLocaleString()} views</span>
+                                    <span className="text-xs text-slate-600">Updated {new Date(article.updated_at || article.created_at).toLocaleDateString()}</span>
                                 </div>
                             </div>
                         </div>

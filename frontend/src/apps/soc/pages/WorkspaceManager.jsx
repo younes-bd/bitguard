@@ -18,9 +18,10 @@ const WorkspaceManager = () => {
         setLoading(true);
         try {
             const data = await platformService.getWorkspaces();
-            setWorkspaces(data);
+            setWorkspaces(Array.isArray(data) ? data : (data?.results || data?.data || []));
         } catch (error) {
             console.error("Failed to fetch workspaces", error);
+            setWorkspaces([]);
         } finally {
             setLoading(false);
         }

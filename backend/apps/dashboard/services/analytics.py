@@ -175,4 +175,79 @@ class CommandCenterAnalyticsService:
         except Exception:
             metrics["contracts"] = {"active_contracts": 0, "expiring_soon": 0, "sla_breaches": 0}
 
+        # ── 10. Projects / PSA ─────────────────────────────────────────────────
+        try:
+            from apps.projects.models import Project, Task
+            projects = Project.objects.all()
+            tasks = Task.objects.all()
+            if tenant:
+                projects = projects.filter(tenant=tenant)
+                tasks = tasks.filter(tenant=tenant)
+            metrics["projects"] = {
+                "active_projects": projects.filter(status__in=["active", "in_progress"]).count(),
+                "total_projects": projects.count(),
+                "overdue_tasks": tasks.filter(
+                    status__in=["todo", "in_progress"],
+                    due_date__lt=now
+                ).count() if hasattr(Task, 'due_date') else 0,
+            }
+        except Exception:
+            metrics["projects"] = {"active_projects": 0, "total_projects": 0, "overdue_tasks": 0}
+
+        # ── 11. ITAM (IT Asset Management) ─────────────────────────────────────
+        try:
+            from apps.itam.models import Asset
+            assets = Asset.objects.all()
+            if tenant:
+                assets = assets.filter(tenant=tenant)
+            metrics["itam"] = {
+                "total_assets": assets.count(),
+                "active_assets": assets.filter(status="active").count() if hasattr(Asset, 'status') else assets.count(),
+            }
+        except Exception:
+            metrics["itam"] = {"total_assets": 0, "active_assets": 0}
+
+        # ── 12. Approvals ──────────────────────────────────────────────────────
+        try:
+            from apps.approvals.models import ApprovalRequest
+            approvals = ApprovalRequest.objects.all()
+            if tenant:
+                approvals = approvals.filter(tenant=tenant)
+            metrics["approvals"] = {
+                "pending": approvals.filter(status="pending").count(),
+                "approved_today": approvals.filter(
+                    status="approved", decided_at__date=now.date()
+                ).count(),
+                "total": approvals.count(),
+            }
+        except Exception:
+            metrics["approvals"] = {"pending": 0, "approved_today": 0, "total": 0}
+
+        # ── 13. ITSM (Change Management) ───────────────────────────────────────
+        try:
+            from apps.itsm.models import ChangeRequest
+            changes = ChangeRequest.objects.all()
+            if tenant:
+                changes = changes.filter(tenant=tenant)
+            metrics["itsm"] = {
+                "open_changes": changes.filter(status__in=["draft", "submitted", "in_progress"]).count(),
+                "high_risk": changes.filter(risk_level="high", status__in=["draft", "submitted"]).count(),
+                "completed": changes.filter(status="completed").count(),
+            }
+        except Exception:
+            metrics["itsm"] = {"open_changes": 0, "high_risk": 0, "completed": 0}
+
+        # ── 14. Documents ──────────────────────────────────────────────────────
+        try:
+            from apps.documents.models import Document
+            docs = Document.objects.all()
+            if tenant:
+                docs = docs.filter(tenant=tenant)
+            metrics["documents"] = {
+                "total": docs.count(),
+                "archived": docs.filter(is_archived=True).count(),
+            }
+        except Exception:
+            metrics["documents"] = {"total": 0, "archived": 0}
+
         return metrics

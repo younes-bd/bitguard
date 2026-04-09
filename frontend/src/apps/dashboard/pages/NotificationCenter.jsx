@@ -30,7 +30,7 @@ const NotificationCenter = () => {
     const fetchNotifications = () => {
         setLoading(true);
         const params = filter !== 'all' ? { is_read: filter === 'read', limit: 100 } : { limit: 100 };
-        client.get('/notifications/', { params })
+        client.get('notifications/', { params })
             .then(r => { setNotifications(r.data?.results ?? r.data ?? []); setLoading(false); })
             .catch(() => setLoading(false));
     };
@@ -38,7 +38,7 @@ const NotificationCenter = () => {
     useEffect(() => { fetchNotifications(); }, [filter]);
 
     const markAllRead = async () => {
-        await client.post('/notifications/mark-all-read/').catch(() => { });
+        await client.post('notifications/mark-all-read/').catch(() => { });
         fetchNotifications();
     };
 

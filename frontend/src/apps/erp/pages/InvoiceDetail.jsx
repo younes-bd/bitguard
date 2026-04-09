@@ -55,7 +55,7 @@ const InvoiceDetail = () => {
             {/* Toolbar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <button
-                    onClick={() => navigate('/erp/invoices')}
+                    onClick={() => navigate('/admin/erp/invoices')}
                     className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
                 >
                     <ArrowLeft size={18} />

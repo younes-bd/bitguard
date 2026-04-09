@@ -1,20 +1,89 @@
-import React from 'react';
-import { DollarSign, TrendingUp, TrendingDown, FileText, CreditCard } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { DollarSign, TrendingUp, TrendingDown, FileText, CreditCard, Loader2 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import client from '../../../core/api/client';
+import { erpService } from '../../../core/api/erpService';
 
 const FinancialsDashboard = () => {
-    // Mock Data for MVP
+    const [metrics, setMetrics] = useState(null);
+    const [expenses, setExpenses] = useState([]);
+    const [payments, setPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFinances = async () => {
+            try {
+                const [metricsRes, expRes, payRes] = await Promise.all([
+                    client.get('dashboard/metrics/'),
+                    erpService.getExpenses(),
+                    erpService.getPayments()
+                ]);
+                
+                setMetrics(metricsRes.data?.data || {});
+                
+                // Handle paginated or direct array responses
+                setExpenses(expRes.results ? expRes.results : (Array.isArray(expRes) ? expRes : []));
+                setPayments(payRes.results ? payRes.results : (Array.isArray(payRes) ? payRes : []));
+            } catch (err) {
+                console.error("Failed to load financials", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFinances();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen w-full">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            </div>
+        );
+    }
+
+    // Calculations
+    const erpMetrics = metrics?.erp || {};
+    const storeMetrics = metrics?.store || {};
+    const crmMetrics = metrics?.crm || {};
+    
+    // Total Revenue = payments logic + lifetime store rev + crm rev 
+    // Usually admin wants the aggregate sum
+    const totalRevenue = (storeMetrics.lifetime_revenue || 0) + (crmMetrics.recent_revenue || 0) + 
+                         payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+                         
+    const totalExpenses = expenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    const netProfit = totalRevenue - totalExpenses;
+    const pendingInvoices = erpMetrics.open_invoices || 0;
+
     const stats = [
-        { label: 'Total Revenue', value: '$124,500', change: '+12%', icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-        { label: 'Total Expenses', value: '$45,200', change: '+5%', icon: CreditCard, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-        { label: 'Net Profit', value: '$79,300', change: '+18%', icon: TrendingUp, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
-        { label: 'Pending Invoices', value: '12', change: '$14k', icon: FileText, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+        { label: 'Total Revenue', value: `$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, change: 'Live', icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+        { label: 'Total Expenses', value: `$${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, change: 'Live', icon: CreditCard, color: 'text-rose-400', bg: 'bg-rose-500/10' },
+        { label: 'Net Profit', value: `$${netProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, change: 'Est.', icon: TrendingUp, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
+        { label: 'Pending Invoices', value: pendingInvoices.toString(), change: 'Unpaid', icon: FileText, color: 'text-amber-400', bg: 'bg-amber-500/10' },
     ];
 
-    const transactions = [
-        { id: 1, desc: 'Office Supplies', date: '2025-01-08', amount: -250.00, type: 'expense' },
-        { id: 2, desc: 'Client Payment - TechCorp', date: '2025-01-08', amount: 4500.00, type: 'income' },
-        { id: 3, desc: 'Server Hosting', date: '2025-01-07', amount: -120.00, type: 'expense' },
-        { id: 4, desc: 'Consulting Fee - StartupInc', date: '2025-01-06', amount: 2100.00, type: 'income' },
+    // Combine Payments & Expenses into single Transaction log
+    const rawTransactions = [
+        ...payments.map(p => ({
+            id: `p-${p.id}`, desc: `Payment - ${p.reference_number || p.id}`, date: p.payment_date || p.created_at, amount: parseFloat(p.amount), type: 'income'
+        })),
+        ...expenses.map(e => ({
+            id: `e-${e.id}`, desc: e.description || e.category || 'Expense', date: e.expense_date || e.created_at, amount: parseFloat(e.amount), type: 'expense'
+        }))
+    ];
+    
+    // Sort by newest
+    rawTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const transactions = rawTransactions.slice(0, 8); // Top 8
+
+    // Build Mock Chart Data for the last 6 months (since we don't have historical grouping endpoints readily available)
+    const mockChartData = [
+        { name: 'Jan', income: 40000, expense: 24000 },
+        { name: 'Feb', income: 30000, expense: 13980 },
+        { name: 'Mar', income: 20000, expense: 9800 },
+        { name: 'Apr', income: 27800, expense: 39080 },
+        { name: 'May', income: 18900, expense: 4800 },
+        { name: 'Jun', income: Math.max(20000, totalRevenue / 2), expense: Math.max(5000, totalExpenses / 2) },
     ];
 
     return (
@@ -50,20 +119,20 @@ const FinancialsDashboard = () => {
                             <option>This Year</option>
                         </select>
                     </div>
-                    <div className="h-64 flex items-end gap-2 justify-between px-4 pb-4 border-b border-slate-700/50">
-                        {/* CSS Bar Chart Simulation */}
-                        {[40, 60, 45, 70, 55, 80, 65, 90, 75, 50, 85, 95].map((h, i) => (
-                            <div key={i} className="w-full bg-indigo-500/20 hover:bg-indigo-500/40 rounded-t transition-all relative group" style={{ height: `${h}%` }}>
-                                <div className="absolute inset-x-0 bottom-0 bg-indigo-500 opacity-60 h-[30%] rounded-t"></div>
-                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                    ${h}k
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-between text-xs text-slate-500 mt-2 px-2">
-                        <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-                        <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                    <div className="h-72 mt-4 text-sm">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={mockChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                                <XAxis dataKey="name" stroke="#64748b" axisLine={false} tickLine={false} />
+                                <YAxis stroke="#64748b" axisLine={false} tickLine={false} tickFormatter={(val) => `$${val/1000}k`} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px', color: '#f8fafc' }}
+                                    formatter={(value) => [`$${value.toLocaleString()}`]}
+                                />
+                                <Bar dataKey="income" fill="#10b981" radius={[4, 4, 0, 0]} barSize={20} />
+                                <Bar dataKey="expense" fill="#f43f5e" radius={[4, 4, 0, 0]} barSize={20} />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
 
@@ -71,22 +140,26 @@ const FinancialsDashboard = () => {
                 <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
                     <h2 className="text-lg font-bold text-white mb-6">Recent Transactions</h2>
                     <div className="space-y-4">
-                        {transactions.map(tx => (
-                            <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-700/50 transition-colors">
+                        {transactions.length > 0 ? transactions.map(tx => (
+                            <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-700/50 transition-colors border border-transparent hover:border-slate-700">
                                 <div className="flex items-center gap-3">
                                     <div className={`p-2 rounded-full ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
                                         {tx.type === 'income' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                                     </div>
                                     <div>
-                                        <div className="text-sm font-medium text-white">{tx.desc}</div>
-                                        <div className="text-xs text-slate-500">{tx.date}</div>
+                                        <div className="text-sm font-medium text-white line-clamp-1">{tx.desc}</div>
+                                        <div className="text-xs text-slate-500">{new Date(tx.date).toLocaleDateString()}</div>
                                     </div>
                                 </div>
-                                <div className={`font-bold text-sm ${tx.type === 'income' ? 'text-emerald-400' : 'text-white'}`}>
-                                    {tx.type === 'income' ? '+' : ''}${Math.abs(tx.amount)}
+                                <div className={`font-bold text-sm shrink-0 pl-4 ${tx.type === 'income' ? 'text-emerald-400' : 'text-white'}`}>
+                                    {tx.type === 'income' ? '+' : '-'}${Math.abs(tx.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </div>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="text-center p-6 text-slate-500">
+                                No recent ledger entries.
+                            </div>
+                        )}
                     </div>
                     <button className="w-full mt-6 py-2 rounded-lg border border-slate-700 text-slate-300 text-sm hover:bg-slate-700 transition-colors">
                         View All transactions

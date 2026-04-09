@@ -28,7 +28,7 @@ const ClientCreate = () => {
         setLoading(true);
         try {
             await crmService.createClient(formData);
-            navigate('/crm/clients');
+            navigate('/admin/crm/clients');
         } catch (error) {
             console.error("Failed to create client", error);
             alert("Failed to create client. Please check your data.");
@@ -48,7 +48,7 @@ const ClientCreate = () => {
                     <p className="text-slate-400">Onboard a new client to the system.</p>
                 </div>
                 <button
-                    onClick={() => navigate('/crm/clients')}
+                    onClick={() => navigate('/admin/crm/clients')}
                     className="p-2 text-slate-400 hover:text-white transition-colors"
                 >
                     <X size={24} />
@@ -155,7 +155,7 @@ const ClientCreate = () => {
                 <div className="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-slate-700/50">
                     <button
                         type="button"
-                        onClick={() => navigate('/crm/clients')}
+                        onClick={() => navigate('/admin/crm/clients')}
                         className="px-6 py-2 text-slate-400 hover:text-white font-bold transition-colors"
                     >
                         Cancel

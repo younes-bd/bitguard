@@ -7,7 +7,7 @@ const CrmReport = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        client.get('/reports/crm/')
+        client.get('reports/crm/')
             .then(r => { setData(r.data?.data ?? {}); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);

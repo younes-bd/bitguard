@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Outlet, useLocation, Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/shared/core/Sidebar';
 import {
     Menu, Bell, LogOut, Settings, User as UserIcon, ChevronDown, Search, Shield, LayoutDashboard
@@ -16,9 +16,14 @@ const ConsoleLayout = () => {
     const location = useLocation();
     const { hasProduct } = useTenant();
     const { user, logout } = useAuth(); // Use centralized auth
+    const navigate = useNavigate();
     const [sidebarCollapsed, setSidebarCollapsed] = useSidebarState();
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
     const dropdownRef = useRef(null);
+    const searchRef = useRef(null);
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -35,6 +40,43 @@ const ConsoleLayout = () => {
     const handleLogout = () => {
         logout(); // Use context logout
     };
+
+    // Search handler — filters all admin menu items by label
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        if (query.trim().length < 2) {
+            setSearchResults([]);
+            setShowSearchResults(false);
+            return;
+        }
+        const q = query.toLowerCase();
+        const results = [];
+        adminMenu.forEach(item => {
+            if (item.label?.toLowerCase().includes(q)) {
+                results.push(item);
+            }
+            if (item.children) {
+                item.children.forEach(child => {
+                    if (child.label?.toLowerCase().includes(q)) {
+                        results.push({ ...child, parentLabel: item.label });
+                    }
+                });
+            }
+        });
+        setSearchResults(results.slice(0, 8));
+        setShowSearchResults(true);
+    };
+
+    // Close search results on click outside
+    useEffect(() => {
+        function handleClickOutsideSearch(event) {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setShowSearchResults(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutsideSearch);
+        return () => document.removeEventListener('mousedown', handleClickOutsideSearch);
+    }, []);
 
     // Filter Menu based on Bundle AND Permissions
     // We only show the MAIN ADMIN MENU here.
@@ -88,17 +130,38 @@ const ConsoleLayout = () => {
                         </span>
                     </div>
 
-                    {/* Center: Search Bar (Restored) */}
-                    <div className="hidden md:flex items-center flex-1 max-w-xl mx-8">
+                    {/* Center: Search Bar (Functional) */}
+                    <div className="hidden md:flex items-center flex-1 max-w-xl mx-8" ref={searchRef}>
                         <div className="relative w-full group">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Search className="h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search users, logs, or settings..."
+                                placeholder="Search modules, pages, settings..."
+                                value={searchQuery}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
                                 className="block w-full pl-10 pr-3 py-2 border border-slate-700 rounded-full leading-5 bg-slate-900 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-lg shadow-black/20"
                             />
+                            {showSearchResults && searchResults.length > 0 && (
+                                <div className="absolute top-full mt-2 w-full bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+                                    {searchResults.map((item, i) => (
+                                        <Link
+                                            key={i}
+                                            to={item.path || '#'}
+                                            onClick={() => { setShowSearchResults(false); setSearchQuery(''); }}
+                                            className="flex items-center gap-3 px-4 py-3 hover:bg-blue-500/10 transition-colors border-b border-slate-800 last:border-0"
+                                        >
+                                            <Search size={14} className="text-slate-500" />
+                                            <div>
+                                                <p className="text-sm text-white font-medium">{item.label}</p>
+                                                {item.parentLabel && <p className="text-xs text-slate-500">{item.parentLabel}</p>}
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -124,11 +187,11 @@ const ConsoleLayout = () => {
                             <button className="flex items-center bg-transparent border-none p-0 cursor-pointer group hover:opacity-100 transition-opacity">
                                 <div className="w-9 h-9 relative">
                                     <div className="absolute inset-0 bg-blue-500 blur-sm opacity-20 group-hover:opacity-50 transition-opacity rounded-full"></div>
-                                    {user.avatar ? (
+                                    {user?.avatar ? (
                                         <img src={user.avatar} alt="User" className="w-full h-full object-cover rounded-full border border-slate-900 relative z-10" />
                                     ) : (
                                         <div className="w-full h-full rounded-full border border-slate-900 relative z-10 bg-slate-800 flex items-center justify-center text-xs font-bold text-white">
-                                            {(user.first_name?.[0] || 'A').toUpperCase()}
+                                            {(user?.first_name?.[0] || 'A').toUpperCase()}
                                         </div>
                                     )}
                                     <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-slate-950 rounded-full z-20"></div>
@@ -141,8 +204,8 @@ const ConsoleLayout = () => {
                                     {/* User Header */}
                                     <div className="p-4 border-b border-white/5 bg-gradient-to-r from-blue-900/20 to-transparent relative overflow-hidden">
                                         <div className="absolute top-0 right-0 text-[100px] leading-none text-blue-500/5 -translate-y-1/2 translate-x-1/2 pointer-events-none font-bold">A</div>
-                                        <div className="font-bold text-white mb-0.5 tracking-tight text-lg">{user.first_name || 'Admin'}</div>
-                                        <div className="text-xs text-blue-400/80 truncate font-mono">{user.email}</div>
+                                        <div className="font-bold text-white mb-0.5 tracking-tight text-lg">{user?.first_name || 'Admin'}</div>
+                                        <div className="text-xs text-blue-400/80 truncate font-mono">{user?.email || 'admin@example.com'}</div>
                                     </div>
 
                                     {/* Menu Items */}
@@ -157,7 +220,7 @@ const ConsoleLayout = () => {
                                             <span className="font-medium">Dashboard</span>
                                         </Link>
                                         <Link
-                                            to="/users/profile"
+                                            to="/account/personal-info"
                                             className="flex items-center gap-3 w-full text-slate-300 p-2.5 rounded-lg text-sm hover:bg-blue-500/10 hover:text-blue-400 transition-all duration-300 group/item border border-transparent hover:border-blue-500/20"
                                         >
                                             <div className="w-6 h-6 rounded bg-slate-900 flex items-center justify-center text-blue-500/50 group-hover/item:text-blue-400 group-hover/item:bg-blue-500/20 transition-colors">
@@ -166,7 +229,7 @@ const ConsoleLayout = () => {
                                             <span className="font-medium">Profile</span>
                                         </Link>
                                         <Link
-                                            to="/users/settings"
+                                            to="/account/security"
                                             className="flex items-center gap-3 w-full text-slate-300 p-2.5 rounded-lg text-sm hover:bg-blue-500/10 hover:text-blue-400 transition-all duration-300 group/item border border-transparent hover:border-blue-500/20"
                                         >
                                             <div className="w-6 h-6 rounded bg-slate-900 flex items-center justify-center text-blue-500/50 group-hover/item:text-blue-400 group-hover/item:bg-blue-500/20 transition-colors">

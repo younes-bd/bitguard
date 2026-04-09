@@ -39,7 +39,7 @@ const ClientList = () => {
                     <p className="text-slate-400">Manage customer relationships and profiles.</p>
                 </div>
                 <button
-                    onClick={() => navigate('/crm/clients/create')}
+                    onClick={() => navigate('/admin/crm/clients/create')}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg hover:shadow-blue-500/20 transition-all"
                 >
                     Add Client

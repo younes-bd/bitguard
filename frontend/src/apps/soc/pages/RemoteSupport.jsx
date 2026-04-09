@@ -16,9 +16,10 @@ const RemoteSupport = () => {
         setLoading(true);
         try {
             const data = await platformService.getRemoteSessions();
-            setSessions(data);
+            setSessions(Array.isArray(data) ? data : (data?.results || data?.data || []));
         } catch (error) {
             console.error("Failed to fetch remote sessions", error);
+            setSessions([]);
         } finally {
             setLoading(false);
         }

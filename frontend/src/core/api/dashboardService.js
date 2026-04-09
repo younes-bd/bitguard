@@ -1,23 +1,35 @@
 import client from './client';
 
+/**
+ * Dashboard Service (core/api layer)
+ * Proxies to the canonical dashboard BFF endpoints.
+ * The authoritative service is at apps/dashboard/api/dashboardService.js
+ * This file keeps backward-compatibility for any imports from core/api/.
+ */
 export const dashboardService = {
-    // Fetch aggregated stats
-    // Fetch aggregated stats from the new unified backend endpoint
     getStats: async () => {
         try {
-            const response = await client.get('core/dashboard/kpi/');
-            return response.data;
+            const response = await client.get('dashboard/metrics/');
+            return response.data?.data ?? response.data ?? {};
         } catch (error) {
             console.error("Dashboard Stats Error:", error);
             throw error;
         }
     },
 
-    // Fetch recent activity (Mocked for now, or map from Logs)
+    getHealth: async () => {
+        try {
+            const response = await client.get('dashboard/health/');
+            return response.data?.data ?? response.data ?? {};
+        } catch (error) {
+            console.error("Dashboard Health Error:", error);
+            throw error;
+        }
+    },
+
     getRecentActivity: async () => {
-        return [
-            { id: 1, text: "System System initialization complete", time: "Just now", type: "system" },
-            { id: 2, text: "API Verification passed", time: "1 hour ago", type: "success" },
-        ];
+        return [];
     }
 };
+
+export default dashboardService;

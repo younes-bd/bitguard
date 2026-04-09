@@ -65,28 +65,21 @@ class QuoteViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def accept(self, request, pk=None):
-        """Accept quote and auto-generate an ERP Invoice."""
+        """Accept quote and auto-generate a Billing Invoice."""
         quote = self.get_object()
         if quote.status != 'sent':
             return Response({'error': 'Only sent quotes can be accepted.'}, status=status.HTTP_400_BAD_REQUEST)
         with transaction.atomic():
             quote.status = 'accepted'
             quote.save(update_fields=['status'])
-            # Auto-generate ERP Invoice
-            from apps.erp.models import Invoice
-            from django.utils import timezone
-            invoice = Invoice.objects.create(
-                tenant=quote.tenant,
-                client=quote.client,
-                invoice_number=f"INV-Q{str(quote.id)[:8].upper()}",
-                amount=quote.total,
-                issue_date=timezone.now().date(),
-                due_date=quote.valid_until or timezone.now().date(),
-                status='draft',
-            )
-            AuditService.log_action(request, action="QUOTE_ACCEPTED_INVOICE_GENERATED",
-                resource=f"contracts.Quote:{quote.pk}",
-                payload={"invoice_id": str(invoice.pk), "amount": float(quote.total)})
+            
+            # Auto-generate Billing Invoice using BillingService
+            from apps.billing.services import BillingService
+            try:
+                invoice = BillingService.create_invoice_from_quote(request, str(quote.id))
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                
         return Response({'status': 'accepted', 'invoice_id': str(invoice.pk)})
 
     @action(detail=True, methods=['post'])

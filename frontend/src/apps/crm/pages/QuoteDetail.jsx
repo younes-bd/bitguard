@@ -33,7 +33,7 @@ const QuoteDetail = () => {
             const response = await client.post(`crm/quotes/${id}/${action}/`);
             if (action === 'accept' && response.data.invoice_id) {
                 alert(`Quote Accepted! Invoice #${response.data.invoice_id} created.`);
-                navigate(`/erp/invoices/${response.data.invoice_id}`);
+                navigate(`/admin/billing/invoices`);
             } else {
                 fetchQuote(); // Refresh status
             }
@@ -54,7 +54,7 @@ const QuoteDetail = () => {
         <div className="space-y-6">
             {/* Back Button */}
             <button
-                onClick={() => navigate('/crm/quotes')}
+                onClick={() => navigate('/admin/crm/quotes')}
                 className="flex items-center text-slate-400 hover:text-white mb-6 transition-colors"
             >
                 <ArrowLeft size={18} className="mr-2" />

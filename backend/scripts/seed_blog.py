@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from integrations.blog.models import Post, Category
+from apps.blog.models import Post, Category
 
 def seed_blog():
     print("Starting blog seeding process...")

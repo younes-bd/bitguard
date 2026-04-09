@@ -1,28 +1,30 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Toaster, toast } from 'react-hot-toast';
 import PublicLayout from './layouts/PublicLayout';
 import AccountsLayout from './layouts/AccountsLayout';
 import ProtectedRoute from './api/auth/ProtectedRoute';
+
+// Override global alert to utilize enterprise toast notifications
+const originalAlert = window.alert;
+window.alert = (message) => {
+    toast(message, {
+        icon: '🔔',
+        style: {
+            borderRadius: '10px',
+            background: '#1e293b',
+            color: '#fff',
+            border: '1px solid #334155'
+        },
+    });
+};
 
 // Public/Auth Pages
 import Login from '../apps/auth/pages/Login';
 import Register from '../apps/auth/pages/Register';
 import ForgotPassword from '../apps/auth/pages/ForgotPassword';
-import LandingPage from '../apps/website/pages/LandingPage';
-import About from '../apps/website/pages/About';
-import Contact from '../apps/website/pages/Contact';
-import Support from '../apps/website/pages/Support';
-import ServiceDetail from '../apps/website/pages/ServiceDetail';
-import Team from '../apps/website/pages/Team';
-import Careers from '../apps/website/pages/Careers';
-import Brochure from '../apps/website/pages/Brochure';
-import Events from '../apps/website/pages/Events';
-import FreeTools from '../apps/website/pages/FreeTools';
-import Podcasts from '../apps/website/pages/Podcasts';
-import Reports from '../apps/website/pages/Reports';
-import Compliance from '../apps/website/pages/Compliance';
-import BlogList from '../apps/website/pages/BlogList';
-import BlogPost from '../apps/website/pages/BlogPost';
+import { WebsiteRoutes } from '../apps/website/routes/WebsiteRoutes';
+import { BlogRoutes } from '../apps/blog/routes/BlogRoutes';
 
 // Feature Pages - Store
 import ProductCatalog from '../apps/store/pages/ProductCatalog';
@@ -65,29 +67,15 @@ const AppContent = () => {
     return (
         <Routes>
             {/* Public Routes with Layout */}
-            <Route element={<PublicLayout />}>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/support" element={<Support />} />
-                <Route path="/platform/:slug" element={<ServiceDetail />} />
-                <Route path="/solutions/:slug" element={<ServiceDetail />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/careers" element={<Careers />} />
-                <Route path="/events" element={<Events />} />
-                <Route path="/free-tools" element={<FreeTools />} />
-                <Route path="/podcasts" element={<Podcasts />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/compliance" element={<Compliance />} />
-                <Route path="/blog" element={<BlogList />} />
-                <Route path="/blog/:slug" element={<BlogPost />} />
+            {/* Public Modular Feature Routes */}
+            <Route path="/*" element={<WebsiteRoutes />} />
+            <Route path="/blog/*" element={<BlogRoutes />} />
 
-                {/* Public Store Routes */}
+            {/* Public Store Routes */}
+            <Route element={<PublicLayout />}>
                 <Route path="/store" element={<ProductCatalog />} />
                 <Route path="/store/:slug" element={<ProductDetail />} />
-            </Route >
-
-            <Route path="/brochure/:slug" element={<Brochure />} />
+            </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -122,15 +110,15 @@ const AppContent = () => {
             <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
                 {/* 
                     If user is admin (staff), they get the AppRoutes (Management).
-                    If user is not admin (Tenant/Shopper), they get PortalRoutes (Unified Portal).
-                    
-                    PortalRoutes contains Store, CRM, ERP, etc.
+                    PortalRoutes (Unified Portal) is always available to test/use.
                  */}
-                {isAdmin ? EnterpriseRouter : PortalRoutes}
+                {isAdmin && EnterpriseRouter}
+                {PortalRoutes}
             </Route>
 
             {/* Redirects for legacy routes */}
-            <Route path="/dashboard" element={<Navigate to={isAdmin ? "/admin" : "/store"} replace />} />
+            <Route path="/dashboard" element={<Navigate to={isAdmin ? "/admin" : "/portal"} replace />} />
+            <Route path="/settings" element={<Navigate to="/admin/settings" replace />} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
@@ -144,6 +132,7 @@ const App = () => {
             <AuthProvider>
                 <TenantProvider>
                     <NotificationProvider>
+                        <Toaster position="top-right" reverseOrder={false} />
                         <AppContent />
                     </NotificationProvider >
                 </TenantProvider >

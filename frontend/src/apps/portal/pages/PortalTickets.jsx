@@ -12,7 +12,7 @@ const PortalTickets = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        client.get('/support/tickets/')
+        client.get('support/tickets/')
             .then(r => { setTickets(r.data?.results ?? r.data ?? []); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);

@@ -8,7 +8,13 @@ const CreateProductModal = ({ onClose, onSave, loading, initialData = null }) =>
         price: '',
         stock_quantity: 0,
         description: '',
-        status: 'Active'
+        status: 'Active',
+        brand: '',
+        vendor: '',
+        warranty_months: 12,
+        license_type: '',
+        specifications: {},
+        features: []
     };
 
     const [formData, setFormData] = useState(defaultState);
@@ -91,6 +97,55 @@ const CreateProductModal = ({ onClose, onSave, loading, initialData = null }) =>
                                 value={formData.price}
                                 onChange={handleChange}
                                 className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">Brand</label>
+                            <input
+                                type="text"
+                                name="brand"
+                                value={formData.brand}
+                                onChange={handleChange}
+                                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+                                placeholder="e.g., Cisco, Microsoft"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">Vendor</label>
+                            <input
+                                type="text"
+                                name="vendor"
+                                value={formData.vendor}
+                                onChange={handleChange}
+                                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+                                placeholder="Distributor name"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">Warranty (Months)</label>
+                            <input
+                                type="number"
+                                name="warranty_months"
+                                value={formData.warranty_months}
+                                onChange={handleChange}
+                                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">License Type</label>
+                            <input
+                                type="text"
+                                name="license_type"
+                                value={formData.license_type}
+                                onChange={handleChange}
+                                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+                                placeholder="Perpetual, SaaS, etc."
                             />
                         </div>
                     </div>

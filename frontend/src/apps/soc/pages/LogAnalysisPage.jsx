@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Database, Search, Filter, Download, RefreshCw, AlertTriangle, Info, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Database, Search, Filter, Download, RefreshCw, AlertTriangle, Info, AlertCircle, Loader2 } from 'lucide-react';
+import client from '../../../core/api/client';
 
 const SEVERITY_MAP = {
     critical: { color: 'bg-red-500/10 text-red-400 border-red-500/20', icon: AlertCircle },
@@ -8,22 +9,32 @@ const SEVERITY_MAP = {
     debug: { color: 'bg-slate-700 text-slate-400 border-slate-600', icon: Database },
 };
 
-const MOCK_LOGS = [
-    { id: 1, timestamp: '2026-03-21T12:45:00Z', source: 'firewall', severity: 'critical', message: 'Unauthorized access attempt from 192.168.1.45', count: 12 },
-    { id: 2, timestamp: '2026-03-21T12:30:00Z', source: 'endpoint', severity: 'warning', message: 'Signed binary not found in allowlist — agent flagged', count: 3 },
-    { id: 3, timestamp: '2026-03-21T12:15:00Z', source: 'cloud', severity: 'info', message: 'Azure AD sync completed successfully', count: 1 },
-    { id: 4, timestamp: '2026-03-21T12:00:00Z', source: 'siem', severity: 'warning', message: 'Unusual login pattern detected for user admin@acme.com', count: 5 },
-    { id: 5, timestamp: '2026-03-21T11:45:00Z', source: 'network', severity: 'info', message: 'DNS resolution spike on subdomain api.internal.corp', count: 1 },
-    { id: 6, timestamp: '2026-03-21T11:30:00Z', source: 'endpoint', severity: 'critical', message: 'Malware signature match on workstation WS-0042', count: 1 },
-];
-
 const LogAnalysisPage = () => {
     const [search, setSearch] = useState('');
     const [severityFilter, setSeverityFilter] = useState('all');
+    const [logs, setLogs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const filtered = MOCK_LOGS
+    const fetchLogs = async () => {
+        setLoading(true);
+        try {
+            const res = await client.get('soc/logs/');
+            const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
+            setLogs(data);
+        } catch (err) {
+            console.error("Failed to fetch logs", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchLogs();
+    }, []);
+
+    const filtered = logs
         .filter(l => severityFilter === 'all' || l.severity === severityFilter)
-        .filter(l => l.message.toLowerCase().includes(search.toLowerCase()) || l.source.toLowerCase().includes(search.toLowerCase()));
+        .filter(l => (l.message || '').toLowerCase().includes(search.toLowerCase()) || (l.source || '').toLowerCase().includes(search.toLowerCase()));
 
     return (
         <div className="space-y-6">
@@ -39,8 +50,8 @@ const LogAnalysisPage = () => {
                     <button className="px-3 py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-sm hover:bg-slate-700 transition-colors flex items-center gap-2">
                         <Download size={14} /> Export
                     </button>
-                    <button className="px-3 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm transition-colors flex items-center gap-2">
-                        <RefreshCw size={14} /> Refresh
+                    <button onClick={fetchLogs} className="px-3 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm transition-colors flex items-center gap-2">
+                        <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Refresh
                     </button>
                 </div>
             </div>
@@ -48,10 +59,10 @@ const LogAnalysisPage = () => {
             {/* KPI Tiles */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total Events', value: '12,847', color: 'text-white' },
-                    { label: 'Critical', value: MOCK_LOGS.filter(l => l.severity === 'critical').length, color: 'text-red-400' },
-                    { label: 'Warnings', value: MOCK_LOGS.filter(l => l.severity === 'warning').length, color: 'text-amber-400' },
-                    { label: 'Sources', value: new Set(MOCK_LOGS.map(l => l.source)).size, color: 'text-blue-400' },
+                    { label: 'Total Events', value: loading ? '...' : logs.length.toLocaleString(), color: 'text-white' },
+                    { label: 'Critical', value: loading ? '...' : logs.filter(l => l.severity === 'critical').length, color: 'text-red-400' },
+                    { label: 'Warnings', value: loading ? '...' : logs.filter(l => l.severity === 'warning').length, color: 'text-amber-400' },
+                    { label: 'Sources', value: loading ? '...' : new Set(logs.map(l => l.source)).size, color: 'text-blue-400' },
                 ].map(kpi => (
                     <div key={kpi.label} className="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors">
                         <div className="text-slate-400 text-xs uppercase font-bold mb-1">{kpi.label}</div>
@@ -101,7 +112,15 @@ const LogAnalysisPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.length === 0 ? (
+                        {loading && (
+                            <tr>
+                                <td colSpan={5} className="py-12 text-center text-slate-500">
+                                    <Loader2 size={32} className="mx-auto mb-2 animate-spin text-red-500" />
+                                    Querying SIEM database...
+                                </td>
+                            </tr>
+                        )}
+                        {!loading && filtered.length === 0 ? (
                             <tr><td colSpan={5} className="py-12 text-center text-slate-500">
                                 <Database size={32} className="mx-auto mb-2 opacity-20" />
                                 No log entries match your filters
@@ -115,15 +134,15 @@ const LogAnalysisPage = () => {
                                         {new Date(log.timestamp).toLocaleString()}
                                     </td>
                                     <td className="px-5 py-4">
-                                        <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-xs font-mono uppercase">{log.source}</span>
+                                        <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-xs font-mono uppercase">{log.source || 'SYSLOG'}</span>
                                     </td>
                                     <td className="px-5 py-4">
                                         <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border w-fit ${sev.color}`}>
-                                            <SevIcon size={11} /> {log.severity}
+                                            <SevIcon size={11} /> {log.severity || 'info'}
                                         </span>
                                     </td>
-                                    <td className="px-5 py-4 text-slate-300 max-w-md truncate">{log.message}</td>
-                                    <td className="px-5 py-4 text-slate-500 font-mono">{log.count}</td>
+                                    <td className="px-5 py-4 text-slate-300 max-w-md truncate">{log.message || log.event_data || 'Unknown event'}</td>
+                                    <td className="px-5 py-4 text-slate-500 font-mono">{log.count || 1}</td>
                                 </tr>
                             );
                         })}

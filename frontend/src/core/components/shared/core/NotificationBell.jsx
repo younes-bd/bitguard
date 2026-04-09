@@ -8,7 +8,8 @@ const NotificationBell = () => {
 
     const handleToggle = () => setIsOpen(!isOpen);
 
-    const unreadCount = notifications.length;
+    const safeNotifications = Array.isArray(notifications) ? notifications : [];
+    const unreadCount = safeNotifications.filter(n => !n.is_read).length;
 
     return (
         <div className="relative">
@@ -28,10 +29,10 @@ const NotificationBell = () => {
                         <h4 className="text-sm font-semibold text-white">Notifications</h4>
                     </div>
                     <div className="max-h-64 overflow-y-auto custom-scrollbar">
-                        {notifications.length === 0 ? (
+                        {safeNotifications.length === 0 ? (
                             <div className="p-4 text-center text-slate-500 text-sm">No notifications</div>
                         ) : (
-                            notifications.map(n => (
+                            safeNotifications.map(n => (
                                 <div key={n.id} className={`p-3 border-b border-slate-800 hover:bg-slate-800/50 transition-colors`}>
                                     <div className="flex justify-between items-start">
                                         <h5 className="text-sm font-medium text-slate-200">{n.title || 'Notification'}</h5>

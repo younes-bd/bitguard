@@ -10,7 +10,7 @@ export const authService = {
         return response.data.data;
     },
     register: async (userData) => {
-        const response = await client.post('users/users/', userData);
+        const response = await client.post('users/', userData);
         return response.data.data;
     },
     logout: () => {
@@ -19,7 +19,7 @@ export const authService = {
         // Clear cached headers if necessary (client interceptor handles new requests)
     },
     getCurrentUser: async () => {
-        const response = await client.get('users/users/me/');
+        const response = await client.get('users/me/');
         return response.data.data;
     }
 };

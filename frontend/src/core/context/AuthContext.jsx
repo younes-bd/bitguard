@@ -31,6 +31,11 @@ export const AuthProvider = ({ children }) => {
             return userData;
         } catch (error) {
             console.error("Failed to fetch user", error);
+            if (error.response?.status === 401) {
+                setIsAuthenticated(false);
+                setUser(null);
+                localStorage.removeItem('access_token');
+            }
         }
     };
 
@@ -38,6 +43,7 @@ export const AuthProvider = ({ children }) => {
         const initAuth = async () => {
             const token = localStorage.getItem('access_token');
             if (token) {
+                client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 setIsAuthenticated(true);
                 // Fetch full profile to get role
                 await fetchUser();

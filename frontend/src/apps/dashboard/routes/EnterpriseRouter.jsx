@@ -87,8 +87,11 @@ import CMSRoutes from '../../cms/routes/CMSRoutes';
 
 // Future Enhancement Modules
 import DocumentsDashboard from '../../documents/pages/DocumentsDashboard';
+import DocumentSettings from '../../documents/pages/DocumentSettings';
 import ApprovalsDashboard from '../../approvals/pages/ApprovalsDashboard';
+import ApprovalSettings from '../../approvals/pages/ApprovalSettings';
 import ItsmDashboard from '../../itsm/pages/ItsmDashboard';
+import ItsmSettings from '../../itsm/pages/ItsmSettings';
 
 export const EnterpriseRouter = (
     <>
@@ -230,16 +233,19 @@ export const EnterpriseRouter = (
         {/* Document Management */}
         <Route path="/admin/documents" element={<ModuleLayout title="Document Management" items={productMenu.documents[0].items} accentColor="cyan" />}>
             <Route index element={<DocumentsDashboard />} />
+            <Route path="settings" element={<DocumentSettings />} />
         </Route>
 
         {/* Approval Center */}
         <Route path="/admin/approvals" element={<ModuleLayout title="Approval Center" items={productMenu.approvals[0].items} accentColor="amber" />}>
             <Route index element={<ApprovalsDashboard />} />
+            <Route path="settings" element={<ApprovalSettings />} />
         </Route>
 
         {/* Change Management (ITSM) */}
         <Route path="/admin/itsm" element={<ModuleLayout title="Change Management" items={productMenu.itsm[0].items} accentColor="indigo" />}>
             <Route index element={<ItsmDashboard />} />
+            <Route path="settings" element={<ItsmSettings />} />
         </Route>
     </>
 );

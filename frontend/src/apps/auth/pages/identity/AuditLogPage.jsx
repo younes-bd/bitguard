@@ -8,7 +8,7 @@ const AuditLogPage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        client.get('/audit/logs/', { params: { search, limit: 100 } })
+        client.get('audit/logs/', { params: { search, limit: 100 } })
             .then(r => { setLogs(r.data?.results ?? r.data ?? []); setLoading(false); })
             .catch(() => setLoading(false));
     }, [search]);

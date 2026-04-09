@@ -10,7 +10,10 @@ const PlatformSettings = () => {
         company_name: 'BitGuard Corp',
         support_email: 'support@bitguard.com',
         default_currency: 'USD ($)',
-        timezone: 'UTC (GMT+0)'
+        timezone: 'UTC (GMT+0)',
+        primary_color: '#3b82f6',
+        accent_color: '#10b981',
+        brand_font: 'Inter'
     });
     const [saving, setSaving] = useState(false);
     const [notification, setNotification] = useState(null);
@@ -78,7 +81,8 @@ const PlatformSettings = () => {
                             { icon: Shield, label: 'Security Policy', active: false },
                             { icon: Bell, label: 'Notifications', active: false },
                             { icon: Database, label: 'Data Retention', active: false },
-                            { icon: Sliders, label: 'Integrations', active: false },
+                            { icon: Sliders, label: 'Integrations', active: false, key: 'integrations' },
+                            { icon: Paintbrush, label: 'Branding', active: false, key: 'branding' },
                         ].map((item, idx) => (
                             <button
                                 key={idx}
@@ -148,6 +152,44 @@ const PlatformSettings = () => {
                                     <option value="UTC (GMT+0)">UTC (GMT+0)</option>
                                     <option value="EST (GMT-5)">EST (GMT-5)</option>
                                     <option value="CET (GMT+1)">CET (GMT+1)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Branding Settings (Moved from Store) */}
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                        <h2 className="text-lg font-semibold text-white mb-4">Branding & Identity</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm text-slate-400">Primary Brand Color</label>
+                                <div className="flex gap-3">
+                                    <input type="color" value={settings.primary_color} onChange={(e) => handleChange('primary_color', e.target.value)} className="h-10 w-12 bg-slate-950 border border-slate-800 rounded cursor-pointer" />
+                                    <input type="text" value={settings.primary_color} onChange={(e) => handleChange('primary_color', e.target.value)} className="flex-1 bg-slate-950 border border-slate-800 text-slate-200 px-4 py-2 rounded-lg focus:outline-none" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm text-slate-400">Accent Color</label>
+                                <div className="flex gap-3">
+                                    <input type="color" value={settings.accent_color} onChange={(e) => handleChange('accent_color', e.target.value)} className="h-10 w-12 bg-slate-950 border border-slate-800 rounded cursor-pointer" />
+                                    <input type="text" value={settings.accent_color} onChange={(e) => handleChange('accent_color', e.target.value)} className="flex-1 bg-slate-950 border border-slate-800 text-slate-200 px-4 py-2 rounded-lg focus:outline-none" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm text-slate-400">Global Font Family</label>
+                                <select value={settings.brand_font} onChange={(e) => handleChange('brand_font', e.target.value)} className="w-full bg-slate-950 border border-slate-800 text-slate-200 px-4 py-2 rounded-lg focus:outline-none">
+                                    <option value="Inter">Inter (Default)</option>
+                                    <option value="Oswald">Oswald (Accent)</option>
+                                    <option value="Roboto">Roboto</option>
+                                    <option value="Outfit">Outfit</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm text-slate-400">Website Header Position</label>
+                                <select className="w-full bg-slate-950 border border-slate-800 text-slate-200 px-4 py-2 rounded-lg focus:outline-none">
+                                    <option value="fixed">Fixed (Sticky)</option>
+                                    <option value="absolute">Absolute (Overlay)</option>
+                                    <option value="static">Static</option>
                                 </select>
                             </div>
                         </div>

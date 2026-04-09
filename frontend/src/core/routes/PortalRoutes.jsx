@@ -16,6 +16,7 @@ import HrmDashboard from '../../apps/hrm/pages/dashboards/HrmDashboard';
 import ScmDashboard from '../../apps/scm/pages/dashboards/ScmDashboard';
 import SupportDashboard from '../../apps/support/pages/SupportDashboard';
 import MarketingDashboard from '../../apps/marketing/pages/MarketingDashboard';
+import ClientPortalDashboard from '../../apps/portal/pages/ClientPortalDashboard';
 
 import SubscriptionGuard from '../api/auth/SubscriptionGuard';
 import ProtectedRoute from '../api/auth/ProtectedRoute';
@@ -26,6 +27,7 @@ export const PortalRoutes = (
             Unified Portal Routes 
             Accessible to all authenticated non-admin users (Business & Personal)
         */}
+        <Route path="/portal" element={<ProtectedRoute><ClientPortalDashboard /></ProtectedRoute>} />
 
         {/* SaaS Products - Access controlled by subscription/purchases */}
 
