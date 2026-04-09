@@ -67,7 +67,7 @@ const ClientList = () => {
                 {clients.map(client => (
                     <div
                         key={client.id}
-                        onClick={() => navigate(`/crm/clients/${client.id}`)}
+                        onClick={() => navigate(`/admin/crm/clients/${client.id}`)}
                         className="glass-panel p-6 rounded-xl border border-slate-700/50 hover:border-blue-500/30 hover:bg-slate-800/80 transition-all cursor-pointer group"
                     >
                         <div className="flex justify-between items-start mb-4">

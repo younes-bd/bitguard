@@ -142,7 +142,7 @@ const InvoiceList = () => {
                                     <Download size={18} />
                                 </button>
                                 <button
-                                    onClick={() => navigate(`/erp/invoices/${inv.id}`)}
+                                    onClick={() => navigate(`/admin/erp/invoices/${inv.id}`)}
                                     className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-colors"
                                 >
                                     <ArrowUpRight size={18} />

@@ -114,7 +114,7 @@ const QuoteList = () => {
                                         </td>
                                         <td className="p-4 text-right">
                                             <button
-                                                onClick={() => navigate(`/crm/quotes/${quote.id}`)}
+                                                onClick={() => navigate(`/admin/contracts/quotes/${quote.id}`)}
                                                 className="p-2 text-slate-400 hover:text-white transition-colors"
                                             >
                                                 <Eye size={18} />
