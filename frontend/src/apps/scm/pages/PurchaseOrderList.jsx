@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Package, CheckCircle, Clock, Truck } from 'lucide-react';
 import scmService from '../../../core/api/scmService';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
 
 const statusBadge = (status) => {
     const map = {
@@ -15,12 +16,19 @@ const statusBadge = (status) => {
 
 const PurchaseOrderList = () => {
     const [orders, setOrders] = useState([]);
+    const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
 
     const fetchOrders = () => {
         setLoading(true);
-        scmService.getPurchaseOrders().then(d => {
+        Promise.all([
+            scmService.getPurchaseOrders().catch(() => []),
+            scmService.getVendors ? scmService.getVendors().catch(() => []) : Promise.resolve([])
+        ]).then(([d, vData]) => {
             setOrders(d?.results ?? d ?? []);
+            setVendors(vData?.results ?? vData ?? []);
             setLoading(false);
         }).catch(() => setLoading(false));
     };
@@ -32,6 +40,26 @@ const PurchaseOrderList = () => {
         fetchOrders();
     };
 
+    const handleCreate = async (formData) => {
+        setActionLoading(true);
+        try {
+            await scmService.createPurchaseOrder(formData);
+            setIsModalOpen(false);
+            fetchOrders();
+        } catch (error) {
+            alert('Failed to create purchase order');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const PO_FIELDS = [
+        { name: 'vendor_id', label: 'Vendor', type: 'select', required: true, options: vendors.map(v => ({ value: v.id, label: v.name })) },
+        { name: 'notes', label: 'Notes', type: 'textarea' },
+        { name: 'total_amount', label: 'Total Amount ($)', type: 'number', step: '0.01' }
+    ];
+
     return (
         <div className="p-6 lg:p-8 space-y-6 animate-in fade-in duration-400">
             <div className="flex justify-between items-center">
@@ -39,7 +67,7 @@ const PurchaseOrderList = () => {
                     <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase">Purchase Orders</h1>
                     <p className="text-slate-400 text-sm mt-0.5">{orders.length} orders</p>
                 </div>
-                <button className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                     <Plus size={16} /><span>New PO</span>
                 </button>
             </div>
@@ -78,6 +106,15 @@ const PurchaseOrderList = () => {
                     </tbody>
                 </table>
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Purchase Order"
+                fields={PO_FIELDS}
+                onSubmit={handleCreate}
+                loading={actionLoading}
+            />
         </div>
     );
 };

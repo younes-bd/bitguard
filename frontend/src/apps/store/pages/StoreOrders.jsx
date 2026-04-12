@@ -13,7 +13,7 @@ const StoreOrders = () => {
     const loadOrders = async () => {
         try {
             const data = await storeService.getOrders();
-            setOrders(data);
+            setOrders(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to load orders", error);
         } finally {
@@ -72,9 +72,9 @@ const StoreOrders = () => {
                             {orders.map((order) => (
                                 <tr key={order.id} className="hover:bg-slate-800/50 transition-colors">
                                     <td className="p-4 font-mono text-indigo-400">#{order.id}</td>
-                                    <td className="p-4 font-medium text-white">{order.customer}</td>
-                                    <td className="p-4 text-slate-400">{order.date}</td>
-                                    <td className="p-4 font-bold text-slate-200">${order.amount.toLocaleString()}</td>
+                                    <td className="p-4 font-medium text-white">{order.customer_name || 'Guest'}</td>
+                                    <td className="p-4 text-slate-400">{new Date(order.created_at).toLocaleDateString()}</td>
+                                    <td className="p-4 font-bold text-slate-200">${parseFloat(order.total_amount || 0).toFixed(2)}</td>
                                     <td className="p-4">
                                         <span className={`px-2 py-1 rounded text-xs font-bold border ${getStatusColor(order.status)}`}>
                                             {order.status}

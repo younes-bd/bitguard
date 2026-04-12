@@ -12,6 +12,7 @@ const InvoiceList = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [downloading, setDownloading] = useState(false);
 
     useEffect(() => {
         loadInvoices();
@@ -25,6 +26,17 @@ const InvoiceList = () => {
             console.error("Failed to load invoices", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDownload = async (id) => {
+        setDownloading(true);
+        try {
+            await erpService.downloadInvoice(id);
+        } catch (error) {
+            alert("Download failed. The PDF endpoint might not be ready on the backend.");
+        } finally {
+            setDownloading(false);
         }
     };
 
@@ -138,7 +150,11 @@ const InvoiceList = () => {
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <button className="p-2 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors">
+                                <button 
+                                    onClick={() => handleDownload(inv.id)}
+                                    disabled={downloading}
+                                    className="p-2 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors disabled:opacity-50"
+                                >
                                     <Download size={18} />
                                 </button>
                                 <button

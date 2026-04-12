@@ -65,10 +65,18 @@ const SocDashboard = () => {
                     <p className="text-slate-400 mt-1">Real-time threat monitoring and response console.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="px-4 py-2 bg-slate-800 text-slate-300 border border-slate-700 rounded-lg hover:text-white transition-colors text-sm font-medium">
+                    <button 
+                        onClick={() => navigate('/admin/security/logs')}
+                        className="px-4 py-2 bg-slate-800 text-slate-300 border border-slate-700 rounded-lg hover:text-white transition-colors text-sm font-medium"
+                    >
                         Export Report
                     </button>
-                    <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-indigo-500/20">
+                    <button 
+                        onClick={() => {
+                            alert('Network scan initiated... Deep packet inspection running.');
+                        }}
+                        className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-rose-500/20"
+                    >
                         Scan Network
                     </button>
                 </div>
@@ -134,7 +142,22 @@ const SocDashboard = () => {
                             <div className="font-semibold text-white">Asset Inventory</div>
                             <div className="text-xs text-slate-400">Manage Endpoints</div>
                         </button>
-                        {/* More buttons... */}
+                        <button
+                            onClick={() => navigate('/admin/security/workspaces')}
+                            className="p-4 bg-slate-700/30 hover:bg-slate-700/50 border border-slate-700/50 rounded-lg text-left transition-colors group"
+                        >
+                            <BoltIcon className="w-6 h-6 text-yellow-400 mb-2 group-hover:scale-110 transition-transform" />
+                            <div className="font-semibold text-white">Workspaces</div>
+                            <div className="text-xs text-slate-400">Environment Config</div>
+                        </button>
+                        <button
+                            onClick={() => navigate('/admin/security/remote')}
+                            className="p-4 bg-slate-700/30 hover:bg-slate-700/50 border border-slate-700/50 rounded-lg text-left transition-colors group"
+                        >
+                            <ArrowRightIcon className="w-6 h-6 text-blue-500 mb-2 group-hover:scale-110 transition-transform" />
+                            <div className="font-semibold text-white">Remote Console</div>
+                            <div className="text-xs text-slate-400">Direct Intervention</div>
+                        </button>
                     </div>
                 </div>
 

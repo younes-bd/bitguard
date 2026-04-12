@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Megaphone, Target, BarChart, Users } from 'lucide-react';
 import { marketingService } from '../api/marketingService';
 
 const MarketingDashboard = () => {
+    const navigate = useNavigate();
     const [campaigns, setCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -25,8 +28,20 @@ const MarketingDashboard = () => {
     }
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold text-white mb-6">Marketing Campaigns</h1>
+        <div className="p-6 lg:p-8 space-y-8 animate-in fade-in duration-500">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-white font-['Oswald'] tracking-wider uppercase">Marketing Automation</h1>
+                    <p className="text-slate-400 text-sm mt-1">Campaign performance and audience engagement</p>
+                </div>
+                <button
+                    onClick={() => navigate('/admin/marketing/campaigns')}
+                    className="flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg font-bold shadow-lg shadow-yellow-500/20 transition-all"
+                >
+                    <Plus size={18} />
+                    <span>Manage Campaigns</span>
+                </button>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">

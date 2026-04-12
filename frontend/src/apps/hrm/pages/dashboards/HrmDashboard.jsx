@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Users, Building2, UserCheck, Clock, Award, TrendingUp, AlertCircle } from 'lucide-react';
 import hrmService from '../../../../core/api/hrmService';
 
-const StatCard = ({ label, value, icon: Icon, color }) => (
-    <div className={`bg-slate-900 border border-slate-800 rounded-xl p-5 flex gap-4 items-center`}>
-        <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-500`}><Icon size={22} /></div>
+const StatCard = ({ label, value, icon: Icon, color, onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`bg-slate-900 border border-slate-800 rounded-xl p-5 flex gap-4 items-center cursor-pointer hover:border-${color}-500/50 transition-all group`}
+    >
+        <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-500 group-hover:scale-110 transition-transform`}><Icon size={22} /></div>
         <div>
             <p className="text-slate-400 text-xs uppercase tracking-wide">{label}</p>
-            <p className="text-2xl font-bold text-white">{value ?? '—'}</p>
+            <p className="text-2xl font-bold text-white group-hover:text-white/80 transition-colors">{value ?? '—'}</p>
         </div>
     </div>
 );
 
 const HrmDashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -22,12 +26,12 @@ const HrmDashboard = () => {
     }, []);
 
     const cards = [
-        { label: 'Total Employees', value: stats.headcount ?? stats.total_employees ?? 0, icon: Users, color: 'pink' },
-        { label: 'Departments', value: stats.departments ?? 0, icon: Building2, color: 'blue' },
-        { label: 'On Leave Today', value: stats.on_leave ?? 0, icon: UserCheck, color: 'amber' },
-        { label: 'Pending Leave Requests', value: stats.pending_leaves ?? 0, icon: AlertCircle, color: 'rose' },
-        { label: 'Time Entries (This Week)', value: stats.time_entries_week ?? 0, icon: Clock, color: 'indigo' },
-        { label: 'Active Certifications', value: stats.active_certifications ?? 0, icon: Award, color: 'emerald' },
+        { label: 'Total Employees', value: stats.headcount ?? stats.total_employees ?? 0, icon: Users, color: 'pink', path: '/admin/hrm/employees' },
+        { label: 'Departments', value: stats.departments ?? 0, icon: Building2, color: 'blue', path: '/admin/hrm/employees' },
+        { label: 'On Leave Today', value: stats.on_leave ?? 0, icon: UserCheck, color: 'amber', path: '/admin/hrm/leaves' },
+        { label: 'Pending Leave Requests', value: stats.pending_leaves ?? 0, icon: AlertCircle, color: 'rose', path: '/admin/hrm/leaves' },
+        { label: 'Time Entries (This Week)', value: stats.time_entries_week ?? 0, icon: Clock, color: 'indigo', path: '/admin/hrm/time' },
+        { label: 'Active Certifications', value: stats.active_certifications ?? 0, icon: Award, color: 'emerald', path: '/admin/hrm/certifications' },
     ];
 
     return (
@@ -41,7 +45,7 @@ const HrmDashboard = () => {
             ) : (
                 <>
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                        {cards.map(c => <StatCard key={c.label} {...c} />)}
+                        {cards.map(c => <StatCard key={c.label} {...c} onClick={() => navigate(c.path)} />)}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[

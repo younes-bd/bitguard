@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { AlertOctagon, Clock, User, ArrowUpCircle, CheckCircle } from 'lucide-react';
-import client from '../../../core/api/client';
+import { AlertOctagon, Clock, User, ArrowUpCircle, CheckCircle, UserPlus, Loader2 } from 'lucide-react';
+import supportService from '../../../core/api/supportService';
+import { iamService } from '../../../core/api/iamService';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
 
 const priorityBadge = (priority) => {
     const map = {
@@ -19,21 +21,63 @@ const priorityBadge = (priority) => {
 const EscalationList = () => {
     const [escalations, setEscalations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState([]);
+    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+    const [selectedTicket, setSelectedTicket] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        // Fetch high/critical tickets as escalations
-        client.get('support/tickets/?priority=critical&status=open')
-            .then(r => { setEscalations(r.data?.results ?? r.data ?? []); setLoading(false); })
-            .catch(() => {
-                // Fallback mock data
-                setEscalations([
-                    { id: 'ESC-001', subject: 'Server down - Production outage', status: 'open', priority: 'critical', client: 'Acme Corp', assigned_to: 'J. Martin', created_at: '2026-03-09T10:22:00Z' },
-                    { id: 'ESC-002', subject: 'Ransomware suspected on endpoint', status: 'open', priority: 'critical', client: 'Global Ltd', assigned_to: null, created_at: '2026-03-09T09:05:00Z' },
-                    { id: 'ESC-003', subject: 'VPN access broken for remote team', status: 'open', priority: 'high', client: 'StartupXYZ', assigned_to: 'A. Smith', created_at: '2026-03-08T14:30:00Z' },
-                ]);
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch critical/high tickets
+                const data = await supportService.getTickets({ priority: 'critical', status: 'open' });
+                setEscalations(Array.isArray(data) ? data : data.results || []);
+                
+                // Fetch users for assignment
+                const usersData = await iamService.getUsers();
+                setUsers(Array.isArray(usersData) ? usersData : usersData.results || []);
+            } catch (error) {
+                console.error("Fetch Escalations Error:", error);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+        fetchData();
     }, []);
+
+    const fetchEscalationsOnly = async () => {
+        try {
+            const data = await supportService.getTickets({ priority: 'critical', status: 'open' });
+            setEscalations(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleAssign = async (formData) => {
+        if (!selectedTicket) return;
+        setActionLoading(true);
+        try {
+            await supportService.assignTicket(selectedTicket.id, formData.assigned_to);
+            setIsAssignModalOpen(false);
+            await fetchEscalationsOnly();
+        } catch (error) {
+            alert("Failed to assign ticket");
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const ASSIGN_FIELDS = [
+        { 
+            name: 'assigned_to', 
+            label: 'Assign To Agent', 
+            type: 'select', 
+            options: users.map(u => ({ value: u.id, label: u.id })), // Using ID as label since name might be missing
+            required: true 
+        }
+    ];
 
     return (
         <div className="p-6 lg:p-8 space-y-6 animate-in fade-in duration-400">
@@ -78,9 +122,13 @@ const EscalationList = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
+                             <div className="flex items-center gap-2 flex-shrink-0">
                                 {priorityBadge(esc.priority)}
-                                <button className="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors px-2 py-1 rounded border border-blue-500/20 hover:border-blue-500/40">
+                                <button 
+                                    onClick={() => { setSelectedTicket(esc); setIsAssignModalOpen(true); }}
+                                    className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-blue-400 hover:text-blue-300 font-semibold transition-colors px-3 py-1.5 rounded-lg border border-blue-500/20 hover:border-blue-500/40"
+                                >
+                                    <UserPlus size={14} />
                                     Assign
                                 </button>
                             </div>
@@ -88,6 +136,15 @@ const EscalationList = () => {
                     </div>
                 ))}
             </div>
+
+            <GenericModal
+                isOpen={isAssignModalOpen}
+                onClose={() => setIsAssignModalOpen(false)}
+                title="Assign Escalation"
+                fields={ASSIGN_FIELDS}
+                onSubmit={handleAssign}
+                loading={actionLoading}
+            />
         </div>
     );
 };

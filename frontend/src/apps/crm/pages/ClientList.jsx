@@ -1,26 +1,93 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../core/api/crmService';
-import { Users, Search, Filter, Briefcase, MapPin, ExternalLink } from 'lucide-react';
+import { contractsService } from '../../../core/api/contractsService';
+import supportService from '../../../core/api/supportService';
+import { Users, Search, Filter, Briefcase, MapPin, ExternalLink, Edit2, Trash2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
 
 const ClientList = () => {
     const navigate = useNavigate();
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({ contracts: 0, tickets: 0 });
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedClient, setSelectedClient] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        const fetchClients = async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
-                const data = await crmService.getClients();
-                setClients(Array.isArray(data) ? data : data.results || []);
+                const [clientsData, contractsData, ticketsData] = await Promise.all([
+                    crmService.getClients(),
+                    contractsService.getContracts(),
+                    supportService.getTickets()
+                ]);
+                setClients(Array.isArray(clientsData) ? clientsData : clientsData.results || []);
+                setStats({
+                    contracts: contractsData.count || (Array.isArray(contractsData) ? contractsData.length : 0),
+                    tickets: ticketsData.count || (Array.isArray(ticketsData) ? ticketsData.length : 0)
+                });
             } catch (error) {
-                console.error(error);
+                console.error("Fetch Data Error:", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchClients();
+        fetchData();
     }, []);
+
+    const fetchOnlyClients = async () => {
+        try {
+            const data = await crmService.getClients();
+            setClients(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedClient) {
+                await crmService.updateClient(selectedClient.id, formData);
+            }
+            setIsEditModalOpen(false);
+            await fetchOnlyClients();
+        } catch (error) {
+            alert('Failed to update client');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedClient) return;
+        setActionLoading(true);
+        try {
+            await crmService.deleteClient(selectedClient.id);
+            setIsDeleteModalOpen(false);
+            await fetchOnlyClients();
+        } catch (error) {
+            alert('Failed to delete client');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const CLIENT_FIELDS = [
+        { name: 'name', label: 'Company Name', required: true },
+        { name: 'industry', label: 'Industry', placeholder: 'e.g. Technology' },
+        { name: 'contact_email', label: 'Contact Email', type: 'email', required: true },
+        { name: 'address', label: 'Business Address', type: 'textarea' },
+        { name: 'status', label: 'Status', type: 'select', options: [
+            { value: 'active', label: 'Active' },
+            { value: 'inactive', label: 'Inactive' }
+        ], default: 'active' }
+    ];
 
     if (loading) return (
         <div className="flex justify-center items-center h-64">
@@ -54,11 +121,11 @@ const ClientList = () => {
                 </div>
                 <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
                     <div className="text-slate-400 text-sm mb-1 uppercase font-bold">Active Contracts</div>
-                    <div className="text-3xl font-bold text-emerald-400">--</div>
+                    <div className="text-3xl font-bold text-emerald-400">{stats.contracts}</div>
                 </div>
                 <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
                     <div className="text-slate-400 text-sm mb-1 uppercase font-bold">Pending Tickets</div>
-                    <div className="text-3xl font-bold text-yellow-400">--</div>
+                    <div className="text-3xl font-bold text-yellow-400">{stats.tickets}</div>
                 </div>
             </div>
 
@@ -83,7 +150,21 @@ const ClientList = () => {
                                     </div>
                                 </div>
                             </div>
-                            <ExternalLink size={18} className="text-slate-600 group-hover:text-blue-400 transition-colors" />
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedClient(client); setIsEditModalOpen(true); }}
+                                    className="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                >
+                                    <Edit2 size={16} />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedClient(client); setIsDeleteModalOpen(true); }}
+                                    className="p-1.5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg transition-colors"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                                <ExternalLink size={18} className="text-slate-600 group-hover:text-blue-400 transition-colors ml-2" />
+                            </div>
                         </div>
 
                         <div className="space-y-3 mb-4">
@@ -105,18 +186,33 @@ const ClientList = () => {
                         </div>
                     </div>
                 ))}
-
                 {clients.length === 0 && (
                     <div className="col-span-full text-center py-12 text-slate-500">
                         No clients found. Start by adding one.
                     </div>
                 )}
             </div>
+
+            <GenericModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                title="Edit Client"
+                fields={CLIENT_FIELDS}
+                initialData={selectedClient}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Client"
+                message={`Are you sure you want to delete ${selectedClient?.name}? All associated data will be removed.`}
+                loading={actionLoading}
+            />
         </div>
     );
 };
 
 export default ClientList;
-
-
-

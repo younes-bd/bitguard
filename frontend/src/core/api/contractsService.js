@@ -20,6 +20,7 @@ export const contractsService = {
     getSlaTiers: () => client.get(`${base}/sla-tiers/`).then(r => r.data?.results ?? r.data ?? []),
     createSlaTier: (data) => client.post(`${base}/sla-tiers/`, data).then(r => r.data),
     updateSlaTier: (id, data) => client.patch(`${base}/sla-tiers/${id}/`, data).then(r => r.data),
+    deleteSlaTier: (id) => client.delete(`${base}/sla-tiers/${id}/`).then(r => r.data),
 
     // SLA Breaches
     getSlaBreaches: (params = {}) => client.get(`${base}/sla-breaches/`, { params }).then(r => r.data),

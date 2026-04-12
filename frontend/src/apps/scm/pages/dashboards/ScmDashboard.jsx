@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Truck, Package, ShoppingCart, Users, TrendingUp, AlertTriangle } from 'lucide-react';
 import scmService from '../../../../core/api/scmService';
 
-const StatCard = ({ label, value, icon: Icon, color }) => (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex gap-4 items-center">
-        <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-500`}><Icon size={22} /></div>
+const StatCard = ({ label, value, icon: Icon, color, onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`bg-slate-900 border border-slate-800 rounded-xl p-5 flex gap-4 items-center cursor-pointer hover:border-${color}-500/50 transition-all group`}
+    >
+        <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-500 group-hover:scale-110 transition-transform`}><Icon size={22} /></div>
         <div>
             <p className="text-slate-400 text-xs uppercase tracking-wide">{label}</p>
-            <p className="text-2xl font-bold text-white">{value ?? '—'}</p>
+            <p className="text-2xl font-bold text-white group-hover:text-white/80 transition-colors">{value ?? '—'}</p>
         </div>
     </div>
 );
 
 const ScmDashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -22,12 +26,12 @@ const ScmDashboard = () => {
     }, []);
 
     const cards = [
-        { label: 'Active Vendors', value: stats.active_vendors ?? stats.total_vendors ?? 0, icon: Users, color: 'orange' },
-        { label: 'Inventory Items', value: stats.total_items ?? 0, icon: Package, color: 'blue' },
-        { label: 'Low Stock Alerts', value: stats.low_stock_items ?? stats.low_stock_count ?? 0, icon: AlertTriangle, color: 'rose' },
-        { label: 'Pending Orders', value: stats.pending_orders ?? 0, icon: ShoppingCart, color: 'amber' },
-        { label: 'Inventory Value', value: stats.total_value != null ? `$${Number(stats.total_value).toLocaleString()}` : '—', icon: TrendingUp, color: 'emerald' },
-        { label: 'Open POs', value: stats.open_pos ?? 0, icon: Truck, color: 'indigo' },
+        { label: 'Active Vendors', value: stats.active_vendors ?? stats.total_vendors ?? 0, icon: Users, color: 'orange', path: '/admin/scm/vendors' },
+        { label: 'Inventory Items', value: stats.total_items ?? 0, icon: Package, color: 'blue', path: '/admin/scm/inventory' },
+        { label: 'Low Stock Alerts', value: stats.low_stock_items ?? stats.low_stock_count ?? 0, icon: AlertTriangle, color: 'rose', path: '/admin/scm/inventory?filter=low_stock' },
+        { label: 'Pending Orders', value: stats.pending_orders ?? 0, icon: ShoppingCart, color: 'amber', path: '/admin/scm/purchase-orders' },
+        { label: 'Inventory Value', value: stats.total_value != null ? `$${Number(stats.total_value).toLocaleString()}` : '—', icon: TrendingUp, color: 'emerald', path: '/admin/scm/inventory' },
+        { label: 'Open POs', value: stats.open_pos ?? 0, icon: Truck, color: 'indigo', path: '/admin/scm/purchase-orders' },
     ];
 
     return (
@@ -41,7 +45,7 @@ const ScmDashboard = () => {
             ) : (
                 <>
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                        {cards.map(c => <StatCard key={c.label} {...c} />)}
+                        {cards.map(c => <StatCard key={c.label} {...c} onClick={() => navigate(c.path)} />)}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[

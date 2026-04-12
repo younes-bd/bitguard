@@ -4,9 +4,11 @@ import { Settings, Save, Bell, Shield, Globe, Database, Mail, Clock } from 'luci
 const SettingRow = ({ icon: Icon, title, description, children }) => (
     <div className="flex items-start justify-between gap-6 py-5 border-b border-slate-800 last:border-0">
         <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Icon size={18} className="text-slate-400" />
-            </div>
+            {Icon && (
+                <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Icon size={18} className="text-slate-400" />
+                </div>
+            )}
             <div>
                 <h4 className="text-white font-medium text-sm">{title}</h4>
                 <p className="text-slate-500 text-xs mt-0.5 max-w-md">{description}</p>

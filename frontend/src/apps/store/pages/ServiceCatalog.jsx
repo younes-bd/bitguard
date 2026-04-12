@@ -8,17 +8,6 @@ const categoryColors = {
     'Hardware': 'bg-slate-700 text-slate-300', 'Software': 'bg-emerald-500/10 text-emerald-400',
 };
 
-const MOCK_SERVICES = [
-    { id: 1, name: 'Managed Security (MDR)', category: 'Cybersecurity', billing: 'Monthly', price: 1200, unit: 'endpoint', description: 'Full 24/7 managed detection and response — alerts, investigation, and containment.', active: true },
-    { id: 2, name: 'Microsoft 365 Management', category: 'Managed IT', billing: 'Monthly', price: 15, unit: 'user/mo', description: 'M365 tenant administration, user lifecycle, license optimization.', active: true },
-    { id: 3, name: 'Cloud Infrastructure Setup', category: 'Cloud', billing: 'One-off', price: 4500, unit: 'project', description: 'Azure / AWS infrastructure design, migration, and deployment.', active: true },
-    { id: 4, name: 'vCISO Advisory (Fractional)', category: 'Consulting', billing: 'Monthly', price: 3800, unit: 'retainer', description: '10 hours/month security leadership, compliance roadmap, board reporting.', active: true },
-    { id: 5, name: 'IT Hardware Procurement', category: 'Hardware', billing: 'One-off', price: 0, unit: 'custom quote', description: 'Laptop, server, and networking device procurement with warranty management.', active: true },
-    { id: 6, name: 'Vulnerability Assessment', category: 'Cybersecurity', billing: 'One-off', price: 2500, unit: 'assessment', description: 'Internal/external vulnerability scan with executive report.', active: true },
-    { id: 7, name: 'Helpdesk Support (Tier 1-3)', category: 'Managed IT', billing: 'Monthly', price: 85, unit: 'user/mo', description: 'Unlimited tier 1-3 end-user IT support with SLA guarantee.', active: true },
-    { id: 8, name: 'Backup & Disaster Recovery', category: 'Cloud', billing: 'Monthly', price: 450, unit: 'server/mo', description: 'Automated daily backup, offsite replication, tested recovery runbooks.', active: true },
-];
-
 const ServiceCatalog = () => {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +17,10 @@ const ServiceCatalog = () => {
     useEffect(() => {
         client.get('store/service-catalog/')
             .then(r => { setServices(r.data?.results ?? r.data ?? []); setLoading(false); })
-            .catch(() => { setServices(MOCK_SERVICES); setLoading(false); });
+            .catch(err => { 
+                console.error("Service Catalog Failed:", err);
+                setLoading(false); 
+            });
     }, []);
 
     const categories = [...new Set(services.map(s => s.category))];

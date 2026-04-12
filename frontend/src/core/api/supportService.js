@@ -25,6 +25,16 @@ class SupportService {
         const response = await client.post(`support/tickets/${id}/resolve/`);
         return response.data.data;
     }
+ 
+    async assignTicket(id, userId) {
+        const response = await client.patch(`support/tickets/${id}/`, { assigned_to: userId });
+        return response.data.data;
+    }
+
+    async deleteTicket(id) {
+        const response = await client.delete(`support/tickets/${id}/`);
+        return response.data.data;
+    }
 
     async addMessage(id, body) {
         const response = await client.post(`support/tickets/${id}/add_message/`, { body });

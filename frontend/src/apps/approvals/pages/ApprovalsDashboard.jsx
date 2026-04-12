@@ -39,7 +39,7 @@ export default function ApprovalsDashboard() {
     };
 
     const filteredRequests = requests.filter(r => {
-        const matchesSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (r.title || '').toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
         return matchesSearch && matchesStatus;
     });

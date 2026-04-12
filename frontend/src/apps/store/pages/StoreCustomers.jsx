@@ -18,9 +18,7 @@ const StoreCustomers = () => {
     const loadCustomers = async () => {
         try {
             const data = await storeService.getSubscriptions();
-            if (data && data.length > 0) {
-                setCustomers(data);
-            }
+            setCustomers(Array.isArray(data) ? data : data?.results || []);
         } catch (error) {
             console.error("Failed to load customers", error);
         } finally {
@@ -93,7 +91,7 @@ const StoreCustomers = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {customers.map(customer => (
+                {(customers || []).map(customer => (
                     <div key={customer.id} className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-colors">
                         <div className="flex justify-between items-start mb-4">
                             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white">

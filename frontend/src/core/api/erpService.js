@@ -52,6 +52,29 @@ export const erpService = {
             throw error;
         }
     },
+    downloadInvoice: async (id) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch(`http://127.0.0.1:8000/api/erp/invoices/${id}/pdf/`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'X-Tenant-ID': localStorage.getItem('tenant_id') || 'bitguard.tech'
+                }
+            });
+            if (!response.ok) throw new Error('Download failed');
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Invoice-${id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error("Download Error:", error);
+            throw error;
+        }
+    },
 
     // Payments
     getPayments: async (params = {}) => {

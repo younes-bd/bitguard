@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../core/api/crmService';
-import { Target, Search, Plus, TrendingUp, Clock, CheckCircle2, XCircle } from 'lucide-react';
-
+import { Target, Search, Plus, TrendingUp, Clock, CheckCircle2, XCircle, Edit2, Trash2 } from 'lucide-react';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
 const STATUS_MAP = {
     new: { label: 'New', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
     contacted: { label: 'Contacted', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
@@ -19,7 +20,10 @@ const LeadList = () => {
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedLead, setSelectedLead] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
     useEffect(() => {
         const fetchLeads = async () => {
             try {
@@ -40,6 +44,65 @@ const LeadList = () => {
 
     const countByStatus = (status) => leads.filter(l => l.status === status).length;
 
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedLead) {
+                await crmService.updateLead(selectedLead.id, formData);
+            } else {
+                await crmService.createLead(formData);
+            }
+            setIsModalOpen(false);
+            const data = await crmService.getLeads();
+            setLeads(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            alert('Failed to save lead');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedLead) return;
+        setActionLoading(true);
+        try {
+            await crmService.deleteLead(selectedLead.id);
+            setIsDeleteModalOpen(false);
+            const data = await crmService.getLeads();
+            setLeads(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            alert('Failed to delete lead');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const LEAD_FIELDS = [
+        { name: 'first_name', label: 'First Name', required: true },
+        { name: 'last_name', label: 'Last Name', required: true },
+        { name: 'company', label: 'Company' },
+        { name: 'email', label: 'Email', type: 'email', required: true },
+        { name: 'phone', label: 'Phone' },
+        { name: 'source', label: 'Source', type: 'select', options: [
+            { value: 'website', label: 'Website' },
+            { value: 'referral', label: 'Referral' },
+            { value: 'cold_call', label: 'Cold Call' },
+            { value: 'event', label: 'Event' },
+            { value: 'social', label: 'Social Media' },
+            { value: 'partner', label: 'Partner' },
+            { value: 'ad', label: 'Advertising' },
+            { value: 'other', label: 'Other' }
+        ], default: 'website' },
+        { name: 'status', label: 'Status', type: 'select', options: [
+            { value: 'new', label: 'New' },
+            { value: 'contacted', label: 'Contacted' },
+            { value: 'qualified', label: 'Qualified' },
+            { value: 'converted', label: 'Converted' },
+            { value: 'lost', label: 'Lost' }
+        ], default: 'new' }
+    ];
     if (loading) return (
         <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -56,7 +119,7 @@ const LeadList = () => {
                     </h1>
                     <p className="text-slate-400">Track, qualify, and convert inbound leads.</p>
                 </div>
-                <button className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg shadow-lg hover:shadow-purple-500/20 transition-all flex items-center gap-2">
+                <button onClick={() => { setSelectedLead(null); setIsModalOpen(true); }} className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg shadow-lg hover:shadow-purple-500/20 transition-all flex items-center gap-2">
                     <Plus size={18} /> New Lead
                 </button>
             </div>
@@ -110,7 +173,7 @@ const LeadList = () => {
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-800">
-                            {['Lead', 'Company', 'Source', 'Status', 'Created'].map(h => (
+                            {['Lead', 'Company', 'Source', 'Status', 'Created', ''].map(h => (
                                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
                             ))}
                         </tr>
@@ -146,12 +209,47 @@ const LeadList = () => {
                                     <td className="px-5 py-4 text-slate-500 text-xs">
                                         {lead.created_at ? new Date(lead.created_at).toLocaleDateString() : '—'}
                                     </td>
+                                    <td className="px-5 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); setIsModalOpen(true); }}
+                                                className="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); setIsDeleteModalOpen(true); }}
+                                                className="p-1.5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             );
                         })}
                     </tbody>
                 </table>
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Lead"
+                fields={LEAD_FIELDS}
+                initialData={selectedLead}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Lead"
+                message={`Are you sure you want to delete ${selectedLead?.first_name} ${selectedLead?.last_name}?`}
+                loading={actionLoading}
+            />
         </div>
     );
 };

@@ -132,7 +132,7 @@ const CommandCenter = () => {
             label: 'Active Clients',
             value: metrics.crm?.active_clients ?? '—',
             sub: `${metrics.crm?.open_deals ?? 0} open deals`,
-            icon: Users, color: 'blue', to: '/admin/crm',
+            icon: Users, color: 'blue', to: '/admin/crm/clients',
         },
         {
             label: 'Security Alerts',
@@ -148,13 +148,13 @@ const CommandCenter = () => {
             sub: `${metrics.support?.critical_tickets ?? 0} critical`,
             icon: LifeBuoy,
             color: (metrics.support?.critical_tickets > 0) ? 'amber' : 'blue',
-            to: '/admin/support',
+            to: '/admin/support/tickets',
         },
         {
             label: 'Pending Orders',
             value: metrics.store?.pending_orders ?? '—',
             sub: `${metrics.scm?.low_stock_items ?? 0} low-stock items`,
-            icon: Package, color: 'indigo', to: '/admin/store',
+            icon: Package, color: 'indigo', to: '/admin/store/orders',
         },
         {
             label: 'Active SLA Contracts',
@@ -162,7 +162,7 @@ const CommandCenter = () => {
             sub: `${metrics.contracts?.sla_breaches ?? 0} SLA breaches`,
             icon: FileText,
             color: (metrics.contracts?.sla_breaches > 0) ? 'rose' : 'violet',
-            to: '/admin/contracts',
+            to: '/admin/contracts/list',
         },
     ];
 

@@ -1,21 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Search, Plus, ChevronRight, Tag, Loader2 } from 'lucide-react';
+import { BookOpen, Search, Plus, ChevronRight, Tag, Loader2, Edit2, Trash2 } from 'lucide-react';
 import client from '../../../core/api/client';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
 
 const KnowledgeBase = () => {
     const [search, setSearch] = useState('');
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedArticle, setSelectedArticle] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        client.get('support/articles/')
-            .then(res => {
-                const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
-                setArticles(data);
-            })
-            .catch(err => console.error("Failed to load articles", err))
-            .finally(() => setLoading(false));
+        const fetchArticles = () => {
+            setLoading(true);
+            client.get('support/articles/')
+                .then(res => {
+                    const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
+                    setArticles(data);
+                })
+                .catch(err => console.error("Failed to load articles", err))
+                .finally(() => setLoading(false));
+        };
+        fetchArticles();
     }, []);
+
+    const fetchOnlyArticles = async () => {
+        try {
+            const res = await client.get('support/articles/');
+            const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
+            setArticles(data);
+        } catch (error) {
+            console.error("Failed to load articles", error);
+        }
+    };
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedArticle) {
+                await client.put(`support/articles/${selectedArticle.id}/`, formData);
+            } else {
+                await client.post('support/articles/', formData);
+            }
+            setIsModalOpen(false);
+            await fetchOnlyArticles();
+        } catch (error) {
+            alert('Failed to save article');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedArticle) return;
+        setActionLoading(true);
+        try {
+            await client.delete(`support/articles/${selectedArticle.id}/`);
+            setIsDeleteModalOpen(false);
+            await fetchOnlyArticles();
+        } catch (error) {
+            alert('Failed to delete article');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const ARTICLE_FIELDS = [
+        { name: 'title', label: 'Title', required: true },
+        { name: 'category', label: 'Category', type: 'select', options: [
+            { value: 'Account', label: 'Account' },
+            { value: 'Security', label: 'Security' },
+            { value: 'Contracts', label: 'Contracts' },
+            { value: 'Support', label: 'Support' },
+            { value: 'MSP', label: 'MSP' },
+            { value: 'General', label: 'General' }
+        ], default: 'General' },
+        { name: 'content', label: 'Content', type: 'textarea', required: true }
+    ];
 
     const filtered = articles.filter(a =>
         (a.title || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -29,7 +95,7 @@ const KnowledgeBase = () => {
                     <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase">Knowledge Base</h1>
                     <p className="text-slate-400 text-sm mt-0.5">Self-service articles and guides</p>
                 </div>
-                <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                <button onClick={() => { setSelectedArticle(null); setIsModalOpen(true); }} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                     <Plus size={16} /> New Article
                 </button>
             </div>
@@ -83,10 +149,43 @@ const KnowledgeBase = () => {
                                 </div>
                             </div>
                         </div>
-                        <ChevronRight size={16} className="text-slate-600 group-hover:text-blue-400 transition-colors" />
-                    </div>
-                ))}
-            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedArticle(article); setIsModalOpen(true); }}
+                                    className="p-1.5 opacity-0 group-hover:opacity-100 bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-all"
+                                >
+                                    <Edit2 size={16} />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedArticle(article); setIsDeleteModalOpen(true); }}
+                                    className="p-1.5 opacity-0 group-hover:opacity-100 bg-slate-800/80 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg transition-all"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                                <ChevronRight size={16} className="text-slate-600 group-hover:text-blue-400 transition-colors ml-2" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Knowledge Base Article"
+                fields={ARTICLE_FIELDS}
+                initialData={selectedArticle}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Article"
+                message={`Are you sure you want to delete ${selectedArticle?.title}?`}
+                loading={actionLoading}
+            />
         </div>
     );
 };

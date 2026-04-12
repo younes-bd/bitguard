@@ -5,6 +5,9 @@ const base = 'billing';
 export const billingService = {
     // Plans
     getPlans: () => client.get(`${base}/plans/`).then(r => r.data?.results ?? r.data ?? []),
+    createPlan: (data) => client.post(`${base}/plans/`, data).then(r => r.data),
+    updatePlan: (id, data) => client.patch(`${base}/plans/${id}/`, data).then(r => r.data),
+    deletePlan: (id) => client.delete(`${base}/plans/${id}/`).then(r => r.data),
 
     // Subscribe → returns { checkout_url } for Stripe redirect
     subscribe: (planId, interval = 'monthly') =>

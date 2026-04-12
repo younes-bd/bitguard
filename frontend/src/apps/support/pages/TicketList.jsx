@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Clock, CheckCircle, AlertCircle, ChevronRight } from 'lucide-react';
 import client from '../../../core/api/client';
+import { useNavigate } from 'react-router-dom';
 
 const statusBadge = (status) => {
     const map = {
@@ -23,6 +24,7 @@ const priorityBadge = (priority) => {
 };
 
 const TicketList = () => {
+    const navigate = useNavigate();
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -46,7 +48,7 @@ const TicketList = () => {
                     <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase">Support Tickets</h1>
                     <p className="text-slate-400 text-sm mt-0.5">{tickets.length} total tickets</p>
                 </div>
-                <button className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                <button onClick={() => navigate('/admin/support/tickets/create')} className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                     <Plus size={16} /> New Ticket
                 </button>
             </div>

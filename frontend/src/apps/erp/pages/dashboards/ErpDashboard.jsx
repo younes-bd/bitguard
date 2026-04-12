@@ -63,49 +63,61 @@ const ErpDashboard = () => {
 
             {/* Row 1: KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-colors group">
+                <div 
+                    onClick={() => navigate('/admin/projects')}
+                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-colors group cursor-pointer"
+                >
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
+                        <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
                             <FolderKanban size={24} />
                         </div>
                         <span className="text-xs text-slate-500 flex items-center gap-1 group-hover:text-blue-400 transition-colors">
-                            <ArrowUpRight size={14} />
+                            <ArrowUpRight size={14} /> View
                         </span>
                     </div>
-                    <div className="text-2xl font-bold text-white mb-1">{kpi.active_projects || 0}</div>
+                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{kpi.active_projects || 0}</div>
                     <div className="text-xs text-slate-400">Active Projects</div>
                     <div className="text-xs text-slate-600 mt-1">Pending Sync</div>
                 </div>
 
-                <div className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-purple-500/30 transition-colors group">
+                <div 
+                    onClick={() => navigate('/admin/approvals')}
+                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-purple-500/30 transition-colors group cursor-pointer"
+                >
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400">
+                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
                             <CheckSquare size={24} />
                         </div>
                     </div>
-                    <div className="text-2xl font-bold text-white mb-1">{kpi.my_tasks}</div>
+                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">{kpi.my_tasks}</div>
                     <div className="text-xs text-slate-400">My Tasks</div>
                     <div className="text-xs text-slate-600 mt-1">{kpi.overdue_tasks} overdue</div>
                 </div>
 
-                <div className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-orange-500/30 transition-colors group">
+                <div 
+                    onClick={() => navigate('/admin/security/alerts')}
+                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-orange-500/30 transition-colors group cursor-pointer"
+                >
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-orange-500/20 text-orange-400">
+                        <div className="p-2 rounded-lg bg-orange-500/20 text-orange-400 group-hover:scale-110 transition-transform">
                             <Shield size={24} />
                         </div>
                     </div>
-                    <div className="text-2xl font-bold text-white mb-1">{kpi.high_risks}</div>
+                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-orange-400 transition-colors">{kpi.high_risks}</div>
                     <div className="text-xs text-slate-400">High Risks</div>
                     <div className="text-xs text-slate-600 mt-1">Action Required</div>
                 </div>
 
-                <div className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-colors group">
+                <div 
+                    onClick={() => navigate('/admin/erp/invoices')}
+                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-colors group cursor-pointer"
+                >
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
+                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
                             <FileText size={24} />
                         </div>
                     </div>
-                    <div className="text-2xl font-bold text-white mb-1">{kpi.new_invoices}</div>
+                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">{kpi.new_invoices}</div>
                     <div className="text-xs text-slate-400">New Invoices</div>
                     <div className="text-xs text-slate-600 mt-1">Pending Approval</div>
                 </div>
@@ -238,19 +250,31 @@ const ErpDashboard = () => {
                     <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
                         <h3 className="text-lg font-bold text-white mb-4">Reports Center</h3>
                         <div className="grid grid-cols-2 gap-3">
-                            <button className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group">
+                            <button 
+                                onClick={() => navigate('/admin/erp/reports')}
+                                className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group"
+                            >
                                 <PieChart size={20} className="text-blue-500 group-hover:scale-110 transition-transform" />
                                 <span className="text-xs text-slate-300">Financials</span>
                             </button>
-                            <button className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group">
+                            <button 
+                                onClick={() => navigate('/admin/erp/reports')}
+                                className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group"
+                            >
                                 <Activity size={20} className="text-orange-500 group-hover:scale-110 transition-transform" />
                                 <span className="text-xs text-slate-300">Ops</span>
                             </button>
-                            <button className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group">
+                            <button 
+                                onClick={() => navigate('/admin/erp/reports')}
+                                className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group"
+                            >
                                 <Shield size={20} className="text-red-500 group-hover:scale-110 transition-transform" />
                                 <span className="text-xs text-slate-300">Risks</span>
                             </button>
-                            <button className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group">
+                            <button 
+                                onClick={() => navigate('/admin/erp/reports')}
+                                className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors group"
+                            >
                                 <Clock size={20} className="text-purple-500 group-hover:scale-110 transition-transform" />
                                 <span className="text-xs text-slate-300">Audits</span>
                             </button>

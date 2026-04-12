@@ -63,47 +63,59 @@ const CrmDashboard = () => {
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-blue-900/20 to-slate-900/50">
+                <div 
+                    onClick={() => navigate('/admin/crm/clients')}
+                    className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-blue-900/20 to-slate-900/50 cursor-pointer hover:border-blue-500/50 transition-all group"
+                >
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-blue-500/20 rounded-lg text-blue-400">
+                        <div className="p-3 bg-blue-500/20 rounded-lg text-blue-400 group-hover:scale-110 transition-transform">
                             <Users size={24} />
                         </div>
                         <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                            <TrendingUp size={12} />
+                            <TrendingUp size={12} /> Live
                         </span>
                     </div>
-                    <div className="text-3xl font-bold text-white mb-1">{stats.totalClients}</div>
+                    <div className="text-3xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{stats.totalClients}</div>
                     <div className="text-sm text-slate-400 font-medium uppercase">Total Clients</div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-purple-900/20 to-slate-900/50">
+                <div 
+                    onClick={() => navigate('/admin/crm/leads')}
+                    className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-purple-900/20 to-slate-900/50 cursor-pointer hover:border-purple-500/50 transition-all group"
+                >
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-purple-500/20 rounded-lg text-purple-400">
+                        <div className="p-3 bg-purple-500/20 rounded-lg text-purple-400 group-hover:scale-110 transition-transform">
                             <Target size={24} />
                         </div>
                         <span className="text-xs font-bold text-slate-500">Active</span>
                     </div>
-                    <div className="text-3xl font-bold text-white mb-1">{stats.activeLeads}</div>
+                    <div className="text-3xl font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">{stats.activeLeads}</div>
                     <div className="text-sm text-slate-400 font-medium uppercase">New Leads</div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-amber-900/20 to-slate-900/50">
+                <div 
+                    onClick={() => navigate('/admin/crm/deals')}
+                    className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-amber-900/20 to-slate-900/50 cursor-pointer hover:border-amber-500/50 transition-all group"
+                >
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-amber-500/20 rounded-lg text-amber-400">
+                        <div className="p-3 bg-amber-500/20 rounded-lg text-amber-400 group-hover:scale-110 transition-transform">
                             <Activity size={24} />
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-white mb-1">{stats.openDeals}</div>
+                    <div className="text-3xl font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">{stats.openDeals}</div>
                     <div className="text-sm text-slate-400 font-medium uppercase">Open Deals</div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-emerald-900/20 to-slate-900/50">
+                <div 
+                    onClick={() => navigate('/admin/crm/deals')}
+                    className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-br from-emerald-900/20 to-slate-900/50 cursor-pointer hover:border-emerald-500/50 transition-all group"
+                >
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-emerald-500/20 rounded-lg text-emerald-400">
+                        <div className="p-3 bg-emerald-500/20 rounded-lg text-emerald-400 group-hover:scale-110 transition-transform">
                             <DollarSign size={24} />
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-white mb-1">${stats.pipelineValue.toLocaleString()}</div>
+                    <div className="text-3xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">${stats.pipelineValue.toLocaleString()}</div>
                     <div className="text-sm text-slate-400 font-medium uppercase">Pipeline Value</div>
                 </div>
             </div>

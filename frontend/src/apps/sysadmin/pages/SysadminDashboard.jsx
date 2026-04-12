@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Activity, Server, Users, AlertTriangle, Settings, Shield, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { sysadminService } from '../api/sysadminService';
 
-const MetricCard = ({ title, value, icon: Icon, trend, colorClass }) => (
-  <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-300">
+const MetricCard = ({ title, value, icon: Icon, trend, colorClass, onClick }) => (
+  <div 
+    onClick={onClick}
+    className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-300 cursor-pointer group"
+  >
     <div className="flex items-center justify-between mb-4">
-      <div className={`p-3 rounded-lg ${colorClass} bg-opacity-10`}>
-        <Icon className={`w-6 h-6 ${colorClass.replace('bg-', 'text-')}`} />
+      <div className={`p-3 rounded-lg ${colorClass.split(' ')[0]} bg-opacity-10 group-hover:scale-110 transition-transform`}>
+        <Icon className={`w-6 h-6 ${colorClass.split(' ')[1]}`} />
       </div>
       {trend && (
         <span className={`text-sm font-medium ${trend.startsWith('+') ? 'text-emerald-500' : 'text-red-500'}`}>
@@ -15,12 +18,13 @@ const MetricCard = ({ title, value, icon: Icon, trend, colorClass }) => (
         </span>
       )}
     </div>
-    <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium">{title}</h3>
+    <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium group-hover:text-slate-300 transition-colors uppercase tracking-widest">{title}</h3>
     <p className="text-slate-900 dark:text-white text-3xl font-bold mt-1 tracking-tight">{value}</p>
   </div>
 );
 
 const SysadminDashboard = () => {
+  const navigate = useNavigate();
   const [metrics, setMetrics] = useState({
     active_users: 0,
     error_rate: 0,
@@ -88,10 +92,10 @@ const SysadminDashboard = () => {
 
       {/* KPI KPIs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <MetricCard title="Active Connections" value={metrics.active_users.toLocaleString()} icon={Users} trend="+12.5%" colorClass="bg-blue-500 text-blue-500" />
-        <MetricCard title="Global Uptime" value={metrics.server_uptime} icon={Server} trend="+0.01%" colorClass="bg-emerald-500 text-emerald-500" />
-        <MetricCard title="System Error Rate" value={`${metrics.error_rate}%`} icon={AlertTriangle} trend="-0.02%" colorClass="bg-amber-500 text-amber-500" />
-        <MetricCard title="Average CPU Load" value={metrics.cpu_load} icon={Activity} trend="-5%" colorClass="bg-purple-500 text-purple-500" />
+        <MetricCard onClick={() => navigate('/admin/iam/audit')} title="Active Connections" value={metrics.active_users.toLocaleString()} icon={Users} trend="+12.5%" colorClass="bg-blue-500 text-blue-500" />
+        <MetricCard onClick={() => navigate('/admin/system/health')} title="Global Uptime" value={metrics.server_uptime} icon={Server} trend="+0.01%" colorClass="bg-emerald-500 text-emerald-500" />
+        <MetricCard onClick={() => navigate('/admin/system/logs')} title="System Error Rate" value={`${metrics.error_rate}%`} icon={AlertTriangle} trend="-0.02%" colorClass="bg-amber-500 text-amber-500" />
+        <MetricCard onClick={() => navigate('/admin/system/performance')} title="Average CPU Load" value={metrics.cpu_load} icon={Activity} trend="-5%" colorClass="bg-purple-500 text-purple-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

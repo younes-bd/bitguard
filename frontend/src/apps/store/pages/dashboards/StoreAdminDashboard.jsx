@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     LineChart, Line, AreaChart, Area
@@ -8,6 +9,7 @@ import client from '../../../../core/api/client';
 import { storeService } from '../../../../core/api/storeService';
 
 const StoreAdminDashboard = () => {
+    const navigate = useNavigate();
     const [metrics, setMetrics] = useState(null);
     const [chartData, setChartData] = useState([]);
     const [recentOrders, setRecentOrders] = useState([]);
@@ -27,7 +29,8 @@ const StoreAdminDashboard = () => {
                     setChartData(chartRes.data.data.monthly_history);
                 }
                 
-                const ordersData = ordersRes.results ? ordersRes.results : ordersRes;
+                const ordersRaw = ordersRes?.data?.data || ordersRes?.data || ordersRes;
+                const ordersData = Array.isArray(ordersRaw) ? ordersRaw : ordersRaw?.results || [];
                 setRecentOrders(ordersData.slice(0, 5));
             } catch (error) {
                 console.error("Failed to load store dashboard data", error);
@@ -140,8 +143,8 @@ const StoreAdminDashboard = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800">
-                            {recentOrders.length > 0 ? recentOrders.map((order) => (
-                                <tr key={order.id} className="hover:bg-slate-800/50 transition-colors">
+                            {(recentOrders || []).length > 0 ? (recentOrders || []).map((order) => (
+                                <tr key={order.id} className="hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => navigate('/admin/store/orders')}>
                                     <td className="p-4 font-mono text-indigo-400">#{order.order_number || `ORD-${order.id}`}</td>
                                     <td className="p-4 font-medium text-white">{order.customer_name || 'Anonymous User'}</td>
                                     <td className="p-4 text-slate-300">{order.items?.length || 0} items</td>

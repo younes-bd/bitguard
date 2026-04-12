@@ -6,12 +6,15 @@ import {
     Calendar, MoreVertical, RefreshCw, AlertCircle
 } from 'lucide-react';
 import client from '../../../core/api/client';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
 
 export default function ItsmDashboard() {
     const [changes, setChanges] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
 
     const fetchChanges = () => {
         setLoading(true);
@@ -26,7 +29,7 @@ export default function ItsmDashboard() {
     }, []);
 
     const filteredChanges = changes.filter(c => {
-        const matchesSearch = c.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (c.title || '').toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPriority = priorityFilter === 'all' || c.priority === priorityFilter;
         return matchesSearch && matchesPriority;
     });
@@ -68,7 +71,7 @@ export default function ItsmDashboard() {
                     </h1>
                     <p className="text-slate-400 mt-2 font-['Inter'] text-lg">Formal management of infrastructure modifications, risk assessment, and peer review.</p>
                 </div>
-                <button className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95">
+                <button onClick={() => setIsModalOpen(true)} className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95">
                     <Plus size={20}/> 
                     <span>Submit Change Request</span>
                 </button>
@@ -142,7 +145,7 @@ export default function ItsmDashboard() {
                                             </div>
                                             <div className="flex items-center gap-1.5 text-xs text-slate-400 border-l border-slate-800 pl-4">
                                                 <AlertTriangle size={14} className={c.risk_level === 'high' ? 'text-orange-500' : 'text-slate-500'} />
-                                                {c.risk_level.toUpperCase()} RISK
+                                                {(c.risk_level || 'low').toUpperCase()} RISK
                                             </div>
                                         </div>
                                     </div>
@@ -198,6 +201,45 @@ export default function ItsmDashboard() {
                     <p className="text-xs text-slate-500 mt-2 font-medium">Next CAB session in 14 hours</p>
                 </div>
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Change Request"
+                fields={CHANGE_FIELDS}
+                initialData={null}
+                onSubmit={async (formData) => {
+                    setActionLoading(true);
+                    try {
+                        await client.post('itsm/changes/', formData);
+                        setIsModalOpen(false);
+                        fetchChanges();
+                    } catch (err) {
+                        alert('Failed to submit change request');
+                        console.error(err);
+                    } finally {
+                        setActionLoading(false);
+                    }
+                }}
+                loading={actionLoading}
+            />
         </div>
     );
 }
+
+const CHANGE_FIELDS = [
+    { name: 'title', label: 'Title', required: true },
+    { name: 'description', label: 'Description', type: 'textarea', required: true, rows: 4 },
+    { name: 'priority', label: 'Priority', type: 'select', options: [
+        { value: 'low', label: 'Low' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'high', label: 'High' },
+        { value: 'critical', label: 'Critical' },
+    ], default: 'medium' },
+    { name: 'risk_level', label: 'Risk Level', type: 'select', options: [
+        { value: 'low', label: 'Low' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'high', label: 'High' },
+    ], default: 'medium' },
+    { name: 'scheduled_date', label: 'Scheduled Date', type: 'date' },
+];

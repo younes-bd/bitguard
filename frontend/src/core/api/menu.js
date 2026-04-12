@@ -53,8 +53,7 @@ export const adminMenu = [
     // 8. Platform
     { label: 'Platform', icon: null, path: null },
     { label: 'System Admin', icon: Server, path: '/admin/system', permissions: ['view_tenant'] },
-    { label: 'Website & CMS', icon: Globe, path: '/admin/cms', permissions: ['view_page'] },
-    { label: 'Client Portal', icon: Globe, path: '/portal', permissions: ['view_tenant'] }
+    { label: 'Website & CMS', icon: Globe, path: '/admin/cms', permissions: ['view_page'] }
 ];
 
 export const productMenu = {
@@ -143,7 +142,7 @@ export const productMenu = {
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/erp' },
                 { label: 'Invoices', icon: FileText, path: '/admin/erp/invoices' },
-                { label: 'Payments', icon: PieChart, path: '/admin/erp/payments' },
+                { label: 'Financials', icon: PieChart, path: '/admin/erp/payments' },
                 { label: 'Expenses', icon: Layers, path: '/admin/erp/expenses' },
                 { label: 'Reports', icon: PieChart, path: '/admin/erp/reports' },
                 { label: 'Settings', icon: Settings, path: '/admin/erp/settings' },

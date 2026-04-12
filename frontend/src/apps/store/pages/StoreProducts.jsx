@@ -8,9 +8,10 @@ const StoreProducts = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [categoryFilter, setCategoryFilter] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
-
     const [editingProduct, setEditingProduct] = useState(null);
 
     useEffect(() => {
@@ -21,13 +22,23 @@ const StoreProducts = () => {
         try {
             // Fetch real data
             const data = await storeService.getProducts();
-            setProducts(data);
+            setProducts(Array.isArray(data) ? data : data?.results || []);
         } catch (error) {
             console.error("Failed to load products", error);
         } finally {
             setLoading(false);
         }
     };
+
+    const filteredProducts = (products || []).filter(p => {
+        const matchesSearch = p.name?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === 'all' || 
+            (statusFilter === 'active' ? (p.status === 'Active' || p.is_active) : (p.status !== 'Active' && !p.is_active));
+        const matchesCategory = categoryFilter === 'all' || (p.product_type === categoryFilter || p.category === categoryFilter);
+        return matchesSearch && matchesStatus && matchesCategory;
+    });
+
+    const categories = Array.from(new Set((products || []).map(p => p.product_type || p.category).filter(Boolean)));
 
     const handleSaveProduct = async (productData) => {
         setIsCreating(true);
@@ -98,10 +109,25 @@ const StoreProducts = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors">
-                    <Filter size={18} />
-                    <span>Filters</span>
-                </button>
+                <div className="flex gap-4">
+                    <select 
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
+                    >
+                        <option value="all">All Categories</option>
+                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <select 
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
+                    >
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                    </select>
+                </div>
             </div>
 
             {/* Products Table */}
@@ -119,7 +145,7 @@ const StoreProducts = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800">
-                            {products.length > 0 ? products.map((product) => (
+                            {filteredProducts.length > 0 ? filteredProducts.map((product) => (
                                 <tr key={product.id} className="group hover:bg-slate-800/50 transition-colors">
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">

@@ -24,14 +24,9 @@ import UserManagement from '../pages/UserManagement';
 import SysadminDashboard from '../../sysadmin/pages/SysadminDashboard';
 import { sysadminRoutes } from '../../sysadmin/routes/sysadminRoutes';
 
-// Feature Pages - Store
+// Feature Pages - CRM
 import ClientDashboard from '../../crm/pages/ClientDashboard';
-import ClientProfile from '../../crm/pages/ClientProfile';
-import StoreProducts from '../../store/pages/StoreProducts';
-import ServiceCatalog from '../../store/pages/ServiceCatalog';
-import StoreOrders from '../../store/pages/StoreOrders';
-import StoreCustomers from '../../store/pages/StoreCustomers';
-import StoreSettings from '../../store/pages/StoreSettings';
+import ClientDetail from '../../crm/pages/ClientDetail';
 import RoleList from '../../auth/pages/identity/RoleList';
 import UserList from '../../auth/pages/identity/UserList';
 
@@ -114,15 +109,13 @@ export const EnterpriseRouter = (
         <Route path="/admin" element={<ConsoleLayout />}>
             <Route path="sales" element={<SalesDashboard />} />
             <Route path="clients" element={<ClientDashboard />} />
-            <Route path="clients/:id" element={<ClientProfile />} />
+            <Route path="clients/:id" element={<ClientDetail />} />
         </Route>
 
         {/* Commerce Module */}
         <Route path="/admin/store" element={<ModuleLayout title="Commerce" items={productMenu.store[0].items} accentColor="indigo" />}>
             <Route index element={<StoreDashboard />} />
             <Route path="dashboard" element={<StoreDashboard />} />
-            <Route path="services" element={<ServiceCatalog />} />
-            <Route path="products" element={<StoreProducts />} />
             {storeRoutes}
         </Route>
 

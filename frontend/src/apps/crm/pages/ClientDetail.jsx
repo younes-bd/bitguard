@@ -183,6 +183,7 @@ const ClientDetail = () => {
             {/* Navigation Tabs */}
             <div className="flex border-b border-slate-700/50">
                 <TabButton id="overview" label="Overview" icon={FileText} />
+                <TabButton id="assets" label="Assets" icon={Server} />
                 <TabButton id="orders" label="Order History" icon={ShoppingCart} />
                 <TabButton id="timeline" label="Timeline" icon={Activity} />
             </div>
@@ -199,7 +200,12 @@ const ClientDetail = () => {
                                     <FileText size={20} className="text-indigo-400" />
                                     Contracts & Services
                                 </h3>
-                                <button className="text-sm text-blue-400 hover:text-blue-300">View All</button>
+                                <button 
+                                    onClick={() => navigate('/admin/contracts/list')}
+                                    className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                >
+                                    View All
+                                </button>
                             </div>
 
                             <div className="space-y-4">
@@ -234,6 +240,27 @@ const ClientDetail = () => {
                                     <div className="text-slate-500 text-sm">No recent tickets.</div>
                                 )}
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ASSETS TAB */}
+                {activeTab === 'assets' && (
+                    <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Server size={20} className="text-blue-400" />
+                                Managed Infrastructure
+                            </h3>
+                            <button 
+                                onClick={() => navigate('/admin/itam/assets')}
+                                className="text-sm text-blue-400 hover:text-blue-300"
+                            >
+                                Manage in ITAM →
+                            </button>
+                        </div>
+                        <div className="p-8 text-center bg-slate-900/40 rounded-lg border border-dashed border-slate-700">
+                             <p className="text-slate-400 italic">Integration with Asset Management (ITAM) module to display hardware and licenses.</p>
                         </div>
                     </div>
                 )}

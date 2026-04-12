@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Megaphone, Search, Plus, Calendar, Users, TrendingUp, Pause, Play, Loader2 } from 'lucide-react';
+import { Megaphone, Search, Plus, Calendar, Users, TrendingUp, Pause, Play, Loader2, Edit2, Trash2 } from 'lucide-react';
 import client from '../../../core/api/client';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
 
 const STATUS_BADGE = {
     active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -13,16 +15,86 @@ const CampaignList = () => {
     const [search, setSearch] = useState('');
     const [campaigns, setCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedCampaign, setSelectedCampaign] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        client.get('marketing/campaigns/')
-            .then(res => {
-                const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
-                setCampaigns(data);
-            })
-            .catch(err => console.error("Failed to fetch campaigns", err))
-            .finally(() => setLoading(false));
+        const fetchCampaigns = () => {
+            setLoading(true);
+            client.get('marketing/campaigns/')
+                .then(res => {
+                    const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
+                    setCampaigns(data);
+                })
+                .catch(err => console.error("Failed to fetch campaigns", err))
+                .finally(() => setLoading(false));
+        };
+        fetchCampaigns();
     }, []);
+
+    const fetchOnlyCampaigns = async () => {
+        try {
+            const res = await client.get('marketing/campaigns/');
+            const data = res.data.results ? res.data.results : (Array.isArray(res.data) ? res.data : []);
+            setCampaigns(data);
+        } catch (error) {
+            console.error("Failed to fetch campaigns", error);
+        }
+    };
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedCampaign) {
+                await client.put(`marketing/campaigns/${selectedCampaign.id}/`, formData);
+            } else {
+                await client.post('marketing/campaigns/', formData);
+            }
+            setIsModalOpen(false);
+            await fetchOnlyCampaigns();
+        } catch (error) {
+            alert('Failed to save campaign');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedCampaign) return;
+        setActionLoading(true);
+        try {
+            await client.delete(`marketing/campaigns/${selectedCampaign.id}/`);
+            setIsDeleteModalOpen(false);
+            await fetchOnlyCampaigns();
+        } catch (error) {
+            alert('Failed to delete campaign');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const CAMPAIGN_FIELDS = [
+        { name: 'name', label: 'Campaign Name', required: true },
+        { name: 'type', label: 'Type', type: 'select', options: [
+            { value: 'email', label: 'Email' },
+            { value: 'social', label: 'Social' },
+            { value: 'ads', label: 'Ads' },
+            { value: 'content', label: 'Content' }
+        ], default: 'email' },
+        { name: 'status', label: 'Status', type: 'select', options: [
+            { value: 'draft', label: 'Draft' },
+            { value: 'active', label: 'Active' },
+            { value: 'paused', label: 'Paused' },
+            { value: 'completed', label: 'Completed' }
+        ], default: 'draft' },
+        { name: 'start_date', label: 'Start Date', type: 'date' },
+        { name: 'end_date', label: 'End Date', type: 'date' },
+        { name: 'budget', label: 'Budget ($)', type: 'number', step: '0.01' }
+    ];
 
     const filtered = campaigns.filter(c => (c.name || '').toLowerCase().includes(search.toLowerCase()));
 
@@ -33,7 +105,7 @@ const CampaignList = () => {
                     <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase">Campaigns</h1>
                     <p className="text-slate-400 text-sm mt-0.5">Create, manage, and track marketing campaigns</p>
                 </div>
-                <button className="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                <button onClick={() => { setSelectedCampaign(null); setIsModalOpen(true); }} className="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
                     <Plus size={16} /> New Campaign
                 </button>
             </div>
@@ -63,7 +135,7 @@ const CampaignList = () => {
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-800">
-                            {['Campaign', 'Type', 'Status', 'Reach', 'Conversions', 'Dates'].map(h => (
+                            {['Campaign', 'Type', 'Status', 'Reach', 'Conversions', 'Dates', ''].map(h => (
                                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
                             ))}
                         </tr>
@@ -78,13 +150,29 @@ const CampaignList = () => {
                             </tr>
                         )}
                         {!loading && filtered.length > 0 ? filtered.map(c => (
-                            <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors cursor-pointer">
+                            <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors group cursor-pointer">
                                 <td className="px-5 py-4 text-white font-medium">{c.name || `Campaign #${c.id}`}</td>
                                 <td className="px-5 py-4"><span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-xs uppercase font-mono">{c.type || 'email'}</span></td>
                                 <td className="px-5 py-4"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${STATUS_BADGE[c.status] || STATUS_BADGE.draft}`}>{c.status || 'draft'}</span></td>
                                 <td className="px-5 py-4 text-slate-400">{(c.reach || 0).toLocaleString()}</td>
                                 <td className="px-5 py-4 text-emerald-400 font-semibold">{(c.conversions || 0).toLocaleString()}</td>
                                 <td className="px-5 py-4 text-slate-500 text-xs"><Calendar size={12} className="inline mr-1" />{c.start_date || '-'} → {c.end_date || '-'}</td>
+                                <td className="px-5 py-4 text-right">
+                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setSelectedCampaign(c); setIsModalOpen(true); }}
+                                            className="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                        >
+                                            <Edit2 size={16} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setSelectedCampaign(c); setIsDeleteModalOpen(true); }}
+                                            className="p-1.5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         )) : !loading && (
                             <tr>
@@ -96,6 +184,25 @@ const CampaignList = () => {
                     </tbody>
                 </table>
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Campaign"
+                fields={CAMPAIGN_FIELDS}
+                initialData={selectedCampaign}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Campaign"
+                message={`Are you sure you want to delete ${selectedCampaign?.name}?`}
+                loading={actionLoading}
+            />
         </div>
     );
 };

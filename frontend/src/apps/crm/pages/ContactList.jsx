@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../core/api/crmService';
-import { UserCircle, Search, Phone, Mail, Building2, Plus } from 'lucide-react';
-
+import { UserCircle, Search, Phone, Mail, Building2, Plus, Edit2, Trash2 } from 'lucide-react';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
 const ContactList = () => {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [clients, setClients] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedContact, setSelectedContact] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const data = await crmService.getContacts();
-                setContacts(Array.isArray(data) ? data : data.results || []);
+                const [conData, cliData] = await Promise.all([
+                    crmService.getContacts(),
+                    crmService.getClients()
+                ]);
+                setContacts(Array.isArray(conData) ? conData : conData.results || []);
+                setClients(Array.isArray(cliData) ? cliData : cliData.results || []);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -20,6 +30,50 @@ const ContactList = () => {
         };
         fetchContacts();
     }, []);
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedContact) {
+                await crmService.updateContact(selectedContact.id, formData);
+            } else {
+                await crmService.createContact(formData);
+            }
+            setIsModalOpen(false);
+            const data = await crmService.getContacts();
+            setContacts(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            alert('Failed to save contact');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedContact) return;
+        setActionLoading(true);
+        try {
+            await crmService.deleteContact(selectedContact.id);
+            setIsDeleteModalOpen(false);
+            const data = await crmService.getContacts();
+            setContacts(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            alert('Failed to delete contact');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const CONTACT_FIELDS = [
+        { name: 'first_name', label: 'First Name', required: true },
+        { name: 'last_name', label: 'Last Name', required: true },
+        { name: 'email', label: 'Email', type: 'email' },
+        { name: 'phone', label: 'Phone' },
+        { name: 'client', label: 'Client', type: 'select', options: clients.map(c => ({ value: c.id, label: c.name })) },
+        { name: 'role', label: 'Role/Title' }
+    ];
 
     const filtered = contacts.filter(c =>
         `${c.first_name} ${c.last_name} ${c.email}`.toLowerCase().includes(search.toLowerCase())
@@ -41,7 +95,7 @@ const ContactList = () => {
                     </h1>
                     <p className="text-slate-400">Manage all contact records across your clients.</p>
                 </div>
-                <button className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg hover:shadow-blue-500/20 transition-all flex items-center gap-2">
+                <button onClick={() => { setSelectedContact(null); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg hover:shadow-blue-500/20 transition-all flex items-center gap-2">
                     <Plus size={18} /> Add Contact
                 </button>
             </div>
@@ -79,7 +133,7 @@ const ContactList = () => {
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-800">
-                            {['Name', 'Email', 'Phone', 'Company', 'Role'].map(h => (
+                            {['Name', 'Email', 'Phone', 'Company', 'Role', ''].map(h => (
                                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
                             ))}
                         </tr>
@@ -91,7 +145,7 @@ const ContactList = () => {
                                 No contacts found
                             </td></tr>
                         ) : filtered.map(c => (
-                            <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                            <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors group">
                                 <td className="px-5 py-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-xs font-bold text-white">
@@ -122,11 +176,46 @@ const ContactList = () => {
                                     ) : <span className="text-slate-600">—</span>}
                                 </td>
                                 <td className="px-5 py-4 text-slate-400">{c.role || c.title || '—'}</td>
+                                <td className="px-5 py-4 text-right">
+                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setSelectedContact(c); setIsModalOpen(true); }}
+                                            className="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                        >
+                                            <Edit2 size={16} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setSelectedContact(c); setIsDeleteModalOpen(true); }}
+                                            className="p-1.5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Contact"
+                fields={CONTACT_FIELDS}
+                initialData={selectedContact}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Contact"
+                message={`Are you sure you want to delete ${selectedContact?.first_name} ${selectedContact?.last_name}?`}
+                loading={actionLoading}
+            />
         </div>
     );
 };

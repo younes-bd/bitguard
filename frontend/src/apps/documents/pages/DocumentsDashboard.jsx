@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Files, Upload, Archive, Loader2, Download, Filter, Search, MoreVertical, FileText, User, Calendar, Trash2 } from 'lucide-react';
+import { Files, Upload, Archive, Loader2, Download, Filter, Search, MoreVertical, FileText, User, Calendar, Trash2, Shield } from 'lucide-react';
 import client from '../../../core/api/client';
 import DocumentUploadModal from '../components/DocumentUploadModal';
 
@@ -23,7 +23,7 @@ export default function DocumentsDashboard() {
     }, []);
 
     const filteredDocs = docs.filter(doc => {
-        const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (doc.title || '').toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = activeCategory === 'all' || doc.category === activeCategory;
         return matchesSearch && matchesCategory;
     });
@@ -239,8 +239,8 @@ export default function DocumentsDashboard() {
                         <h3 className="text-white font-bold mb-4">Quick Insights</h3>
                         <div className="space-y-5">
                             <div>
-                                <p className="text-slate-500 text-xs uppercase font-black tracking-widest mb-1">Total Vault Size</p>
-                                <p className="text-2xl font-['Outfit'] text-white">12.4 GB</p>
+                                <p className="text-slate-500 text-xs uppercase font-black tracking-widest mb-1">Categories</p>
+                                <p className="text-2xl font-['Outfit'] text-white">{[...new Set(docs.map(d => d.category).filter(Boolean))].length}</p>
                             </div>
                             <div>
                                 <p className="text-slate-500 text-xs uppercase font-black tracking-widest mb-1">Total Documents</p>

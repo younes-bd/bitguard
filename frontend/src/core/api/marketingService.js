@@ -42,6 +42,16 @@ class MarketingService {
             return { total: 0, active: 0, completed: 0 };
         }
     }
+
+    async getIntegrations() {
+        const response = await client.get('marketing/integrations/');
+        return response.data?.data ?? response.data?.results ?? response.data ?? [];
+    }
+
+    async toggleIntegration(name) {
+        const response = await client.post(`marketing/integrations/toggle/`, { name });
+        return response.data?.data ?? response.data;
+    }
 }
 
 export const marketingService = new MarketingService();
