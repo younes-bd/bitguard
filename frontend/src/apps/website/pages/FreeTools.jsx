@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 
 const FreeTools = () => {
     // ROI Calculator State
@@ -50,6 +51,7 @@ const FreeTools = () => {
 
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen transition-colors duration-300">
+            <PageMeta title="Free IT Tools" description="Free IT calculators and security tools from BitGuard \u2014 ROI calculator, subnet calculator, and password strength checker." />
             {/* Hero */}
             <section className="relative pt-32 pb-20 dark:bg-slate-950 bg-slate-950 overflow-hidden transition-colors duration-300">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>

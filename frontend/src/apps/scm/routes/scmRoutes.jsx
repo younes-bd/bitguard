@@ -10,6 +10,7 @@ import ScmReportPage from '../pages/ScmReportPage';
 export const scmRoutes = (
     <>
         <Route index element={<ScmDashboard />} />
+        <Route path="overview" element={<ScmDashboard />} />
         <Route path="inventory" element={<InventoryList />} />
         <Route path="vendors" element={<VendorList />} />
         <Route path="purchase-orders" element={<PurchaseOrderList />} />

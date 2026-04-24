@@ -1,25 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { Truck, Search, Loader2 } from 'lucide-react';
+import { Truck, Search, Loader2, Edit2, Trash2 } from 'lucide-react';
 import client from '../../../core/api/client';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
+import toast from 'react-hot-toast';
+
+const SHIPPING_FIELDS = [
+    { name: 'zone_name', label: 'Zone Name', required: true },
+    { name: 'rate', label: 'Transit Flat Rate', type: 'number', step: '0.01', required: true }
+];
 
 export default function ShippingSettings() {
     const [zones, setZones] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        client.get('store/shipping-settings/')
-            .then(res => setZones(res.data.results || res.data || []))
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
+        fetchZones();
     }, []);
+
+    const fetchZones = async () => {
+        setLoading(true);
+        try {
+            const res = await client.get('store/shipping-settings/');
+            setZones(res.data.results || res.data || []);
+        } catch (error) {
+            console.error("Failed to fetch shipping zones:", error);
+            toast.error('Failed to fetch shipping zones');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedItem) {
+                await client.patch(`store/shipping-settings/${selectedItem.id}/`, formData);
+                toast.success('Route configured');
+            } else {
+                await client.post('store/shipping-settings/', formData);
+                toast.success('Global zone added');
+            }
+            setIsModalOpen(false);
+            setSelectedItem(null);
+            fetchZones();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to configure route');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setActionLoading(true);
+        try {
+            await client.delete(`store/shipping-settings/${selectedItem.id}/`);
+            toast.success('Route removed');
+            setIsDeleteModalOpen(false);
+            setSelectedItem(null);
+            fetchZones();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete route');
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                    <Truck className="text-teal-400" /> Shipping & Delivery
+                    <Truck className="text-teal-400" /> Fulfillment & Logistics
                 </h1>
-                <button className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors">
+                <button 
+                    onClick={() => { setSelectedItem(null); setIsModalOpen(true); }}
+                    className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors"
+                >
                     Add Global Zone
                 </button>
             </div>
@@ -55,7 +117,8 @@ export default function ShippingSettings() {
                                     <td className="px-6 py-4 text-white font-medium">{zone.zone_name}</td>
                                     <td className="px-6 py-4 text-slate-400">${parseFloat(zone.rate).toFixed(2)} USD</td>
                                     <td className="px-6 py-4 text-right text-slate-400">
-                                        <button className="hover:text-white">Configure Route</button>
+                                        <button onClick={() => { setSelectedItem(zone); setIsModalOpen(true); }} className="hover:text-white mr-3"><Edit2 size={16} /></button>
+                                        <button onClick={() => { setSelectedItem(zone); setIsDeleteModalOpen(true); }} className="hover:text-red-400"><Trash2 size={16} /></button>
                                     </td>
                                 </tr>
                             ))}
@@ -63,6 +126,25 @@ export default function ShippingSettings() {
                     </table>
                 )}
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => { setIsModalOpen(false); setSelectedItem(null); }}
+                title={selectedItem ? "Configure Route" : "New Global Zone"}
+                fields={SHIPPING_FIELDS}
+                initialData={selectedItem}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+            
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => { setIsDeleteModalOpen(false); setSelectedItem(null); }}
+                onConfirm={handleDelete}
+                loading={actionLoading}
+                title="Delete Route"
+                message={`Are you sure you want to delete "${selectedItem?.zone_name}"?`}
+            />
         </div>
     );
 }

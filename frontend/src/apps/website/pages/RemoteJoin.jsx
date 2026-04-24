@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import client from '../../../core/api/client';
+import PageMeta from '../../../core/components/shared/PageMeta';
 import { MonitorPlay, ShieldCheck, Loader2, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
 
 const RemoteJoin = () => {
@@ -27,7 +28,7 @@ const RemoteJoin = () => {
         setErrorMessage('');
 
         try {
-            const response = await client.post('website/support/session/join/', { session_code: pin });
+            const response = await client.post('home/support/session/join/', { session_code: pin });
             setJoinStatus('success');
             setSessionData(response.data);
         } catch (error) {
@@ -43,6 +44,7 @@ const RemoteJoin = () => {
 
     return (
         <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
+            <PageMeta title="Remote Support" description="Join a secure remote support session with a BitGuard technician." />
             {/* Background Glows */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[128px] pointer-events-none"></div>
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[128px] pointer-events-none"></div>
@@ -138,6 +140,30 @@ const RemoteJoin = () => {
                             </form>
                         )}
                     </div>
+                </div>
+            </div>
+
+            {/* Download Support Tools */}
+            <div className="w-full max-w-lg relative z-10 mt-10">
+                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
+                    <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <i className="bi bi-download text-blue-400"></i>
+                        Download Support Tools
+                    </h3>
+                    <p className="text-slate-400 text-xs mb-4">Your technician may ask you to download one of these tools to your device:</p>
+                    <div className="grid grid-cols-2 gap-3">
+                        <a href="https://screenconnect.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/50 rounded-xl hover:border-blue-500/30 hover:bg-slate-800/50 transition-all no-underline">
+                            <i className="bi bi-display text-blue-400 text-lg"></i>
+                            <span className="text-white text-sm font-bold">ScreenConnect</span>
+                        </a>
+                        <a href="https://anydesk.com/download" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/50 rounded-xl hover:border-blue-500/30 hover:bg-slate-800/50 transition-all no-underline">
+                            <i className="bi bi-laptop text-emerald-400 text-lg"></i>
+                            <span className="text-white text-sm font-bold">AnyDesk</span>
+                        </a>
+                    </div>
+                    <p className="text-slate-500 text-[11px] mt-4 flex items-center gap-1.5">
+                        <Lock className="w-3 h-3" /> Only download tools when instructed by a verified BitGuard technician.
+                    </p>
                 </div>
             </div>
         </div>

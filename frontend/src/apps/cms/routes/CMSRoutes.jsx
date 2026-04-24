@@ -8,6 +8,7 @@ const CMSDashboard = React.lazy(() => import('../pages/CMSDashboard'));
 const PageEditor = React.lazy(() => import('../pages/PageEditor'));
 const InquiriesPage = React.lazy(() => import('../pages/InquiriesPage'));
 const CmsSettings = React.lazy(() => import('../pages/CmsSettings'));
+const LandingPagesManager = React.lazy(() => import('../pages/LandingPagesManager'));
 
 const LoadingScreen = () => (
     <div className="flex h-full items-center justify-center p-8 bg-slate-950">
@@ -80,6 +81,21 @@ const CMSRoutes = () => {
                             items={productMenu.cms[0].items}
                         >
                             <InquiriesPage />
+                        </ModuleLayout>
+                    }
+                />
+
+                {/* Landing Pages */}
+                <Route
+                    path="/landing-pages"
+                    element={
+                        <ModuleLayout
+                            title="Landing Pages"
+                            subtitle="Manage promotional landing pages"
+                            icon="LayoutTemplate"
+                            items={productMenu.cms[0].items}
+                        >
+                            <LandingPagesManager />
                         </ModuleLayout>
                     }
                 />

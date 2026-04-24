@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 
 const Careers = () => {
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen transition-colors duration-300">
+            <PageMeta title="Careers" description="Join the BitGuard team. Explore open positions in cybersecurity, engineering, and IT services." />
             {/* Dark Tech Hero */}
             <section className="relative py-24 lg:py-32 dark:bg-slate-950 bg-slate-50 overflow-hidden transition-colors duration-300">
                 {/* Tech Background Elements */}
@@ -13,7 +15,8 @@ const Careers = () => {
 
                 {/* Content */}
                 <div className="container mx-auto px-4 relative z-10 text-center">
-                    <span className="inline-block py-1.5 px-4 rounded-full dark:bg-blue-500/10 bg-blue-100 border dark:border-blue-500/20 border-blue-200 text-blue-600 dark:text-blue-300 text-xs font-bold mb-8 uppercase tracking-[0.2em] backdrop-blur-sm transition-colors duration-300">
+                    <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full dark:bg-blue-500/10 bg-blue-100 border dark:border-blue-500/20 border-blue-200 text-blue-600 dark:text-blue-300 text-xs font-bold mb-8 uppercase tracking-[0.2em] backdrop-blur-sm transition-colors duration-300">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
                         Join Us
                     </span>
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 dark:text-white text-slate-900 tracking-tight transition-colors duration-300">

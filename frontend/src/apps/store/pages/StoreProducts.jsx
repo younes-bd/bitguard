@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { storeService } from '../../../core/api/storeService';
 import { Plus, Search, Edit2, Trash2, Package, Filter, MoreVertical } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 import CreateProductModal from '../../../core/components/store/CreateProductModal';
 
@@ -25,6 +26,7 @@ const StoreProducts = () => {
             setProducts(Array.isArray(data) ? data : data?.results || []);
         } catch (error) {
             console.error("Failed to load products", error);
+            toast.error("Failed to load products");
         } finally {
             setLoading(false);
         }
@@ -50,10 +52,11 @@ const StoreProducts = () => {
             }
             setIsModalOpen(false);
             setEditingProduct(null);
+            toast.success(editingProduct ? "Product updated" : "Product created");
             loadProducts(); // Refresh list
         } catch (error) {
             console.error("Failed to save product", error);
-            alert("Failed to save product. See console for details.");
+            toast.error("Failed to save product.");
         } finally {
             setIsCreating(false);
         }
@@ -69,10 +72,11 @@ const StoreProducts = () => {
 
         try {
             await storeService.deleteProduct(productId);
+            toast.success("Product deleted");
             loadProducts();
         } catch (error) {
             console.error("Failed to delete product", error);
-            alert("Failed to delete product");
+            toast.error("Failed to delete product");
         }
     };
 
@@ -85,8 +89,8 @@ const StoreProducts = () => {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Products</h1>
-                    <p className="text-slate-400">Manage your software, hardware, and service offerings.</p>
+                    <h1 className="text-2xl font-bold text-white tracking-tight">Products & Services</h1>
+                    <p className="text-slate-400">Manage software licenses, hardware catalog, and service bundles.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}

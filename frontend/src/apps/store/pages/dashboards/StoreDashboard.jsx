@@ -82,15 +82,15 @@ const StoreDashboard = () => {
             {/* Header */}
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Store Overview</h1>
-                    <p className="text-slate-400">Manage your procurement, subscriptions, and hardware assets.</p>
+                    <h1 className="text-3xl font-bold text-white mb-2">Procurement & Licensing</h1>
+                    <p className="text-slate-400">Manage service subscriptions, software licenses, and hardware procurement.</p>
                 </div>
                 <button
-                    onClick={() => navigate('/app/store/products')}
+                    onClick={() => navigate('/admin/store/products')}
                     className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg shadow-indigo-500/20"
                 >
                     <ShoppingBag size={18} />
-                    Browse Catalog
+                    New Procurement Request
                 </button>
             </div>
 
@@ -133,7 +133,7 @@ const StoreDashboard = () => {
                         </div>
                     </div>
                     <div className="text-3xl font-bold text-white mb-1">{stats.hardwareDevices}</div>
-                    <div className="text-sm text-slate-400 font-medium uppercase">Hardware Assets</div>
+                    <div className="text-sm text-slate-400 font-medium uppercase">Managed Devices</div>
                 </div>
             </div>
 
@@ -142,7 +142,7 @@ const StoreDashboard = () => {
                 {/* Recent Orders Table */}
                 <div className="lg:col-span-2 glass-panel rounded-xl border border-slate-700/50 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-slate-700/50 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-white">Recent Procurement</h2>
+                        <h2 className="text-xl font-bold text-white">Recent Orders</h2>
                         <button onClick={() => navigate('/app/store/orders')} className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">View All</button>
                     </div>
                     <div className="overflow-x-auto">
@@ -196,7 +196,7 @@ const StoreDashboard = () => {
 
                 {/* Recommended (Upsell) - Keeping Mock for Visuals */}
                 <div className="glass-panel p-6 rounded-xl border border-slate-700/50 bg-gradient-to-b from-slate-800/40 to-slate-900/40">
-                    <h2 className="text-xl font-bold text-white mb-6">Recommended for You</h2>
+                    <h2 className="text-xl font-bold text-white mb-6">Available Add-Ons</h2>
                     <div className="space-y-4">
                         <div className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/50 hover:border-indigo-500/50 transition-all cursor-pointer">
                             <div className="flex justify-between items-start mb-2">

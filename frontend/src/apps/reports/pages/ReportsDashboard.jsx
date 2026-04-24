@@ -3,21 +3,31 @@ import { Link } from 'react-router-dom';
 import { TrendingUp, Users, LifeBuoy, ShieldAlert, Download, BarChart3 } from 'lucide-react';
 import client from '../../../core/api/client';
 
-const ReportTile = ({ title, desc, path, icon: Icon, color, value }) => (
-    <Link to={path}
-        className={`group bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4 hover:border-${color}-500/40 transition-all no-underline`}>
-        <div className={`w-12 h-12 rounded-xl bg-${color}-500/10 flex items-center justify-center text-${color}-500 group-hover:bg-${color}-500/20 transition-colors`}>
-            <Icon size={24} />
-        </div>
-        <div>
-            <p className="text-white font-bold text-lg">{title}</p>
-            <p className="text-slate-400 text-sm mt-1">{desc}</p>
-        </div>
-        {value !== undefined && (
-            <p className={`text-2xl font-bold text-${color}-400`}>{value}</p>
-        )}
-    </Link>
-);
+const COLOR_MAP = {
+    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-500', hoverBorder: 'hover:border-emerald-500/40', textLight: 'text-emerald-400', bgHover: 'group-hover:bg-emerald-500/20' },
+    blue: { bg: 'bg-blue-500/10', text: 'text-blue-500', hoverBorder: 'hover:border-blue-500/40', textLight: 'text-blue-400', bgHover: 'group-hover:bg-blue-500/20' },
+    amber: { bg: 'bg-amber-500/10', text: 'text-amber-500', hoverBorder: 'hover:border-amber-500/40', textLight: 'text-amber-400', bgHover: 'group-hover:bg-amber-500/20' },
+    rose: { bg: 'bg-rose-500/10', text: 'text-rose-500', hoverBorder: 'hover:border-rose-500/40', textLight: 'text-rose-400', bgHover: 'group-hover:bg-rose-500/20' },
+};
+
+const ReportTile = ({ title, desc, path, icon: Icon, color, value }) => {
+    const c = COLOR_MAP[color] || COLOR_MAP.blue;
+    return (
+        <Link to={path}
+            className={`group bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4 ${c.hoverBorder} transition-all no-underline`}>
+            <div className={`w-12 h-12 rounded-xl ${c.bg} flex items-center justify-center ${c.text} ${c.bgHover} transition-colors`}>
+                <Icon size={24} />
+            </div>
+            <div>
+                <p className="text-white font-bold text-lg">{title}</p>
+                <p className="text-slate-400 text-sm mt-1">{desc}</p>
+            </div>
+            {value !== undefined && (
+                <p className={`text-2xl font-bold ${c.textLight}`}>{value}</p>
+            )}
+        </Link>
+    );
+};
 
 const ReportsDashboard = () => {
     const [summary, setSummary] = useState({});

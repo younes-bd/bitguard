@@ -1,21 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import client from '../../../core/api/client';
-import SectionDivider from '../../../core/components/SectionDivider';
 import SolutionReveal from '../components/SolutionReveal';
+import PageMeta from '../../../core/components/shared/PageMeta';
 import '../../../core/styles/landing.css';
+
+// Static color map to prevent Tailwind purge in production builds
+const COLOR_MAP = {
+    blue:    { bg: 'bg-blue-600', shadow: 'shadow-blue-600/30', text: 'text-blue-600', darkText: 'dark:text-blue-400', hoverText: 'hover:text-blue-800', darkHoverText: 'dark:hover:text-blue-300', bgLight: 'bg-blue-500/20', border: 'border-blue-500/20' },
+    indigo:  { bg: 'bg-indigo-600', shadow: 'shadow-indigo-600/30', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', hoverText: 'hover:text-indigo-800', darkHoverText: 'dark:hover:text-indigo-300', bgLight: 'bg-indigo-500/20', border: 'border-indigo-500/20' },
+    emerald: { bg: 'bg-emerald-600', shadow: 'shadow-emerald-600/30', text: 'text-emerald-600', darkText: 'dark:text-emerald-400', hoverText: 'hover:text-emerald-800', darkHoverText: 'dark:hover:text-emerald-300', bgLight: 'bg-emerald-500/20', border: 'border-emerald-500/20' },
+    purple:  { bg: 'bg-purple-600', shadow: 'shadow-purple-600/30', text: 'text-purple-600', darkText: 'dark:text-purple-400', hoverText: 'hover:text-purple-800', darkHoverText: 'dark:hover:text-purple-300', bgLight: 'bg-purple-500/20', border: 'border-purple-500/20' },
+    amber:   { bg: 'bg-amber-600', shadow: 'shadow-amber-600/30', text: 'text-amber-600', darkText: 'dark:text-amber-400', hoverText: 'hover:text-amber-800', darkHoverText: 'dark:hover:text-amber-300', bgLight: 'bg-amber-500/20', border: 'border-amber-500/20' },
+    cyan:    { bg: 'bg-cyan-600', shadow: 'shadow-cyan-600/30', text: 'text-cyan-600', darkText: 'dark:text-cyan-400', hoverText: 'hover:text-cyan-800', darkHoverText: 'dark:hover:text-cyan-300', bgLight: 'bg-cyan-500/20', border: 'border-cyan-500/20' },
+    green:   { bg: 'bg-green-600', shadow: 'shadow-green-600/30', text: 'text-green-600', darkText: 'dark:text-green-400', hoverText: 'hover:text-green-800', darkHoverText: 'dark:hover:text-green-300', bgLight: 'bg-green-500/20', border: 'border-green-500/20' },
+};
 
 const LandingPage = () => {
     const [videoOpen, setVideoOpen] = useState(false);
     const [activeAccordion, setActiveAccordion] = useState(null);
+    const [activeTab, setActiveTab] = useState(0);
 
-    const openVideo = () => { console.log('Opening Video Modal'); setVideoOpen(true); };
-    const closeVideo = () => { console.log('Closing Video Modal'); setVideoOpen(false); };
-    
-    const toggleAccordion = (index) => {
-        setActiveAccordion(activeAccordion === index ? null : index);
-    };
+    const [liveMetrics, setLiveMetrics] = useState({ threats: 14205, active: 1248 });
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setLiveMetrics(prev => ({
+                threats: prev.threats + Math.floor(Math.random() * 5),
+                active: prev.active + (Math.floor(Math.random() * 3) - 1)
+            }));
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const openVideo = () => { setVideoOpen(true); };
+    const closeVideo = () => { setVideoOpen(false); };
 
     const navigate = useNavigate();
 
@@ -54,320 +73,380 @@ const LandingPage = () => {
         fetchAnnouncements();
     }, []);
 
-    const heroAnnouncement = announcements.length > 0 ? announcements[0] : null;
-
     return (
         <div className="dark:bg-slate-950 bg-slate-50 font-sans dark:text-slate-300 text-slate-800 selection:bg-sky-500/30 transition-colors duration-300">
+            <PageMeta title="Enterprise Managed IT & Cybersecurity Services" description="BitGuard delivers enterprise-grade managed IT, 24/7 cybersecurity operations, cloud infrastructure, and physical security for mid-market and enterprise organizations." />
             
             {/* ================================================================== */}
-            {/* 1. DARK — Hero Section                                            */}
+            {/* 1. HERO SECTION — Asymmetrical, Dark, Tech-Forward                 */}
             {/* ================================================================== */}
-            <section className="relative pt-32 pb-40 lg:pt-48 lg:pb-56 dark:bg-slate-950 bg-slate-50 overflow-hidden transition-colors duration-300" id="hero-section">
-                {/* Enterprise Mesh Background */}
+            <section className="relative pt-28 pb-16 lg:pt-36 lg:pb-20 dark:bg-slate-950 bg-slate-50 overflow-hidden transition-colors duration-300" id="hero-section">
+                {/* Minimal Background Grid */}
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-0 dark:bg-[#0a0f1c] dark:mix-blend-multiply"></div>
-                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-blue-600/10 dark:bg-blue-600/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen pointer-events-none"></div>
-                    <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/10 dark:bg-cyan-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen pointer-events-none"></div>
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-30%,rgba(56,189,248,0.05),transparent)] dark:bg-[radial-gradient(circle_800px_at_50%_-30%,rgba(56,189,248,0.15),transparent)]"></div>
-                    <div className="absolute inset-0 bg-[url('/assets/grid.svg')] opacity-[0.03] dark:opacity-10" style={{ backgroundSize: '40px 40px' }}></div>
+                    <div className="absolute inset-0 bg-[url('/assets/grid.svg')] opacity-[0.03] dark:opacity-[0.06]" style={{ backgroundSize: '40px 40px' }}></div>
                 </div>
                 
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full dark:bg-blue-500/10 bg-blue-100 border dark:border-blue-500/20 border-blue-200 text-blue-600 dark:text-blue-300 text-xs font-bold mb-8 uppercase tracking-[0.2em] backdrop-blur-sm transition-colors duration-300">
-                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                        {heroAnnouncement ? heroAnnouncement.title : "Enterprise-Grade IT Infrastructure"}
-                    </span>
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+                        {/* LEFT: Copywriting */}
+                        <div className="lg:col-span-6 text-left">
+                            <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full dark:bg-blue-500/10 bg-blue-50 border dark:border-blue-500/20 border-blue-200 text-blue-600 dark:text-blue-400 text-[11px] font-bold mb-6 tracking-[0.15em] backdrop-blur-sm transition-colors duration-300">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                MANAGED SECURITY PLATFORM
+                            </span>
 
-                    <h1 className="text-5xl md:text-7xl font-bold mb-6 dark:text-white text-slate-900 tracking-tight leading-[1.1] transition-colors duration-300">
-                        Enterprise Managed IT <br className="hidden md:block" />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">& Cybersecurity Platform</span>
-                    </h1>
+                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 dark:text-white text-slate-900 tracking-tight leading-[1.08] transition-colors duration-300">
+                                Enterprise IT &<br/>
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Cybersecurity</span>, Simplified.
+                            </h1>
 
-                    <p className="text-xl dark:text-slate-400 text-slate-600 max-w-3xl mx-auto mb-12 leading-relaxed transition-colors duration-300">
-                        From proactive infrastructure management to advanced threat protection, BitGuard provides the complete technology backbone your business needs to scale securely and stay compliant.
-                    </p>
+                            <p className="text-lg md:text-xl dark:text-slate-400 text-slate-600 mb-10 leading-relaxed max-w-xl transition-colors duration-300">
+                                Consolidate your IT operations, threat detection, and compliance under one managed platform — backed by 24/7 SOC engineers and a 15-minute response SLA.
+                            </p>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
-                        <Link to="/contact" className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-[0_0_40px_-10px_rgba(37,99,235,0.5)] flex items-center gap-2 transform active:scale-[0.98] no-underline">
-                            <span>Book a Consultation</span>
-                            <i className="bi bi-arrow-right"></i>
-                        </Link>
-                        <button onClick={openVideo} className="px-8 py-4 dark:bg-white/5 bg-white border dark:border-white/10 border-slate-200 dark:hover:bg-white/10 hover:bg-slate-50 dark:text-white text-slate-900 rounded-xl font-bold transition-all flex items-center gap-2 transform active:scale-[0.98]">
-                            <i className="bi bi-play-circle-fill text-blue-600 dark:text-blue-400 text-lg"></i>
-                            <span>See Our Solutions</span>
-                        </button>
-                    </div>
-
-                    {/* Trust Badges */}
-                    <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-16">
-                        {['SOC2 Type II', 'ISO 27001', 'HIPAA Ready', 'GDPR Compliant', 'NIST CSF'].map((cert, i) => (
-                            <div key={i} className="flex items-center gap-2 dark:text-slate-400 text-slate-600 font-semibold text-xs tracking-wide dark:bg-white/5 bg-white/60 px-4 py-2 rounded-full border dark:border-white/10 border-slate-200 backdrop-blur-sm transition-colors duration-300">
-                                <i className="bi bi-patch-check-fill text-emerald-500"></i> {cert}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Stat Counters */}
-                    <div className="flex flex-wrap justify-center gap-8 md:gap-16">
-                        {[
-                            { value: "500+", label: "Clients Protected" },
-                            { value: "99.9%", label: "Uptime Guarantee" },
-                            { value: "<15min", label: "Response SLA" },
-                            { value: "24/7/365", label: "SOC Monitoring" }
-                        ].map((stat, i) => (
-                            <div key={i} className="text-center">
-                                <div className="text-3xl md:text-4xl font-bold dark:text-white text-slate-900 tracking-tight transition-colors duration-300">{stat.value}</div>
-                                <div className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">{stat.label}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                
-                {/* Video Modal */}
-                {videoOpen && (
-                    <SolutionReveal onClose={closeVideo} />
-                )}
-            </section>
-
-            <SectionDivider variant="angle" from="dark" to="light" />
-
-            {/* ================================================================== */}
-            {/* 2. LIGHT — Dashboard Preview + 6 Service Cards                     */}
-            {/* ================================================================== */}
-            <section className="dark:bg-slate-900 bg-white relative z-20 pb-24 transition-colors duration-300">
-                <div className="container mx-auto px-4 -mt-32 lg:-mt-48 relative z-30 mb-20 md:mb-32">
-                    {/* Interactive UI Mockup: BitGuard Command Center */}
-                    <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] border dark:border-slate-800 border-slate-200 dark:bg-[#0a0f1c] bg-white p-0 hover:-translate-y-2 transition-all duration-700 flex flex-col h-[500px] xl:h-[650px] ring-1 dark:ring-white/10 ring-slate-900/5 group text-left">
-                        
-                        {/* macOS Window Header */}
-                        <div className="h-12 border-b dark:border-slate-800 border-slate-200 dark:bg-slate-900/50 bg-slate-50 flex items-center px-4 justify-between backdrop-blur-md">
-                            <div className="flex gap-2 w-16">
-                                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                                <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-                            </div>
-                            <div className="text-xs font-bold dark:text-slate-400 text-slate-500 tracking-widest flex items-center gap-2">
-                                <i className="bi bi-shield-lock-fill text-blue-500 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]"></i> BITGUARD COMMAND CENTER
-                            </div>
-                            <div className="w-16 flex justify-end">
-                                <i className="bi bi-wifi text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-                        
-                        {/* Dashboard Content */}
-                        <div className="flex-1 flex overflow-hidden">
-                            
-                            {/* Left Sidebar */}
-                            <div className="hidden sm:flex w-16 border-r dark:border-slate-800 border-slate-200 flex-col items-center py-6 gap-6 dark:bg-slate-900/30 bg-slate-50">
-                                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-500/20 transition-colors border border-blue-500/20 shadow-[0_0_15px_rgba(56,189,248,0.2)]"><i className="bi bi-grid-1x2-fill text-xl"></i></div>
-                                <div className="w-10 h-10 rounded-xl dark:text-slate-500 text-slate-400 flex items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 dark:hover:text-slate-200 transition-colors"><i className="bi bi-map-fill text-xl"></i></div>
-                                <div className="w-10 h-10 rounded-xl dark:text-slate-500 text-slate-400 flex items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 dark:hover:text-slate-200 transition-colors"><i className="bi bi-shield-exclamation text-xl"></i></div>
-                                <div className="w-10 h-10 rounded-xl dark:text-slate-500 text-slate-400 flex items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 dark:hover:text-slate-200 transition-colors"><i className="bi bi-activity text-xl"></i></div>
-                                <div className="mt-auto w-10 h-10 rounded-xl dark:text-slate-500 text-slate-400 flex items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 dark:hover:text-slate-200 transition-colors"><i className="bi bi-gear-fill text-xl"></i></div>
-                            </div>
-
-                            {/* Main View Data */}
-                            <div className="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col gap-6 relative">
-                                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
-                                
-                                {/* Top Metrics Row */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 relative z-10">
-                                    <div className="dark:bg-slate-900/60 bg-white border dark:border-slate-800 border-slate-200 rounded-xl p-5 backdrop-blur-sm group-hover:border-blue-500/30 transition-colors shadow-sm">
-                                        <div className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Network Health</div>
-                                        <div className="flex items-end gap-3">
-                                            <div className="text-3xl font-bold dark:text-white text-slate-900 font-mono tracking-tight">99.999%</div>
-                                            <div className="text-emerald-500 text-sm font-bold flex items-center"><i className="bi bi-arrow-up-short text-lg"></i> SLA</div>
-                                        </div>
-                                    </div>
-                                    <div className="dark:bg-slate-900/60 bg-white border dark:border-slate-800 border-slate-200 rounded-xl p-5 backdrop-blur-sm group-hover:border-red-500/30 transition-colors shadow-sm">
-                                        <div className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2 flex justify-between">
-                                            <span>Threats Blocked</span>
-                                            <span className="w-2 h-2 rounded-full bg-red-500 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></span>
-                                        </div>
-                                        <div className="flex items-end gap-3">
-                                            <div className="text-3xl font-bold dark:text-white text-slate-900 font-mono tracking-tight">14,205</div>
-                                            <div className="text-red-500 text-sm font-bold bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">Past 24H</div>
-                                        </div>
-                                    </div>
-                                    <div className="dark:bg-slate-900/60 bg-white border dark:border-slate-800 border-slate-200 rounded-xl p-5 backdrop-blur-sm group-hover:border-indigo-500/30 transition-colors shadow-sm hidden md:block">
-                                        <div className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Active Elements</div>
-                                        <div className="flex items-end gap-3">
-                                            <div className="text-3xl font-bold dark:text-white text-slate-900 font-mono tracking-tight">1,248</div>
-                                            <div className="text-indigo-500 text-sm font-bold flex items-center gap-1"><i className="bi bi-hdd-stack-fill"></i> Online</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Middle Split View */}
-                                <div className="flex-1 flex flex-col xl:flex-row gap-6 relative z-10 min-h-0">
-                                    
-                                    {/* Visual Grid Map */}
-                                    <div className="flex-[5] dark:bg-slate-900/40 bg-slate-50 border dark:border-slate-800 border-slate-200 rounded-xl p-6 relative overflow-hidden flex flex-col shadow-inner">
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 dark:bg-blue-500/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-blue-500/30 transition-colors duration-1000"></div>
-                                        <div className="flex justify-between items-center mb-6 relative z-10">
-                                            <h4 className="font-bold dark:text-white text-slate-800 flex items-center gap-2"><i className="bi bi-diagram-3-fill text-blue-500"></i> Global Infrastructure</h4>
-                                            <span className="px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-widest rounded-full border border-blue-500/20 shadow-[0_0_10px_rgba(56,189,248,0.2)]">Live Sync</span>
-                                        </div>
-                                        <div className="flex-1 relative z-10 flex items-center justify-center">
-                                            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-3 sm:gap-4 md:gap-5 w-full h-full p-2 place-content-center place-items-center">
-                                                {Array.from({length: 40}).map((_, i) => (
-                                                    <div key={i} className="relative group/node w-2 h-2 sm:w-3 sm:h-3">
-                                                        <div className={`w-full h-full rounded-full transition-all duration-500 ${[3, 12, 19, 27, 34, 38].includes(i) ? 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,1)] scale-125' : 'bg-slate-300 dark:bg-slate-700 group-hover/node:bg-blue-400 group-hover/node:shadow-[0_0_10px_rgba(56,189,248,0.8)]'}`}></div>
-                                                        {((i === 12) || (i === 27)) && (
-                                                            <div className="absolute -inset-2 border-2 border-emerald-500/40 rounded-full animate-ping"></div>
-                                                        )}
-                                                        {i === 19 && (
-                                                            <div className="absolute top-1/2 left-1/2 w-8 border-t-2 border-dashed border-indigo-500/50 -translate-y-1/2 origin-left rotate-45 pointer-events-none"></div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Live Console Feed */}
-                                    <div className="flex-[4] dark:bg-[#050914] bg-slate-900 rounded-xl border dark:border-slate-800 border-slate-700 p-5 flex flex-col font-mono relative overflow-hidden shadow-2xl">
-                                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-50"></div>
-                                        <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-3 mt-1">
-                                            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2"><i className="bi bi-shield-check text-emerald-500"></i> Event Stream</h4>
-                                            <i className="bi bi-terminal text-slate-500"></i>
-                                        </div>
-                                        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col justify-end text-[11px] sm:text-xs space-y-3 leading-relaxed">
-                                            <div className="text-slate-500">System initialized. Secure connection established.</div>
-                                            <div className="text-emerald-400"><span className="text-slate-600 mr-2">[10:41:02]</span> Backup sync completed across 4 regions.</div>
-                                            <div className="text-blue-400"><span className="text-slate-600 mr-2">[10:41:15]</span> Policy push: User access control updated remotely.</div>
-                                            <div className="text-amber-400"><span className="text-slate-600 mr-2">[10:42:01]</span> Warning: High baseline CPU load on Node-Alpha-7.</div>
-                                            <div className="text-red-400 font-bold bg-red-950/40 border border-red-900/50 p-1.5 -mx-1.5 px-1.5 rounded-md"><span className="text-slate-500 mr-2 font-normal">[10:42:19]</span> CRITICAL: Unauthorized login blocked from IP 192.168.1.1</div>
-                                            <div className="text-emerald-400"><span className="text-slate-600 mr-2">[10:42:20]</span> Zero-Trust agent successfully dynamically banned IP.</div>
-                                            <div className="text-slate-300 flex items-center gap-2 mt-4 bg-slate-800/50 p-2 rounded border border-slate-800">
-                                                <span className="text-blue-500 font-bold">root@bitguard:~$</span>
-                                                <span className="w-2 h-4 bg-slate-400 animate-pulse"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="container mx-auto px-4 pb-20 text-center border-b dark:border-slate-800 border-slate-200 transition-colors duration-300">
-                    <p className="text-slate-500 font-bold uppercase tracking-widest mb-10 text-sm">Trusted By Industry Leaders</p>
-                    <div className="flex flex-wrap justify-center items-center gap-10 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                        <i className="bi bi-microsoft text-4xl md:text-5xl text-blue-600 hover:scale-110 transition-transform"></i>
-                        <i className="bi bi-amazon text-4xl md:text-5xl dark:text-slate-400 text-slate-800 hover:scale-110 transition-transform"></i>
-                        <i className="bi bi-google text-4xl md:text-5xl text-red-500 hover:scale-110 transition-transform"></i>
-                        <div className="h-8 w-px dark:bg-slate-700 bg-slate-300 hidden md:block"></div>
-                        <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-hexagon-fill text-blue-600"></i> ACME</div>
-                        <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-triangle-fill text-indigo-600"></i> GLOBEX</div>
-                    </div>
-                </div>
-
-                <div className="container mx-auto px-4 py-24">
-                     <div className="mb-16 text-center">
-                        <span className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 block">Core Solutions</span>
-                        <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">Enterprise IT Services</h2>
-                        <p className="dark:text-slate-400 text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed transition-colors duration-300">We handle the complex technology stacks so you can focus entirely on growing your business and dominating your market.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[
-                            { title: "Managed IT Services", desc: "Proactive 24/7 network monitoring, helpdesk support, patch management, and hardware lifecycle tracking to eliminate downtime and keep every endpoint running at peak performance.", icon: "bi-display", link: "/solutions/managed-detection-response", color: "blue" },
-                            { title: "Cybersecurity Defense", desc: "AI-driven threat detection, endpoint protection (EDR/XDR), SIEM monitoring, vulnerability assessments, and 24/7 SOC operations to protect your digital perimeter from advanced threats.", icon: "bi-shield-lock", link: "/solutions/bitguard-bundle", color: "indigo" },
-                            { title: "Cloud & Infrastructure", desc: "Expert cloud migration, hybrid architecture design, and continuous optimization across AWS, Azure, and Google Cloud — plus Microsoft 365 management and secure private cloud deployments.", icon: "bi-cloud-arrow-up", link: "/solutions/azure-aws", color: "emerald" },
-                            { title: "Digital Transformation", desc: "Modernize legacy systems with workflow automation, custom web & app development, full-stack engineering, and business process re-engineering to accelerate your digital journey.", icon: "bi-lightning-charge", link: "/solutions/digital-transformation", color: "purple" },
-                            { title: "Consulting & Co-Managed IT", desc: "Augment your internal IT team with specialized engineers. Our co-managed model provides flexible staff augmentation, strategic CTO advisory, and project-based support exactly when you need it.", icon: "bi-people", link: "/solutions/staff-augmentation", color: "amber" },
-                            { title: "Compliance & Governance", desc: "Navigate complex regulatory requirements with automated compliance monitoring for SOC2, HIPAA, GDPR, PCI-DSS, NIST, and ISO 27001 — including audit preparation and continuous risk scoring.", icon: "bi-clipboard-data", link: "/compliance", color: "cyan" }
-                        ].map((item, i) => (
-                            <div key={i} className="group dark:bg-slate-800 bg-white p-8 rounded-2xl shadow-lg border dark:border-slate-700 border-slate-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col" style={{borderTopColor: `var(--tw-shadow-color, transparent)`}}>
-                                <div className={`w-16 h-16 bg-${item.color}-600 rounded-2xl flex items-center justify-center mb-8 text-white shadow-lg shadow-${item.color}-600/30 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
-                                    <i className={`bi ${item.icon} text-3xl`}></i>
-                                </div>
-                                <h3 className="text-2xl font-bold dark:text-white text-slate-900 mb-4 tracking-tight transition-colors duration-300">{item.title}</h3>
-                                <p className="dark:text-slate-400 text-slate-600 mb-8 leading-relaxed flex-grow text-sm transition-colors duration-300">{item.desc}</p>
-                                <Link to={item.link} className={`inline-flex items-center text-${item.color}-600 dark:text-${item.color}-400 font-bold hover:text-${item.color}-800 dark:hover:text-${item.color}-300 tracking-wide uppercase text-sm mt-auto no-underline transition-colors duration-300`}>
-                                    Explore Service <i className="bi bi-arrow-right ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                            <div className="flex flex-col sm:flex-row items-center justify-start gap-3 mb-8">
+                                <Link to="/contact" className="px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 flex items-center gap-2 transform active:scale-[0.98] no-underline text-sm">
+                                    <span>Request a Consultation</span>
+                                    <i className="bi bi-arrow-right"></i>
+                                </Link>
+                                <Link to="/solutions/bitguard-bundle" className="px-7 py-3.5 dark:bg-slate-900/80 bg-white border dark:border-slate-700 border-slate-200 dark:hover:bg-slate-800 hover:bg-slate-50 dark:text-white text-slate-900 rounded-lg font-semibold transition-all flex items-center gap-2 transform active:scale-[0.98] text-sm no-underline">
+                                    <span>Explore Solutions</span>
+                                    <i className="bi bi-arrow-right opacity-40"></i>
                                 </Link>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-            
-            <SectionDivider variant="angle" from="light" to="dark" />
 
-            {/* ================================================================== */}
-            {/* 3. DARK — Why BitGuard (Value Proposition)                         */}
-            {/* ================================================================== */}
-            <section className="py-24 dark:bg-slate-950 bg-slate-50 dark:text-white text-slate-900 relative overflow-hidden transition-colors duration-300">
-                <div className="absolute top-0 right-0 w-1/3 h-full dark:bg-slate-900 bg-white skew-x-12 opacity-50 pointer-events-none border-l dark:border-slate-800 border-slate-200"></div>
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-                        <div>
-                            <span className="text-blue-500 font-bold uppercase tracking-widest text-sm mb-4 block">Why 500+ Businesses Trust Us</span>
-                            <h2 className="text-4xl lg:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">
-                                Your Unfair Advantage <br />in Technology
-                            </h2>
-                            <p className="dark:text-slate-400 text-slate-600 text-lg leading-relaxed mb-10 transition-colors duration-300">
-                                Technology shouldn't be a bottleneck. BitGuard acts as a force multiplier for your business — eliminating IT complexity so you can focus on growth, innovation, and competitive advantage.
-                            </p>
-                            <div className="space-y-4">
-                                {[
-                                    { title: "Single Pane of Glass", desc: "Manage every asset, ticket, endpoint, and compliance check from one unified dashboard — no tool sprawl.", icon: "bi-grid-1x2-fill", color: "blue" },
-                                    { title: "Zero-Downtime Migrations", desc: "Our architects handle the heavy lifting of cloud migration, office relocations, and M&A integrations seamlessly.", icon: "bi-arrow-left-right", color: "green" },
-                                    { title: "15-Minute SLA Guarantee", desc: "Tier-2 engineers respond in under 15 minutes, 24/7/365. No chatbots, no ticket queues — real humans, real fast.", icon: "bi-stopwatch", color: "amber" },
-                                    { title: "Predictable Flat-Rate Pricing", desc: "No surprise invoices. Per-device or per-user monthly pricing that scales transparently with your company.", icon: "bi-receipt", color: "purple" }
-                                ].map((item, i) => (
-                                    <div key={i} className="flex items-start dark:bg-slate-900/50 bg-white p-5 rounded-xl border dark:border-slate-800 border-slate-200 shadow-sm hover:border-blue-500/30 dark:hover:border-blue-500/30 transition-colors group">
-                                        <div className={`w-12 h-12 flex-shrink-0 bg-${item.color}-500/20 rounded-xl flex items-center justify-center text-${item.color}-600 dark:text-${item.color}-400 border border-${item.color}-500/20 mr-4 mt-0.5 group-hover:scale-110 transition-transform`}>
-                                            <i className={`bi ${item.icon} text-xl`}></i>
-                                        </div>
-                                        <div>
-                                            <span className="font-bold dark:text-slate-200 text-slate-800 block mb-1 transition-colors duration-300">{item.title}</span>
-                                            <span className="text-sm dark:text-slate-500 text-slate-600 leading-relaxed transition-colors duration-300">{item.desc}</span>
-                                        </div>
+                            {/* Compliance Badges */}
+                            <div className="flex flex-wrap gap-x-5 gap-y-2 items-center">
+                                {['SOC 2 Type II', 'ISO 27001', 'HIPAA', 'NIST CSF'].map((cert, i) => (
+                                    <div key={i} className="flex items-center gap-1.5 text-[11px] font-semibold dark:text-slate-500 text-slate-400 tracking-wide">
+                                        <i className="bi bi-patch-check-fill text-emerald-500/80 text-xs"></i> {cert}
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="relative mt-12 lg:mt-0">
-                            <div className="absolute -inset-4 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl transform rotate-3 opacity-30 blur-sm"></div>
-                            <div className="relative rounded-xl overflow-hidden shadow-xl border dark:border-slate-800 border-slate-200 dark:bg-slate-900 bg-white p-1">
-                                <div className="rounded-2xl overflow-hidden relative border dark:border-slate-900 border-slate-100">
-                                    <img src="/assets/images/home/unified.jpg" alt="BitGuard Platform" className="w-full h-auto object-cover opacity-90 hover:opacity-100 transform hover:scale-105 transition-all duration-700" onError={(e) => e.target.src = 'https://placehold.co/800x600/1e293b/475569?text=Enterprise+Platform'} />
-                                    <div className="absolute inset-0 bg-blue-900/20 pointer-events-none mix-blend-overlay"></div>
+
+                        {/* RIGHT: Dynamic Tech Visual */}
+                        <div className="lg:col-span-6 relative">
+                            {/* Glow behind visual */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+                            
+                            {/* Glass Panel */}
+                            <div className="relative dark:bg-slate-900/40 bg-white/40 backdrop-blur-2xl border dark:border-slate-700/50 border-slate-200 rounded-2xl p-5 shadow-2xl z-10 overflow-hidden transform md:rotate-1 hover:rotate-0 transition-transform duration-700">
+                                {/* Chrome Top */}
+                                <div className="flex gap-2 mb-4">
+                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    {/* Abstract Metric 1 */}
+                                    <div className="dark:bg-slate-950/80 bg-slate-50 border dark:border-slate-800 border-slate-200 rounded-xl p-4">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <i className="bi bi-shield-lock-fill text-emerald-500 text-xl"></i>
+                                            <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded">Active</span>
+                                        </div>
+                                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Threats Blocked</p>
+                                        <h3 className="text-2xl font-black text-slate-900 dark:text-white font-mono">{liveMetrics.threats.toLocaleString()}</h3>
+                                    </div>
+
+                                    {/* Abstract Metric 2 */}
+                                    <div className="dark:bg-slate-950/80 bg-slate-50 border dark:border-slate-800 border-slate-200 rounded-xl p-4">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <i className="bi bi-activity text-blue-500 text-xl"></i>
+                                            <span className="text-[10px] text-blue-500 font-bold uppercase tracking-wider bg-blue-500/10 px-2 py-0.5 rounded">Syncing</span>
+                                        </div>
+                                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Active Endpoints</p>
+                                        <h3 className="text-2xl font-black text-slate-900 dark:text-white font-mono">{liveMetrics.active.toLocaleString()}</h3>
+                                    </div>
+
+                                    {/* Bar Chart — deterministic data */}
+                                    <div className="col-span-2 dark:bg-slate-950/80 bg-slate-50 border dark:border-slate-800 border-slate-200 rounded-xl p-4 h-28 relative overflow-hidden flex items-end">
+                                        <p className="absolute top-4 left-5 text-xs text-slate-500 font-bold uppercase tracking-widest">Network Traffic (24h)</p>
+                                        <div className="w-full flex items-end justify-between gap-[3px] h-16">
+                                            {[35,62,48,75,40,88,55,70,45,82,60,73,50,90,65,78,42,85,58,72].map((h, i) => (
+                                                <div key={i} className="w-full bg-blue-500/30 dark:bg-blue-400/20 rounded-t-sm transition-all" style={{ height: `${h}%` }}></div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="absolute -bottom-10 -left-10 dark:bg-slate-900 bg-white p-6 rounded-2xl shadow-xl border dark:border-slate-800 border-slate-200 max-w-xs hidden lg:block transition-colors duration-300">
-                                <div className="flex items-center gap-4 mb-3">
-                                    <div className="w-12 h-12 bg-green-900/40 rounded-xl flex items-center justify-center text-green-500 dark:text-green-400 border border-green-500/20">
-                                        <i className="bi bi-activity text-2xl"></i>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold dark:text-white text-slate-900 transition-colors duration-300">System Status</h4>
-                                        <p className="text-xs font-bold text-green-500 dark:text-green-400 uppercase tracking-widest">All Systems Operational</p>
-                                    </div>
+                            
+                            {/* Floating status node */}
+                            <div className="absolute -right-4 -bottom-4 sm:-right-6 sm:-bottom-6 dark:bg-slate-800/90 bg-white/90 backdrop-blur border dark:border-slate-700 border-slate-200 py-3 px-4 rounded-xl shadow-xl z-20 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-emerald-500/15 flex items-center justify-center">
+                                    <i className="bi bi-check-lg text-emerald-500"></i>
                                 </div>
-                                <p className="text-sm dark:text-slate-400 text-slate-600 transition-colors duration-300">Real-time monitoring across 12,000+ endpoints.</p>
+                                <div>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">SOC Status</p>
+                                    <p className="text-xs font-bold dark:text-white text-slate-900">All Systems Operational</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Video Modal */}
+                {videoOpen && <SolutionReveal onClose={closeVideo} />}
             </section>
-            
-            <SectionDivider variant="wave" from="dark" to="light" />
 
             {/* ================================================================== */}
-            {/* 4. LIGHT — How It Works (3-Step Process)                           */}
+            {/* 2. TRUST & CREDIBILITY + CORE SOLUTIONS                            */}
             {/* ================================================================== */}
-            <section className="py-24 dark:bg-slate-900 bg-white relative overflow-hidden transition-colors duration-300">
+            <section className="dark:bg-slate-900 bg-white relative z-20 pt-16 pb-20 transition-colors duration-300">
+                {/* Stats Bar */}
+                <div className="container mx-auto px-4 relative z-30 mb-16">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                        {[
+                            { value: "500+", label: "Organizations Served", icon: "bi-building" },
+                            { value: "99.99%", label: "Platform Uptime", icon: "bi-graph-up-arrow" },
+                            { value: "<15min", label: "Incident Response SLA", icon: "bi-stopwatch" },
+                            { value: "24/7", label: "SOC Operations Center", icon: "bi-shield-check" }
+                        ].map((stat, i) => (
+                            <div key={i} className="text-center dark:bg-slate-800/60 bg-slate-50 rounded-xl border dark:border-slate-700/50 border-slate-200 p-5 relative overflow-hidden group">
+
+                                <i className={`bi ${stat.icon} text-blue-500 text-2xl mb-3 block opacity-80 group-hover:scale-110 transition-transform duration-500`}></i>
+                                <div className="text-2xl md:text-3xl font-bold dark:text-white text-slate-900 tracking-tight mb-1 relative z-10">{stat.value}</div>
+                                <div className="dark:text-slate-400 text-slate-500 text-xs font-bold uppercase tracking-widest relative z-10">{stat.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Trusted By — Logo Marquee */}
+                <div className="w-full pb-16 text-center border-b dark:border-slate-800 border-slate-100 transition-colors duration-300 overflow-hidden">
+                    <p className="text-slate-400 font-bold uppercase tracking-widest mb-8 text-xs">Trusted by forward-thinking enterprises</p>
+                    <div className="flex overflow-hidden relative w-full [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+                        <div className="flex space-x-16 min-w-full flex-shrink-0 justify-around items-center animate-marquee opacity-60 grayscale hover:grayscale-0 transition-all duration-500 px-8">
+                            <i className="bi bi-microsoft text-4xl md:text-5xl text-blue-600"></i>
+                            <i className="bi bi-amazon text-4xl md:text-5xl dark:text-slate-400 text-slate-800"></i>
+                            <i className="bi bi-google text-4xl md:text-5xl text-red-500"></i>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-hexagon-fill text-blue-600"></i> ACME</div>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-triangle-fill text-indigo-600"></i> GLOBEX</div>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-circle-fill text-purple-600"></i> INNOTECH</div>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-diamond-fill text-cyan-600"></i> NEXGEN</div>
+                        </div>
+                        <div className="flex space-x-16 min-w-full flex-shrink-0 justify-around items-center animate-marquee opacity-60 grayscale hover:grayscale-0 transition-all duration-500 px-8" aria-hidden="true">
+                            <i className="bi bi-microsoft text-4xl md:text-5xl text-blue-600"></i>
+                            <i className="bi bi-amazon text-4xl md:text-5xl dark:text-slate-400 text-slate-800"></i>
+                            <i className="bi bi-google text-4xl md:text-5xl text-red-500"></i>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-hexagon-fill text-blue-600"></i> ACME</div>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-triangle-fill text-indigo-600"></i> GLOBEX</div>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-circle-fill text-purple-600"></i> INNOTECH</div>
+                            <div className="flex items-center gap-2 dark:text-slate-300 text-slate-800 font-bold font-mono text-xl"><i className="bi bi-diamond-fill text-cyan-600"></i> NEXGEN</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Service Cards — Bento Box */}
+                <div className="container mx-auto px-4 pt-16 pb-8">
+                     <div className="mb-16 text-center">
+                        <span className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 block">Our Solutions</span>
+                        <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">
+                            End-to-End IT & Security Services
+                        </h2>
+                        <p className="dark:text-slate-400 text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed transition-colors duration-300">
+                            From threat detection to cloud management, we deliver a comprehensive technology stack — so you get one partner instead of a dozen vendors.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-6xl mx-auto">
+                        
+                        {/* BENTO ITEM 1: Massive Security Block */}
+                        <Link to="/solutions/bitguard-bundle" className="md:col-span-8 group relative rounded-3xl dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 p-8 md:p-12 overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 no-underline block">
+                            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px] -mr-64 -mt-64 group-hover:bg-indigo-600/20 transition-all duration-700 pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-[url('/assets/grid.svg')] opacity-[0.03] dark:opacity-[0.05] pointer-events-none"></div>
+                            
+                            <div className="relative z-10 h-full flex flex-col justify-between">
+                                <div className="w-14 h-14 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-500 text-2xl mb-8 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)]">
+                                    <i className="bi bi-shield-lock-fill"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl md:text-3xl font-bold dark:text-white text-slate-900 tracking-tight mb-3">Managed Cybersecurity & SOC</h3>
+                                    <p className="dark:text-slate-400 text-slate-600 leading-relaxed text-base max-w-md">24/7 Security Operations Center, AI-powered threat detection, EDR/XDR management, vulnerability scanning, and incident response — all under one SLA.</p>
+                                </div>
+                            </div>
+                            <div className="absolute bottom-8 right-8 text-indigo-500 dark:text-indigo-400 opacity-0 transform translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-2xl">
+                                <i className="bi bi-arrow-right-circle-fill"></i>
+                            </div>
+                        </Link>
+
+                        {/* BENTO ITEM 2: Vertical IT Block */}
+                        <Link to="/solutions/helpdesk-support" className="md:col-span-4 group relative rounded-3xl dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 p-8 md:p-10 overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 no-underline block">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[70px] group-hover:bg-blue-500/20 transition-all duration-700 pointer-events-none"></div>
+                            
+                            <div className="relative z-10 h-full flex flex-col items-center text-center justify-center">
+                                <div className="w-14 h-14 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center text-blue-500 text-2xl mb-6 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_15px_-3px_rgba(59,130,246,0.3)]">
+                                    <i className="bi bi-headset"></i>
+                                </div>
+                                <h3 className="text-xl md:text-2xl font-bold dark:text-white text-slate-900 tracking-tight mb-3">Managed IT & Helpdesk</h3>
+                                <p className="dark:text-slate-400 text-slate-600 leading-relaxed text-sm">Proactive monitoring, patch management, endpoint lifecycle, and a dedicated helpdesk with 15-minute SLA response times.</p>
+                            </div>
+                        </Link>
+
+                        {/* BENTO ITEM 3: Small Horizontal Block */}
+                        <Link to="/solutions/vdi-solutions" className="md:col-span-4 group relative rounded-3xl dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 p-8 overflow-hidden shadow-xl hover:-translate-y-1 transition-all duration-500 no-underline">
+                            <div className="absolute bottom-0 right-0 w-[200px] h-[200px] bg-emerald-500/10 rounded-full blur-[60px] group-hover:bg-emerald-500/20 transition-all duration-700 pointer-events-none"></div>
+                            
+                            <div className="relative z-10 flex items-start gap-4">
+                                <div className="w-12 h-12 shrink-0 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500 text-xl group-hover:rotate-12 transition-transform duration-500">
+                                    <i className="bi bi-cloud-arrow-up-fill"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold dark:text-white text-slate-900 tracking-tight mb-1">Cloud & VDI</h3>
+                                    <p className="dark:text-slate-400 text-slate-600 text-sm leading-relaxed">Azure & AWS migrations, Microsoft 365 governance, and secure Virtual Desktop Infrastructure.</p>
+                                </div>
+                            </div>
+                        </Link>
+
+                        {/* BENTO ITEM 4: Small Horizontal Block */}
+                        <Link to="/solutions/camera-surveillance" className="md:col-span-4 group relative rounded-3xl dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 p-8 overflow-hidden shadow-xl hover:-translate-y-1 transition-all duration-500 no-underline">
+                            <div className="absolute bottom-0 right-0 w-[200px] h-[200px] bg-amber-500/10 rounded-full blur-[60px] group-hover:bg-amber-500/20 transition-all duration-700 pointer-events-none"></div>
+                            
+                            <div className="relative z-10 flex items-start gap-4">
+                                <div className="w-12 h-12 shrink-0 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-500 text-xl group-hover:rotate-12 transition-transform duration-500">
+                                    <i className="bi bi-camera-video-fill"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold dark:text-white text-slate-900 tracking-tight mb-1">Physical Security</h3>
+                                    <p className="dark:text-slate-400 text-slate-600 text-sm leading-relaxed">IP camera systems, access control, alarm monitoring, and unified physical-digital security dashboards.</p>
+                                </div>
+                            </div>
+                        </Link>
+                        
+                        {/* BENTO ITEM 5: Small Horizontal Block */}
+                        <Link to="/solutions/data-analytics-ai" className="md:col-span-4 group relative rounded-3xl dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 p-8 overflow-hidden shadow-xl hover:-translate-y-1 transition-all duration-500 no-underline">
+                            <div className="absolute bottom-0 right-0 w-[200px] h-[200px] bg-cyan-500/10 rounded-full blur-[60px] group-hover:bg-cyan-500/20 transition-all duration-700 pointer-events-none"></div>
+                            
+                            <div className="relative z-10 flex items-start gap-4">
+                                <div className="w-12 h-12 shrink-0 bg-cyan-500/10 border border-cyan-500/20 rounded-xl flex items-center justify-center text-cyan-500 text-xl group-hover:rotate-12 transition-transform duration-500">
+                                    <i className="bi bi-cpu-fill"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold dark:text-white text-slate-900 tracking-tight mb-1">Data & AI Solutions</h3>
+                                    <p className="dark:text-slate-400 text-slate-600 text-sm leading-relaxed">Business intelligence dashboards, workflow automation, and custom AI/ML integrations.</p>
+                                </div>
+                            </div>
+                        </Link>
+
+                    </div>
+                </div>
+            </section>
+
+            {/* ================================================================== */}
+            {/* 3. WHY BITGUARD — Value Proposition                                */}
+            {/* ================================================================== */}
+            <section className="py-20 lg:py-28 dark:bg-slate-950 bg-slate-50 dark:text-white text-slate-900 relative overflow-hidden transition-colors duration-300">
+                <div className="absolute top-0 right-0 w-1/3 h-full dark:bg-slate-900 bg-white skew-x-12 opacity-50 pointer-events-none border-l dark:border-slate-800 border-slate-200"></div>
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                        <div>
+                            <span className="text-blue-500 font-bold uppercase tracking-widest text-sm mb-4 block">Why BitGuard</span>
+                            <h2 className="text-4xl lg:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">
+                                One Partner for Every<br />Technology Challenge.
+                            </h2>
+                            <p className="dark:text-slate-400 text-slate-600 text-lg leading-relaxed mb-10 transition-colors duration-300">
+                                We eliminate the complexity of managing multiple IT vendors. BitGuard acts as your outsourced technology department — delivering infrastructure, security, and support under a single SLA.
+                            </p>
+                            <div className="space-y-3 relative border-l-2 dark:border-slate-800 border-slate-200 ml-4">
+                                {[
+                                    { title: "Unified Management Console", desc: "Every asset, user, endpoint, ticket, and compliance check — visible and actionable from a single operations dashboard.", icon: "bi-grid-1x2-fill", color: "blue", tag: "Platform" },
+                                    { title: "Zero-Disruption Onboarding", desc: "Phased migration plans and parallel-run strategies that keep your operations running throughout the transition.", icon: "bi-arrow-left-right", color: "green", tag: "Cloud" },
+                                    { title: "15-Minute SLA Commitment", desc: "Critical incidents are assigned to a Tier-2 engineer within 15 minutes, 24/7/365 — contractually guaranteed.", icon: "bi-stopwatch", color: "amber", tag: "Support" }
+                                ].map((item, i) => {
+                                    const isActive = activeTab === i;
+                                    const c = COLOR_MAP[item.color] || COLOR_MAP.blue;
+                                    return (
+                                    <div 
+                                        key={i} 
+                                        onClick={() => setActiveTab(i)}
+                                        className={`relative pl-8 py-4 cursor-pointer transition-all duration-300 group ${isActive ? 'opacity-100' : 'opacity-50 hover:opacity-100'}`}
+                                    >
+                                        {/* Active Line Indicator */}
+                                        <div className={`absolute top-0 bottom-0 left-[-2px] w-1 rounded-r-md transition-all duration-500 ease-out ${isActive ? c.bg : 'bg-transparent group-hover:bg-slate-300 dark:group-hover:bg-slate-700'}`}></div>
+                                        
+                                        <div className="flex items-start">
+                                            <div className={`w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center mr-4 mt-0.5 transition-all duration-500 ${isActive ? `${c.bg} text-white shadow-lg ${c.shadow}` : 'dark:bg-slate-800 bg-slate-100 dark:text-slate-400 text-slate-500'}`}>
+                                                <i className={`bi ${item.icon} text-lg`}></i>
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-1">
+                                                    <span className={`font-bold transition-colors duration-300 ${isActive ? 'dark:text-white text-slate-900 text-lg' : 'dark:text-slate-400 text-slate-600'}`}>{item.title}</span>
+                                                    {isActive && <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full ${c.text} ${c.bgLight} border ${c.border}`}>{item.tag}</span>}
+                                                </div>
+                                                <div className={`text-sm leading-relaxed transition-all duration-500 overflow-hidden ${isActive ? 'max-h-32 opacity-100 dark:text-slate-400 text-slate-600 mt-2' : 'max-h-0 opacity-0'}`}>{item.desc}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        <div className="relative mt-12 lg:mt-0 h-full min-h-[400px] lg:min-h-[500px]">
+                            {[
+                                { title: "Unified Management Console", icon: "bi-grid-1x2-fill", color: "blue", tag: "Platform" },
+                                { title: "Zero-Disruption Onboarding", icon: "bi-arrow-left-right", color: "green", tag: "Cloud" },
+                                { title: "15-Minute SLA Commitment", icon: "bi-stopwatch", color: "amber", tag: "Support" }
+                            ].map((item, i) => {
+                                const isActive = activeTab === i;
+                                const c = COLOR_MAP[item.color] || COLOR_MAP.blue;
+                                return (
+                                <div 
+                                    key={`img-${i}`}
+                                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                                >
+                                    <div className="absolute -inset-4 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl transform rotate-2 opacity-20 blur-xl"></div>
+                                    <div className="relative rounded-2xl overflow-hidden shadow-2xl border dark:border-slate-800 border-slate-200 dark:bg-slate-900 bg-white p-2 h-full flex flex-col">
+                                        
+                                        {/* Mockup Top Bar */}
+                                        <div className="h-10 border-b dark:border-slate-800 border-slate-100 flex items-center px-4 gap-2 mb-2">
+                                            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                            <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                            <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                            <div className="ml-4 text-xs font-mono dark:text-slate-500 text-slate-400 font-bold tracking-widest flex items-center gap-2">
+                                                <i className="bi bi-diagram-3 text-blue-500"></i> BITGUARD OPERATIONS: {item.tag.toUpperCase()}
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-xl overflow-hidden relative border dark:border-slate-900 border-slate-100 flex-1 bg-slate-100 dark:bg-slate-900">
+                                            <img src={`/assets/images/home/ai-models.png`} alt={item.title} className={`w-full h-full object-cover transition-transform duration-[10s] ease-linear ${isActive ? 'scale-110' : 'scale-100'}`} onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/home/ai-models.png'; }} />
+                                            <div className="absolute inset-0 bg-blue-900/10 pointer-events-none mix-blend-overlay"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    {isActive && (
+                                        <div className="absolute -bottom-8 -left-8 dark:bg-slate-900 bg-white p-6 rounded-2xl shadow-xl border dark:border-slate-800 border-slate-200 max-w-xs hidden lg:block animate-fade-in-up">
+                                            <div className="flex items-center gap-4 mb-3">
+                                                <div className={`w-12 h-12 ${c.bgLight} rounded-xl flex items-center justify-center ${c.text} ${c.darkText} border ${c.border}`}>
+                                                    <i className={`bi ${item.icon} text-2xl`}></i>
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold dark:text-white text-slate-900 transition-colors duration-300">{item.tag} Active</h4>
+                                                    <p className={`text-xs font-bold ${c.text} ${c.darkText} uppercase tracking-widest`}>System Optimal</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm dark:text-slate-400 text-slate-600">Enterprise operations fully synced and monitored.</p>
+                                        </div>
+                                    )}
+                                </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ================================================================== */}
+            {/* 4. HOW IT WORKS — 3-Step Process                                   */}
+            {/* ================================================================== */}
+            <section className="py-20 lg:py-28 dark:bg-slate-900 bg-white relative overflow-hidden transition-colors duration-300">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] dark:opacity-[0.01] pointer-events-none"></div>
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="text-center mb-20">
-                        <span className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 block">Getting Started</span>
-                        <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">Three Steps to IT Freedom</h2>
-                        <p className="dark:text-slate-400 text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed transition-colors duration-300">From initial assessment to full managed operations — we make the transition seamless, fast, and zero-disruption.</p>
+                    <div className="text-center mb-16">
+                        <span className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 block">How It Works</span>
+                        <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">From Assessment to Managed Operations</h2>
+                        <p className="dark:text-slate-400 text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed transition-colors duration-300">A proven onboarding process designed for zero disruption — most clients are fully operational within 30 days.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-0 relative">
@@ -375,176 +454,167 @@ const LandingPage = () => {
                         <div className="hidden md:block absolute top-24 left-[16.67%] right-[16.67%] h-0.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 z-0 opacity-50 dark:opacity-100"></div>
                         
                         {[
-                            { step: "01", title: "Assess & Audit", desc: "We perform a comprehensive audit of your existing infrastructure, security posture, compliance gaps, and operational pain points — delivering a prioritized roadmap within 48 hours.", icon: "bi-clipboard-data-fill", color: "blue" },
-                            { step: "02", title: "Architect & Secure", desc: "Our engineers design and implement the optimal architecture — migrating systems, deploying security layers, configuring monitoring, and establishing SLA-backed support channels.", icon: "bi-shield-lock-fill", color: "indigo" },
-                            { step: "03", title: "Manage & Optimize", desc: "With your infrastructure fully managed, we continuously optimize performance, patch vulnerabilities, resolve tickets, and deliver monthly executive reports on your IT health.", icon: "bi-graph-up-arrow", color: "purple" }
-                        ].map((item, i) => (
+                            { step: "01", title: "Assess & Audit", desc: "Comprehensive audit of your infrastructure, security posture, and compliance gaps — prioritized roadmap delivered within 48 hours.", icon: "bi-clipboard-data-fill", color: "blue" },
+                            { step: "02", title: "Architect & Secure", desc: "We design and deploy the optimal architecture — migrating systems, configuring monitoring, and establishing SLA-backed support.", icon: "bi-shield-lock-fill", color: "indigo" },
+                            { step: "03", title: "Manage & Optimize", desc: "Continuous optimization, proactive patching, ticket resolution, and monthly executive reports on your IT health.", icon: "bi-graph-up-arrow", color: "purple" }
+                        ].map((item, i) => {
+                            const c = COLOR_MAP[item.color] || COLOR_MAP.blue;
+                            return (
                             <div key={i} className="text-center px-8 relative z-10">
-                                <div className={`w-20 h-20 bg-${item.color}-600 rounded-2xl flex items-center justify-center mx-auto mb-8 text-white shadow-xl shadow-${item.color}-600/30 transform hover:rotate-6 hover:scale-110 transition-all duration-300 border-4 dark:border-slate-800 border-white`}>
+                                <div className={`w-20 h-20 ${c.bg} rounded-2xl flex items-center justify-center mx-auto mb-8 text-white shadow-xl ${c.shadow} transform hover:rotate-6 hover:scale-110 transition-all duration-300 border-4 dark:border-slate-800 border-white`}>
                                     <i className={`bi ${item.icon} text-3xl`}></i>
                                 </div>
-                                <div className={`text-${item.color}-600 dark:text-${item.color}-400 font-bold text-sm uppercase tracking-widest mb-3 transition-colors duration-300`}>Step {item.step}</div>
+                                <div className={`${c.text} ${c.darkText} font-bold text-sm uppercase tracking-widest mb-3 transition-colors duration-300`}>Step {item.step}</div>
                                 <h3 className="text-2xl font-bold dark:text-white text-slate-900 mb-4 tracking-tight transition-colors duration-300">{item.title}</h3>
                                 <p className="dark:text-slate-400 text-slate-600 leading-relaxed text-sm transition-colors duration-300">{item.desc}</p>
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     <div className="text-center mt-16">
-                        <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 dark:bg-blue-600 bg-slate-900 hover:bg-slate-800 dark:hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-xl no-underline">
-                            Start Your Free Assessment <i className="bi bi-arrow-right"></i>
+                        <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition-all shadow-lg shadow-blue-600/20 no-underline text-sm">
+                            Schedule Your Free Assessment <i className="bi bi-arrow-right"></i>
                         </Link>
                     </div>
                 </div>
             </section>
-            
-            <SectionDivider variant="gradient" from="light" to="dark" />
 
             {/* ================================================================== */}
-            {/* 5. DARK — Developer API + Integration Partners                     */}
+            {/* 5. STRATEGIC TECH PARTNERS                                         */}
             {/* ================================================================== */}
-            <section className="py-24 dark:bg-slate-950 bg-slate-50 relative overflow-hidden text-slate-900 dark:text-white transition-colors duration-300">
-                <div className="container mx-auto px-4 relative z-10">
-                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                        <div>
-                            <span className="text-blue-500 font-bold uppercase tracking-widest text-sm mb-4 block">Developer First</span>
-                            <h2 className="text-4xl lg:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">Integrations That Actually Work</h2>
-                            <p className="dark:text-slate-400 text-slate-600 text-lg leading-relaxed mb-8 transition-colors duration-300">
-                                BitGuard isn't a black box. Our platform features a robust, fully documented REST API that allows you to pipe security events directly into your existing SIEM, sync assets with your HR tools, or trigger custom automated workflows.
-                            </p>
-                            <div className="flex flex-wrap gap-4 mb-10">
-                                {['RESTful API', 'Webhooks', 'GraphQL Beta', '99.99% Uptime'].map((feature, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-sm font-bold dark:bg-slate-900 bg-white dark:text-slate-300 text-slate-700 px-4 py-2 rounded-lg border dark:border-slate-800 border-slate-200 shadow-sm transition-colors duration-300">
-                                        <i className="bi bi-check2 text-blue-500"></i> {feature}
-                                    </div>
-                                ))}
+            <section className="py-20 lg:py-28 dark:bg-slate-950 bg-slate-50 relative overflow-hidden text-slate-900 dark:text-white transition-colors duration-300">
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <span className="text-blue-500 font-bold uppercase tracking-widest text-sm mb-4 block">Certified Expertise</span>
+                    <h2 className="text-4xl lg:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">Enterprise Technology Ecosystem</h2>
+                    <p className="dark:text-slate-400 text-slate-600 text-lg leading-relaxed max-w-3xl mx-auto mb-16 transition-colors duration-300">
+                        We don't force you into proprietary boxes. BitGuard engineers hold elite certifications across the world's most powerful platforms, allowing us to manage, secure, and optimize the exact technology stack you rely on.
+                    </p>
+
+                    {/* Partnership Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-16">
+                        {[
+                            { name: "Microsoft Gold Partner", icon: "bi-microsoft", type: "Cloud & OS", color: "text-blue-500" },
+                            { name: "AWS Advanced Partner", icon: "bi-aws", type: "Infrastructure", color: "text-slate-800 dark:text-slate-300" },
+                            { name: "CrowdStrike Certified", icon: "bi-shield-shaded", type: "XDR Security", color: "text-red-500" },
+                            { name: "Cisco Meraki Provider", icon: "bi-router-fill", type: "Network Hardware", color: "text-emerald-500" },
+                            { name: "Google Cloud Platform", icon: "bi-google", type: "Data & Cloud", color: "text-amber-500" },
+                            { name: "Palo Alto Networks", icon: "bi-shield-check", type: "Zero-Trust Firewalls", color: "text-orange-500" },
+                            { name: "VMware Enterprise", icon: "bi-hdd-network-fill", type: "Virtualization", color: "text-slate-500" },
+                            { name: "SentinelOne Managed", icon: "bi-shield-plus", type: "Endpoint Defense", color: "text-purple-500" }
+                        ].map((partner, i) => (
+                            <div key={i} className="dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center gap-4 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl group">
+                                <i className={`bi ${partner.icon} text-4xl md:text-5xl opacity-80 group-hover:opacity-100 transition-opacity ${partner.color}`}></i>
+                                <div className="text-center">
+                                    <div className="font-bold dark:text-white text-slate-900 text-xs md:text-sm mb-1">{partner.name}</div>
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{partner.type}</div>
+                                </div>
                             </div>
-                            <Link to="/contact" className="text-blue-500 font-bold hover:text-blue-400 transition-colors flex items-center gap-2 no-underline">
-                                Request API Early Access <i className="bi bi-arrow-right"></i>
-                            </Link>
-                        </div>
-
-                        {/* Code Snippet Window */}
-                        <div className="rounded-xl overflow-hidden border dark:border-slate-800 border-slate-300 shadow-xl dark:bg-slate-900 bg-slate-800 transition-colors duration-300">
-                            <div className="flex items-center gap-2 px-4 py-3 border-b dark:border-slate-800 border-slate-700 bg-slate-900/50">
-                                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                                <div className="text-xs text-slate-500 ml-4 font-mono">bitguard-client.js</div>
-                            </div>
-                            <div className="p-6 font-mono text-sm leading-relaxed overflow-x-auto text-slate-300">
-                                <pre className="text-slate-300">
-<span className="text-pink-400">import</span> {"{ "}BitGuard{" }"} <span className="text-pink-400">from</span> <span className="text-green-300">'@bitguard/sdk'</span>;
-
-<span className="text-pink-400">const</span> client = <span className="text-pink-400">new</span> <span className="text-yellow-200">BitGuard</span>({"{ "}
-    <span className="text-blue-300">apiKey</span>: process.env.<span className="text-purple-300">BG_API_KEY</span>,
-{" }"});
-
-<span className="text-slate-500">// Provision a new secure environment</span>
-<span className="text-pink-400">const</span> result = <span className="text-pink-400">await</span> client.<span className="text-blue-300">environments</span>.<span className="text-blue-300">create</span>({"{ "}
-    <span className="text-blue-300">region</span>: <span className="text-green-300">'us-east-1'</span>,
-    <span className="text-blue-300">securityProfile</span>: <span className="text-green-300">'strict-soc2'</span>,
-    <span className="text-blue-300">autoScale</span>: <span className="text-orange-300">true</span>
-{" }"});
-
-<span className="text-cyan-300">console</span>.<span className="text-blue-300">log</span>(result);
-<span className="text-slate-500">// {">"} {'{ "status": "provisioning", "eta_minutes": 15 }'}</span>
-                                </pre>
-                            </div>
-                        </div>
-                   </div>
-
-                   {/* Technology Partners */}
-                   <div className="mt-32 border-t dark:border-slate-800 border-slate-200 pt-16 transition-colors duration-300">
-                       <p className="text-center dark:text-slate-500 text-slate-600 font-bold uppercase tracking-widest text-xs mb-10 transition-colors duration-300">Pre-Built Integrations With Your Existing Stack</p>
-                       <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                           {/* Using text representations as placeholders for partner logos */}
-                           <div className="text-xl font-bold dark:text-slate-400 text-slate-700 flex items-center gap-2"><i className="bi bi-slack text-2xl"></i> Slack</div>
-                           <div className="text-xl font-bold dark:text-slate-400 text-slate-700 flex items-center gap-2"><i className="bi bi-jira text-2xl"></i> Jira</div>
-                           <div className="text-xl font-bold dark:text-slate-400 text-slate-700 flex items-center gap-2"><i className="bi bi-github text-2xl"></i> GitHub</div>
-                           <div className="text-xl font-bold dark:text-slate-400 text-slate-700 flex items-center gap-2"><i className="bi bi-microsoft-teams text-2xl"></i> Teams</div>
-                           <div className="text-xl font-bold dark:text-slate-400 text-slate-700 flex items-center gap-2"><i className="bi bi-aws text-2xl"></i> AWS</div>
-                       </div>
-                   </div>
-                </div>
-            </section>
-            
-            <SectionDivider variant="wave" from="dark" to="light" flip={true} />
-
-            {/* ================================================================== */}
-            {/* 6. LIGHT — Testimonials & FAQ                                      */}
-            {/* ================================================================== */}
-            <section className="py-24 dark:bg-slate-900 bg-white relative overflow-hidden transition-colors duration-300">
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="mb-20 text-center">
-                        <span className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 block">Client Success</span>
-                        <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">Don't Just Take Our Word For It</h2>
+                        ))}
                     </div>
 
-                    {/* Testimonial Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32">
-                        <div className="dark:bg-slate-800 bg-white p-10 rounded-xl shadow-lg border dark:border-slate-700 border-slate-100 flex flex-col relative transition-colors duration-300">
-                            <i className="bi bi-quote text-6xl text-blue-500/20 absolute top-6 left-6"></i>
-                            <div className="flex text-amber-500 space-x-1 mb-6 relative z-10">
-                                <i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i>
-                            </div>
-                            <p className="dark:text-slate-300 text-slate-700 text-lg md:text-xl leading-relaxed mb-10 flex-grow relative z-10 italic transition-colors duration-300">
-                                "Moving to BitGuard was the best IT decision we've made. They completely overhauled our cloud infrastructure in two weeks with zero downtime, and their security team caught a phishing attempt that our previous vendor missed entirely."
-                            </p>
-                            <div className="flex items-center gap-4 relative z-10">
-                                <div className="w-14 h-14 rounded-full bg-slate-700 overflow-hidden border-2 border-blue-500">
-                                    <img src="https://i.pravatar.cc/150?img=11" alt="Sarah J." className="w-full h-full object-cover" />
+                    <div className="inline-flex items-center gap-4 p-1.5 rounded-full dark:bg-slate-900 bg-white border dark:border-slate-800 border-slate-200 shadow-sm mx-auto flex-col sm:flex-row text-center sm:text-left w-full sm:w-auto">
+                        <span className="px-4 py-2 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 uppercase tracking-widest whitespace-nowrap">Vendor Agnostic</span>
+                        <span className="sm:pr-4 text-xs sm:text-sm font-semibold dark:text-slate-400 text-slate-600 mb-2 sm:mb-0">We architect the best tool for the job, never a forced ecosystem.</span>
+                    </div>
+                </div>
+            </section>
+
+            {/* ================================================================== */}
+            {/* 6. TESTIMONIALS & FAQ                                              */}
+            {/* ================================================================== */}
+            <section className="py-20 lg:py-28 dark:bg-slate-900 bg-white relative overflow-hidden transition-colors duration-300">
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="mb-20 text-center">
+                        <span className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 block">Client Outcomes</span>
+                        <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-slate-900 mb-6 tracking-tight transition-colors duration-300">Trusted by Technology Leaders</h2>
+                        <p className="dark:text-slate-400 text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed transition-colors duration-300">See how organizations like yours have transformed their IT operations and security posture with BitGuard.</p>
+                    </div>
+
+                    {/* Testimonial Cards — 3 cards for visual balance */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                        {[
+                            {
+                                quote: "BitGuard migrated our entire Azure infrastructure in two weeks with zero downtime. They also identified three critical vulnerabilities our previous vendor had missed during their last audit.",
+                                name: "Sarah Jenkins",
+                                title: "CTO, Finova Financial Group",
+                                avatar: "https://i.pravatar.cc/150?img=11",
+                                metric: "99.9% uptime achieved",
+                                color: "blue"
+                            },
+                            {
+                                quote: "The compliance automation alone justified the engagement. BitGuard had us SOC 2 audit-ready in under 30 days, and their continuous monitoring means we never scramble before quarterly reviews.",
+                                name: "Marcus Chen",
+                                title: "VP of Engineering, HealthTech Inc",
+                                avatar: "https://i.pravatar.cc/150?img=33",
+                                metric: "SOC2 in 28 days",
+                                color: "indigo"
+                            },
+                            {
+                                quote: "Their 15-minute SLA is contractual, not aspirational. We had a critical server failure at 2 AM on a Sunday and a Tier-2 engineer was actively working the issue within 8 minutes.",
+                                name: "Rachel Torres",
+                                title: "COO, DataVault Systems",
+                                avatar: "https://i.pravatar.cc/150?img=47",
+                                metric: "93% fewer incidents",
+                                color: "emerald"
+                            }
+                        ].map((testimonial, i) => {
+                            const c = COLOR_MAP[testimonial.color] || COLOR_MAP.blue;
+                            return (
+                            <div key={i} className="dark:bg-slate-800 bg-white p-8 rounded-xl shadow-lg border dark:border-slate-700 border-slate-100 flex flex-col relative transition-colors duration-300">
+                                <i className="bi bi-quote text-5xl text-blue-500/10 absolute top-4 left-4"></i>
+                                
+                                {/* Metric Badge */}
+                                <div className={`inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full text-xs font-bold mb-6 ${c.bgLight} ${c.text} ${c.darkText} border ${c.border}`}>
+                                    <i className="bi bi-graph-up-arrow"></i> {testimonial.metric}
                                 </div>
-                                <div>
-                                    <div className="font-bold dark:text-white text-slate-900 text-lg transition-colors duration-300">Sarah Jenkins</div>
-                                    <div className="dark:text-slate-400 text-slate-600 text-sm transition-colors duration-300">CTO, Finova Financial</div>
+
+                                <div className="flex text-amber-500 space-x-1 mb-4 relative z-10">
+                                    <i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i>
+                                </div>
+                                <p className="dark:text-slate-300 text-slate-700 text-base leading-relaxed mb-8 flex-grow relative z-10 italic transition-colors duration-300">
+                                    "{testimonial.quote}"
+                                </p>
+                                <div className="flex items-center gap-4 relative z-10 mt-auto">
+                                    <div className={`w-12 h-12 rounded-full bg-slate-700 overflow-hidden border-2 ${c.border}`}>
+                                        <img src={testimonial.avatar} alt={testimonial.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div>
+                                        <div className="font-bold dark:text-white text-slate-900 transition-colors duration-300">{testimonial.name}</div>
+                                        <div className="dark:text-slate-400 text-slate-600 text-sm transition-colors duration-300">{testimonial.title}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="dark:bg-slate-800 bg-white p-10 rounded-xl shadow-lg border dark:border-slate-700 border-slate-100 flex flex-col relative transition-colors duration-300 md:translate-y-8">
-                            <i className="bi bi-quote text-6xl text-blue-500/20 absolute top-6 left-6"></i>
-                            <div className="flex text-amber-500 space-x-1 mb-6 relative z-10">
-                                <i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i><i className="bi bi-star-fill"></i>
-                            </div>
-                            <p className="dark:text-slate-300 text-slate-700 text-lg md:text-xl leading-relaxed mb-10 flex-grow relative z-10 italic transition-colors duration-300">
-                                "The compliance automation alone is worth the price. BitGuard got us SOC2 ready in less than a month, and the continuous monitoring means we don't have to scramble before every audit. Absolutely game-changing."
-                            </p>
-                            <div className="flex items-center gap-4 relative z-10">
-                                <div className="w-14 h-14 rounded-full bg-slate-700 overflow-hidden border-2 border-indigo-500">
-                                    <img src="https://i.pravatar.cc/150?img=33" alt="Marcus C." className="w-full h-full object-cover" />
-                                </div>
-                                <div>
-                                    <div className="font-bold dark:text-white text-slate-900 text-lg transition-colors duration-300">Marcus Chen</div>
-                                    <div className="dark:text-slate-400 text-slate-600 text-sm transition-colors duration-300">VP Engineering, HealthTech Inc</div>
-                                </div>
-                            </div>
-                        </div>
+                            );
+                        })}
                     </div>
 
                     {/* FAQ */}
                     <div className="max-w-3xl mx-auto pt-16 border-t dark:border-slate-800 border-slate-200 transition-colors duration-300">
                         <h3 className="text-3xl font-bold text-center dark:text-white text-slate-900 mb-12 tracking-tight transition-colors duration-300">Frequently Asked Questions</h3>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {[
-                                { q: "How fast can you migrate our existing infrastructure?", a: "Most standard migrations are completed within 14-30 days. We assign a dedicated architect to your account who builds a phased migration plan to ensure absolutely zero disruption to your daily operations during the cutover." },
-                                { q: "Do you support hybrid environments (On-premise + Cloud)?", a: "Yes. In fact, hybrid environments are our specialty. BitGuard seamlessly integrates and monitors on-premise servers, remote endpoints, and multi-cloud architectures (AWS, Azure, GCP) through a single unified dashboard." },
-                                { q: "What is included in the flat-rate monthly fee?", a: "Our managed IT bundle includes 24/7 proactive monitoring, unlimited remote helpdesk support, managed EDR/antivirus, automated patch management, hardware asset tracking, and quarterly vCIO strategic planning meetings." },
-                                { q: "How does the 15-minute SLA work?", a: "If you submit a critical severity ticket, a certified Tier-2 or Tier-3 engineer will actively begin working on it within 15 minutes, 24/7/365. This is backed by financial penalties in our Master Service Agreement." }
+                                { q: "How fast can you migrate our existing infrastructure?", a: "Most standard migrations are completed within 14-30 days. We assign a dedicated architect who builds a phased migration plan to ensure zero disruption to daily operations." },
+                                { q: "Do you support hybrid environments (On-premise + Cloud)?", a: "Yes — hybrid is our specialty. BitGuard seamlessly integrates on-premise servers, remote endpoints, and multi-cloud architectures (AWS, Azure, GCP) through a single unified dashboard." },
+                                { q: "What is included in the flat-rate monthly fee?", a: "24/7 proactive monitoring, unlimited remote helpdesk, managed EDR/antivirus, automated patch management, hardware asset tracking, and quarterly vCIO strategic planning meetings." },
+                                { q: "How does the 15-minute SLA work?", a: "Critical severity tickets get a certified Tier-2+ engineer actively working on them within 15 minutes, 24/7/365 — backed by financial penalties in our Master Service Agreement." },
+                                { q: "What does onboarding look like?", a: "Week 1: Full infrastructure audit. Week 2-3: Agent deployment, monitoring setup, and documentation. Week 4: Go-live with 24/7 managed operations. Total transition is typically 30 days." },
+                                { q: "How is pricing structured?", a: "We offer per-user, per-month flat-rate pricing with no hidden fees. Every plan includes our core monitoring, helpdesk, and security stack. Custom enterprise agreements are available for 200+ seats." }
                             ].map((faq, i) => (
-                                <div key={i} className="dark:bg-slate-800 bg-white border dark:border-slate-700 border-slate-200 rounded-xl overflow-hidden transition-all duration-300">
+                                <div key={i} className={`dark:bg-slate-800 bg-white border dark:border-slate-700 border-slate-200 rounded-xl overflow-hidden transition-all duration-300 ${activeAccordion === i ? 'border-l-2 border-l-blue-500' : ''}`}>
                                     <button 
                                         onClick={() => setActiveAccordion(activeAccordion === i ? null : i)}
-                                        className="w-full px-8 py-6 text-left flex justify-between items-center focus:outline-none focus:bg-slate-50 dark:focus:bg-slate-800/80 transition-colors"
+                                        className="w-full px-8 py-5 text-left flex justify-between items-center focus:outline-none focus:bg-slate-50 dark:focus:bg-slate-800/80 transition-colors"
                                     >
-                                        <span className="font-bold dark:text-slate-200 text-slate-800 text-lg transition-colors duration-300">{faq.q}</span>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 ${activeAccordion === i ? 'rotate-180 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' : ''}`}>
+                                        <span className="font-bold dark:text-slate-200 text-slate-800 transition-colors duration-300">{faq.q}</span>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0 ml-4 bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 ${activeAccordion === i ? 'rotate-180 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' : ''}`}>
                                             <i className="bi bi-chevron-down"></i>
                                         </div>
                                     </button>
                                     <div 
                                         className={`overflow-hidden transition-all duration-300 ease-in-out ${activeAccordion === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
                                     >
-                                        <div className="px-8 pb-8 dark:text-slate-400 text-slate-600 leading-relaxed border-t dark:border-slate-700 border-slate-100 pt-6 transition-colors duration-300">
+                                        <div className="px-8 pb-6 dark:text-slate-400 text-slate-600 leading-relaxed border-t dark:border-slate-700 border-slate-100 pt-5 transition-colors duration-300 text-sm">
                                             {faq.a}
                                         </div>
                                     </div>
@@ -555,17 +625,16 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            <SectionDivider variant="gradient" from="light" to="dark" />
 
             {/* ================================================================== */}
-            {/* 7. DARK — Final CTA + Newsletter                                  */}
+            {/* 7. FINAL CTA + NEWSLETTER                                          */}
             {/* ================================================================== */}
-            <section className="dark:bg-slate-950 bg-slate-50 relative overflow-hidden border-t dark:border-slate-800 border-slate-200 transition-colors duration-300 text-center">
+            <section className="dark:bg-slate-950 bg-slate-50 relative overflow-hidden transition-colors duration-300 text-center">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
                 {/* Announcements */}
                 {announcements.length > 0 && (
-                    <div className="container mx-auto px-4 pt-24 pb-12 relative z-10 border-b dark:border-slate-800/50 border-slate-200 text-left transition-colors duration-300">
+                    <div className="container mx-auto px-4 pt-20 pb-12 relative z-10 border-b dark:border-slate-800/50 border-slate-200 text-left transition-colors duration-300">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                             <div>
                                 <span className="text-blue-500 font-bold uppercase tracking-widest text-sm mb-2 block">Platform Updates</span>
@@ -595,26 +664,26 @@ const LandingPage = () => {
                 )}
 
                 {/* Main CTA */}
-                <div className="py-24 md:py-32 container mx-auto px-4 text-center relative z-10">
-                    <h2 className="text-4xl md:text-6xl font-bold dark:text-white text-slate-900 mb-8 tracking-tight transition-colors duration-300">
-                        Stop Managing IT. <br className="hidden md:block"/>Start Growing.
+                <div className="py-20 lg:py-24 container mx-auto px-4 text-center relative z-10">
+                    <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-slate-900 mb-8 tracking-tight transition-colors duration-300">
+                        Ready to Modernize <br className="hidden md:block"/>Your IT Operations?
                     </h2>
-                    <p className="dark:text-slate-400 text-slate-600 text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed transition-colors duration-300">
-                        Offload your infrastructure, security, and support operations to BitGuard so you can focus entirely on scaling your product and delighting your customers.
+                    <p className="dark:text-slate-400 text-slate-600 text-lg max-w-2xl mx-auto mb-12 leading-relaxed transition-colors duration-300">
+                        Talk to our engineering team about how BitGuard can reduce your attack surface, improve uptime, and simplify vendor management — starting this month.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-16">
-                        <Link to="/contact" className="px-10 py-5 bg-blue-600 text-white rounded-xl font-bold uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/30 w-full sm:w-auto transform active:scale-[0.98] no-underline">
-                            Talk to an Expert Today
+                        <Link to="/contact" className="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 w-full sm:w-auto transform active:scale-[0.98] no-underline text-sm">
+                            Schedule a Consultation
                         </Link>
-                        <span className="text-slate-500 text-sm font-bold mx-2 hidden sm:block">OR</span>
-                        <button onClick={openVideo} className="dark:text-slate-400 text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 font-bold transition-colors w-full sm:w-auto text-lg flex items-center justify-center gap-2">
-                           <i className="bi bi-play-circle text-2xl"></i> Watch the 2 min Demo
-                        </button>
+                        <Link to="/solutions/bitguard-bundle" className="dark:text-slate-300 text-slate-700 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors w-full sm:w-auto text-sm flex items-center justify-center gap-2 no-underline">
+                           View All Solutions <i className="bi bi-arrow-right"></i>
+                        </Link>
                     </div>
 
                     {/* Newsletter Signup */}
                     <div className="max-w-lg mx-auto">
-                        <p className="dark:text-slate-500 text-slate-400 text-sm font-bold uppercase tracking-widest mb-4 transition-colors duration-300">Stay ahead of threats</p>
+                        <p className="dark:text-slate-500 text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 transition-colors duration-300">Subscribe to the BitGuard Brief</p>
+                        <p className="dark:text-slate-600 text-slate-500 text-xs mb-4 transition-colors duration-300">Monthly cybersecurity intel and IT strategy insights for technology leaders.</p>
                         <form className="flex gap-2" onSubmit={handleSubscribe}>
                             <input
                                 type="email"
@@ -622,19 +691,26 @@ const LandingPage = () => {
                                 onChange={(e) => setNewsletterEmail(e.target.value)}
                                 placeholder="Enter your work email"
                                 required
-                                className="flex-1 px-5 py-3 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-700 border-slate-300 dark:text-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
+                                disabled={newsletterStatus.type === 'loading' || newsletterStatus.type === 'success'}
+                                className={`flex-1 px-5 py-3 rounded-xl dark:bg-slate-900 bg-white border border-slate-300 dark:border-slate-700 dark:text-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm ${newsletterStatus.type === 'error' ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                             />
-                            <button disabled={newsletterStatus.type === 'loading'} type="submit" className="px-6 py-3 dark:bg-white bg-slate-900 dark:text-slate-900 text-white rounded-xl font-bold text-sm dark:hover:bg-slate-100 hover:bg-slate-800 transition-colors flex-shrink-0 disabled:opacity-50">
-                                {newsletterStatus.type === 'loading' ? '...' : 'Subscribe'}
+                            <button disabled={newsletterStatus.type === 'loading' || newsletterStatus.type === 'success'} type="submit" className={`px-6 py-3 dark:bg-white bg-slate-900 dark:text-slate-900 text-white rounded-xl font-bold text-sm dark:hover:bg-slate-100 hover:bg-slate-800 transition-all flex-shrink-0 flex items-center justify-center min-w-[120px] ${newsletterStatus.type === 'loading' || newsletterStatus.type === 'success' ? 'opacity-70 cursor-not-allowed' : 'active:scale-95 shadow-md hover:shadow-lg'}`}>
+                                {newsletterStatus.type === 'loading' ? (
+                                    <div className="w-5 h-5 border-2 border-slate-400 border-t-white dark:border-slate-400 dark:border-t-slate-900 rounded-full animate-spin"></div>
+                                ) : newsletterStatus.type === 'success' ? (
+                                    <span className="flex items-center gap-2"><i className="bi bi-check-circle-fill text-emerald-500 dark:text-emerald-500"></i> Done</span>
+                                ) : 'Subscribe'}
                             </button>
                         </form>
-                        {newsletterStatus.message ? (
-                            <p className={`text-xs mt-3 ${newsletterStatus.type === 'success' ? 'text-emerald-500' : 'text-red-500'} font-bold transition-colors duration-300`}>
-                                {newsletterStatus.message}
-                            </p>
-                        ) : (
-                            <p className="dark:text-slate-600 text-slate-500 text-xs mt-3 transition-colors duration-300">Monthly cybersecurity insights. No spam, unsubscribe anytime.</p>
-                        )}
+                        <div className="h-6 mt-3">
+                            {newsletterStatus.message && (
+                                <p className={`text-xs ${newsletterStatus.type === 'success' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} font-bold transition-all duration-300 animate-fade-in-up`}>
+                                    {newsletterStatus.type === 'success' && <i className="bi bi-shield-check mr-1"></i>}
+                                    {newsletterStatus.type === 'error' && <i className="bi bi-exclamation-triangle mr-1"></i>}
+                                    {newsletterStatus.message}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </section>

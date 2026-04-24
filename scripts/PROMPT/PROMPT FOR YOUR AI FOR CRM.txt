@@ -1,0 +1,279 @@
+🔐 BITGUARD — SECURITY-FOCUSED CRM (AI BUILDER PROMPT)
+ROLE
+
+You are a senior SaaS engineer and enterprise security architect building for BitGuard, a cybersecurity & managed IT services company.
+
+This is an existing Django platform with:
+
+existing header and footer (must be reused)
+
+existing accounts app
+
+existing platform app (Unified Cyber Security Platform)
+
+existing store app (billing & subscriptions)
+
+You must extend the system professionally.
+
+OBJECTIVE
+
+Create or refactor a CRM app for BitGuard that supports:
+
+Clients & organizations
+
+Leads & prospects
+
+Security tickets & incidents
+
+Contracts & subscriptions
+
+Communication & activity tracking
+
+Integration with billing, platform, and store
+
+This CRM must be security-aware, client-centric, and enterprise-ready.
+
+APP NAME & POSITIONING
+
+App name:
+
+crm
+
+
+User-facing label:
+
+Client & Security Operations
+
+Do NOT brand it as a generic CRM.
+
+CRM CORE ENTITIES
+Client & Organization Management
+
+Organizations (companies)
+
+Contacts (users linked to organizations)
+
+Contract type (MSP, Security, One-time)
+
+SLA level
+
+Compliance requirements
+
+Active services
+
+Lead & Sales Pipeline
+
+Leads
+
+Lead source
+
+Qualification status
+
+Assigned sales/security engineer
+
+Conversion to client
+
+Notes & follow-ups
+
+Ticketing & Security Requests
+
+Support tickets
+
+Security incidents
+
+Severity & priority
+
+Linked to dashboard alerts
+
+SLA timers
+
+Escalation logic
+
+Contracts & Billing Integration
+
+Link CRM clients to:
+
+Store subscriptions
+
+Platform plans
+
+Purchased products
+
+Show:
+
+renewal dates
+
+invoices
+
+payment status
+
+Activity & Communication Tracking
+
+Email logs
+
+Call notes
+
+Internal comments
+
+Timeline per client
+
+Audit trail
+
+INTEGRATIONS (CRITICAL)
+With accounts
+
+Role-based access:
+
+Admin
+
+Sales
+
+Security Analyst
+
+Support
+
+With platform 
+
+Link alerts & incidents to clients
+
+Show security posture per client
+
+View platform modules enabled
+
+With store
+
+View subscriptions per client
+
+Track renewals & upsells
+
+Billing status awareness
+
+USER INTERFACES
+Internal Team Views
+
+Client profile
+
+Lead pipeline
+
+Ticket queues
+
+SLA dashboard
+
+Activity timeline
+
+Client Portal (Optional but professional)
+
+View tickets
+
+View incidents
+
+View invoices
+
+View subscriptions
+
+Secure messaging
+
+SECURITY REQUIREMENTS
+
+Strict RBAC
+
+Organization data isolation
+
+Audit logging
+
+No cross-tenant access
+
+Rate limiting
+
+Encrypted sensitive fields
+
+Permission checks on every object
+
+DO NOT
+
+Do NOT create a generic CRM clone
+
+Do NOT expose internal notes to clients
+
+Do NOT mix client data
+
+Do NOT bypass RBAC
+
+Do NOT redesign header/footer
+
+FINAL OUTPUT EXPECTED
+
+Django crm app
+
+Models, services, views
+
+Secure permissions
+
+Integration points with store & platform
+
+Enterprise cybersecurity and tech UI
+
+Production-ready logic
+
+Build this as a Security-First CRM, purpose-built for a cybersecurity & managed IT company — not a generic sales tool.
+
+
+
+
+
+
+CRM Refactoring (Enterprise & Security-First)
+Goal
+Build a deeply integrated CRM that connects People (Accounts), Business (Store), and Tech (Platform).
+
+Data Model Changes
+[MODIFY] 
+apps/crm/models.py
+Client:
+client_type: Company or Individual.
+account_manager: FK to accounts.User (Staff).
+status
+, sla_level.
+Contact
+:
+Link to Login: user = OneToOneField('accounts.User', null=True) -> Enables Client Portal access.
+is_primary: Boolean.
+Contract
+:
+Link to Billing: subscription = ForeignKey('store.Subscription').
+document: FileField (Encrypted/Private).
+Ticket
+:
+Link to Security: linked_alert = ForeignKey('platform.Alert').
+ticket_type: Incident, Support, Access.
+[MODIFY] 
+apps/platform/models.py
+Link Workspace: client = ForeignKey('crm.Client').
+Accounts Integration (RBAC)
+Staff Roles (Implemented via Django Groups):
+Sales: Can interactions with Leads/Prospects.
+Analyst: Can view Platform Alerts & Workspace data.
+Support: Can view Tickets.
+Admin: Full access.
+Client Roles:
+External users authenticate via accounts app but get redirected to portal_home.
+Views & Templates
+Internal:
+Sales Dashboard: Pipeline, My Clients.
+Ops Dashboard: SLA Breaches, High Severity Tickets.
+Client Portal:
+Secure view showing only data linked to request.user.contact.client.
+Verification Plan
+RBAC Check: Login as Sales -> Try to access Admin view (Should 403).
+Portal Check: Login as Client -> Try to see another client's ticket (Should 404/403).
+Flow: Lead -> Client -> Workspace -> Billing.
+
+
+
+
+
+
+
+
+
+

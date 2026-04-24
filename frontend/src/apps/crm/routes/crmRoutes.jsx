@@ -18,6 +18,7 @@ import InteractionList from '../pages/InteractionList';
 import OrderList from '../pages/OrderList';
 import CrmSettings from '../pages/CrmSettings';
 import CrmReportPage from '../pages/CrmReportPage';
+import DocumentGenerator from '../pages/DocumentGenerator';
 
 export const crmRoutes = (
     <>
@@ -31,6 +32,7 @@ export const crmRoutes = (
         <Route path="contacts" element={<ContactList />} />
         <Route path="leads" element={<LeadList />} />
         <Route path="deals" element={<DealsPipeline />} />
+        <Route path="generate-document" element={<DocumentGenerator />} />
         <Route path="activities" element={<InteractionList />} />
 
         {/* Keep legacy routes aliased just in case */}

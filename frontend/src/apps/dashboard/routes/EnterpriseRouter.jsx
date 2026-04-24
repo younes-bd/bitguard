@@ -35,6 +35,8 @@ import BillingAdminPage from '../../billing/pages/BillingAdminPage';
 import PlansList from '../../billing/pages/PlansList';
 import InvoicesList from '../../billing/pages/InvoicesList';
 import BillingSettings from '../../billing/pages/BillingSettings';
+import BillingSuccess from '../../billing/pages/BillingSuccess';
+import BillingCancel from '../../billing/pages/BillingCancel';
 
 // Reports
 import ReportsDashboard from '../../reports/pages/ReportsDashboard';
@@ -57,6 +59,7 @@ import ProjectsDashboard from '../../projects/pages/ProjectsDashboard';
 import { projectsRoutes } from '../../projects/routes/projectsRoutes';
 
 // IAM extra pages
+import IamDashboard from '../../auth/pages/identity/IamDashboard';
 import TenantList from '../../auth/pages/identity/TenantList';
 import AuditLogPage from '../../auth/pages/identity/AuditLogPage';
 import IamSettings from '../../auth/pages/identity/IamSettings';
@@ -162,7 +165,7 @@ export const EnterpriseRouter = (
 
         {/* Identity & Access Module */}
         <Route path="/admin/iam" element={<ModuleLayout title="Identity & Access" items={productMenu.iam[0].items} accentColor="violet" />}>
-            <Route index element={<Navigate to="roles" replace />} />
+            <Route index element={<IamDashboard />} />
             <Route path="roles" element={<RoleList />} />
             <Route path="users" element={<UserList />} />
             <Route path="tenants" element={<TenantList />} />
@@ -173,11 +176,12 @@ export const EnterpriseRouter = (
         {/* Billing Module */}
         <Route path="/admin/billing" element={<ModuleLayout title="Billing" items={productMenu.billing[0].items} accentColor="emerald" />}>
             <Route index element={<BillingAdminPage />} />
+            <Route path="overview" element={<BillingAdminPage />} />
             <Route path="plans" element={<PlansList />} />
             <Route path="invoices" element={<InvoicesList />} />
             <Route path="settings" element={<BillingSettings />} />
-            <Route path="success" element={<div className="p-8 text-emerald-400 text-center text-xl font-bold">✅ Subscription activated! Redirecting...</div>} />
-            <Route path="cancel" element={<div className="p-8 text-slate-400 text-center">Checkout cancelled. You haven't been charged.</div>} />
+            <Route path="success" element={<BillingSuccess />} />
+            <Route path="cancel" element={<BillingCancel />} />
         </Route>
 
         {/* Analytics & Reports Module */}

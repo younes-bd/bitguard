@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../core/api/crmService';
+import client from '../../../core/api/client';
+import toast from 'react-hot-toast';
 import { ShoppingCart, Search, Filter, DollarSign, User, Calendar, CheckCircle, Clock } from 'lucide-react';
 
 const OrderList = () => {
@@ -18,6 +20,17 @@ const OrderList = () => {
             console.error("Failed to load orders", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleStatusChange = async (orderId, newStatus) => {
+        try {
+            await client.patch(`crm/orders/${orderId}/`, { status: newStatus });
+            toast.success('Order status updated');
+            loadData();
+        } catch (e) {
+            console.error(e);
+            toast.error('Failed to update status');
         }
     };
 
@@ -82,9 +95,16 @@ const OrderList = () => {
                                         ${parseFloat(order.total_amount || order.amount || 0).toLocaleString()}
                                     </td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase border ${getStatusColor(order.status)}`}>
-                                            {order.status}
-                                        </span>
+                                        <select 
+                                            value={order.status?.toLowerCase()} 
+                                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                            className={`px-2 py-1 rounded text-xs font-bold uppercase border bg-transparent focus:outline-none cursor-pointer ${getStatusColor(order.status)}`}
+                                        >
+                                            <option value="pending" className="bg-slate-800 text-yellow-400">PENDING</option>
+                                            <option value="processing" className="bg-slate-800 text-blue-400">PROCESSING</option>
+                                            <option value="completed" className="bg-slate-800 text-emerald-400">COMPLETED</option>
+                                            <option value="cancelled" className="bg-slate-800 text-red-400">CANCELLED</option>
+                                        </select>
                                     </td>
                                     <td className="p-4 text-sm text-slate-400">
                                         {/* Assuming items or description is available, otherwise generic */}

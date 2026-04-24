@@ -6,6 +6,9 @@ export default {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            },
             colors: {
                 bitguard: {
                     dark: '#0f172a',
@@ -19,10 +22,15 @@ export default {
                 'fade-in-up': {
                     '0%': { opacity: '0', transform: 'translateY(20px)' },
                     '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                'marquee': {
+                    '0%': { transform: 'translateX(0%)' },
+                    '100%': { transform: 'translateX(-100%)' },
                 }
             },
             animation: {
                 'fade-in-up': 'fade-in-up 0.8s ease-out forwards',
+                'marquee': 'marquee 25s linear infinite',
             }
         },
     },

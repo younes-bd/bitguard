@@ -56,7 +56,7 @@ export const PortalRoutes = (
             {scmRoutes}
         </Route>
 
-        <Route path="/support" element={<ProtectedRoute><ProductLayout /></ProtectedRoute>}>
+        <Route path="/portal/support" element={<ProtectedRoute><ProductLayout /></ProtectedRoute>}>
             <Route index element={<SupportDashboard />} />
             {supportRoutes}
         </Route>

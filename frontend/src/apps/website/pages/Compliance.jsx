@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 
 const Compliance = () => {
     const standards = [
@@ -56,6 +57,7 @@ const Compliance = () => {
 
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen transition-colors duration-300">
+            <PageMeta title="Compliance Center" description="Navigate HIPAA, GDPR, PCI-DSS, SOC 2, NIST, and ISO 27001 compliance with BitGuard's expert guidance." />
             {/* Hero */}
             <section className="relative pt-32 pb-20 dark:bg-slate-950 bg-slate-950 overflow-hidden transition-colors duration-300">
                 <div className="absolute top-0 right-0 w-full h-full bg-[url('/assets/images/grid.png')] opacity-20 pointer-events-none"></div>

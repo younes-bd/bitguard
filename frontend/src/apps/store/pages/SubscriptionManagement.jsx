@@ -5,6 +5,7 @@ import client from '../../../core/api/client';
 export default function SubscriptionManagement() {
     const [subscriptions, setSubscriptions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         client.get('store/subscriptions/')
@@ -17,14 +18,20 @@ export default function SubscriptionManagement() {
         <div className="space-y-6 animate-in fade-in">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                    <CreditCard className="text-pink-400" /> Recurring Billing
+                    <CreditCard className="text-pink-400" /> Client Subscriptions
                 </h1>
             </div>
             <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
                 <div className="p-4 border-b border-slate-800 flex justify-between items-center">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                        <input type="text" placeholder="Search subscriptions..." className="bg-slate-950 border border-slate-800 text-white rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-pink-500" />
+                        <input 
+                            type="text" 
+                            placeholder="Search subscriptions..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-slate-950 border border-slate-800 text-white rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-pink-500" 
+                        />
                     </div>
                 </div>
                 {loading ? (
@@ -48,7 +55,11 @@ export default function SubscriptionManagement() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">
-                            {subscriptions.map(sub => (
+                            {subscriptions.filter(sub => 
+                                (sub.customer_details?.username || `Customer #${sub.customer}`).toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                (sub.plan_details?.name || `Plan #${sub.plan}`).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                (sub.status || '').toLowerCase().includes(searchQuery.toLowerCase())
+                            ).map(sub => (
                                 <tr key={sub.id} className="hover:bg-slate-800/30">
                                     <td className="px-6 py-4 text-white font-medium">{sub.customer_details?.username || `Customer #${sub.customer}`}</td>
                                     <td className="px-6 py-4 text-slate-400 font-mono text-xs">{sub.plan_details?.name || `Plan #${sub.plan}`}</td>

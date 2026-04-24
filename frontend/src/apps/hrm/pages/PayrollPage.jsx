@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { DollarSign, Calendar, Users, Calculator, Loader2 } from 'lucide-react';
+import { DollarSign, Calendar, Users, Calculator, Loader2, Download, Play } from 'lucide-react';
 import { hrmService } from '../../../core/api/hrmService';
+import toast from 'react-hot-toast';
 
 const PayrollPage = () => {
     const [employees, setEmployees] = useState([]);
@@ -30,14 +31,36 @@ const PayrollPage = () => {
     const totalMonthly = employees.reduce((sum, e) => sum + parseFloat(e.salary || 0), 0);
     const avgSalary = employees.length > 0 ? totalMonthly / employees.length : 0;
 
+    const handleExport = () => {
+        toast.success('Payroll export generated');
+    };
+
+    const handleRunPayroll = () => {
+        toast.success('Payroll run initiated');
+    };
+
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase flex items-center gap-3">
-                    <DollarSign className="text-pink-400" size={28} />
-                    Payroll
-                </h1>
-                <p className="text-slate-400 text-sm mt-0.5">Process payroll, manage compensation, and track payments</p>
+            <div className="flex justify-between items-start">
+                <div>
+                    <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase flex items-center gap-3">
+                        <DollarSign className="text-pink-400" size={28} />
+                        Payroll
+                    </h1>
+                    <p className="text-slate-400 text-sm mt-0.5">Process payroll, manage compensation, and track payments</p>
+                </div>
+                <div className="flex gap-3">
+                    <button 
+                        onClick={handleExport}
+                        className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold transition-colors">
+                        <Download size={16} /> Export CSV
+                    </button>
+                    <button 
+                        onClick={handleRunPayroll}
+                        className="flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-lg text-sm font-semibold transition-colors">
+                        <Play size={16} /> Run Payroll
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

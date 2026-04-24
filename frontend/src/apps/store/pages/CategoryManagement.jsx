@@ -1,18 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import { Layers, Search, Plus, Loader2 } from 'lucide-react';
-import { storeService } from '../../../core/api/storeService';
+import { Layers, Search, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
 import client from '../../../core/api/client';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
+import toast from 'react-hot-toast';
+
+const CATEGORY_FIELDS = [
+    { name: 'name', label: 'Name', required: true },
+    { name: 'slug', label: 'Slug', required: true },
+    { name: 'is_visible', label: 'Visible', type: 'toggle' },
+    { name: 'description', label: 'Description', type: 'textarea', rows: 3 }
+];
 
 export default function CategoryManagement() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        client.get('store/categories/')
-            .then(res => setCategories(res.data.results || res.data || []))
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
+        fetchCategories();
     }, []);
+
+    const fetchCategories = async () => {
+        setLoading(true);
+        try {
+            const res = await client.get('store/categories/');
+            setCategories(res.data.results || res.data || []);
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+            toast.error('Failed to fetch categories');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedItem) {
+                await client.patch(`store/categories/${selectedItem.id}/`, formData);
+                toast.success('Category updated');
+            } else {
+                await client.post('store/categories/', formData);
+                toast.success('Category created');
+            }
+            setIsModalOpen(false);
+            setSelectedItem(null);
+            fetchCategories();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to save category');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setActionLoading(true);
+        try {
+            await client.delete(`store/categories/${selectedItem.id}/`);
+            toast.success('Category deleted');
+            setIsDeleteModalOpen(false);
+            setSelectedItem(null);
+            fetchCategories();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete category');
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in">
@@ -20,7 +80,10 @@ export default function CategoryManagement() {
                 <h1 className="text-2xl font-bold text-white flex items-center gap-2">
                     <Layers className="text-blue-400" /> Categories
                 </h1>
-                <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors">
+                <button 
+                    onClick={() => { setSelectedItem(null); setIsModalOpen(true); }}
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors"
+                >
                     <Plus size={16} /> Add Category
                 </button>
             </div>
@@ -61,8 +124,8 @@ export default function CategoryManagement() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right text-slate-400">
-                                        <button className="hover:text-white mr-3">Edit</button>
-                                        <button className="hover:text-red-400">Delete</button>
+                                        <button onClick={() => { setSelectedItem(cat); setIsModalOpen(true); }} className="hover:text-white mr-3"><Edit2 size={16} /></button>
+                                        <button onClick={() => { setSelectedItem(cat); setIsDeleteModalOpen(true); }} className="hover:text-red-400"><Trash2 size={16} /></button>
                                     </td>
                                 </tr>
                             ))}
@@ -70,6 +133,25 @@ export default function CategoryManagement() {
                     </table>
                 )}
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => { setIsModalOpen(false); setSelectedItem(null); }}
+                title={selectedItem ? "Edit Category" : "New Category"}
+                fields={CATEGORY_FIELDS}
+                initialData={selectedItem}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+            
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => { setIsDeleteModalOpen(false); setSelectedItem(null); }}
+                onConfirm={handleDelete}
+                loading={actionLoading}
+                title="Delete Category"
+                message={`Are you sure you want to delete "${selectedItem?.name}"?`}
+            />
         </div>
     );
 }

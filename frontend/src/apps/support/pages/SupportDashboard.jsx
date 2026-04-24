@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Ticket, Clock, AlertCircle } from 'lucide-react';
-import { supportService } from '../api/supportService';
+import supportService from '../../../core/api/supportService';
 
 const SupportDashboard = () => {
     const navigate = useNavigate();
@@ -15,8 +15,8 @@ const SupportDashboard = () => {
     const fetchTickets = async () => {
         try {
             const res = await supportService.getTickets();
-            // Assuming standardised { status: 'success', data: { results: [] } } response
-            setTickets(res.data?.results || []);
+            // supportService unwraps data via response.data.data
+            setTickets(Array.isArray(res) ? res : res?.results || []);
         } catch (error) {
             console.error('Failed to fetch tickets:', error);
         } finally {

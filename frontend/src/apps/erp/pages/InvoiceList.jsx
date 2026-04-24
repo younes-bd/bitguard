@@ -5,6 +5,7 @@ import {
     Search, Filter, Plus, FileText,
     MoreHorizontal, Download, ArrowUpRight
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const InvoiceList = () => {
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ const InvoiceList = () => {
             setInvoices(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to load invoices", error);
+            toast.error("Failed to load invoices");
         } finally {
             setLoading(false);
         }
@@ -33,8 +35,9 @@ const InvoiceList = () => {
         setDownloading(true);
         try {
             await erpService.downloadInvoice(id);
+            toast.success("Download started");
         } catch (error) {
-            alert("Download failed. The PDF endpoint might not be ready on the backend.");
+            toast.error("Download failed. PDF endpoint might not be ready.");
         } finally {
             setDownloading(false);
         }

@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Clock, Filter } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Filter, Plus } from 'lucide-react';
 import hrmService from '../../../core/api/hrmService';
+import client from '../../../core/api/client';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import toast from 'react-hot-toast';
+
+const LEAVE_FIELDS = [
+    { name: 'employee', label: 'Employee ID', type: 'number', required: true },
+    { name: 'leave_type', label: 'Leave Type', type: 'select', options: [
+        { value: 'annual', label: 'Annual (Paid)' },
+        { value: 'sick', label: 'Sick Leave' },
+        { value: 'unpaid', label: 'Unpaid Leave' }
+    ]},
+    { name: 'start_date', label: 'Start Date', type: 'date', required: true },
+    { name: 'end_date', label: 'End Date', type: 'date', required: true },
+    { name: 'reason', label: 'Reason', type: 'textarea', rows: 3 }
+];
 
 const statusBadge = (status) => {
     const map = {
@@ -15,6 +30,8 @@ const LeaveManagement = () => {
     const [leaves, setLeaves] = useState([]);
     const [filter, setFilter] = useState('pending');
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
 
     const fetchLeaves = () => {
         setLoading(true);
@@ -27,12 +44,38 @@ const LeaveManagement = () => {
     useEffect(() => { fetchLeaves(); }, [filter]);
 
     const handleApprove = async (id) => {
-        await hrmService.approveLeave(id);
-        fetchLeaves();
+        try {
+            await hrmService.approveLeave(id);
+            toast.success('Leave approved');
+            fetchLeaves();
+        } catch(e) {
+            toast.error('Failed to approve');
+        }
     };
+    
     const handleReject = async (id) => {
-        await hrmService.rejectLeave(id);
-        fetchLeaves();
+        try {
+            await hrmService.rejectLeave(id);
+            toast.success('Leave rejected');
+            fetchLeaves();
+        } catch(e) {
+            toast.error('Failed to reject');
+        }
+    };
+
+    const handleRequestLeave = async (formData) => {
+        setActionLoading(true);
+        try {
+            await client.post('hrm/leave/', formData);
+            toast.success('Leave requested successfully');
+            setIsModalOpen(false);
+            fetchLeaves();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to request leave');
+        } finally {
+            setActionLoading(false);
+        }
     };
 
     return (
@@ -42,6 +85,11 @@ const LeaveManagement = () => {
                     <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase">Leave Management</h1>
                     <p className="text-slate-400 text-sm mt-0.5">Review and approve employee leave requests</p>
                 </div>
+                <button 
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-lg text-sm font-semibold transition-colors no-underline">
+                    <Plus size={16} /> Request Leave
+                </button>
             </div>
             {/* Status filter tabs */}
             <div className="flex gap-2">
@@ -90,6 +138,16 @@ const LeaveManagement = () => {
                     </div>
                 ))}
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Request Leave"
+                fields={LEAVE_FIELDS}
+                onSubmit={handleRequestLeave}
+                loading={actionLoading}
+                submitText="Submit Request"
+            />
         </div>
     );
 };

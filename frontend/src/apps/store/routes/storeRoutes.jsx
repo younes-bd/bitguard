@@ -4,7 +4,7 @@ import { Route, Navigate } from 'react-router-dom';
 import StoreDashboard from '../pages/dashboards/StoreDashboard';
 import StoreCustomization from '../pages/StoreCustomization';
 import CategoryManagement from '../pages/CategoryManagement';
-import ProductManagement from '../pages/ProductManagement';
+import StoreProducts from '../pages/StoreProducts';
 import StoreOrders from '../pages/StoreOrders';
 import CustomerManagement from '../pages/CustomerManagement';
 import ShippingSettings from '../pages/ShippingSettings';
@@ -22,7 +22,7 @@ export const storeRoutes = (
         <Route path="customization" element={<StoreCustomization />} />
         <Route path="categories" element={<CategoryManagement />} />
         <Route path="services" element={<ServiceCatalog />} />
-        <Route path="products" element={<ProductManagement />} />
+        <Route path="products" element={<StoreProducts />} />
         <Route path="orders" element={<StoreOrders />} />
         <Route path="customers" element={<CustomerManagement />} />
         <Route path="shipping" element={<ShippingSettings />} />
@@ -33,4 +33,3 @@ export const storeRoutes = (
         <Route path="settings" element={<StoreSettings />} />
     </>
 );
-

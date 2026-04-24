@@ -20,8 +20,8 @@ export default function PixelTracking() {
     const handleSave = () => {
         const payload = tracking;
         const req = payload.id 
-            ? client.put(`/store/tracking-configs/${payload.id}/`, payload)
-            : client.post(`/store/tracking-configs/`, payload);
+            ? client.put(`store/tracking-configs/${payload.id}/`, payload)
+            : client.post(`store/tracking-configs/`, payload);
 
         req.then(res => {
             setTracking(res.data);
@@ -43,7 +43,7 @@ export default function PixelTracking() {
         <div className="space-y-6 animate-in fade-in">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                    <Activity className="text-emerald-400" /> Pixels & Analytics
+                    <Activity className="text-emerald-400" /> Marketing Analytics
                 </h1>
                 <button 
                     onClick={handleSave}

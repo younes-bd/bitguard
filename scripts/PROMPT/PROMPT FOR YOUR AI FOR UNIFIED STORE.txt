@@ -1,0 +1,218 @@
+🔒 BITGUARD — UNIFIED STORE (AI BUILDER PROMPT)
+
+ROLE & CONTEXT
+
+You are a senior full-stack engineer and security-first product designer building for a cybersecurity & managed IT company called BitGuard.
+
+The project is an existing Django website with:
+
+existing header and footer (DO NOT redesign them)
+
+existing accounts app (authentication already exists)
+
+dark, enterprise cybersecurity theme (BitGuard branding)
+
+modular Django architecture
+
+You must extend, not replace, the current system.
+
+🎯 OBJECTIVE
+
+Create a single unified Store app that supports:
+
+Digital products
+
+reports, tools, scripts, licenses
+
+secure download after payment
+
+Physical products
+
+hardware, devices, security keys
+
+inventory tracking + shipping info
+
+Subscriptions
+
+monthly / yearly plans
+
+third-party tools (Canva, Microsoft 365, antivirus, VPNs)
+
+manual or API-based provisioning
+
+All product types must use:
+
+one catalog
+
+one cart
+
+one checkout
+
+one payment system
+
+one order system
+
+🧠 TECH STACK REQUIREMENTS
+Backend
+
+Django (single app named store)
+
+Reuse existing accounts.User
+
+Stripe integration (one-time + recurring payments)
+
+Webhooks for subscription lifecycle
+
+Secure access control (login required)
+
+Frontend
+
+Use existing site layout, header, footer
+
+Responsive (desktop + mobile)
+
+Enterprise cybersecurity UI
+
+Clean, professional, no marketplace clutter
+
+🧱 STORE APP ARCHITECTURE
+Models (must be modular)
+
+Product (base)
+
+DigitalProduct logic
+
+PhysicalProduct logic
+
+SubscriptionProduct logic
+
+Order
+
+OrderItem
+
+Subscription
+
+Provider (Canva, Microsoft, VPNs)
+
+License / Delivery record
+
+Products must include:
+
+product_type: digital | physical | subscription
+
+pricing
+
+provider (optional)
+
+billing_cycle (for subscriptions)
+
+provisioning_type: manual | api
+
+🔄 BUSINESS LOGIC
+Checkout logic
+
+If digital → unlock secure download
+
+If physical → request shipping info
+
+If subscription → create subscription record
+
+Handle mixed carts (e.g. digital + subscription)
+
+Subscription logic
+
+Stripe recurring billing
+
+Webhook handling:
+
+payment success
+
+renewal
+
+cancellation
+
+expiration
+
+Show active subscriptions in user dashboard
+
+Provisioning logic
+
+Manual provisioning queue for admin
+
+API provisioning support (pluggable)
+
+Store license keys / access URLs securely
+
+👤 USER DASHBOARD
+
+Add a “My Products” section:
+
+Purchased digital downloads
+
+Active subscriptions
+
+License keys
+
+Renewal dates
+
+Order history
+
+Invoices
+
+Support request button
+
+🛠 ADMIN PANEL
+
+Admin must be able to:
+
+Manage products (all types)
+
+See orders and payments
+
+Handle manual provisioning
+
+Manage subscriptions
+
+Assign licenses
+
+Track renewals and expirations
+
+🔐 SECURITY REQUIREMENTS (CRITICAL)
+
+Role-based access control
+
+No direct file access (signed URLs only)
+
+Protect license keys
+
+Validate Stripe webhooks
+
+Audit logs for orders and provisioning
+
+CSRF, rate-limiting, secure cookies
+
+🚫 DO NOT DO
+
+Do NOT create multiple store apps
+
+Do NOT redesign header/footer
+
+Do NOT use mock data
+
+Do NOT expose keys or licenses
+
+Do NOT use insecure downloads
+
+📦 FINAL OUTPUT EXPECTED
+
+Django store app structure
+
+Models + services + views
+
+Payment & subscription logic
+
+Frontend templates integrated into current site
+
+Production-ready, clean, secure code
+
+Build this as an enterprise-grade commerce system, suitable for a cybersecurity company selling tech tools, licenses, hardware, and subscriptions.

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 import client from '../../../core/api/client';
 import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import '../../../core/styles/landing.css';
@@ -41,6 +43,7 @@ const Contact = () => {
 
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen transition-colors duration-300">
+            <PageMeta title="Contact Us" description="Get in touch with BitGuard. Contact our sales or support team for enterprise IT services and cybersecurity solutions." />
             {/* Dark Tech Hero */}
             <section className="relative py-24 lg:py-32 dark:bg-slate-950 bg-slate-50 overflow-hidden transition-colors duration-300">
                 {/* Tech Background Elements */}
@@ -49,7 +52,8 @@ const Contact = () => {
 
                 {/* Content */}
                 <div className="container mx-auto px-4 relative z-10 text-center">
-                    <span className="inline-block py-1.5 px-4 rounded-full dark:bg-blue-500/10 bg-blue-100 border dark:border-blue-500/20 border-blue-200 text-blue-600 dark:text-blue-300 text-xs font-bold mb-8 uppercase tracking-[0.2em] backdrop-blur-sm transition-colors duration-300">
+                    <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full dark:bg-blue-500/10 bg-blue-100 border dark:border-blue-500/20 border-blue-200 text-blue-600 dark:text-blue-300 text-xs font-bold mb-8 uppercase tracking-[0.2em] backdrop-blur-sm transition-colors duration-300">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
                         Get In Touch
                     </span>
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 dark:text-white text-slate-900 tracking-tight transition-colors duration-300">
@@ -70,17 +74,15 @@ const Contact = () => {
 
                         {/* Contact Info Panel (2 Cols) */}
                         <div className="lg:col-span-2 dark:bg-slate-900 bg-white dark:text-white text-slate-900 rounded-xl p-10 shadow-xl border dark:border-slate-800 border-slate-200 relative overflow-hidden transition-colors duration-300">
-                            <div className="w-full h-96 dark:bg-slate-900 bg-slate-200 rounded-2xl flex items-center justify-center border dark:border-slate-800 border-slate-300 relative overflow-hidden group transition-colors duration-300">
-                                {/* Fake map dots */}
-                                <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)] animate-pulse"></div>
-                                <div className="absolute top-1/2 left-1/2 w-4 h-4 bg-emerald-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.8)] animate-pulse" style={{ animationDelay: '1s' }}></div>
-                                <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.8)] animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                                <div className="absolute bottom-1/3 right-1/3 w-3 h-3 bg-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.8)] animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-
-                                <div className="text-center relative z-10">
-                                    <i className="bi bi-pin-map-fill text-5xl dark:text-slate-700 text-slate-400 mb-4 transition-colors duration-300"></i>
-                                    <h3 className="dark:text-slate-500 text-slate-600 font-bold transition-colors duration-300">Interactive Map Component</h3>
-                                    <p className="dark:text-slate-600 text-slate-500 text-sm mt-2 transition-colors duration-300">Requires Google Maps API Key</p>
+                            <div className="w-full h-96 rounded-2xl overflow-hidden border dark:border-slate-800 border-slate-300 relative group transition-colors duration-300">
+                                <iframe
+                                    title="BitGuard Headquarters"
+                                    src="https://www.openstreetmap.org/export/embed.html?bbox=-87.6375%2C41.8785%2C-87.6275%2C41.8835&layer=mapnik&marker=41.881%2C-87.6325"
+                                    className="w-full h-full border-0 opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                                    loading="lazy"
+                                ></iframe>
+                                <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 text-xs text-slate-300 font-bold">
+                                    <i className="bi bi-geo-alt-fill text-blue-400 mr-1"></i> 55 W. Monroe St., Chicago
                                 </div>
                             </div>
                             <span className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-6 block">Contact Info</span>
@@ -210,7 +212,7 @@ const Contact = () => {
                                             <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
                                         ) : 'Send Message'}
                                     </button>
-                                    <p className="dark:text-slate-400 text-slate-500 text-sm mt-6">By submitting this form, you agree to our <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</a>.</p>
+                                    <p className="dark:text-slate-400 text-slate-500 text-sm mt-6">By submitting this form, you agree to our <Link to="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</Link>.</p>
                                 </div>
                             </form>
                         </div>

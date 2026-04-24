@@ -1,9 +1,11 @@
 import React from 'react';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 
 const Team = () => {
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen transition-colors duration-300">
+            <PageMeta title="Our Team" description="Meet the experts behind BitGuard — engineers, analysts, and strategists dedicated to protecting your business." />
             {/* Dark Tech Hero */}
             <section className="relative py-24 lg:py-32 dark:bg-slate-950 bg-slate-50 overflow-hidden transition-colors duration-300">
                 {/* Tech Background Elements */}

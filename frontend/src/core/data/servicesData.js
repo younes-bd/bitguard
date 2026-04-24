@@ -1742,6 +1742,275 @@ const SERVICES = {
             { question: 'What if an API fails?', answer: 'Our scripts include robust error handling and human fallback alerts.' },
             { question: 'Can you automate legacy desktop software?', answer: 'Yes, using Robotic Process Automation (RPA) tools to scrape the UI.' }
         ]
+    },
+    'camera-surveillance': {
+        title: 'Physical Security & Camera Surveillance',
+        subtitle: 'Protect Your Premises',
+        description: 'Enterprise-grade physical security, access control, and camera surveillance.',
+        icon: 'bi bi-camera-video-fill',
+        hero_bg: 'linear-gradient(135deg, #020617 0%, #1e40af 100%)',
+        hero_image: '/assets/images/home/unified.jpg',
+        long_description: `
+            <p>Cybersecurity is only half the battle. If a malicious actor can physically walk into your server room, all your firewalls are useless. 
+            BitGuard provides state-of-the-art physical security solutions tailored for modern businesses.</p>
+            <p>From high-definition IP camera networks with AI-powered analytics to badge and biometric access control systems, we secure the perimeter 
+            of your physical infrastructure. All tied into a unified, cloud-managed dashboard that you can monitor from anywhere on any device.</p>
+        `,
+        features: [
+            { title: 'AI Video Analytics', desc: 'Cameras that automatically detect loitering, line-crossing, or unauthorized vehicles.', icon: 'bi bi-eye' },
+            { title: 'Cloud Access Control', desc: 'Unlock doors via smartphone, key fob, or biometrics. Instantly revoke access globally.', icon: 'bi bi-key-fill' },
+            { title: 'Unified Dashboard', desc: 'Manage your cameras and doors across 100 different locations from one screen.', icon: 'bi bi-grid-1x2-fill' }
+        ],
+        benefits: [
+            { title: 'Deterrence', description: 'Visible security measures drastically reduce theft and vandalism.', icon: 'bi bi-shield-lock' },
+            { title: 'Liability Protection', description: 'High-quality video evidence protects against false injury or HR claims.', icon: 'bi bi-file-earmark-medical' },
+            { title: 'Remote Management', description: 'Lock down your entire facility with one click on your phone during an emergency.', icon: 'bi bi-phone-vibrate' }
+        ],
+        process: [
+            { step: '01', title: 'Site Walk', description: 'Physical assessment of your property to identify vulnerabilities and blind spots.' },
+            { step: '02', title: 'Install', description: 'Cabling and mounting of cameras, door strikes, and controllers by licensed technicians.' },
+            { step: '03', title: 'Integrate', description: 'Connecting the physical hardware to your IT network and Active Directory.' }
+        ],
+        why_choose_us: {
+            title: 'Modern Physical Security',
+            points: [
+                'We bridge the gap between IT and Facilities. Physical security is now an IT function.',
+                'Partners with top-tier vendors like Verkada, Meraki, and Avigilon.',
+                'No more clunky NVR boxes in the closet; we deploy cloud-first systems.'
+            ]
+        },
+        faq: [
+            { question: 'Do the cameras record to the cloud?', answer: 'Yes, systems offer local edge storage on the camera itself with continuous cloud backup.' },
+            { question: 'Can it notify police?', answer: 'Yes, we can integrate professional 24/7 video monitoring and dispatch.' }
+        ]
+    },
+    'helpdesk-support': {
+        title: 'Helpdesk IT Support',
+        subtitle: 'Empower Your Team',
+        description: 'Lightning-fast technical support for your employees, available 24/7/365.',
+        icon: 'bi bi-headset',
+        hero_bg: 'linear-gradient(135deg, #02366b 0%, #3b82f6 100%)',
+        hero_image: '/assets/images/people/man2.jpg',
+        long_description: `
+            <p>IT issues drain employee productivity. Every minute an employee spends wrestling with a jammed printer, a locked account, or a slow computer is money wasted. BitGuard provides an elite Helpdesk Support team that acts as your internal IT department.</p>
+            <p>With an average response time of under 60 seconds, our certified technicians resolve issues rapidly, keeping your workforce happy and productive.</p>
+        `,
+        features: [
+            { title: '24/7 Availability', desc: 'Support is available round-the-clock for global teams.', icon: 'bi bi-clock-history' },
+            { title: 'Remote Resolution', desc: 'Secure screen sharing allows us to fix 95% of issues instantly.', icon: 'bi bi-laptop' },
+            { title: 'Ticketing Portal', desc: 'Sleek portal for users to track their requests and read FAQs.', icon: 'bi bi-ticket-detailed' }
+        ],
+        benefits: [
+            { title: 'Zero Frustration', description: 'Employees text, call, or email our support center instantly.', icon: 'bi bi-emoji-smile' },
+            { title: 'Predictable Costs', description: 'Flat monthly rate per user, unlimited support.', icon: 'bi bi-cash-stack' },
+            { title: 'Oversight', description: 'Monthly reporting on ticket trends and system health.', icon: 'bi bi-graph-up' }
+        ],
+        process: [
+            { step: '01', title: 'Onboard', description: 'Deploy helpdesk agents to employee workstations.' },
+            { step: '02', title: 'Support', description: 'Employees begin putting in direct requests.' },
+            { step: '03', title: 'Analyze', description: 'We identify root causes of recurring issues.' }
+        ],
+        why_choose_us: {
+            title: 'Friendly, Fast, Local',
+            points: [
+                '100% US-based support technicians.',
+                'ITIL-certified service delivery model.',
+                'Satisfaction guarantees backed by SLAs.'
+            ]
+        },
+        faq: [
+            { question: 'Do you offer on-site support?', answer: 'Yes, we can dispatch field engineers when remote resolution is impossible.' },
+            { question: 'Can you support Mac and PC?', answer: 'Absolutely. We support Windows, macOS, and mobile devices.' }
+        ]
+    },
+    'vdi-solutions': {
+        title: 'Virtual Desktop Infrastructure (VDI)',
+        subtitle: 'The Remote Office',
+        description: 'Secure, high-performance virtual desktops streamed to any device.',
+        icon: 'bi bi-pc-display',
+        hero_bg: 'linear-gradient(135deg, #034484 0%, #1e3a8a 100%)',
+        hero_image: '/assets/images/home/unified.jpg',
+        long_description: `
+            <p>The traditional model of buying expensive laptops loaded with sensitive data is dead. Virtual Desktop Infrastructure (VDI) centralizes your computing power in the cloud.</p>
+            <p>Employees simply stream a secure, fully-loaded Windows desktop to any device (even an old iPad or cheap Chromebook). If the device is lost, no data is compromised because no data ever left the cloud.</p>
+        `,
+        features: [
+            { title: 'Azure Virtual Desktop', desc: 'Native integration with Microsoft 365 and Azure environments.', icon: 'bi bi-microsoft' },
+            { title: 'GPU Acceleration', desc: 'High-performance instances for CAD, video editing, and rendering.', icon: 'bi bi-gpu-card' },
+            { title: 'Zero Trust Access', desc: 'Strict conditional access policies to connect to the VDI environment.', icon: 'bi bi-shield-lock' }
+        ],
+        benefits: [
+            { title: 'Hardware Savings', description: 'Extend the life of older hardware or move to thin clients.', icon: 'bi bi-piggy-bank' },
+            { title: 'Absolute Security', description: 'Data never resides on the local endpoint.', icon: 'bi bi-lock-fill' },
+            { title: 'Instant Onboarding', description: 'Provision a new employee\'s digital workspace in 5 minutes.', icon: 'bi bi-lightning-fill' }
+        ],
+        process: [
+            { step: '01', title: 'Design', description: 'Architect the pool size and compute requirements.' },
+            { step: '02', title: 'Build', description: 'Create golden master images with all software pre-loaded.' },
+            { step: '03', title: 'Deploy', description: 'Roll out to users and decommission old hardware.' }
+        ],
+        why_choose_us: {
+            title: 'Flawless Streaming',
+            points: [
+                'Experience architecting multi-region VDI farms.',
+                'Cost-optimization through auto-scaling (spin down desktops at night).',
+                'Integration with all major identity providers.'
+            ]
+        },
+        faq: [
+            { question: 'What if the internet goes down?', answer: 'VDI requires an internet connection. We implement redundant ISP solutions for offices.' },
+            { question: 'Is it laggy?', answer: 'No, modern VDI protocols (like PCoIP or Blast) deliver near-native performance.' }
+        ]
+    },
+    'penetration-testing': {
+        title: 'Penetration Testing',
+        subtitle: 'Think Like A Hacker',
+        description: 'Simulated cyberattacks by ethical hackers to find weaknesses before criminals do.',
+        icon: 'bi bi-incognito',
+        hero_bg: 'linear-gradient(135deg, #1e1b4b 0%, #ef4444 100%)',
+        hero_image: '/assets/images/home/search.png',
+        long_description: `
+            <p>Automated scanners can only find known vulnerabilities. To truly know if your defenses will hold, you need human intelligence. Our ethical hackers simulate advanced persistent threats (APTs) targeting your organization.</p>
+            <p>We attempt to breach your perimeter, move laterally through your network, and access sensitive data, mimicking the tactics, techniques, and procedures (TTPs) of real-world adversaries.</p>
+        `,
+        features: [
+            { title: 'External / Internal', desc: 'Test your internet-facing assets and your internal corporate network.', icon: 'bi bi-globe-americas' },
+            { title: 'Web/API Testing', desc: 'Deep-dive manual testing of your custom software (OWASP Top 10).', icon: 'bi bi-code-slash' },
+            { title: 'Social Engineering', desc: 'Phishing campaigns and physical breach attempts.', icon: 'bi bi-person-x' }
+        ],
+        benefits: [
+            { title: 'Validate Controls', description: 'Prove that your expensive security tools actually work.', icon: 'bi bi-check-circle' },
+            { title: 'Compliance Requirement', description: 'Satisfy SOC2, PCI-DSS, and HIPAA testing mandates.', icon: 'bi bi-file-earmark-check' },
+            { title: 'Actionable Remediation', description: 'Get a step-by-step guide to fixing the vulnerabilities we exploited.', icon: 'bi bi-tools' }
+        ],
+        process: [
+            { step: '01', title: 'Scope', description: 'Define Rules of Engagement (RoE) and targets.' },
+            { step: '02', title: 'Exploit', description: 'Our red team executes the controlled attacks.' },
+            { step: '03', title: 'Report', description: 'Detailed debrief with executive summaries and technical fixes.' }
+        ],
+        why_choose_us: {
+            title: 'Elite Offensive Security',
+            points: [
+                'Engineers holding OSCP, OSCE, and CISSP certifications.',
+                'Manual exploitation, not just repackaged automated scans.',
+                'Free re-testing of critical vulnerabilities after patching.'
+            ]
+        },
+        faq: [
+            { question: 'Will this crash our systems?', answer: 'We use controlled exploits and coordinate closely to ensure zero operational downtime.' },
+            { question: 'How often should we test?', answer: 'Annually, or after any major infrastructure change.' }
+        ]
+    },
+    'data-analytics-ai': {
+        title: 'Data Analytics & AI',
+        subtitle: 'Intelligence Unleashed',
+        description: 'Transform raw data into predictive insights and automated workflows.',
+        icon: 'bi bi-robot',
+        hero_bg: 'linear-gradient(135deg, #020617 0%, #8b5cf6 100%)',
+        hero_image: '/assets/images/home/analytics.png',
+        long_description: `
+            <p>Your business is generating massive amounts of data, but without structure, it\'s useless. Our Data Engineering team builds the pipelines, warehouses, and dashboards needed to turn data into a strategic asset.</p>
+            <p>From visual Business Intelligence (BI) tools to custom LLM (Large Language Model) integrations that automate decision-making, we help you leapfrog the competition.</p>
+        `,
+        features: [
+            { title: 'Data Warehousing', desc: 'Centralize siloed data into Snowflake or BigQuery.', icon: 'bi bi-database-check' },
+            { title: 'Business Intelligence', desc: 'Executive dashboards in PowerBI or Tableau showing real-time KPIs.', icon: 'bi bi-bar-chart-fill' },
+            { title: 'Custom AI Models', desc: 'Train LLMs on your proprietary data for internal copilots.', icon: 'bi bi-cpu-fill' }
+        ],
+        benefits: [
+            { title: 'Data-Driven Decisions', description: 'Stop guessing. Make executive choices based on hard metrics.', icon: 'bi bi-bullseye' },
+            { title: 'Efficiency', description: 'AI agents can automate complex data analysis instantly.', icon: 'bi bi-lightning' },
+            { title: 'Predictive Trends', description: 'Forecast sales, inventory needs, and market shifts before they happen.', icon: 'bi bi-graph-up-arrow' }
+        ],
+        process: [
+            { step: '01', title: 'Assess', description: 'Evaluate data quality and current silos.' },
+            { step: '02', title: 'Pipeline', description: 'Build secure ETL vectors to centralize the intelligence.' },
+            { step: '03', title: 'Visualize', description: 'Deploy dashboards and train AI models.' }
+        ],
+        why_choose_us: {
+            title: 'Data Science with Security',
+            points: [
+                'We ensure data privacy and compliance during AI training.',
+                'Full-stack approach: We build the infrastructure AND the models.',
+                'Focus on actionable business outcomes, not science experiments.'
+            ]
+        },
+        faq: [
+            { question: 'Is our data used to train public AI?', answer: 'Never. We deploy private, isolated models that nobody else can access.' },
+            { question: 'Do we need a massive dataset?', answer: 'We can drive immense value even from small, structured SQL databases.' }
+        ]
+    },
+    'healthcare': {
+        title: 'Healthcare IT Services',
+        subtitle: 'HIPAA Compliant Security',
+        description: 'Secure, compliant, and always-on IT management for healthcare providers, clinics, and medical facilities.',
+        icon: 'bi bi-heart-pulse-fill',
+        hero_bg: 'linear-gradient(135deg, #0f172a 0%, #be123c 100%)',
+        long_description: '<p>Healthcare providers require rock-solid reliability combined with ironclad compliance. A downed network means patient care suffers.</p><p>BitGuard provides HIPAA-compliant IT and cybersecurity, protecting ePHI against ransomware while ensuring your clinicians have instant access to vital medical records 24/7.</p>'
+    },
+    'finance': {
+        title: 'Financial IT Services',
+        subtitle: 'FINRA & SEC Ready',
+        description: 'Zero-trust architecture and high-availability infrastructure for banks, wealth managers, and financial institutions.',
+        icon: 'bi bi-bank2',
+        hero_bg: 'linear-gradient(135deg, #0f172a 0%, #047857 100%)',
+        long_description: '<p>The financial sector is the number one target for advanced persistent threats. Stop trading security for convenience.</p><p>BitGuard specializes in deploying FINRA and SEC-compliant networks with immutable audit logs, strict access controls, and proactive threat hunting.</p>'
+    },
+    'government': {
+        title: 'Government & Civic IT',
+        subtitle: 'CMMC & FedRAMP Standards',
+        description: 'Hardened technology operations for local municipalities and government contractors.',
+        icon: 'bi bi-building',
+        hero_bg: 'linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%)',
+        long_description: '<p>Municipalities and federal contractors operate under strict guidelines and severe public scrutiny.</p><p>We help local governments modernize aging infrastructure while ensuring absolute operational continuity and compliance with CMMC guidelines.</p>'
+    },
+    'manufacturing': {
+        title: 'Manufacturing & Supply Chain',
+        subtitle: 'Protect Your IP',
+        description: 'Industrial-grade networking and OT security to keep the supply chain flowing without disruption.',
+        icon: 'bi bi-nut-fill',
+        hero_bg: 'linear-gradient(135deg, #0f172a 0%, #b45309 100%)',
+        long_description: '<p>A cyber incident in a manufacturing plant can halt global supply chains within hours. Your Operational Technology (OT) networks must be rigidly secured.</p><p>We secure factories, logistics hubs, and warehouses with zero-trust policies that ensure maximum uptime and IP protection.</p>'
+    },
+    'hardware-procurement': {
+        title: 'Hardware Procurement',
+        subtitle: 'Enterprise Supply Chain',
+        description: 'Global sourcing, configuration, and shipping of enterprise laptops, servers, and firewalls.',
+        icon: 'bi bi-pc-display',
+        hero_bg: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        long_description: '<p>Don\'t waste time buying laptops individually from retail stores. BitGuard provides end-to-end IT hardware procurement.</p><p>We source top-tier enterprise equipment (Dell, Lenovo, Cisco, Fortinet), pre-configure them with your company\'s security policies and software stack, and drop-ship them directly to your remote employees\' doors ready for immediate use.</p>'
+    },
+    'compliance-consulting': {
+        title: 'Compliance Consulting',
+        subtitle: 'vCISO Services',
+        description: 'Virtual Chief Information Security Officer consulting for SOC2, HIPAA, NIST, and CMMC.',
+        icon: 'bi bi-clipboard2-check',
+        hero_bg: 'linear-gradient(135deg, #020617 0%, #4338ca 100%)',
+        long_description: '<p>Navigating the complex landscape of regulatory compliance requires specialized knowledge. Failing a compliance audit can result in lost contracts or massive fines.</p><p>Our vCISO (Virtual Chief Information Security Officer) services provide ongoing strategic guidance to ensure your organization meets strict compliance standards like SOC2 Type II, HIPAA, and CMMC without the cost of a full-time executive.</p>'
+    },
+    'access-control': {
+        title: 'Cloud Access Control',
+        subtitle: 'Secure the Perimeter',
+        description: 'Modern, keyless badge and biometric door reading systems managed securely from the cloud.',
+        icon: 'bi bi-door-closed',
+        hero_bg: 'linear-gradient(135deg, #020617 0%, #0f766e 100%)',
+        long_description: '<p>Physical keys are easy to lose and impossible to track. Modern facilities require intelligent access control.</p><p>We deploy advanced cloud-managed door readers that allow your employees to unlock doors using secure smart cards, their mobile phones, or biometrics. You can instantly grant or revoke access globally from a single dashboard—even during emergencies.</p>'
+    },
+    'alarm-systems': {
+        title: 'Advanced Alarm Systems',
+        subtitle: '24/7 Monitoring',
+        description: 'Commercial-grade perimeter defense and intrusion detection systems integrated with IT networks.',
+        icon: 'bi bi-bell-fill',
+        hero_bg: 'linear-gradient(135deg, #450a0a 0%, #dc2626 100%)',
+        long_description: '<p>A standard alarm system isn\'t enough to protect critical IT infrastructure or intellectual property.</p><p>We integrate enterprise-grade intrusion detection panels, environmental sensors (temperature/water for server rooms), and motion detectors directly into your unified technology dashboard, complete with 24/7/365 professional police dispatch monitoring.</p>'
+    },
+    'structured-cabling': {
+        title: 'Structured Cabling',
+        subtitle: 'The Network Backbone',
+        description: 'Professional installation of Cat6, Fiber Optic, and server rack infrastructure for offices and warehouses.',
+        icon: 'bi bi-hdd-network-fill',
+        hero_bg: 'linear-gradient(135deg, #172554 0%, #1e3a8a 100%)',
+        long_description: '<p>Your network is only as fast and reliable as the physical cables connecting it. Messy server rooms and sub-standard wiring lead to latency and unpredictable outages.</p><p>Our certified low-voltage technicians design and install immaculate structured cabling systems, including Cat6 Ethernet drops, Fiber Optic backbones, and perfectly dressed server racks to ensure maximum throughput and reliability.</p>'
     }
 };
 

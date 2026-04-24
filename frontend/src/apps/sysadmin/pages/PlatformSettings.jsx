@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Settings, Globe, Shield, Bell, Database,
-    Save, Sliders, Image as ImageIcon, CheckCircle2
+    Save, Sliders, Image as ImageIcon, CheckCircle2, Paintbrush
 } from 'lucide-react';
 import { sysadminService } from '../api/sysadminService';
 

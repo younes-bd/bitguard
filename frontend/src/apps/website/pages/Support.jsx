@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../core/styles/landing.css';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 import client from '../../../core/api/client';
+import { useAuth } from '../../../core/hooks/useAuth';
 import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 const Support = () => {
+    const { isAuthenticated } = useAuth();
+    const [searchQuery, setSearchQuery] = useState('');
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
         subject: '',
+        priority: 'medium',
         message: ''
     });
     
@@ -34,15 +39,16 @@ const Support = () => {
                 full_name: formData.fullName,
                 email: formData.email,
                 subject: formData.subject,
+                priority: formData.priority,
                 message: formData.message
             };
             
-            const response = await client.post('website/support/ticket/', payload);
+            const response = await client.post('home/support/ticket/', payload);
             
             setSubmitStatus('success');
             setTicketId(response.data.ticket_id);
             setSubmitMessage('Your ticket has been securely submitted to our CRM systems.');
-            setFormData({ fullName: '', email: '', subject: '', message: '' });
+            setFormData({ fullName: '', email: '', subject: '', priority: 'medium', message: '' });
         } catch (error) {
             console.error('Ticket submission failed:', error);
             setSubmitStatus('error');
@@ -55,8 +61,23 @@ const Support = () => {
         }
     };
 
+    // FAQ data for search functionality
+    const faqItems = [
+        { q: 'How do I reset my password?', a: 'Go to the login page and click "Forgot Password" to receive a reset link.' },
+        { q: 'How do I submit a support ticket?', a: 'Scroll down to the ticket form below, or call our support line directly.' },
+        { q: 'What is your response time?', a: 'Our SLA guarantees a response within 15 minutes for critical issues.' },
+        { q: 'How do I join a remote session?', a: 'Click "Remote Support" above to enter your 6-digit session PIN.' },
+        { q: 'How do I access the client portal?', a: 'Click "Client Portal" above to log in and manage your account.' },
+        { q: 'What are your support hours?', a: 'Our support team is available 24/7/365 for critical issues.' },
+    ];
+
+    const filteredFaq = searchQuery.length > 1
+        ? faqItems.filter(f => f.q.toLowerCase().includes(searchQuery.toLowerCase()) || f.a.toLowerCase().includes(searchQuery.toLowerCase()))
+        : [];
+
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen transition-colors duration-300">
+            <PageMeta title="Support" description="Get help from BitGuard's support team. Submit tickets, join remote sessions, and access our knowledge base." />
             {/* Dark Tech Hero */}
             <section className="relative py-24 lg:py-32 dark:bg-slate-950 bg-slate-950 overflow-hidden transition-colors duration-300">
                 {/* Tech Background Elements */}
@@ -65,7 +86,8 @@ const Support = () => {
 
                 {/* Content */}
                 <div className="container mx-auto px-4 relative z-10 text-center">
-                    <span className="inline-block py-1.5 px-4 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold mb-8 uppercase tracking-[0.2em] backdrop-blur-sm">
+                    <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full dark:bg-blue-500/10 bg-blue-100 border dark:border-blue-500/20 border-blue-200 text-blue-600 dark:text-blue-300 text-xs font-bold mb-8 uppercase tracking-[0.2em] backdrop-blur-sm transition-colors duration-300">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
                         Help Center
                     </span>
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white tracking-tight">
@@ -79,9 +101,27 @@ const Support = () => {
                         <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                         <div className="relative">
                             <input type="text" placeholder="Search for answers..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full py-5 pl-14 pr-6 rounded-full bg-slate-900/90 backdrop-blur-xl border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-2xl transition-all" />
                             <i className="bi bi-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
                         </div>
+                        {/* Search Results Dropdown */}
+                        {filteredFaq.length > 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-30">
+                                {filteredFaq.map((f, idx) => (
+                                    <div key={idx} className="p-4 border-b border-slate-700/50 last:border-0 hover:bg-slate-700/50 transition-colors cursor-pointer">
+                                        <h4 className="text-white font-bold text-sm mb-1">{f.q}</h4>
+                                        <p className="text-slate-400 text-xs">{f.a}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {searchQuery.length > 1 && filteredFaq.length === 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-6 text-center z-30">
+                                <p className="text-slate-400 text-sm">No results found. Try submitting a ticket below.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
@@ -109,8 +149,8 @@ const Support = () => {
                             </div>
                             <h3 className="text-2xl font-bold dark:text-white text-slate-900 mb-3 tracking-tight transition-colors duration-300">Client Portal</h3>
                             <p className="dark:text-slate-400 text-slate-600 mb-6 leading-relaxed transition-colors duration-300">Manage tickets, view invoices, and track project status from your dedicated dashboard.</p>
-                            <Link to="/login" className="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-700 tracking-wide uppercase text-sm">
-                                Log In <i className="bi bi-arrow-right ml-2 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all"></i>
+                            <Link to={isAuthenticated ? '/portal' : '/login'} className="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-700 tracking-wide uppercase text-sm">
+                                {isAuthenticated ? 'Go to Portal' : 'Log In'} <i className="bi bi-arrow-right ml-2 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all"></i>
                             </Link>
                         </div>
 
@@ -214,6 +254,16 @@ const Support = () => {
                                         <input type="text" name="subject" value={formData.subject} onChange={handleChange} disabled={isSubmitting}
                                             className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all disabled:opacity-50"
                                             placeholder="Brief summary of the issue" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold dark:text-slate-400 text-slate-500 uppercase tracking-wider mb-2">Priority</label>
+                                        <select name="priority" value={formData.priority} onChange={handleChange} disabled={isSubmitting}
+                                            className="w-full p-4 rounded-xl dark:bg-slate-900 bg-white border dark:border-slate-600 border-slate-200 dark:text-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all disabled:opacity-50">
+                                            <option value="low">Low — General question</option>
+                                            <option value="medium">Medium — Issue affecting work</option>
+                                            <option value="high">High — Service degraded</option>
+                                            <option value="critical">Critical — Service down</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="block text-xs font-bold dark:text-slate-400 text-slate-500 uppercase tracking-wider mb-2">Description</label>

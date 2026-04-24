@@ -1,0 +1,174 @@
+I want you to completely redesign and upgrade my accounts app, including frontend + backend logic, while keeping my existing header and footer files exactly as they are.
+
+Requirements
+1. Use my existing layout
+
+All new pages must extend the base template:
+
+{% extends "base.html" %}
+{% load static %}
+
+
+2. Build a full BitGuard-themed accounts module
+
+Create production-ready frontend and backend for:
+
+Login
+
+Register
+
+Forgot Password
+
+Reset Password
+
+Email Verification
+
+Two-Factor Authentication (OTP via email)
+
+Profile Page
+
+Account Settings
+
+Security Center (sessions, devices, activity logs)
+
+Logout
+
+Use the BitGuard brand:
+
+White BG monogram logo
+
+Clean cyber AND TECH layout (sharp + minimal)
+
+CSS preferred
+
+3. Build a complete Django backend
+
+Generate a full production-ready backend, including:
+
+Models
+
+Custom User model (email as username)
+
+Profile model
+
+LoginActivity model
+
+Device model (fingerprint or user-agent hash)
+
+OTP model
+
+Forms
+
+LoginForm
+
+RegisterForm
+
+ProfileUpdateForm
+
+PasswordChangeForm
+
+TwoFactorForm
+
+Views (Class-Based)
+
+LoginView
+
+RegisterView
+
+LogoutView
+
+ProfileView
+
+SettingsView
+
+SecurityCenterView
+
+SessionsView
+
+ForgotPasswordView
+
+ResetPasswordView
+
+TwoFactorSetupView
+
+TwoFactorVerifyView
+
+URL Configuration
+
+Provide a full accounts/urls.py.
+
+4. Add real security features
+
+Implement:
+
+CSRF everywhere
+
+Rate limit login attempts
+
+Email verification workflow
+
+2FA using email OTP
+
+Strong password validation
+
+Track active sessions
+
+Track login history (IP, browser, time)
+
+Device recognition: store browser + IP hash
+
+Logout from all sessions
+
+Blocking suspicious login attempts
+
+5. Provide the templates
+
+Generate:
+
+login.html
+
+register.html
+
+profile.html
+
+settings.html
+
+security_center.html
+
+forgot_password.html
+
+reset_password.html
+
+2fa_verify.html
+
+2fa_setup.html
+
+All pages must:
+
+Use my header and footer
+
+Be mobile responsive
+
+Use clean Tailwind components
+
+6. Provide the static files
+
+CSS file
+
+JavaScript for forms
+
+JS for session/device table interactivity
+
+7. Email system
+
+Provide:
+
+Email templates (HTML)
+
+Django email settings
+
+OTP email format
+
+8. Output format
+
+Provide everything in clean structure:

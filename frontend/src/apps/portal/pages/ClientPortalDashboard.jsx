@@ -61,7 +61,7 @@ const ClientPortalDashboard = () => {
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <Link to="/support" className="px-4 py-2 dark:bg-slate-800 bg-white border dark:border-slate-700 border-slate-200 rounded-lg dark:text-white text-slate-900 text-sm font-bold dark:hover:bg-slate-700 hover:bg-slate-100 transition-colors shadow-sm">
+                    <Link to="/portal/support" className="px-4 py-2 dark:bg-slate-800 bg-white border dark:border-slate-700 border-slate-200 rounded-lg dark:text-white text-slate-900 text-sm font-bold dark:hover:bg-slate-700 hover:bg-slate-100 transition-colors shadow-sm">
                         Submit Ticket
                     </Link>
                     <Link to="/contact" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-sm font-bold shadow-lg shadow-blue-500/20 transition-all">

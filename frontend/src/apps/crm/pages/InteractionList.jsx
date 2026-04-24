@@ -1,16 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../core/api/crmService';
-import { MessageSquare, Calendar, User, Phone, Mail, Clock, ArrowRight } from 'lucide-react';
+import client from '../../../core/api/client';
+import { MessageSquare, Calendar, User, Phone, Mail, Clock, ArrowRight, Plus, Edit2, Trash2 } from 'lucide-react';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
+import toast from 'react-hot-toast';
+
+const INTERACTION_FIELDS = [
+    { name: 'client', label: 'Client ID', type: 'number', required: true },
+    { name: 'interaction_type', label: 'Type', type: 'select', options: [
+        { value: 'call', label: 'Call' },
+        { value: 'email', label: 'Email' },
+        { value: 'meeting', label: 'Meeting' }
+    ]},
+    { name: 'summary', label: 'Summary', required: true },
+    { name: 'description', label: 'Description', type: 'textarea', rows: 3 },
+    { name: 'date', label: 'Date', type: 'datetime-local' }
+];
 
 const InteractionList = () => {
     const [interactions, setInteractions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         loadData();
     }, []);
 
     const loadData = async () => {
+        setLoading(true);
         try {
             const data = await crmService.getInteractions();
             setInteractions(Array.isArray(data) ? data : data.results || []);
@@ -18,6 +39,43 @@ const InteractionList = () => {
             console.error("Failed to load interactions", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedItem) {
+                await client.put(`crm/interactions/${selectedItem.id}/`, formData);
+                toast.success('Interaction updated');
+            } else {
+                await client.post('crm/interactions/', formData);
+                toast.success('Interaction logged');
+            }
+            setIsModalOpen(false);
+            setSelectedItem(null);
+            loadData();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to save interaction');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setActionLoading(true);
+        try {
+            await client.delete(`crm/interactions/${selectedItem.id}/`);
+            toast.success('Interaction deleted');
+            setIsDeleteModalOpen(false);
+            setSelectedItem(null);
+            loadData();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete interaction');
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -32,7 +90,7 @@ const InteractionList = () => {
 
     if (loading) return (
         <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
         </div>
     );
 
@@ -44,8 +102,14 @@ const InteractionList = () => {
                         <MessageSquare className="text-purple-400" size={32} />
                         Interactions Log
                     </h1>
-                    <p className="text-slate-400">History of all client communications.</p>
+                    <p className="text-slate-400 mt-1">History of all client communications.</p>
                 </div>
+                <button 
+                    onClick={() => { setSelectedItem(null); setIsModalOpen(true); }}
+                    className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors"
+                >
+                    <Plus size={16} /> Log Interaction
+                </button>
             </div>
 
             <div className="space-y-4">
@@ -77,6 +141,11 @@ const InteractionList = () => {
                                 </div>
                             </div>
                         </div>
+                        
+                        <div className="flex justify-end gap-3 md:ml-auto">
+                            <button onClick={() => { setSelectedItem(interaction); setIsModalOpen(true); }} className="p-2 text-slate-400 hover:text-white transition-colors"><Edit2 size={16} /></button>
+                            <button onClick={() => { setSelectedItem(interaction); setIsDeleteModalOpen(true); }} className="p-2 text-rose-400 hover:text-rose-300 transition-colors"><Trash2 size={16} /></button>
+                        </div>
                     </div>
                 ))}
 
@@ -89,6 +158,25 @@ const InteractionList = () => {
                     </div>
                 )}
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => { setIsModalOpen(false); setSelectedItem(null); }}
+                title={selectedItem ? "Edit Interaction" : "Log Interaction"}
+                fields={INTERACTION_FIELDS}
+                initialData={selectedItem}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+            
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => { setIsDeleteModalOpen(false); setSelectedItem(null); }}
+                onConfirm={handleDelete}
+                loading={actionLoading}
+                title="Delete Interaction"
+                message={`Are you sure you want to delete this interaction?`}
+            />
         </div>
     );
 };

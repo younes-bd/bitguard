@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Clock, CheckCircle, AlertCircle, ChevronRight } from 'lucide-react';
 import client from '../../../core/api/client';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const statusBadge = (status) => {
     const map = {
@@ -33,7 +34,10 @@ const TicketList = () => {
     useEffect(() => {
         client.get('support/tickets/')
             .then(r => { setTickets(r.data?.results ?? r.data ?? []); setLoading(false); })
-            .catch(() => setLoading(false));
+            .catch((err) => {
+                toast.error('Failed to load tickets.');
+                setLoading(false);
+            });
     }, []);
 
     const filtered = tickets.filter(t =>
@@ -138,10 +142,10 @@ const TicketList = () => {
                                                 onClick={async () => {
                                                     try {
                                                         await client.post(`support/tickets/${selectedTicket.id}/create_kb_from_ticket/`);
-                                                        alert('Converted to KB successfully');
+                                                        toast.success('Converted to KB successfully');
                                                         setSelectedTicket({...selectedTicket, is_converted_to_kb: true});
                                                     } catch (e) {
-                                                        alert('Error converting to KB');
+                                                        toast.error('Error converting to KB article');
                                                     }
                                                 }}
                                                 className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
@@ -153,8 +157,8 @@ const TicketList = () => {
                                             const id = prompt('Enter KB Article ID to link:');
                                             if (id) {
                                                 client.post(`support/tickets/${selectedTicket.id}/link_article/`, { article_id: id })
-                                                    .then(() => alert('Linked!'))
-                                                    .catch(() => alert('Failed to link article.'));
+                                                    .then(() => toast.success('KB Article linked!'))
+                                                    .catch(() => toast.error('Failed to link article.'));
                                             }
                                         }} className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold border border-slate-700 transition-colors">
                                             Link Existing KB Article

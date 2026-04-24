@@ -1,0 +1,156 @@
+cd /mnt/c/users/youne/desktop/2-infotech/website/website7
+ls -R /mnt/c/Users/youne/Desktop/2-InfoTech/website/website7
+sudo apt update && sudo apt install python3-venv python3-pip -y
+python3 -m venv env
+source env/bin/activate
+deactivate
+rm -rf env
+pip install --upgrade pip
+pip freeze > requirements.txt
+pip install -r requirements.txt
+python3 manage.py makemigrations && python3 manage.py migrate
+python3 manage.py runserver
+python3 manage.py createsuperuser
+python3 populate_dashboard_data.py
+
+cp db.sqlite3 db_backup.sqlite3
+rm db.sqlite3
+find apps -name "migrations" -type d -exec rm -r {} +
+pip uninstall django -y
+pip install django
+find apps/ai_engine/migrations -name "0*.py" -delete
+python manage.py makemigrations ai_engine
+python manage.py migrate --fake-initial
+
+user : youness
+password:youness
+email: bitguard.tech@gmail.com
+
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node -v
+npm -v
+
+JWT auth: call /api/auth/token/ to get tokens. Use Bearer token to access protected API endpoints (you can change permissions in REST_FRAMEWORK settings).
+Stripe: set STRIPE_SECRET_KEY and STRIPE_PUBLISHABLE_KEY env vars. Use the checkout view to start a Stripe session.
+
+Celery + Redis:
+
+Start Redis (I included docker-compose.yml), or run your Redis service.
+
+Start worker: celery -A bitguard worker --loglevel=info.
+
+Trigger example task: from apps.ai_engine.tasks import run_dummy_analysis; run_dummy_analysis.delay().
+
+
+
+
+troubleshouting wsl:
+
+powershell:
+
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+wsl -l -v
+wsl --set-version <distro_name> 2
+wsl --shutdown
+wsl
+wsl --install -d Ubuntu
+wsl --install kali-linux
+wsl --unregister kali-linux
+code --install-extension ms-vscode-remote.remote-wsl
+
+
+wsl:
+rm -rf ~/.vscode-server
+rm -rf ~/.vscode-remote
+rm -rf ~/.antigravity-server
+rm -rf ~/.vscode-server-insiders
+rm -rf ~/.vscode-server/bin/*
+rm -rf ~/.vscode-server/bin
+rm -rf ~/.antigravity-server/bin
+sudo chown -R $USER:$USER ~
+sudo apt update
+sudo apt install -y curl wget tar zip unzip
+sudo chmod 1777 /tmp
+
+code .
+antigravity .
+
+sudo apt update
+sudo apt install antigravity
+sudo tee /etc/yum.repos.d/antigravity.repo << EOL
+[antigravity-rpm]
+name=Antigravity RPM Repository
+baseurl=https://us-central1-yum.pkg.dev/projects/antigravity-auto-updater-dev/antigravity-rpm
+enabled=1
+gpgcheck=0
+EOL
+sudo dnf makecache
+sudo dnf install antigravity
+
+
+website similar:
+https://onapsis.com/
+https://pixapage.netlify.app/#
+https://www.coro.net/
+https://blackpointcyber.com/
+https://empist.com/
+
+
+
+
+
+
+
+
+
+bitguard/
+│
+├── manage.py
+├── bitguard/               # Core settings
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── home/
+├── dashboard/
+├── store/
+├── crm/
+├── accounts/
+├── ai_engine/
+├── automation/
+├── erp/
+│
+├── templates/
+│   ├── base.html
+│   ├── includes/
+│   │   ├── navbar.html
+│   │   └── footer.html
+│   ├── home/
+│   │   └── index.html
+│   ├── dashboard/
+│   │   └── index.html
+│   ├── store/
+│   │   ├── products.html
+│   │   └── product_detail.html
+│   ├── crm/
+│   │   └── clients.html
+│   ├── ai_engine/
+│   │   └── analysis.html
+│   ├── erp/
+│   │   └── overview.html
+│   ├── automation/
+│   │   └── workflows.html
+│   └── accounts/
+│       ├── login.html
+│       └── register.html
+│
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── script.js
+│   └── img/
+│       └── logo.png

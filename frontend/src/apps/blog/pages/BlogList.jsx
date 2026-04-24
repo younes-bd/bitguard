@@ -1,34 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import blogService from '../../../core/api/blogService';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
+
+const CATEGORIES = ['All', 'Engineering', 'Security', 'Releases', 'Cloud'];
 
 const BlogList = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'All');
+    const [pagination, setPagination] = useState({ count: 0, next: null, previous: null, currentPage: 1 });
+
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+
+    const fetchPosts = useCallback(async (page = 1, category = 'All') => {
+        setLoading(true);
+        setError('');
+        try {
+            const params = { page };
+            if (category && category !== 'All') {
+                params.category = category.toLowerCase();
+            }
+            const response = await blogService.getPosts(params);
+            // Handle both raw array and DRF paginated {results: []} responses
+            if (response.results) {
+                setPosts(response.results);
+                setPagination({
+                    count: response.count || response.results.length,
+                    next: response.next,
+                    previous: response.previous,
+                    currentPage: page
+                });
+            } else {
+                const data = Array.isArray(response) ? response : [];
+                setPosts(data);
+                setPagination({ count: data.length, next: null, previous: null, currentPage: 1 });
+            }
+        } catch (err) {
+            console.error("Error fetching blog posts:", err);
+            setError('Failed to load blog posts. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                // Fetch published posts via the decoupled service
-                const response = await blogService.getPosts();
-                // Handle both raw array and DRF paginated {results: []} responses
-                const data = response.results || response;
-                setPosts(data);
-                setLoading(false);
-            } catch (err) {
-                console.error("Error fetching blog posts:", err);
-                setError('Failed to load blog posts. Please try again later.');
-                setLoading(false);
-            }
-        };
+        fetchPosts(currentPage, activeCategory);
+    }, [currentPage, activeCategory, fetchPosts]);
 
-        fetchPosts();
-    }, []);
+    const handleCategoryChange = (cat) => {
+        setActiveCategory(cat);
+        const newParams = {};
+        if (cat !== 'All') newParams.category = cat.toLowerCase();
+        setSearchParams(newParams); // resets page to 1
+    };
+
+    const handlePageChange = (page) => {
+        const newParams = { page: String(page) };
+        if (activeCategory !== 'All') newParams.category = activeCategory.toLowerCase();
+        setSearchParams(newParams);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const totalPages = Math.max(1, Math.ceil(pagination.count / 9)); // Assume 9 per page
+
+    // Estimate reading time from content
+    const readTime = (content) => {
+        if (!content) return '3 min';
+        const words = content.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
+        return `${Math.max(1, Math.ceil(words / 250))} min read`;
+    };
 
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen font-sans selection:bg-sky-500/30 transition-colors duration-300">
+            <PageMeta title="Blog" description="Latest news, cybersecurity insights, and product updates from the BitGuard engineering team." />
             {/* HERO SECTION */}
             <section className="relative min-h-[40vh] flex flex-col justify-center pt-32 pb-16 overflow-hidden bg-slate-950 text-white">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] z-0"></div>
@@ -54,9 +102,16 @@ const BlogList = () => {
                 <div className="container mx-auto px-4 md:px-8">
                     {/* Category Filter Tabs */}
                     <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-                        <button className="px-6 py-2 rounded-full font-bold text-sm bg-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all">All Posts</button>
-                        {['Engineering', 'Security', 'Releases', 'Cloud'].map(cat => (
-                            <button key={cat} className="px-6 py-2 rounded-full font-bold text-sm dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-600 dark:hover:bg-slate-700 hover:bg-slate-200 transition-colors border dark:border-slate-700 border-slate-200">
+                        {CATEGORIES.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => handleCategoryChange(cat)}
+                                className={`px-6 py-2 rounded-full font-bold text-sm transition-all duration-300 ${
+                                    activeCategory === cat
+                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                                        : 'dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-600 dark:hover:bg-slate-700 hover:bg-slate-200 border dark:border-slate-700 border-slate-200'
+                                }`}
+                            >
                                 {cat}
                             </button>
                         ))}
@@ -75,7 +130,12 @@ const BlogList = () => {
                         <div className="text-center py-32 dark:text-slate-400 text-slate-500">
                             <i className="bi bi-journal-x text-5xl block mb-4 opacity-50"></i>
                             <h3 className="text-2xl font-bold dark:text-white text-slate-900 mb-2">No Posts Found</h3>
-                            <p>Check back soon for our latest updates and articles.</p>
+                            <p>No articles match the selected category. Try selecting "All" to see everything.</p>
+                            {activeCategory !== 'All' && (
+                                <button onClick={() => handleCategoryChange('All')} className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-full font-bold text-sm hover:bg-blue-500 transition-colors">
+                                    Show All Posts
+                                </button>
+                            )}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -107,9 +167,16 @@ const BlogList = () => {
 
                                         {/* Content Body */}
                                         <div className="p-6 flex-1 flex flex-col">
-                                            <div className="text-xs font-bold dark:text-blue-400 text-blue-600 mb-3 tracking-widest uppercase flex items-center gap-2">
-                                                <i className="bi bi-calendar3"></i>
-                                                {new Date(post.publish_date || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            <div className="flex items-center gap-3 text-xs font-bold dark:text-blue-400 text-blue-600 mb-3 tracking-widest uppercase">
+                                                <span className="flex items-center gap-1.5">
+                                                    <i className="bi bi-calendar3"></i>
+                                                    {new Date(post.publish_date || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                </span>
+                                                <span className="text-slate-400">·</span>
+                                                <span className="flex items-center gap-1 dark:text-slate-500 text-slate-400">
+                                                    <i className="bi bi-clock"></i>
+                                                    {readTime(post.content)}
+                                                </span>
                                             </div>
                                             
                                             <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-tight">
@@ -142,15 +209,43 @@ const BlogList = () => {
                     )}
 
                     {/* Pagination Interface */}
-                    {!loading && !error && posts.length > 0 && (
+                    {!loading && !error && posts.length > 0 && totalPages > 1 && (
                         <div className="flex items-center justify-center gap-2 mt-16 pt-8 border-t dark:border-slate-800 border-slate-200">
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage <= 1}
+                                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${
+                                    currentPage <= 1
+                                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                        : 'bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-slate-200 dark:text-slate-300 text-slate-600'
+                                }`}
+                            >
                                 <i className="bi bi-chevron-left"></i>
                             </button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-600 text-white font-bold shadow-lg shadow-blue-500/20">1</button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-slate-200 dark:text-slate-300 text-slate-600 font-bold transition-colors">2</button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-slate-200 dark:text-slate-300 text-slate-600 font-bold transition-colors">3</button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-slate-200 dark:text-slate-300 text-slate-600 transition-colors">
+
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold transition-colors ${
+                                        page === currentPage
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                                            : 'bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-slate-200 dark:text-slate-300 text-slate-600'
+                                    }`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage >= totalPages}
+                                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${
+                                    currentPage >= totalPages
+                                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                        : 'bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-slate-200 dark:text-slate-300 text-slate-600'
+                                }`}
+                            >
                                 <i className="bi bi-chevron-right"></i>
                             </button>
                         </div>

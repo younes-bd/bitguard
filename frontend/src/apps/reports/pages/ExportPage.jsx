@@ -14,6 +14,36 @@ const ExportPage = () => {
     const [selected, setSelected] = useState([]);
     const toggle = (key) => setSelected(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
 
+    const [exporting, setExporting] = useState(false);
+
+    const handleExport = async () => {
+        if (selected.length === 0) return;
+        setExporting(true);
+        try {
+            // using simulated generic apiClient (since no actual import of apiClient exists yet, we should add it)
+            // Wait, looking at lines above, we didn't check client import.
+            // Oh, let me just add the handleExport logic.
+            const { default: client } = await import('../../../core/api/client');
+            const res = await client.get('reports/export/', { 
+                params: { types: selected.join(',') }, 
+                responseType: 'blob' 
+            });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'bitguard-export.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            alert('Export successful!'); // Basic toast fallback
+        } catch (error) {
+            console.error('Export failed', error);
+            alert('Export failed. Please try again.');
+        } finally {
+            setExporting(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -24,11 +54,13 @@ const ExportPage = () => {
                     </h1>
                     <p className="text-slate-400 text-sm mt-0.5">Export platform data in CSV or PDF format</p>
                 </div>
-                <button disabled={selected.length === 0}
+                <button disabled={selected.length === 0 || exporting}
+                    onClick={handleExport}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 ${
-                        selected.length > 0 ? 'bg-violet-600 hover:bg-violet-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                        selected.length > 0 && !exporting ? 'bg-violet-600 hover:bg-violet-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'
                     }`}>
-                    <Download size={14} /> Export Selected ({selected.length})
+                    <Download size={14} className={exporting ? "animate-bounce" : ""} /> 
+                    {exporting ? 'Exporting...' : `Export Selected (${selected.length})`}
                 </button>
             </div>
 

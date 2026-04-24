@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { storeService } from '../../../core/api/storeService';
 import { Search, Filter, Eye, DollarSign, Clock, CheckCircle, XCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const StoreOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -25,10 +26,11 @@ const StoreOrders = () => {
         if (!window.confirm("Are you sure you want to delete this order?")) return;
         try {
             await storeService.deleteOrder(orderId);
+            toast.success('Order deleted');
             loadOrders();
         } catch (error) {
             console.error("Failed to delete order", error);
-            alert("Failed to delete order");
+            toast.error('Failed to delete order');
         }
     };
 
@@ -45,8 +47,8 @@ const StoreOrders = () => {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Orders</h1>
-                    <p className="text-slate-400">Track and manage customer purchases.</p>
+                    <h1 className="text-2xl font-bold text-white tracking-tight">Procurement Orders</h1>
+                    <p className="text-slate-400">Track and manage client procurement and service orders.</p>
                 </div>
                 <button className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-lg transition-all">
                     <Filter size={18} />

@@ -16,6 +16,8 @@ import FreeTools from '../pages/FreeTools';
 import Podcasts from '../pages/Podcasts';
 import Reports from '../pages/Reports';
 import Compliance from '../pages/Compliance';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
+import TermsOfService from '../pages/TermsOfService';
 import PartnerProgram from '../../store/pages/PartnerProgram';
 
 export const WebsiteRoutes = () => {
@@ -29,6 +31,7 @@ export const WebsiteRoutes = () => {
                 <Route path="support/remote" element={<RemoteJoin />} />
                 <Route path="platform/:slug" element={<ServiceDetail />} />
                 <Route path="solutions/:slug" element={<ServiceDetail />} />
+                <Route path="industries/:slug" element={<ServiceDetail />} />
                 <Route path="team" element={<Team />} />
                 <Route path="careers" element={<Careers />} />
                 <Route path="events" element={<Events />} />
@@ -37,6 +40,8 @@ export const WebsiteRoutes = () => {
                 <Route path="reports" element={<Reports />} />
                 <Route path="compliance" element={<Compliance />} />
                 <Route path="partner" element={<PartnerProgram />} />
+                <Route path="privacy" element={<PrivacyPolicy />} />
+                <Route path="terms" element={<TermsOfService />} />
             </Route>
             <Route path="brochure/:slug" element={<Brochure />} />
         </Routes>

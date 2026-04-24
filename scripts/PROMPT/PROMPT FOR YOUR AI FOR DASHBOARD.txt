@@ -1,0 +1,270 @@
+✅ PROMPT FOR YOUR AI WEBSITE BUILDER
+
+Build a unified cybersecurity dashboard platform for BitGuard.
+Use my existing website’s header, footer, branding, and color palette.
+You only build the platform/dashboard, not a new website.
+tailor or remove the current module and views and templates on my dashboard app if nessessery.
+
+Core Objective
+
+Create a full production-ready SOC dashboard that centralizes:
+
+Alerts
+
+Incidents
+
+Endpoint monitoring
+
+Email threats
+
+Cloud app risk
+
+Network events
+
+System health
+
+Remediation actions
+
+Cloud integrations
+
+Security gaps
+
+Everything must function as one integrated Django app named dashboard.
+
+1. Backend Logic (Django)
+
+Implement full real detection, scoring, and automation logic:
+
+Alert scoring engine
+
+Severity mapping: critical=100, high=75, medium=40, low=10
+
+Add contextual weights: asset criticality, repeat events, vulnerability presence, threat evidence count
+
+Normalize to 0–100
+
+Store score in model
+
+Auto-sort alerts by score
+
+Rule engine
+
+Map alert conditions to playbooks:
+
+Quarantine endpoint
+
+Block IP
+
+Revoke tokens
+
+Email quarantine
+
+Human triage
+
+Automation
+
+Celery tasks for:
+
+Endpoint isolation
+
+IP firewall block
+
+OAuth token disable/revoke
+
+Mail quarantine
+
+Incident creation
+
+Automation must be safe, auditable, and reversible.
+
+Incident lifecycle
+
+Implement:
+New → In Triage → Containment → Eradication → Recovery → Closed
+Create remediation actions automatically or manually.
+
+2. Frontend Dashboard (UI)
+
+Build a polished, modern SOC dashboard UI inspired by top EDR/Cloud-XDR platforms.
+
+Required pages:
+
+Overview Dashboard
+
+Total alerts
+
+Active incidents
+
+Endpoint health
+
+Cloud integrations status
+
+Email threats stats
+
+Network events quick view
+
+System health score
+
+Alerts Page
+
+Filters (severity, status, module)
+
+Alert detail view
+
+Timeline + enrichment
+
+“Run Playbook” actions
+
+Endpoints Page
+
+Endpoint table
+
+Health, OS, agent version
+
+Status indicators (secure/at risk/compromised)
+
+Isolation button
+
+Incidents Page
+
+Full triage view
+
+Playbook steps
+
+Remediation history
+
+Email Threats
+
+Cloud Apps Risk
+
+Network Events
+
+System Health Metrics
+
+Security Gaps
+
+Cloud Integrations
+
+UI Requirements
+
+Real-time updates via WebSockets
+
+Modern bitguard theme
+
+Cards, graphs, tables, timeline widgets
+
+Fast filtering and search
+
+Drill-down analysis pages
+
+Status colors (critical → red, high → orange, etc.)
+
+3. Security
+
+Platform must include:
+
+RBAC (viewer, analyst, responder, admin)
+
+MFA enforcement
+
+Secure sessions + hardened Django settings
+
+Full audit logs
+
+Input sanitization
+
+mTLS for agents
+
+Token-based API auth
+
+Secret management using environment variables or Vault
+
+4. Integrations & Data Flow
+
+Simulate or create stubs for:
+
+Endpoint agent data
+
+Email security gateway
+
+Cloud security APIs (e.g., Microsoft 365)
+
+Threat intel lookups
+
+Network firewall logs
+
+Automatically ingest → normalize → create alerts → score → playbook assignment.
+
+5. Deliverables
+
+The builder must generate:
+
+Backend
+
+Django app dashboard with all models
+
+services.py (scoring engine, rule engine, enrichment)
+
+tasks.py (Celery playbooks)
+
+signals.py (auto-trigger scoring on create)
+
+api endpoints for all dashboard modules
+
+RBAC system using my accounts app
+
+Logging + monitoring hooks
+
+Frontend
+
+Complete dashboard UI (HTML/CSS/JS and React) both of them 
+
+All pages listed
+
+Real-time updates
+
+Tables, graphs, metrics
+
+Alert detail and incident detail pages with action buttons
+
+Infrastructure
+
+Dockerfile + docker-compose
+
+Celery worker + Redis
+
+Postgres DB
+
+Secure production settings
+
+6. Style & Branding
+
+Use my logo (white BG monogram)
+
+Use my existing website’s header/footer
+
+ bitguard blue + cyber neon highlight theme
+
+Cybersecurity professional look
+
+7. Final Output Should Include
+
+Full generated code
+
+Full UI
+
+API endpoints
+
+Database schema
+
+Integration stubs
+
+Deployment instructions
+
+Instructions to plug into my existing Django project
+
+No filler content
+
+No lorem ipsum
+
+Fully functional modules

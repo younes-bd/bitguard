@@ -1,5 +1,6 @@
 import React from 'react';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 
 const Podcasts = () => {
     const episodes = [
@@ -34,6 +35,7 @@ const Podcasts = () => {
 
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen dark:text-slate-300 text-slate-600 font-sans transition-colors duration-300">
+            <PageMeta title="Podcasts" description="Listen to BitGuard Tech Talks — weekly conversations with cybersecurity leaders, innovators, and white-hat hackers." />
             {/* Hero */}
             <section className="relative pt-32 pb-20 overflow-hidden transition-colors duration-300">
                 <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b dark:from-blue-900/20 from-blue-100 dark:to-slate-950 to-slate-50 pointer-events-none transition-colors duration-300"></div>

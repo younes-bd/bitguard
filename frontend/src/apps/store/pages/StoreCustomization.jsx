@@ -20,8 +20,8 @@ export default function StoreCustomization() {
     const handleSave = () => {
         const payload = theme;
         const req = payload.id 
-            ? client.put(`/store/customization/${payload.id}/`, payload)
-            : client.post(`/store/customization/`, payload);
+            ? client.put(`store/customization/${payload.id}/`, payload)
+            : client.post(`store/customization/`, payload);
 
         req.then(res => {
             setTheme(res.data);

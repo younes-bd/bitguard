@@ -114,7 +114,6 @@ export const productMenu = {
             title: 'Project Management',
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/projects' },
-                { label: 'All Projects', icon: FolderKanban, path: '/admin/projects' },
                 { label: 'Kanban Board', icon: Layers, path: '/admin/projects/kanban' },
                 { label: 'Reports', icon: BarChart3, path: '/admin/projects/reports' },
             ]
@@ -130,6 +129,7 @@ export const productMenu = {
                 { label: 'Contacts', icon: Users, path: '/admin/crm/contacts' },
                 { label: 'Leads', icon: AlertCircle, path: '/admin/crm/leads' },
                 { label: 'Deals', icon: Layers, path: '/admin/crm/deals' },
+                { label: 'Document Generator', icon: FileText, path: '/admin/crm/generate-document' },
                 { label: 'Activities', icon: FileText, path: '/admin/crm/activities' },
                 { label: 'Reports', icon: PieChart, path: '/admin/crm/reports' },
                 { label: 'Settings', icon: Settings, path: '/admin/crm/settings' },
@@ -151,16 +151,19 @@ export const productMenu = {
     ],
     store: [
         {
-            title: 'Commerce',
+            title: 'Service Catalog & Procurement',
             items: [
-                { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/store/dashboard' },
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/store/dashboard' },
                 { label: 'Service Catalog', icon: Tag, path: '/admin/store/services' },
                 { label: 'Categories', icon: Tags, path: '/admin/store/categories' },
-                { label: 'Products', icon: Box, path: '/admin/store/products' },
-                { label: 'Orders', icon: ShoppingCart, path: '/admin/store/orders' },
-                { label: 'Customers', icon: Users, path: '/admin/store/customers' },
-                { label: 'Shipping Settings', icon: Truck, path: '/admin/store/shipping' },
-                { label: 'Subscriptions', icon: RefreshCw, path: '/admin/store/subscriptions' },
+                { label: 'Products & Services', icon: Box, path: '/admin/store/products' },
+                { label: 'Procurement Orders', icon: ShoppingCart, path: '/admin/store/orders' },
+                { label: 'Client Accounts', icon: Users, path: '/admin/store/customers' },
+                { label: 'Client Subscriptions', icon: RefreshCw, path: '/admin/store/subscriptions' },
+                { label: 'Fulfillment & Logistics', icon: Truck, path: '/admin/store/shipping' },
+                { label: 'Integrations', icon: Puzzle, path: '/admin/store/addons' },
+                { label: 'Campaign Pages', icon: Megaphone, path: '/admin/store/landing-pages' },
+                { label: 'Analytics', icon: Activity, path: '/admin/store/tracking' },
                 { label: 'Settings', icon: Settings, path: '/admin/store/settings' },
             ]
         }
@@ -276,7 +279,6 @@ export const productMenu = {
             title: 'Document Management',
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/documents' },
-                { label: 'All Documents', icon: FolderOpen, path: '/admin/documents' },
                 { label: 'Settings', icon: Settings, path: '/admin/documents/settings' },
             ]
         }
@@ -286,7 +288,7 @@ export const productMenu = {
             title: 'Approval Center',
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/approvals' },
-                { label: 'Pending', icon: CheckSquare, path: '/admin/approvals' },
+                { label: 'Pending', icon: CheckSquare, path: '/admin/approvals/pending' },
                 { label: 'Settings', icon: Settings, path: '/admin/approvals/settings' },
             ]
         }
@@ -296,7 +298,7 @@ export const productMenu = {
             title: 'Change Management',
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/itsm' },
-                { label: 'Change Requests', icon: GitBranch, path: '/admin/itsm' },
+                { label: 'Change Requests', icon: GitBranch, path: '/admin/itsm/requests' },
                 { label: 'Settings', icon: Settings, path: '/admin/itsm/settings' },
             ]
         }

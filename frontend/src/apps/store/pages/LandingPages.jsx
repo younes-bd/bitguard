@@ -1,25 +1,90 @@
 import React, { useState, useEffect } from 'react';
-import { MousePointerClick, Search, Plus, Loader2 } from 'lucide-react';
+import { MousePointerClick, Search, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
 import client from '../../../core/api/client';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
+import toast from 'react-hot-toast';
+
+const LANDING_PAGE_FIELDS = [
+    { name: 'title', label: 'Campaign Title', required: true },
+    { name: 'slug', label: 'Access Slug', required: true },
+    { name: 'is_published', label: 'Published', type: 'toggle' },
+    { name: 'content', label: 'Content', type: 'textarea', rows: 4 },
+    { name: 'meta_description', label: 'Meta Description', type: 'textarea', rows: 2 }
+];
 
 export default function LandingPages() {
     const [pages, setPages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        client.get('store/landing-pages/')
-            .then(res => setPages(res.data.results || res.data || []))
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
+        fetchPages();
     }, []);
+
+    const fetchPages = async () => {
+        setLoading(true);
+        try {
+            const res = await client.get('store/landing-pages/');
+            setPages(res.data.results || res.data || []);
+        } catch (error) {
+            console.error("Failed to fetch landing pages:", error);
+            toast.error('Failed to fetch landing pages');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSave = async (formData) => {
+        setActionLoading(true);
+        try {
+            if (selectedItem) {
+                await client.patch(`store/landing-pages/${selectedItem.id}/`, formData);
+                toast.success('Landing page updated');
+            } else {
+                await client.post('store/landing-pages/', formData);
+                toast.success('Landing page created');
+            }
+            setIsModalOpen(false);
+            setSelectedItem(null);
+            fetchPages();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to save landing page');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setActionLoading(true);
+        try {
+            await client.delete(`store/landing-pages/${selectedItem.id}/`);
+            toast.success('Landing page deleted');
+            setIsDeleteModalOpen(false);
+            setSelectedItem(null);
+            fetchPages();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete landing page');
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                    <MousePointerClick className="text-sky-400" /> Landing Pages
+                    <MousePointerClick className="text-sky-400" /> Campaign Pages
                 </h1>
-                <button className="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors">
+                <button 
+                    onClick={() => { setSelectedItem(null); setIsModalOpen(true); }}
+                    className="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors"
+                >
                     <Plus size={16} /> Create Funnel
                 </button>
             </div>
@@ -62,7 +127,8 @@ export default function LandingPages() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right text-slate-400">
-                                        <button className="hover:text-white mr-3 transition-colors">Visual Editor</button>
+                                        <button onClick={() => { setSelectedItem(page); setIsModalOpen(true); }} className="hover:text-white mr-3 transition-colors"><Edit2 size={16} /></button>
+                                        <button onClick={() => { setSelectedItem(page); setIsDeleteModalOpen(true); }} className="hover:text-red-400 transition-colors"><Trash2 size={16} /></button>
                                     </td>
                                 </tr>
                             ))}
@@ -70,6 +136,25 @@ export default function LandingPages() {
                     </table>
                 )}
             </div>
+
+            <GenericModal
+                isOpen={isModalOpen}
+                onClose={() => { setIsModalOpen(false); setSelectedItem(null); }}
+                title={selectedItem ? "Edit Landing Page" : "New Landing Page"}
+                fields={LANDING_PAGE_FIELDS}
+                initialData={selectedItem}
+                onSubmit={handleSave}
+                loading={actionLoading}
+            />
+            
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => { setIsDeleteModalOpen(false); setSelectedItem(null); }}
+                onConfirm={handleDelete}
+                loading={actionLoading}
+                title="Delete Landing Page"
+                message={`Are you sure you want to delete "${selectedItem?.title}"?`}
+            />
         </div>
     );
 }

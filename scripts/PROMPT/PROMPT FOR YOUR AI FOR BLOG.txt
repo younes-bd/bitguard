@@ -1,0 +1,175 @@
+✅ PROFESSIONAL BLOG MODULE — FINAL PROMPT FOR AI BUILDER
+
+I also want you to add a complete, production-ready Blog module to my Django project, fully integrated with my BitGuard design system.
+
+Blog Requirements
+
+Create a full blog CMS with both public pages and admin/editor features.
+
+1. Use my existing layout
+
+Keep my current header.html and footer.html untouched.
+
+REMOVE ALL VIEWS AND MODEL  RELATED TO BLOG APP ON MY HOME APP KEEP ONLY THAT RELATED TO HOME APP
+
+All new pages must extend:
+
+{% extends "base.html" %}
+{% load static %}
+
+2. Public Blog Pages
+
+Generate the following templates:
+
+blog_list.html — All posts, pagination, categories, tags
+
+blog_detail.html — Single post page
+
+blog_category.html — Posts under one category
+
+blog_tag.html — Posts under one tag
+
+blog_search.html — Search results
+
+Use BitGuard styling:
+
+BITGUARD  blue theme
+
+Modern card layout
+
+Tailwind CSS
+
+Responsive grid
+
+3. Blog Backend Logic
+
+Build a full Django backend that supports:
+
+Models
+
+Post
+
+title
+
+slug
+
+author (FK User)
+
+content (rich text)
+
+featured_image
+
+category
+
+tags
+
+created_at / updated_at
+
+is_published
+
+SEO fields (meta_title, meta_description)
+
+Category
+
+Tag
+
+Comment (optional moderation)
+
+Views
+
+ListView
+
+DetailView
+
+CategoryView
+
+TagView
+
+SearchView
+
+Forms
+
+PostCreateForm
+
+PostUpdateForm
+
+CommentForm
+
+4. Editor/Admin Dashboard
+
+Create a BitGuard-styled editor area:
+
+/blog/dashboard/
+
+Create post
+
+Edit post
+
+Delete post
+
+Manage categories
+
+Manage tags
+
+Approve/delete comments
+
+5. Features to Implement
+
+Full CRUD for posts
+
+Rich text editor (e.g., TinyMCE or CKEditor)
+
+Slug auto-generation
+
+Image upload support
+
+SEO-friendly URLs
+
+Search (title + content)
+
+Pagination
+
+Draft vs Published mode
+
+Post scheduling (publish_date)
+
+Post SHARE
+
+Comment moderation workflow
+
+6. Blog URLs
+
+Provide full URL routing:
+
+blog/
+  urls.py
+  views.py
+  models.py
+  forms.py
+  templates/blog/*.html
+
+7. Security
+
+CSRF everywhere
+
+Only authenticated staff can publish/edit/delete posts
+
+XSS filtering in comments
+
+Image validation (size, type)
+
+SQL-safe queries
+
+8. Output Format
+
+Provide a ready-to-install Django app:
+
+blog/
+  models.py
+  views.py
+  forms.py
+  urls.py
+  admin.py
+templates/blog/*.html
+static/blog/css/*.css
+static/blog/js/*.js

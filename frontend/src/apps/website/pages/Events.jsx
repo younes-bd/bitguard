@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SectionDivider from '../../../core/components/SectionDivider';
+import PageMeta from '../../../core/components/shared/PageMeta';
 
 const Events = () => {
     const upcomingEvents = [
@@ -50,6 +51,7 @@ const Events = () => {
 
     return (
         <div className="dark:bg-slate-950 bg-slate-50 min-h-screen transition-colors duration-300">
+            <PageMeta title="Events & Webinars" description="Attend BitGuard webinars, conferences, and panel discussions on cybersecurity and IT best practices." />
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 dark:bg-slate-950 bg-slate-950 overflow-hidden transition-colors duration-300">
                 <div className="absolute inset-0 bg-blue-600/10 blur-[100px] pointer-events-none"></div>

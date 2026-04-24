@@ -11,6 +11,7 @@ import HrmSettings from '../pages/HrmSettings';
 export const hrmRoutes = (
     <>
         <Route index element={<HrmDashboard />} />
+        <Route path="overview" element={<HrmDashboard />} />
         <Route path="employees" element={<EmployeeList />} />
         <Route path="leaves" element={<LeaveManagement />} />
         <Route path="time" element={<TimeTracking />} />

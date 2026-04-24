@@ -10,6 +10,10 @@ export const storeService = {
         const response = await client.get(`store/products/${id}/`);
         return response.data.data;
     },
+    getProductById: async (id) => {
+        const response = await client.get(`store/products/${id}/`);
+        return response.data.data;
+    },
 
     // --- Categories ---
     getCategories: async () => {
@@ -23,7 +27,7 @@ export const storeService = {
 
     // --- Subscription Plans ---
     getPlans: async () => {
-        const response = await client.get('store/plans/');
+        const response = await client.get('store/subscription-plans/');
         return response.data.data;
     },
 
@@ -33,7 +37,7 @@ export const storeService = {
         return response.data.data;
     },
     subscribe: async (planId, subscribeData) => {
-        const response = await client.post(`store/plans/${planId}/subscribe/`, subscribeData);
+        const response = await client.post(`store/subscription-plans/${planId}/subscribe/`, subscribeData);
         return response.data.data;
     },
     getOrders: async () => {
@@ -43,6 +47,10 @@ export const storeService = {
     deleteOrder: async (id) => {
         const response = await client.delete(`store/orders/${id}/`);
         return response.data.data;
+    },
+    updateOrderStatus: async (id, status) => {
+        const response = await client.post(`store/orders/${id}/update_status/`, { status });
+        return response.data;
     },
 
     // --- User Subscriptions & Licenses ---
@@ -72,7 +80,7 @@ export const storeService = {
         return response.data.data;
     },
 
-    // --- CRM ---
+    // --- Customers ---
     getCustomers: async () => {
         const response = await client.get('store/customers/');
         return response.data.data;
@@ -89,6 +97,12 @@ export const storeService = {
     },
     deleteProduct: async (id) => {
         const response = await client.delete(`store/products/${id}/`);
+        return response.data.data;
+    },
+
+    // --- Service Catalog ---
+    getServiceCatalog: async () => {
+        const response = await client.get('store/service-catalog/');
         return response.data.data;
     },
 

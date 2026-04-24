@@ -1,0 +1,220 @@
+🔒 BITGUARD — UNIFIED COMMERCE & PLATFORM SUBSCRIPTION PROMPT
+ROLE
+
+You are a senior full-stack SaaS engineer and security architect building for BitGuard, a cybersecurity & managed IT company.
+
+The project is an existing Django website with:
+
+existing header and footer (must be reused)
+
+existing accounts app
+
+existing dashboard app (Unified Cyber Security Platform)
+
+enterprise dark cybersecurity theme
+
+You must extend, not rewrite, the platform.
+
+OBJECTIVES (CRITICAL)
+A) Build a single unified Store app
+
+Name: store
+
+It must support:
+
+Digital products
+
+Physical products
+
+Subscriptions (recurring)
+
+Third-party tools & licenses
+
+BitGuard’s own SaaS platform subscription
+
+B) Integrate BitGuard Unified Cyber Security Platform subscription
+
+The platform itself is NOT a product page — it is a SaaS service.
+
+Platform logic stays in dashboard
+
+Subscription, billing, and plans are handled by store
+
+Subscription status controls access to dashboard features
+
+TECH REQUIREMENTS
+Backend
+
+Django
+
+Stripe (one-time + recurring)
+
+Webhooks for subscription lifecycle
+
+Secure role-based access
+
+Central billing system
+
+Frontend
+
+Use existing header/footer
+
+Cybersecurity enterprise UI
+
+Responsive
+
+Clean SaaS-style UX
+
+STORE APP RESPONSIBILITIES
+Product Types
+
+digital
+
+physical
+
+subscription
+
+Subscription products include:
+
+third-party tools (Canva, Microsoft 365, Antivirus, VPN)
+
+BitGuard Unified Cyber Security Platform plans
+
+Subscription Logic
+
+Monthly / yearly plans
+
+Stripe recurring billing
+
+Webhook handling:
+
+activation
+
+renewal
+
+cancellation
+
+expiration
+
+Support upgrades/downgrades
+
+Central invoice history
+
+PLATFORM ACCESS CONTROL (IMPORTANT)
+
+User can access dashboard ONLY if:
+
+active BitGuard platform subscription exists
+
+Different plans unlock different modules:
+
+endpoint security
+
+cloud security
+
+email security
+
+alerts
+
+reports
+
+USER DASHBOARD (ACCOUNTS)
+
+Add sections:
+
+My Products
+
+My Subscriptions
+
+My Platform Plan
+
+Invoices & Billing
+
+License Keys
+
+Renewals & Expiry
+
+ADMIN PANEL
+
+Admin must be able to:
+
+Manage products & subscriptions
+
+Define platform plans
+
+Assign features per plan
+
+Manage third-party provisioning
+
+Monitor billing & renewals
+
+View audit logs
+
+SECURITY REQUIREMENTS
+
+Stripe webhook signature validation
+
+No direct digital file exposure
+
+Signed URLs only
+
+Protect license keys
+
+Rate-limiting
+
+Audit logging
+
+Secure cookies & CSRF
+
+DO NOT
+
+Do NOT create multiple store apps
+
+Do NOT duplicate billing logic
+
+Do NOT redesign header/footer
+
+Do NOT mock subscriptions
+
+Do NOT bypass access control
+
+FINAL RESULT
+
+One professional store app
+
+One billing engine for everything
+
+Dashboard access gated by subscription
+
+Enterprise-ready SaaS + commerce platform
+
+Build this as a real production-ready system, suitable for a cybersecurity company selling:
+
+tools
+
+licenses
+
+hardware
+
+subscriptions
+
+and its own Unified Cyber Security Platform.
+
+Final clarity (important)
+
+✔️ Your instinct was right
+✔️ Platform ≠ Store
+✔️ Billing must be centralized
+✔️ This is exactly how enterprises do it
+
+If you want next, I can:
+
+map BitGuard platform plans → dashboard modules
+
+design subscription upgrade/downgrade logic
+
+write Stripe webhook flow
+
+or create feature flags per plan
+
+Just say the word.

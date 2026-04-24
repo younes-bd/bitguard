@@ -20,8 +20,8 @@ export default function StoreSettings() {
     const handleSave = () => {
         const payload = settings;
         const req = payload.id 
-            ? client.put(`/store/settings/${payload.id}/`, payload)
-            : client.post(`/store/settings/`, payload);
+            ? client.put(`store/settings/${payload.id}/`, payload)
+            : client.post(`store/settings/`, payload);
 
         req.then(res => {
             setSettings(res.data);
@@ -43,7 +43,7 @@ export default function StoreSettings() {
         <div className="space-y-6 animate-in fade-in">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                    <Settings className="text-slate-400" /> Global Settings
+                    <Settings className="text-slate-400" /> Catalog Settings
                 </h1>
                 <button 
                     onClick={handleSave}
