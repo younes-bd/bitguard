@@ -1,0 +1,200 @@
+AI BUILDER PROMPT — Multi-store, tenant-aware backend for BitGuard
+
+Project context:
+
+BitGuard already has a backend with multiple apps (CRM, SOC, ERP, Store, Home).
+
+We want to refactor / unify the system to a single backend, one database, with service-layer architecture, supporting internal (BitGuard staff) and external (SaaS clients) consumption.
+
+The stores include:
+
+Local store (Algeria, cash-on-delivery)
+
+International store (Stripe / card payments)
+
+Requirements
+1️⃣ Backend architecture
+
+Use Django for backend
+
+Use service-layer architecture: all business logic lives in reusable service functions, not in views
+
+Views and APIs call service functions
+
+One shared database for all apps and stores
+
+Tenant-aware:
+
+Internal tenant = BitGuard staff
+
+External tenant = clients / SaaS customers
+
+Store type = “local” or “international”
+
+All data models have tenant_id and store_type fields
+
+2️⃣ Tenant model
+Tenant
+- id (UUID)
+- name
+- is_internal (boolean)  # true for BitGuard staff
+- status (active/suspended)
+- plan
+- created_at
+
+
+Users belong to a tenant
+
+Tenant isolation enforced at ORM / service level
+
+Internal staff can see all tenants; external tenants can only see their data
+
+3️⃣ User & permissions
+User
+- id
+- email
+- password
+- role
+- tenant_id
+
+
+Roles:
+
+super_admin → BitGuard internal only, full access
+
+tenant_admin → external client admin
+
+analyst / support / viewer → tenant-limited access
+
+Enforce tenant isolation in every service function: queries must filter by tenant_id
+
+4️⃣ Store logic
+Shared service functions for orders
+def create_order(user, product_id, store_type):
+    if store_type == "local":
+        # COD flow
+        return create_cod_order(user, product_id)
+    elif store_type == "international":
+        # Stripe / card flow
+        return create_stripe_checkout(user, product_id)
+
+
+Single service handles both stores
+
+Local store: COD, internal DB logic
+
+International store: Stripe SDK, session creation
+
+Product catalog
+
+Shared table with fields: available_in (["DZ"], ["US","EU"], ["ALL"])
+
+Queries filter by store_type or tenant
+
+Prices, taxes, availability are dynamic per store
+
+5️⃣ Frontend integration
+Local store
+
+Server-rendered templates
+
+Browser requests template → Django view calls service layer → renders HTML
+
+No API view or serializer needed
+
+International store
+
+Server-rendered templates for now
+
+Service layer handles Stripe checkout internally
+
+Upgrade to SPA + external API only if needed
+
+Home app
+
+Server-rendered templates
+
+Calls internal services for pricing, products, stats
+
+No external API calls from browser
+
+SaaS platform (CRM / SOC / ERP)
+
+SPA (React / Vue / Next)
+
+Calls API endpoints (DRF)
+
+API endpoints use same service layer (internal functions)
+
+Tenant isolation enforced in API layer
+
+6️⃣ Internal vs external consumption
+App / Page	Rendering	Consumption
+Home page	Template	Internal service calls
+Local store	Template	Internal service calls
+International store	Template	Internal service calls (Stripe SDK)
+SaaS dashboard	SPA	External API calls (DRF + serializers)
+
+Internal = Python functions, no HTTP / JSON
+
+External = HTTP API, JSON, auth tokens
+
+7️⃣ Security & isolation
+
+Every query enforces tenant_id
+
+store_type filters orders/products
+
+Internal tenant sees all tenants & all stores
+
+External tenant sees only their tenant & store
+
+Audit logging per tenant & store
+
+Rate limiting per tenant
+
+8️⃣ Deliverable for AI builder
+
+Refactor existing Django apps to service-layer architecture
+
+Create tenant-aware models and filters for every app
+
+Refactor store logic to single service function handling local + international
+
+Refactor views for templates to call services (internal consumption)
+
+Ensure SaaS apps (SPA) consume API externally, reusing same service functions
+
+Provide folder structure / project layout separating:
+
+core/services
+
+apps/home, store, crm, soc, erp
+
+api/views / serializers
+
+templates
+
+Key constraints:
+
+One backend
+
+One database
+
+One service layer per business logic
+
+Template apps call services internally
+
+SPA / API apps call same services externally
+
+If you give this prompt to your AI website builder, it should refactor your existing system into:
+
+One tenant-aware backend
+
+One service layer
+
+One DB
+
+Local and international store handled cleanly
+
+Internal and external consumption separated

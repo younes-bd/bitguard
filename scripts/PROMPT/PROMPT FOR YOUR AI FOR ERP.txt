@@ -1,0 +1,446 @@
+🛡️ BITGUARD — PRO ERP APP (FULL LOGIC + TEMPLATES PROMPT)
+ROLE
+
+You are a senior enterprise SaaS architect and cybersecurity systems engineer building a production-ready ERP app for BitGuard, a cybersecurity, managed IT, and technology services company.
+
+This is an existing Django platform with:
+
+global header & footer (MUST be reused)
+
+BITGUARD enterprise theme
+
+existing apps: accounts, dashboard, store, crm
+
+You must extend, not rewrite, the platform.
+
+OBJECTIVE
+
+Create OR ADJUST a professional ERP app named:
+
+erp
+
+
+This ERP manages internal operations, resources, and service delivery, and integrates tightly with CRM, Store, and Dashboard.
+
+This is internal-only enterprise software.
+
+ARCHITECTURE PRINCIPLES (NON-NEGOTIABLE)
+
+One ERP app
+
+Strict RBAC on every object
+
+Organization/tenant isolation
+
+No billing logic (read-only financial insights only)
+
+Audit logs for all critical actions
+
+Security-first design
+
+ERP CORE MODULES (LOGIC)
+1️⃣ Operations Overview
+
+Real-time operational KPIs
+
+SLA risk detection
+
+Resource utilization
+
+Compliance health
+
+2️⃣ Projects & Service Delivery
+
+Client-linked projects (CRM integration)
+
+Services (SOC, audits, monitoring, pentests)
+
+Milestones & timelines
+
+SLA tracking
+
+Incident/ticket linkage
+
+3️⃣ Tasks & Workforce
+
+Task assignment
+
+Engineer workload tracking
+
+Skills & availability
+
+Time logging
+
+On-call rotations
+
+Escalation logic
+
+4️⃣ Asset & Inventory
+
+Internal assets
+
+Client-deployed assets
+
+Hardware & licenses
+
+Lifecycle management
+
+Security posture tracking
+
+Store product references
+
+5️⃣ Vendor & Provider Management
+
+SaaS, cloud, hardware vendors
+
+Contracts & renewals
+
+Risk scoring
+
+SLA mapping
+
+6️⃣ Financial Visibility (Read-Only)
+
+Revenue summaries from Store
+
+Subscription insights
+
+Cost vs delivery
+
+Client profitability
+
+7️⃣ Compliance & Risk
+
+Internal compliance
+
+Client requirements
+
+Evidence tracking
+
+Risk register
+
+Audit readiness
+
+8️⃣ Reporting & Analytics
+
+Operations performance
+
+SLA compliance
+
+Utilization trends
+
+Security operations correlation
+
+SECURITY & ACCESS CONTROL
+
+Roles:
+
+Admin
+
+Operations Manager
+
+Engineer
+
+Finance (read-only)
+
+Per-object permission checks
+
+Audit logging
+
+Encrypted sensitive fields
+
+Rate limiting
+
+No cross-tenant access
+
+INTEGRATIONS (MANDATORY)
+With accounts
+
+RBAC enforcement
+
+Organization isolation
+
+With crm
+
+Clients
+
+Tickets
+
+SLAs
+
+Contracts
+
+With store
+
+Subscriptions
+
+Revenue data
+
+Product references
+
+Renewal visibility
+
+With dashboard
+
+Incident correlation
+
+Alert workload
+
+Platform usage data
+
+TEMPLATE STRUCTURE (REQUIRED)
+
+All templates must be generated under:
+
+templates/erp/
+
+
+They must:
+
+extend the global site base
+
+reuse header & footer
+
+include ERP sidebar & topbar LIKE IN PLATFORM 
+
+be responsive and enterprise-grade
+
+REQUIRED TEMPLATES (FULL LIST)
+Core Layout
+
+erp/base.html
+
+erp/partials/sidebar.html
+
+erp/partials/topbar.html
+
+Overview
+
+erp/overview.html
+
+Projects
+
+erp/projects/project_list.html
+
+erp/projects/project_detail.html
+
+erp/projects/project_create.html
+
+Tasks & Workforce
+
+erp/tasks/task_list.html
+
+erp/tasks/task_detail.html
+
+erp/tasks/task_create.html
+
+erp/workforce/engineer_list.html
+
+erp/workforce/engineer_detail.html
+
+Assets
+
+erp/assets/asset_list.html
+
+erp/assets/asset_detail.html
+
+erp/assets/asset_create.html
+
+Vendors
+
+erp/vendors/vendor_list.html
+
+erp/vendors/vendor_detail.html
+
+erp/vendors/vendor_create.html
+
+Financials (Read-Only)
+
+erp/financials/overview.html
+
+erp/financials/client_finance.html
+
+Compliance & Risk
+
+erp/compliance/compliance_list.html
+
+erp/compliance/compliance_detail.html
+
+erp/risk/risk_register.html
+
+Reports
+
+erp/reports/operations.html
+
+erp/reports/financials.html
+
+erp/reports/security_operations.html
+
+System & Security
+
+erp/audit_logs.html
+
+erp/403.html
+
+TEMPLATE BEHAVIOR REQUIREMENTS
+
+Each template must include:
+
+permission-aware rendering
+
+clean tables & dashboards
+
+filters & search where relevant
+
+SLA indicators
+
+actionable links
+
+no demo or mock data
+
+UI / UX REQUIREMENTS
+
+BITGUARD Enterprise look
+
+BITGUARD DASHBOARD theme
+
+Data-dense, professional
+
+No marketing visuals
+
+Internal system feel
+
+DO NOT
+
+Do NOT redesign header/footer
+
+Do NOT duplicate billing logic
+
+Do NOT expose ERP to clients
+
+Do NOT create a generic ERP
+
+Do NOT simplify modules
+
+FINAL RESULT
+
+Deliver a fully functional ERP app that feels like:
+
+The internal operations backbone of a real cybersecurity & managed IT company.
+
+This ERP must integrate seamlessly with BitGuard’s:
+
+CRM
+
+Store
+
+Security Dashboard
+
+This is the exact architecture used by real MSPs, SOC providers, and cyber firms.
+
+Final clarity
+
+✔️ CRM = clients & relationships
+✔️ ERP = operations & resources
+✔️ Store = money & subscriptions
+✔️ Dashboard = security platform
+
+This separation is exactly how serious tech companies scale.
+
+
+ERP App Implementation Plan
+Goal Description
+Upgrade the existing erp app into a professional Enterprise Resource Planning system. The current app is a basic stub; we will extend it to manage internal operations, resources, service delivery, and compliance, while integrating with crm and store.
+
+User Review Required
+IMPORTANT
+
+Refactoring Existing App:
+
+existing 
+
+Invoice
+ model -> DELETE or MIGRATE (Billing logic belongs to store. ERP sees Read-Only Financials).
+existing 
+
+Employee
+ model -> REFACTOR to EngineerProfile (Linked to auth.User).
+NOTE
+
+RBAC Implementation:
+
+Admin: Full access.
+Operations Manager: Full read/write on operations, projects, tasks.
+Engineer: Read/write on assigned tasks, read-only on projects/assets.
+Finance: Read-only on financial modules.
+Proposed Changes
+1. Refactor Existing apps/erp
+[MODIFY] 
+
+models.py
+Clean up:
+
+Remove or deprecate Invoice (Financial data comes from store).
+Refactor Employee.
+New Data Models:
+
+Operations Module:
+OperationKPI: Real-time operational metrics.
+Projects & Services:
+Service: Standardized offerings (e.g., "SOC Monitoring").
+InternalProject: The ERP-side project record, linked to crm.Client.
+Milestone: Key dates/deliverables.
+Workforce:
+EngineerProfile: Extends User. Skills, Availability.
+Task: Detailed work units, linked to Project.
+OnCallSchedule: Rostering.
+Assets:
+Asset: Hardware/Software tracking.
+AssetAssignment: Who has what.
+Vendors:
+Vendor: External suppliers.
+VendorContract: SLA/Renewal tracking.
+Compliance:
+RiskRegister: Track organizational risks.
+ComplianceItem: Track adherence to standards (ISO/SOC2).
+[MODIFY] 
+
+views.py
+Mixins: ERPRoleRequiredMixin.
+Dashboards: Completely rewrite overview view.
+New Views: Implement CRUD views for all new modules.
+[MODIFY] 
+
+urls.py
+Replace basic invoice URLs with full module routing (e.g., projects/, tasks/, assets/).
+2. Templates
+Create comprehensive template structure in templates/erp/.
+
+[NEW] 
+
+base.html
+Extends global base.html but adds ERP-specific sidebar/topbar.
+[NEW] [Partials]
+erp/partials/sidebar.html (ERP specific navigation).
+erp/partials/topbar.html.
+[NEW] [Module Templates]
+Overview: overview.html
+Projects: projects/project_list.html, projects/project_detail.html...
+Tasks: tasks/task_list.html, tasks/task_detail.html...
+Assets: assets/asset_list.html...
+Financials: financials/overview.html (Read-only views of Store data).
+Compliance: compliance/risk_register.html.
+3. Settings & Configuration
+[VERIFY] 
+
+settings.py
+Ensure apps.erp is listed (It is).
+Verification Plan
+Automated Steps
+makemigrations and migrate (handle Invoice deletion carefully if data existed, but assuming dev/stub data).
+Manual Features
+Project Linkage: Create a Project in ERP, link to CRM Client.
+RBAC: Login as Engineer -> Verify inability to access Financials.
+Financial View: Verify ERP shows Store Subscriptions without "Edit" buttons.
+
+

@@ -1,0 +1,725 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  BitGuard Enterprise Platform — Complete Company Management Tutorial       ║
+# ║  For IT & Cybersecurity Managed Service Providers (MSPs)                   ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+#
+# This guide teaches you how to run your IT/cybersecurity company end-to-end
+# using the BitGuard admin dashboard. No prior experience required.
+#
+# Table of Contents:
+#   1. Platform Architecture Overview
+#   2. First-Time Setup (Day 1 Checklist)
+#   3. Managing Clients (CRM)
+#   4. Creating Services & Products (Service Catalog)
+#   5. Creating & Managing Contracts + SLAs
+#   6. Managing Projects
+#   7. Running Your Service Desk (Support Tickets)
+#   8. Security Operations Center (SOC)
+#   9. Managing Your Team (HR)
+#  10. Procurement & Inventory (SCM)
+#  11. Finance, Invoicing, & Billing
+#  12. IT Asset Management (ITAM)
+#  13. Document Management
+#  14. Approval Workflows
+#  15. Change Management (ITSM)
+#  16. Marketing & Lead Generation
+#  17. Analytics & Reports
+#  18. Daily Operations Checklist
+#  19. Weekly Operations Checklist
+#  20. Company Workflow Diagram
+
+================================================================================
+  SECTION 1: PLATFORM ARCHITECTURE OVERVIEW
+================================================================================
+
+Your BitGuard platform is a UNIFIED COMPANY MANAGEMENT SYSTEM. Everything you
+need to run your IT/cybersecurity company is in one place.
+
+Admin Dashboard URL:  http://localhost:3000/admin
+Backend API URL:      http://localhost:8000/api/
+
+WHAT EACH MODULE DOES:
+──────────────────────
+
+┌─────────────────────────┬─────────────────────────────────────────────────┐
+│ Module                  │ What It Does                                    │
+├─────────────────────────┼─────────────────────────────────────────────────┤
+│ Command Center          │ Your HQ — see all KPIs, alerts, and module     │
+│ (/admin)                │ status on one screen                            │
+│                         │                                                 │
+│ Sales & CRM             │ Track leads, clients, deals, and the entire    │
+│ (/admin/crm)            │ sales pipeline from first contact to close      │
+│                         │                                                 │
+│ Service Catalog         │ Your store — list cybersecurity services,      │
+│ (/admin/store)          │ software licenses, and product packages         │
+│                         │                                                 │
+│ Service Desk            │ Handle client support tickets, escalations,    │
+│ (/admin/support)        │ and knowledge base articles                     │
+│                         │                                                 │
+│ SOC (Security)          │ Security Operations Center — manage alerts,    │
+│ (/admin/security)       │ incidents, endpoints, and threat intelligence   │
+│                         │                                                 │
+│ Contracts & SLAs        │ Create service agreements with response time   │
+│ (/admin/contracts)      │ guarantees, track compliance, detect breaches   │
+│                         │                                                 │
+│ Project Management      │ Plan and track client projects with tasks,     │
+│ (/admin/projects)       │ milestones, and kanban boards                   │
+│                         │                                                 │
+│ Finance & Billing       │ Invoices, payments, expenses, and recurring    │
+│ (/admin/erp)            │ SaaS subscription billing via Stripe            │
+│                         │                                                 │
+│ People & HR             │ Employee profiles, leave management, payroll,  │
+│ (/admin/hrm)            │ certifications (CISSP, CEH, etc.), time tracking│
+│                         │                                                 │
+│ Procurement             │ Manage hardware/software vendors, purchase     │
+│ (/admin/scm)            │ orders, and inventory tracking                  │
+│                         │                                                 │
+│ IT Asset Management     │ Track all managed endpoints, servers, laptops, │
+│ (/admin/itam)           │ and software licenses across client sites       │
+│                         │                                                 │
+│ Identity & Access       │ Manage admin users, roles, permissions, and    │
+│ (/admin/iam)            │ tenant isolation                                │
+│                         │                                                 │
+│ Document Vault          │ Store and version company documents, policies, │
+│ (/admin/documents)      │ contracts, and technical manuals                 │
+│                         │                                                 │
+│ Approval Center         │ Route purchase requests, leave approvals, and  │
+│ (/admin/approvals)      │ expense sign-offs through chain of command      │
+│                         │                                                 │
+│ Change Management       │ ITIL change requests for infrastructure mods   │
+│ (/admin/itsm)           │ with risk assessment and CAB approvals          │
+│                         │                                                 │
+│ Marketing               │ Run campaigns, track leads from your website,  │
+│ (/admin/marketing)      │ and measure marketing ROI                       │
+│                         │                                                 │
+│ Analytics & Reports     │ Revenue reports, CRM analytics, support SLA    │
+│ (/admin/reports)        │ reports, security dashboards, and data export   │
+│                         │                                                 │
+│ Website Builder         │ Manage your public-facing company website,     │
+│ (/admin/cms)            │ landing pages, blog, and contact forms          │
+└─────────────────────────┴─────────────────────────────────────────────────┘
+
+
+================================================================================
+  SECTION 2: FIRST-TIME SETUP (DAY 1 CHECKLIST)
+================================================================================
+
+Do these steps IN ORDER on your first day:
+
+STEP 1: Create Your Admin Account
+──────────────────────────────────
+  Backend terminal:
+    python manage.py createsuperuser
+  
+  Use your real company email (e.g., admin@infotech.com)
+  Log in at: http://localhost:3000/login
+
+STEP 2: Set Up Your Company Identity  
+──────────────────────────────────────
+  Go to: /admin/system → Platform Settings
+  
+  - Company Name:        "2-InfoTech" (or your company name)
+  - Primary Domain:      "infotech.com"
+  - Industry:            "IT Services & Cybersecurity"
+  - Default Currency:    USD
+  - Timezone:            Your timezone (e.g., Europe/Paris)
+
+STEP 3: Create Departments
+──────────────────────────
+  Go to: /admin/hrm → Employees → (use the API or Django Admin)
+  
+  Create these departments:
+    1. Executive Management
+    2. Sales & Business Development  
+    3. Security Operations (SOC)
+    4. Technical Services (Implementation)
+    5. Customer Support (Help Desk)
+    6. Finance & Administration
+
+STEP 4: Add Your Team Members
+──────────────────────────────
+  Go to: /admin/hrm → Employees
+  
+  For each employee, fill in:
+    - Full Name, Email, Job Title
+    - Department (from Step 3)
+    - Hire Date, Salary
+    - Skills (e.g., "SIEM", "Firewall", "Penetration Testing")
+
+STEP 5: Create Your Service Offerings  
+──────────────────────────────────────
+  Go to: /admin/store → Service Catalog
+  
+  Recommended services for an IT/cybersecurity company:
+  
+  ┌──────────────────────────────────┬──────────┬─────────────────────────────┐
+  │ Service Name                     │ Price/mo │ Description                 │
+  ├──────────────────────────────────┼──────────┼─────────────────────────────┤
+  │ Managed SOC Monitoring           │ $2,500   │ 24/7 SIEM monitoring &      │
+  │                                  │          │ incident response           │
+  │ Endpoint Detection & Response    │ $15/seat │ EDR agent deployment &      │
+  │                                  │          │ managed detection           │
+  │ Vulnerability Assessment         │ $3,000   │ Quarterly security scans    │
+  │                                  │          │ and remediation reports      │
+  │ Penetration Testing              │ $8,000   │ Annual external/internal    │
+  │                                  │          │ penetration test             │
+  │ Managed Firewall                 │ $500/mo  │ Firewall configuration,     │
+  │                                  │          │ monitoring, and updates      │
+  │ Security Awareness Training      │ $5/user  │ Monthly phishing simulations│
+  │                                  │          │ and training modules         │
+  │ Incident Response Retainer       │ $5,000   │ On-call IR team, 4-hour SLA │
+  │ Compliance Consulting (SOC2/ISO) │ $10,000  │ Gap analysis and audit prep │
+  │ IT Help Desk (Managed)           │ $1,200   │ L1/L2 support for SMBs     │
+  │ Backup & Disaster Recovery       │ $800/mo  │ Cloud backup + DR planning  │
+  └──────────────────────────────────┴──────────┴─────────────────────────────┘
+
+STEP 6: Create SLA Tiers
+─────────────────────────
+  Go to: /admin/contracts → SLA Tiers
+  
+  Create these tiers:
+    - Platinum: 15-min response, 1-hour resolution, 99.99% uptime
+    - Gold:     1-hour response, 4-hour resolution, 99.9% uptime
+    - Silver:   4-hour response, 8-hour resolution, 99.5% uptime
+    - Bronze:   8-hour response, 24-hour resolution, 99.0% uptime
+
+STEP 7: Create User Roles
+──────────────────────────
+  Go to: /admin/iam → Roles & Permissions
+  
+  Recommended roles:
+    - Administrator (full access)
+    - SOC Analyst (security module access)
+    - Sales Manager (CRM + contracts)
+    - Help Desk Agent (support tickets only)
+    - Finance Manager (ERP + billing)
+    - Project Manager (projects + time tracking)
+
+
+================================================================================
+  SECTION 3: MANAGING CLIENTS (CRM)
+================================================================================
+
+YOUR CLIENT LIFECYCLE:
+  Website Visitor → Lead → Qualified Lead → Deal → Won → Onboarded Client
+
+HOW TO ADD A NEW LEAD:
+─────────────────────
+  1. Go to: /admin/crm → Leads
+  2. Click "Add Lead"
+  3. Fill in:
+     - Company name (e.g., "Acme Corp")
+     - Contact person name & email
+     - Source: "Website", "Referral", "Cold Outreach", etc.
+     - Status: "New"
+     - Estimated value (e.g., $5,000/month)
+
+HOW TO CREATE A DEAL:
+────────────────────
+  1. Go to: /admin/crm → Deals
+  2. Click "Add Deal"
+  3. Fill in:
+     - Deal name: "Acme Corp - Managed SOC"
+     - Client: Select the client
+     - Value: $30,000/year
+     - Stage: "Qualification" → "Proposal" → "Negotiation" → "Won"
+  4. Move the deal through stages as it progresses
+
+HOW TO ONBOARD A NEW CLIENT:
+────────────────────────────
+  1. Quick Action: Click "Onboard Client" on the Command Center
+  2. Or go to: /admin/crm → Onboard Client
+  3. Fill in company details, primary contact, and service requirements
+  4. This automatically:
+     - Creates the client record
+     - Opens a template for a service contract
+     - Triggers a project for onboarding tasks
+
+
+================================================================================
+  SECTION 4: CREATING SERVICES & PRODUCTS (SERVICE CATALOG)
+================================================================================
+
+Your store at /admin/store is where you list everything you sell.
+
+TYPES OF PRODUCTS YOU SHOULD CREATE:
+─────────────────────────────────────
+
+1. RECURRING SERVICES (Subscriptions):
+   - Managed SOC Monitoring
+   - Endpoint Detection & Response
+   - IT Help Desk Support
+   
+   → Set these as "subscription" products with monthly/annual pricing
+
+2. ONE-TIME SERVICES (Projects):
+   - Penetration Testing
+   - Compliance Audit (SOC2, ISO 27001)
+   - Network Architecture Review
+   
+   → Set these as "one-time" products
+
+3. DIGITAL PRODUCTS (Licenses):
+   - Security awareness training licenses
+   - Custom security tools/scripts
+   
+   → Set these with license keys (auto-generated)
+
+4. PHYSICAL PRODUCTS (Hardware):
+   - Firewall appliances
+   - Security cameras
+   - Network switches
+   
+   → Set these with inventory tracking (/admin/scm)
+
+HOW TO CREATE A SERVICE:
+────────────────────────
+  1. Go to: /admin/store → Products
+  2. Click "Add Product"
+  3. Fill in:
+     - Name: "Managed SOC - 24/7 Monitoring"
+     - Category: "Security Services"
+     - Price: $2,500/month
+     - Description: Detailed scope of what's included
+     - Features: List specific deliverables
+  4. Save
+
+HOW TO SET UP CATEGORIES:
+─────────────────────────
+  Go to: /admin/store → Categories
+  
+  Recommended categories:
+    - Managed Security Services
+    - Compliance & Audit
+    - IT Infrastructure
+    - Training & Awareness
+    - Software Licenses
+    - Hardware
+
+
+================================================================================
+  SECTION 5: CREATING & MANAGING CONTRACTS + SLAs
+================================================================================
+
+Every client should have a SERVICE CONTRACT with an SLA tier.
+
+HOW TO CREATE A CONTRACT:
+─────────────────────────
+  1. Go to: /admin/contracts → Service Contracts
+  2. Click "Add Contract"
+  3. Fill in:
+     - Client: Select (e.g., "Acme Corp")
+     - Contract type: "Managed Services Agreement"
+     - Start date / End date
+     - SLA Tier: Select (Platinum/Gold/Silver/Bronze)
+     - Monthly Value: $2,500
+     - Auto-renew: Yes/No
+  4. Save
+
+HOW TO CREATE A QUOTE:
+──────────────────────
+  1. Go to: /admin/contracts → Quotes
+  2. Click "Create Quote"
+  3. Add line items (services + quantities)
+  4. Review total
+  5. Click "Send to Client"
+  6. When client accepts → Click "Accept Quote"
+  7. This automatically creates a contract + invoice
+
+MONITORING SLA COMPLIANCE:
+──────────────────────────
+  - Go to: /admin/contracts → SLA Breaches
+  - The system automatically detects when:
+    • Response time exceeds the SLA threshold
+    • Resolution time exceeds the SLA threshold
+    • Uptime drops below the guaranteed percentage
+  - Red alerts appear on your Command Center dashboard
+
+
+================================================================================
+  SECTION 6: MANAGING PROJECTS
+================================================================================
+
+Use projects for:
+  - Client onboarding implementations
+  - Penetration testing engagements
+  - Compliance audit projects
+  - Network migration projects
+  - Internal R&D
+
+HOW TO CREATE A PROJECT:
+────────────────────────
+  1. Go to: /admin/projects
+  2. Click "New Project"
+  3. Fill in:
+     - Project Name: "Acme Corp - SOC Onboarding"
+     - Client: Link to client (if external)
+     - Start Date / Deadline
+     - Budget: $15,000
+     - Team Members: Assign from your employees
+  4. Save
+
+HOW TO MANAGE TASKS:
+────────────────────
+  1. Go to: /admin/projects → Select a project
+  2. Use the Kanban board (/admin/projects/kanban)
+  3. Create tasks:
+     - "Deploy SIEM agents on all endpoints"
+     - "Configure firewall rules"
+     - "Conduct baseline security audit"
+     - "Train client staff on security protocols"
+  4. Assign to team members
+  5. Track progress: To Do → In Progress → Done
+
+HOW TO LOG TIME:
+────────────────
+  1. Go to: /admin/hrm → Time Tracking
+  2. Click "Log Time"
+  3. Select project, describe work, enter hours
+  4. Mark as billable (for client work) or non-billable (internal)
+
+
+================================================================================
+  SECTION 7: RUNNING YOUR SERVICE DESK (SUPPORT TICKETS)
+================================================================================
+
+This is your client-facing help desk.
+
+HOW TICKETS WORK:
+─────────────────
+  Client submits a ticket → Agent assigned → Work begins → Resolution → Closed
+
+CREATING A TICKET:
+──────────────────
+  1. Go to: /admin/support → Tickets
+  2. Click "New Ticket" (or use Command Center quick action)
+  3. Fill in:
+     - Subject: "Firewall blocking legitimate traffic"
+     - Client: Select
+     - Priority: Low / Medium / High / Critical
+     - Category: "Network", "Security", "Access", etc.
+     - Description: Detailed issue description
+  4. Assign to a team member
+
+HANDLING ESCALATIONS:
+─────────────────────
+  - Go to: /admin/support → Escalations
+  - Tickets are automatically escalated when:
+    • They exceed SLA response time
+    • They're marked as Critical
+    • Client requests escalation
+  - YOU, as the manager, should review escalations daily
+
+KNOWLEDGE BASE:
+───────────────
+  - Go to: /admin/support → Knowledge Base
+  - Create articles for common issues:
+    • "How to reset MFA tokens"
+    • "VPN connection troubleshooting"
+    • "Password policy requirements"
+  - These help agents resolve tickets faster
+
+
+================================================================================
+  SECTION 8: SECURITY OPERATIONS CENTER (SOC)
+================================================================================
+
+Your SOC module is the heart of your cybersecurity business.
+
+KEY SECTIONS:
+─────────────
+  /admin/security/alerts      → Security alerts from monitoring tools
+  /admin/security/incidents   → Active security incidents under investigation
+  /admin/security/assets      → Managed endpoints (client computers/servers)
+  /admin/security/network     → Network event monitoring
+  /admin/security/email       → Email security (phishing, spam)
+  /admin/security/intel       → Threat intelligence feeds
+  /admin/security/gaps        → Security gap analysis results
+
+DAILY SOC WORKFLOW:
+───────────────────
+  1. Check Command Center for new alerts count
+  2. Go to /admin/security/alerts
+  3. Triage each alert:
+     - False Positive → Close with note
+     - True Positive → Escalate to Incident
+  4. For Incidents:
+     - Assign an analyst
+     - Document findings
+     - Contain the threat
+     - Remediate
+     - Write incident report
+  5. Update client via support ticket
+
+MANAGING CLIENT ENDPOINTS:
+──────────────────────────
+  Go to: /admin/security/assets
+  - Add every managed device (servers, workstations, firewalls)
+  - Track agent status (online/offline)
+  - Monitor patch levels
+  - Flag vulnerable endpoints
+
+
+================================================================================
+  SECTION 9: MANAGING YOUR TEAM (HR)
+================================================================================
+
+  /admin/hrm/employees       → All staff profiles
+  /admin/hrm/leaves           → Leave requests (approve/reject)
+  /admin/hrm/time             → Time tracking entries
+  /admin/hrm/certifications   → Professional certifications
+  /admin/hrm/payroll          → Payroll overview
+
+CERTIFICATIONS TO TRACK:
+─────────────────────────
+  For a cybersecurity company, key certifications include:
+    - CISSP (Certified Information Systems Security Professional)
+    - CEH (Certified Ethical Hacker)
+    - CompTIA Security+
+    - OSCP (Offensive Security Certified Professional)
+    - AWS Solutions Architect
+    - Microsoft Azure Security Engineer
+    - CISA (Certified Information Systems Auditor)
+  
+  Track expiry dates — the system alerts you 90 days before expiry.
+
+
+================================================================================
+  SECTION 10: PROCUREMENT & INVENTORY (SCM)
+================================================================================
+
+  /admin/scm/vendors          → Hardware/software suppliers
+  /admin/scm/inventory        → Stock levels
+  /admin/scm/purchase-orders  → Purchase orders to vendors
+
+EXAMPLE VENDORS TO ADD:
+───────────────────────
+  - Fortinet (firewalls)
+  - Palo Alto Networks (NGFWs)
+  - CrowdStrike (EDR)
+  - Microsoft (365, Azure)
+  - Cisco (networking)
+  - Dell (servers, laptops)
+
+PURCHASE ORDER WORKFLOW:
+────────────────────────
+  1. Someone requests equipment
+  2. Create PO → Link to vendor
+  3. Submit for approval (/admin/approvals)
+  4. Send to vendor
+  5. Receive goods → Click "Receive" → Updates inventory
+  6. Inventory auto-deducts when sold through store
+
+
+================================================================================
+  SECTION 11: FINANCE, INVOICING, & BILLING
+================================================================================
+
+  /admin/erp/invoices   → All invoices
+  /admin/erp/payments   → Payment tracking
+  /admin/erp/expenses   → Company expenses
+
+HOW TO CREATE AN INVOICE:
+─────────────────────────
+  1. Go to: /admin/erp → Invoices
+  2. Click "Create Invoice"
+  3. Select client
+  4. Add line items (from your services)
+  5. Set payment terms (Net 30)
+  6. Send to client
+
+SUBSCRIPTION BILLING:
+─────────────────────
+  The /admin/billing module handles recurring SaaS-style billing through Stripe:
+  - Create billing plans (/admin/billing/plans)
+  - Clients subscribe via checkout
+  - Stripe handles recurring charges
+  - View MRR on /admin/reports/mrr
+
+
+================================================================================
+  SECTION 12-16: OTHER MODULES (Quick Reference)
+================================================================================
+
+IT ASSET MANAGEMENT (/admin/itam):
+  - Track all hardware/software assets you manage
+  - Fields: Asset name, type, serial number, assigned user, status
+  - Link to clients for client-site equipment
+
+DOCUMENT VAULT (/admin/documents):
+  - Upload contracts, policies, SOPs, technical manuals
+  - Version control (v1.0, v1.1, v2.0)
+  - Categories: Policy, Contract, Invoice, Manual
+
+APPROVAL CENTER (/admin/approvals):
+  - Expense approvals over $5,000
+  - Leave request approvals
+  - Purchase order sign-offs
+  - Contract sign-offs
+
+CHANGE MANAGEMENT (/admin/itsm):
+  - Submit change requests before modifying infrastructure
+  - Risk assessment: Low/Medium/High
+  - CAB (Change Advisory Board) approval for high-risk changes
+  - Rollback plan required
+
+MARKETING (/admin/marketing):
+  - Create campaigns to generate leads
+  - Track which campaigns produce the most clients
+  - Links to CRM for lead attribution
+
+
+================================================================================
+  SECTION 17: ANALYTICS & REPORTS
+================================================================================
+
+  /admin/reports/mrr        → Monthly Recurring Revenue dashboard
+  /admin/reports/revenue    → Revenue trends, top clients
+  /admin/reports/crm        → Sales pipeline, conversion rates
+  /admin/reports/support    → Ticket resolution times, SLA compliance
+  /admin/reports/security   → Alert volumes, incident trends
+  /admin/reports/export     → Export data to CSV/Excel
+
+
+================================================================================
+  SECTION 18: DAILY OPERATIONS CHECKLIST
+================================================================================
+
+Every morning, log in and do this (15 minutes):
+
+  □  1. Open Command Center (/admin)
+  □  2. Check "Needs Attention" strip — resolve red items first
+  □  3. Review security alerts (/admin/security/alerts)
+  □  4. Check open support tickets (/admin/support/tickets)
+  □  5. Review pending approvals (/admin/approvals)
+  □  6. Check SLA breach log (/admin/contracts/sla-breaches)
+  □  7. Review new leads in CRM (/admin/crm/leads)
+
+
+================================================================================
+  SECTION 19: WEEKLY OPERATIONS CHECKLIST
+================================================================================
+
+Every Friday, review:
+
+  □  1. Revenue Health (/admin/reports/mrr) — Is MRR growing?
+  □  2. Project Progress (/admin/projects) — Any overdue tasks?
+  □  3. Employee Time (/admin/hrm/time) — Are hours being logged?
+  □  4. Inventory (/admin/scm/inventory) — Any low-stock items?
+  □  5. Certification Expiry (/admin/hrm/certifications)
+  □  6. Invoices (/admin/erp/invoices) — Any overdue payments?
+  □  7. Security Posture (/admin/security) — Incident trends
+  □  8. Client Contracts (/admin/contracts) — Any expiring soon?
+
+
+================================================================================
+  SECTION 20: COMPANY WORKFLOW DIAGRAM
+================================================================================
+
+  This is how your IT/cybersecurity company operates end-to-end:
+
+  ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+  │  MARKETING   │────>│  LEAD (CRM)  │────>│  DEAL (CRM)  │
+  │  /marketing  │     │  /crm/leads  │     │  /crm/deals  │
+  └─────────────┘     └──────────────┘     └──────┬───────┘
+                                                   │
+                                            Deal Won ▼
+                                                   │
+                      ┌──────────────┐     ┌──────┴───────┐
+                      │    QUOTE     │◄────│   CONTRACT   │
+                      │  /contracts  │     │   + SLA TIER │
+                      │   /quotes    │     │  /contracts  │
+                      └──────┬───────┘     └──────┬───────┘
+                             │                     │
+                      Quote Accepted        Service Begins
+                             │                     │
+                      ┌──────▼───────┐     ┌──────▼───────┐
+                      │   INVOICE    │     │   PROJECT    │
+                      │  /erp/inv    │     │  /projects   │
+                      └──────┬───────┘     └──────┬───────┘
+                             │                     │
+                      Payment ▼              Tasks Assigned
+                             │                     │
+                      ┌──────▼───────┐     ┌──────▼───────┐
+                      │   PAYMENT    │     │  SOC / DESK  │
+                      │  /erp/pay    │     │  Day-to-day  │
+                      └──────┬───────┘     │  operations  │
+                             │             └──────┬───────┘
+                             │                    │
+                      ┌──────▼──────────────▼──────────────┐
+                      │        REPORTS & ANALYTICS          │
+                      │   /reports — Revenue, SLA, Security │
+                      └─────────────────────────────────────┘
+
+
+================================================================================
+  SIDEBAR NAVIGATION REFERENCE
+================================================================================
+
+  Your admin sidebar is organized by business domain:
+
+  COMMAND CENTER
+    ├── Dashboard          → /admin           (Command Center overview)
+    └── Notifications      → /admin/notifications
+
+  REVENUE & GROWTH
+    ├── Sales & CRM        → /admin/crm       (Clients, Deals, Pipeline)
+    ├── Service Catalog    → /admin/store     (Products, Orders, Services)
+    ├── Billing            → /admin/billing   (Plans, Subscriptions)
+    └── Marketing          → /admin/marketing (Campaigns)
+
+  SERVICE OPERATIONS
+    ├── Service Desk       → /admin/support   (Tickets, KB, Escalations)
+    ├── Contracts & SLAs   → /admin/contracts (Contracts, Quotes, SLAs)
+    ├── Project Management → /admin/projects  (Projects, Tasks, Kanban)
+    ├── Change Management  → /admin/itsm      (Change Requests, CAB)
+    ├── IT Asset Management→ /admin/itam      (Endpoints, Licenses)
+    └── Procurement        → /admin/scm       (Vendors, POs, Inventory)
+
+  PEOPLE & GOVERNANCE
+    ├── People & HR        → /admin/hrm       (Employees, Leave, Payroll)
+    ├── Approval Center    → /admin/approvals (Expense, PO, Leave)
+    └── Document Vault     → /admin/documents (Policies, Contracts)
+
+  FINANCE
+    └── Finance            → /admin/erp       (Invoices, Payments, Expenses)
+
+  SECURITY & COMPLIANCE
+    ├── Security (SOC)     → /admin/security  (Alerts, Incidents, Intel)
+    └── Identity & Access  → /admin/iam       (Users, Roles, Audit)
+
+  INTELLIGENCE
+    └── Analytics          → /admin/reports   (MRR, Revenue, SLA, Export)
+
+  PLATFORM
+    ├── System Admin       → /admin/system    (Settings, Logs)
+    ├── Website Builder    → /admin/cms       (Pages, Blog, SEO)
+    └── Client Portal      → /portal          (Client self-service)
+
+
+================================================================================
+  QUICK REFERENCE: KEYBOARD SHORTCUTS & TIPS
+================================================================================
+
+  • The search bar in the top navigation bar lets you search for any
+    module or page by name. Type 2+ characters to see results.
+
+  • The notification bell shows UNREAD notifications only.
+    Click to see recent alerts, ticket updates, and system events.
+
+  • The "Needs Attention" strip on the Command Center automatically
+    highlights critical items: security alerts, SLA breaches,
+    overdue invoices, and pending approvals.
+
+  • Quick Actions (right sidebar on Command Center):
+    - Onboard Client  → Starts the full client onboarding flow
+    - New Ticket       → Creates a support ticket immediately
+    - Create Quote     → Opens the quote builder
+    - Add User         → Adds a new platform user
+
+  • All data auto-refreshes every 60 seconds on the Command Center.
+    Click the refresh icon (↻) for an immediate update.
+
+================================================================================
+  END OF TUTORIAL
+================================================================================

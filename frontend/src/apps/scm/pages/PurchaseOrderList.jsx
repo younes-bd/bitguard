@@ -1,0 +1,212 @@
+import React, { useState, useEffect } from 'react';
+import { Plus, Package, CheckCircle, Clock, Truck } from 'lucide-react';
+import scmService from '../../../core/api/scmService';
+import GenericModal from '../../../core/components/shared/forms/GenericModal';
+import toast from 'react-hot-toast';
+
+const statusBadge = (status) => {
+    const map = {
+        draft: 'bg-slate-700 text-slate-300',
+        sent: 'bg-blue-500/10 text-blue-400',
+        confirmed: 'bg-indigo-500/10 text-indigo-400',
+        received: 'bg-emerald-500/10 text-emerald-400',
+        cancelled: 'bg-red-500/10 text-red-400',
+    };
+    return <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${map[status] ?? 'bg-slate-700 text-slate-400'}`}>{status}</span>;
+};
+
+const PurchaseOrderList = () => {
+    const [orders, setOrders] = useState([]);
+    const [vendors, setVendors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [formData, setFormData] = useState({ vendor_id: '', expected_delivery: '', notes: '', items: [] });
+
+    const addLineItem = () => {
+        setFormData({ ...formData, items: [...formData.items, { description: '', quantity: 1, unit_price: 0 }] });
+    };
+
+    const updateLineItem = (index, field, value) => {
+        const newItems = [...formData.items];
+        newItems[index][field] = value;
+        setFormData({ ...formData, items: newItems });
+    };
+
+    const removeLineItem = (index) => {
+        setFormData({ ...formData, items: formData.items.filter((_, i) => i !== index) });
+    };
+
+    const calculateTotal = () => {
+        return formData.items.reduce((sum, item) => sum + (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0), 0);
+    };
+
+    const fetchOrders = () => {
+        setLoading(true);
+        Promise.all([
+            scmService.getPurchaseOrders().catch(() => []),
+            scmService.getVendors ? scmService.getVendors().catch(() => []) : Promise.resolve([])
+        ]).then(([d, vData]) => {
+            setOrders(d?.results ?? d ?? []);
+            setVendors(vData?.results ?? vData ?? []);
+            setLoading(false);
+        }).catch(() => setLoading(false));
+    };
+
+    useEffect(() => { fetchOrders(); }, []);
+
+    const handleReceive = async (id) => {
+        await scmService.receivePurchaseOrder(id);
+        fetchOrders();
+    };
+
+    const handleCreate = async (e) => {
+        e.preventDefault();
+        setActionLoading(true);
+        try {
+            await scmService.createPurchaseOrder(formData);
+            toast.success('Purchase order created successfully');
+            setIsModalOpen(false);
+            setFormData({ vendor_id: '', expected_delivery: '', notes: '', items: [] });
+            fetchOrders();
+        } catch (error) {
+            toast.error('Failed to create purchase order');
+            console.error(error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    return (
+        <div className="p-6 lg:p-8 space-y-6 animate-in fade-in duration-400">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase">Purchase Orders</h1>
+                    <p className="text-slate-400 text-sm mt-0.5">{orders.length} orders</p>
+                </div>
+                <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                    <Plus size={16} /><span>New PO</span>
+                </button>
+            </div>
+            <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                <table className="w-full text-sm">
+                    <thead>
+                        <tr className="border-b border-slate-800">
+                            {['PO #', 'Vendor', 'Items', 'Total', 'Order Date', 'Status', 'Actions'].map(h => (
+                                <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr><td colSpan={7} className="py-16 text-center text-slate-500">Loading purchase orders...</td></tr>
+                        ) : orders.length === 0 ? (
+                            <tr><td colSpan={7} className="py-16 text-center text-slate-500">No purchase orders yet</td></tr>
+                        ) : orders.map(po => (
+                            <tr key={po.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors">
+                                <td className="px-5 py-4 text-slate-300 font-mono">#{po.id}</td>
+                                <td className="px-5 py-4 text-white font-medium">{po.vendor?.name ?? po.vendor ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-400">{po.lines?.length ?? po.item_count ?? '—'} items</td>
+                                <td className="px-5 py-4 text-emerald-400 font-semibold">${Number(po.total_amount ?? 0).toFixed(2)}</td>
+                                <td className="px-5 py-4 text-slate-400">{po.created_at?.split('T')[0] ?? '—'}</td>
+                                <td className="px-5 py-4">{statusBadge(po.status)}</td>
+                                <td className="px-5 py-4">
+                                    {(po.status === 'confirmed' || po.status === 'sent') && (
+                                        <button onClick={() => handleReceive(po.id)}
+                                            className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 font-semibold transition-colors">
+                                            <CheckCircle size={13} /> Mark Received
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+                    <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-white">Create Purchase Order</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
+                        </div>
+                        <form onSubmit={handleCreate} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">Vendor *</label>
+                                    <select required value={formData.vendor_id} onChange={e => setFormData({...formData, vendor_id: e.target.value})}
+                                        className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                        <option value="">Select Vendor</option>
+                                        {vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">Expected Delivery</label>
+                                    <input type="date" value={formData.expected_delivery} onChange={e => setFormData({...formData, expected_delivery: e.target.value})}
+                                        className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-orange-500" />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-slate-400 mb-1">Notes</label>
+                                <textarea rows={2} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})}
+                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-orange-500" />
+                            </div>
+
+                            <div className="pt-4 border-t border-slate-800">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-white font-semibold">Line Items</h3>
+                                    <button type="button" onClick={addLineItem} className="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded flex items-center gap-1 transition-colors">
+                                        <Plus size={14} /> Add Item
+                                    </button>
+                                </div>
+                                
+                                {formData.items.length === 0 ? (
+                                    <div className="text-center py-4 text-slate-500 text-sm border border-slate-800 border-dashed rounded-lg">No line items added yet</div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {formData.items.map((item, index) => (
+                                            <div key={index} className="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                                <div className="flex-1">
+                                                    <input type="text" placeholder="Description" required value={item.description} onChange={e => updateLineItem(index, 'description', e.target.value)}
+                                                        className="w-full bg-transparent border-none text-white text-sm focus:ring-0 p-0" />
+                                                </div>
+                                                <div className="w-24">
+                                                    <input type="number" placeholder="Qty" min="1" required value={item.quantity} onChange={e => updateLineItem(index, 'quantity', e.target.value)}
+                                                        className="w-full bg-transparent border-slate-700 rounded text-white text-sm p-1.5 focus:ring-orange-500" />
+                                                </div>
+                                                <div className="w-32">
+                                                    <input type="number" placeholder="Price ($)" min="0" step="0.01" required value={item.unit_price} onChange={e => updateLineItem(index, 'unit_price', e.target.value)}
+                                                        className="w-full bg-transparent border-slate-700 rounded text-white text-sm p-1.5 focus:ring-orange-500" />
+                                                </div>
+                                                <div className="w-24 text-right text-emerald-400 font-semibold text-sm">
+                                                    ${((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)).toFixed(2)}
+                                                </div>
+                                                <button type="button" onClick={() => removeLineItem(index)} className="text-slate-500 hover:text-red-400 transition-colors">✕</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex justify-end pt-4">
+                                <div className="text-xl text-white">
+                                    <span className="text-slate-400 text-sm font-medium mr-3 uppercase">Total Amount</span>
+                                    <span className="font-bold text-emerald-400">${calculateTotal().toFixed(2)}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-4 border-t border-slate-800">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-2.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-700 transition-colors">Cancel</button>
+                                <button type="submit" disabled={actionLoading} className="flex-1 py-2.5 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-500 transition-colors disabled:opacity-50">{actionLoading ? 'Saving...' : 'Create Purchase Order'}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default PurchaseOrderList;

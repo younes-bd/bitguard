@@ -1,0 +1,679 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# BITGUARD ADMIN DASHBOARD — COMPLETE AUDIT REPORT & AI BUILDER PROMPT
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# Generated: 2026-04-09
+# Scope: Every module, every page, every button, every CRUD operation
+# Purpose: Give this ENTIRE file to your AI website builder as a prompt
+#
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+# ┌──────────────────────────────────────────────────────────────────────────┐
+# │                     CRITICAL CONTEXT FOR AI BUILDER                      │
+# └──────────────────────────────────────────────────────────────────────────┘
+
+PLATFORM ARCHITECTURE:
+- Backend: Django REST Framework at /backend/
+- Frontend: React + Vite at /frontend/
+- API: Axios client at frontend/src/core/api/client.js
+- Base URL: http://127.0.0.1:8000/api/
+- API Envelope: { status: "success", data: {...} } — unwrap as response.data.data
+- EXCEPTION: SimpleJWT token endpoints return FLAT { access, refresh } — NOT data.data
+- All routes are under /admin/* prefix
+- Module layouts use <ModuleLayout> with sidebar from productMenu in menu.js
+- Styling: Tailwind CSS dark theme (slate-900 bg, slate-800 borders, white text)
+
+FILE STRUCTURE PATTERN:
+  frontend/src/apps/{module}/pages/         — Page components
+  frontend/src/apps/{module}/routes/        — Route definitions
+  frontend/src/core/api/{module}Service.js  — API service layer
+  backend/apps/{module}/                    — Django app
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  MODULE-BY-MODULE AUDIT — BUGS FOUND + FIXES REQUIRED
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 1: CRM (Sales & CRM)                     ║
+# ║  Route: /admin/crm                                ║
+# ║  Service: frontend/src/core/api/crmService.js     ║
+# ╚═══════════════════════════════════════════════════╝
+
+## CRM — OVERVIEW DASHBOARD (/admin/crm)
+STATUS: ✅ WORKING — Loads KPIs from API, shows client count, deals, leads
+
+## CRM — CLIENTS (/admin/crm/clients)
+STATUS: ⚠️ PARTIALLY BROKEN
+FILE: frontend/src/apps/crm/pages/ClientList.jsx
+
+BUG 1: BROKEN NAVIGATION LINK (LINE 70)
+  CURRENT CODE: navigate(`/crm/clients/${client.id}`)
+  CORRECT CODE: navigate(`/admin/crm/clients/${client.id}`)
+  IMPACT: Clicking any client card navigates to a 404 page
+
+BUG 2: MISSING DELETE BUTTON
+  The client list has no delete functionality. No way to remove a client.
+  FIX: Add a delete button on each client card that calls crmService.deleteClient(id)
+
+BUG 3: MISSING EDIT BUTTON
+  No inline edit. Users can only view client cards, not update them.
+  FIX: Add an edit button that opens a modal or navigates to an edit page
+
+BUG 4: HARDCODED KPI VALUES (LINES 57, 61)
+  "Active Contracts" shows "--" (hardcoded)
+  "Pending Tickets" shows "--" (hardcoded)
+  FIX: Compute from data or fetch from a stats endpoint
+
+## CRM — LEADS (/admin/crm/leads)
+STATUS: ⚠️ DEAD BUTTON
+FILE: frontend/src/apps/crm/pages/LeadList.jsx
+
+BUG 5: "NEW LEAD" BUTTON IS DEAD (LINE 59)
+  CURRENT: <button className="..."> — No onClick handler at all
+  FIX: Add onClick that opens a modal/form with fields: first_name, last_name,
+       company, email, phone, source, status. On submit call crmService.createLead(data)
+       then reload the list.
+
+BUG 6: NO DELETE FUNCTIONALITY
+  Leads cannot be deleted. No trash icon or delete handler.
+  FIX: Add a delete button per row calling crmService.deleteLead(id)
+
+BUG 7: NO EDIT FUNCTIONALITY
+  Leads cannot be edited inline. No ability to change status from the list.
+  FIX: Add click-to-edit or modal for updating lead status/details
+
+BUG 8: NO STATUS CHANGE BUTTONS
+  Cannot mark lead as "qualified" or "converted" from the list view.
+  FIX: Add a dropdown or quick-action buttons per row to update lead status
+
+## CRM — CONTACTS (/admin/crm/contacts)
+STATUS: ⚠️ DEAD BUTTON
+FILE: frontend/src/apps/crm/pages/ContactList.jsx
+
+BUG 9: "ADD CONTACT" BUTTON IS DEAD (LINE 44)
+  CURRENT: <button className="..."> — No onClick handler
+  FIX: Add onClick opening a modal with: first_name, last_name, email,
+       phone, client (dropdown), role. Call crmService.createContact(data)
+
+BUG 10: NO DELETE OR EDIT ON CONTACTS
+  FIX: Add edit/delete actions per row
+
+## CRM — DEALS (/admin/crm/deals)
+STATUS: ✅ WORKING — Full CRUD (create, edit, delete) with modals and pipeline view
+
+## CRM — ACTIVITIES (/admin/crm/activities)
+STATUS: ⚠️ READ-ONLY
+FILE: frontend/src/apps/crm/pages/InteractionList.jsx
+
+BUG 11: NO "LOG INTERACTION" BUTTON
+  Page only reads data. No way to create a new interaction/activity.
+  FIX: Add a "Log Activity" button with form: type (call/email/meeting),
+       summary, description, client (dropdown), date. Call crmService.createInteraction()
+
+## CRM — REPORTS (/admin/crm/reports)
+STATUS: ⚠️ HARDCODED DATA
+FILE: frontend/src/apps/crm/pages/CrmReportPage.jsx
+
+BUG 12: HARDCODED KPI VALUES (LINES 43, 48)
+  "Lead Conversion Rate" is hardcoded as "28%"
+  "Avg Deal Size" is hardcoded as "$14,500"
+  FIX: Compute from API data: (converted leads / total leads * 100) for conversion,
+       and (sum of deal values / deal count) for avg deal size
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 2: CONTRACTS & SLAs                       ║
+# ║  Route: /admin/contracts                          ║
+# ║  Service: frontend/src/core/api/contractsService.js║
+# ╚═══════════════════════════════════════════════════╝
+
+## CONTRACTS — LIST (/admin/contracts, /admin/contracts/list)
+STATUS: ⚠️ DEAD BUTTON
+FILE: frontend/src/apps/crm/pages/ContractList.jsx
+
+BUG 13: "NEW CONTRACT" BUTTON IS DEAD (LINE 34)
+  No onClick handler. Cannot create contracts.
+  FIX: Add ContractModal or navigate to create page. Fields: client (dropdown),
+       title, sla_tier, start_date, end_date, value, status. Call contractsService.createContract()
+
+BUG 14: NO EDIT/DELETE ON CONTRACTS
+  FIX: Add edit (opens modal) and delete (confirmation dialog) per row
+
+## CONTRACTS — SLA TIERS (/admin/contracts/sla-tiers)
+STATUS: ❌ ALL MOCK DATA
+FILE: frontend/src/apps/crm/pages/SlaTiersPage.jsx
+
+BUG 15: ENTIRE PAGE IS HARDCODED MOCK DATA (LINE 4)
+  Uses MOCK_SLA_TIERS constant. No API call. Not connected to backend.
+  FIX: Replace with API calls:
+       - Load: contractsService.getSlaTiers() on mount
+       - Create: "Add SLA Tier" button → modal → contractsService.createSlaTier()
+       - Edit: Click tier → edit modal → contractsService.updateSlaTier()
+       - Delete: Delete button → contractsService.deleteSlaTier()
+
+## CONTRACTS — QUOTES (/admin/contracts/quotes)
+STATUS: ⚠️ BROKEN LINK
+FILE: frontend/src/apps/crm/pages/QuoteList.jsx
+
+BUG 16: BROKEN NAVIGATION LINK (LINE 117)
+  CURRENT: navigate(`/crm/quotes/${quote.id}`)
+  CORRECT: navigate(`/admin/contracts/quotes/${quote.id}`)
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 3: SERVICE CATALOG (Store)                ║
+# ║  Route: /admin/store                              ║
+# ║  Service: frontend/src/core/api/storeService.js   ║
+# ╚═══════════════════════════════════════════════════╝
+
+## STORE — PRODUCTS (/admin/store/products)
+STATUS: ✅ WORKING — Full CRUD with modal (create, edit, delete)
+
+## STORE — SERVICE CATALOG (/admin/store/services)
+STATUS: ⚠️ FALLBACK MOCK DATA
+FILE: frontend/src/apps/store/pages/ServiceCatalog.jsx
+
+BUG 17: FALLS BACK TO MOCK_SERVICES ON API ERROR (LINE 31)
+  FIX: Remove MOCK_SERVICES fallback. Show empty state on error.
+
+## STORE — FILTER BUTTON IS DEAD (/admin/store/products)
+FILE: frontend/src/apps/store/pages/StoreProducts.jsx
+
+BUG 18: "FILTERS" BUTTON IS DEAD (LINE 101)
+  <button> with no onClick handler. Does nothing when clicked.
+  FIX: Add filter dropdown/panel for: product_type, is_active, price range
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 4: FINANCE & BILLING (ERP)               ║
+# ║  Route: /admin/erp                                ║
+# ║  Service: frontend/src/core/api/erpService.js     ║
+# ╚═══════════════════════════════════════════════════╝
+
+## ERP — INVOICES (/admin/erp/invoices)
+STATUS: ⚠️ BROKEN LINK + DEAD BUTTON
+FILE: frontend/src/apps/erp/pages/InvoiceList.jsx
+
+BUG 19: BROKEN NAVIGATION LINK (LINE 145)
+  CURRENT: navigate(`/erp/invoices/${inv.id}`)
+  CORRECT: navigate(`/admin/erp/invoices/${inv.id}`)
+  IMPACT: "View" button on each invoice navigates to 404
+
+BUG 20: DOWNLOAD BUTTON IS DEAD (LINE 141-143)
+  The download icon button has no onClick handler.
+  FIX: Implement PDF download: erpService.downloadInvoice(inv.id) or
+       window.open(`${API_BASE}/erp/invoices/${inv.id}/pdf/`)
+
+## ERP — EXPENSES (/admin/erp/expenses)
+STATUS: ✅ WORKING — Full CRUD with create modal and status filtering
+
+## ERP — PAYMENTS (/admin/erp/payments)
+STATUS: Need to verify — check if route exists
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 5: SERVICE DESK (Support)                 ║
+# ║  Route: /admin/support                            ║
+# ║  Service: Uses raw client.get('support/...')      ║
+# ╚═══════════════════════════════════════════════════╝
+
+## SUPPORT — TICKETS (/admin/support/tickets)
+STATUS: ⚠️ DEAD BUTTON
+FILE: frontend/src/apps/support/pages/TicketList.jsx
+
+BUG 21: "NEW TICKET" BUTTON IS DEAD (LINE 49)
+  No onClick handler. Cannot create tickets from the ticket list page.
+  FIX: Add onClick that navigates to /admin/support/tickets/create
+
+## SUPPORT — ESCALATIONS (/admin/support/escalations)
+STATUS: ⚠️ FALLBACK MOCK + DEAD BUTTON
+FILE: frontend/src/apps/support/pages/EscalationList.jsx
+
+BUG 22: FALLS BACK TO MOCK DATA ON API ERROR (LINES 29-33)
+  When API fails, it shows hardcoded mock escalations instead of an error state.
+  FIX: Show proper empty/error state instead of fake data.
+
+BUG 23: "ASSIGN" BUTTON IS DEAD (LINE 83)
+  The "Assign" button on each escalation has no onClick handler.
+  FIX: Add onClick that opens a dropdown to select an agent, then calls API to assign.
+
+## SUPPORT — KNOWLEDGE BASE (/admin/support/knowledge-base)
+STATUS: ⚠️ DEAD BUTTON
+FILE: frontend/src/apps/support/pages/KnowledgeBase.jsx
+
+BUG 24: "NEW ARTICLE" BUTTON IS DEAD (LINE 32)
+  No onClick handler. Cannot create knowledge base articles.
+  FIX: Add onClick opening a form with: title, category, content (rich text).
+       Call client.post('support/articles/', data) then reload.
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 6: SOC (Security Operations)              ║
+# ║  Route: /admin/security                           ║
+# ║  Service: frontend/src/core/api/controlService.js ║
+# ╚═══════════════════════════════════════════════════╝
+
+## SOC — ALERTS, INCIDENTS, ENDPOINTS
+STATUS: ✅ MOSTLY WORKING — Read/display from API
+  These pages load live data and display correctly.
+
+## SOC — CLOUD APPS (/admin/security/cloud)
+STATUS: Verify — may be display-only with no CRUD
+
+## SOC — REMOTE SESSIONS (/admin/security/remote)
+STATUS: Verify — may be display-only
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 7: PEOPLE & HR (HRM)                     ║
+# ║  Route: /admin/hrm                                ║
+# ║  Service: frontend/src/core/api/hrmService.js     ║
+# ╚═══════════════════════════════════════════════════╝
+
+## HRM — EMPLOYEES (/admin/hrm/employees)
+STATUS: ⚠️ DEAD BUTTON + NO CRUD
+FILE: frontend/src/apps/hrm/pages/EmployeeList.jsx
+
+BUG 25: "ADD EMPLOYEE" BUTTON IS DEAD (LINE 29)
+  No onClick handler. Cannot create employees from this page.
+  FIX: Add onClick opening a modal with: first_name, last_name, email,
+       department (dropdown), job_title, salary, hire_date, status.
+       Call hrmService.createEmployee(data) then reload.
+
+BUG 26: NO EDIT/DELETE ON EMPLOYEES
+  ChevronRight icon (line 69) suggests navigation but has no onClick.
+  FIX: Add click handler to navigate to employee detail or open edit modal.
+       Also add delete functionality.
+
+## HRM — LEAVE MANAGEMENT (/admin/hrm/leaves)
+STATUS: ✅ WORKING — Approve/reject buttons work, filter tabs work
+
+## HRM — TIME TRACKING (/admin/hrm/time)
+STATUS: ✅ WORKING — Log Time modal, data table, KPI cards
+
+## HRM — CERTIFICATIONS (/admin/hrm/certifications)
+STATUS: ✅ WORKING — Add certification modal, status tracking
+
+## HRM — PAYROLL (/admin/hrm/payroll)
+STATUS: ✅ WORKING — KPI calculations, salary table
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 8: PROCUREMENT (SCM)                     ║
+# ║  Route: /admin/scm                                ║
+# ║  Service: frontend/src/core/api/scmService.js     ║
+# ╚═══════════════════════════════════════════════════╝
+
+## SCM — VENDORS (/admin/scm/vendors)
+STATUS: ⚠️ DEAD BUTTON + NO CRUD
+FILE: frontend/src/apps/scm/pages/VendorList.jsx
+
+BUG 27: "ADD VENDOR" BUTTON IS DEAD (LINE 24)
+  No onClick handler. Cannot create vendors.
+  FIX: Add onClick → modal with: name, email, phone, website, category, is_active.
+       Call scmService.createVendor(data) then reload.
+
+BUG 28: NO EDIT/DELETE ON VENDORS
+  FIX: Add edit/delete actions per vendor card
+
+## SCM — INVENTORY (/admin/scm/inventory)
+STATUS: ⚠️ DEAD BUTTON
+FILE: frontend/src/apps/scm/pages/InventoryList.jsx
+
+BUG 29: "ADD ITEM" BUTTON IS DEAD (LINE 30)
+  No onClick. Cannot add inventory items.
+  FIX: Add modal: name, sku, category, quantity_on_hand, reorder_level, unit_price.
+       Call scmService.createInventoryItem(data) then reload.
+
+BUG 30: NO EDIT/DELETE ON INVENTORY
+  FIX: Add edit (inline or modal) and delete per row
+
+## SCM — PURCHASE ORDERS (/admin/scm/purchase-orders)
+STATUS: ⚠️ DEAD BUTTON
+FILE: frontend/src/apps/scm/pages/PurchaseOrderList.jsx
+
+BUG 31: "NEW PO" BUTTON IS DEAD (LINE 42)
+  No onClick. Cannot create purchase orders.
+  FIX: Add modal/form: vendor (dropdown), items (line editor), total_amount.
+       Call scmService.createPurchaseOrder(data) then reload.
+
+NOTE: "Mark Received" button (line 70) IS WORKING ✅
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 9: PROJECT MANAGEMENT                     ║
+# ║  Route: /admin/projects                           ║
+# ║  Service: frontend/src/core/api/projectsService.js║
+# ╚═══════════════════════════════════════════════════╝
+
+## PROJECTS — DASHBOARD (/admin/projects)
+STATUS: ✅ WORKING — KPIs, project table, links to detail pages
+
+## PROJECTS — KANBAN (/admin/projects/kanban)
+STATUS: ✅ WORKING — Kanban board with drag-and-drop style columns
+
+## PROJECTS — REPORTS (/admin/projects/reports)
+STATUS: ❌ STUB PAGE
+FILE: frontend/src/apps/projects/pages/ProjectReports.jsx
+
+BUG 32: ENTIRE PAGE IS A STUB — "Reports visualization interface not yet implemented"
+  FIX: Build real project reports:
+       - Fetch projectsService.getProjects()
+       - Show: project completion rates, time spent per project,
+         budget vs actual, overdue tasks, team utilization chart
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 10: MARKETING                            ║
+# ║  Route: /admin/marketing                          ║
+# ║  Service: frontend/src/core/api/marketingService.js║
+# ╚═══════════════════════════════════════════════════╝
+
+## MARKETING — CAMPAIGNS (/admin/marketing/campaigns)
+STATUS: ⚠️ DEAD BUTTON + NO CRUD
+FILE: frontend/src/apps/marketing/pages/CampaignList.jsx
+
+BUG 33: "NEW CAMPAIGN" BUTTON IS DEAD (LINE 36)
+  No onClick. Cannot create campaigns.
+  FIX: Add modal: name, type (email/social/ads), status (draft/active),
+       start_date, end_date, budget. Call marketingService.createCampaign(data)
+
+BUG 34: NO EDIT/DELETE ON CAMPAIGNS
+  FIX: Add edit (click row to open modal) and delete per row
+
+## MARKETING — INTEGRATIONS (/admin/marketing/integrations)
+STATUS: ❌ ALL MOCK DATA
+FILE: frontend/src/apps/marketing/pages/MarketingIntegrations.jsx
+
+BUG 35: ENTIRE PAGE IS HARDCODED MOCK DATA (LINE 4)
+  Hardcoded INTEGRATIONS array. "Connect" button is dead.
+  FIX: Either wire to a real integrations API or acknowledge this is a config page
+       where clicking "Connect" opens a setup wizard / OAuth flow.
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 11: IT ASSET MANAGEMENT (ITAM)           ║
+# ║  Route: /admin/itam                               ║
+# ║  Service: frontend/src/core/api/itamService.js    ║
+# ╚═══════════════════════════════════════════════════╝
+
+## ITAM — DASHBOARD (/admin/itam)
+STATUS: ✅ WORKING — KPIs and asset overview
+
+## ITAM — ASSET LIST (/admin/itam/assets)
+STATUS: ✅ WORKING — Asset table with CRUD
+
+## ITAM — SETTINGS (/admin/itam/settings)
+STATUS: ⚠️ GENERIC STUB
+FILE: frontend/src/apps/itam/pages/ItamSettings.jsx
+
+BUG 36: Settings page just renders a generic <ModuleSettings> component
+  FIX: Build real settings: asset lifecycle stages, depreciation rules,
+       alert thresholds for warranty expiry. Save to backend API.
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 12: BILLING & SUBSCRIPTIONS              ║
+# ║  Route: /admin/billing                            ║
+# ║  Service: frontend/src/core/api/billingService.js ║
+# ╚═══════════════════════════════════════════════════╝
+
+## BILLING — PLANS (/admin/billing/plans)
+STATUS: ❌ ALL MOCK DATA
+FILE: frontend/src/apps/billing/pages/PlansList.jsx
+
+BUG 37: ENTIRE PAGE IS HARDCODED MOCK DATA (LINE 4)
+  Uses MOCK_PLANS constant. Not connected to backend.
+  FIX: Replace with billingService.getPlans() API call.
+       Add create/edit/delete actions for plans.
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 13-15: DOCUMENTS, APPROVALS, ITSM        ║
+# ╚═══════════════════════════════════════════════════╝
+
+## DOCUMENTS (/admin/documents)
+STATUS: ✅ WORKING — Dashboard loads from API
+
+## APPROVALS (/admin/approvals)
+STATUS: ✅ WORKING — Dashboard loads from API
+
+## ITSM (/admin/itsm)
+STATUS: ✅ WORKING — Dashboard loads from API
+
+
+# ╔═══════════════════════════════════════════════════╗
+# ║  MODULE 16: ANALYTICS & REPORTS                   ║
+# ╚═══════════════════════════════════════════════════╝
+
+## REPORTS — ALL PAGES
+STATUS: ✅ WORKING — Real data loaded from API
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SUMMARY: ALL 37 BUGS FOUND
+# ══════════════════════════════════════════════════════════════════════════════
+
+CATEGORY                    COUNT   BUGS
+──────────────────────────────────────────────────
+DEAD BUTTONS (no onClick)    14     #5,9,13,18,21,23,24,25,27,29,31,33,35(Connect),36
+BROKEN NAV LINKS             4      #1,16,19,6(QuoteList)
+HARDCODED MOCK DATA          4      #15,17,35,37
+MISSING DELETE                7      #2,6,10,14,26,28,30
+MISSING EDIT                 6      #3,7,10,26,28,30
+HARDCODED KPI VALUES         3      #4,12,4(second)
+STUB PAGE                    1      #32
+TOTAL                       37 issues across 14 modules
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PRIORITY FIX ORDER (for AI builder)
+# ══════════════════════════════════════════════════════════════════════════════
+
+PRIORITY 1 — BROKEN LINKS (will cause 404s):
+  ✗ ClientList.jsx line 70: /crm/clients/ → /admin/crm/clients/
+  ✗ QuoteList.jsx line 117: /crm/quotes/ → /admin/contracts/quotes/
+  ✗ InvoiceList.jsx line 145: /erp/invoices/ → /admin/erp/invoices/
+
+PRIORITY 2 — DEAD "CREATE" BUTTONS (can't add data):
+  ✗ LeadList.jsx: "New Lead" button — add onClick + modal + API
+  ✗ ContactList.jsx: "Add Contact" button — add onClick + modal + API
+  ✗ ContractList.jsx: "New Contract" button — add onClick + modal + API
+  ✗ EmployeeList.jsx: "Add Employee" button — add onClick + modal + API
+  ✗ VendorList.jsx: "Add Vendor" button — add onClick + modal + API
+  ✗ InventoryList.jsx: "Add Item" button — add onClick + modal + API
+  ✗ PurchaseOrderList.jsx: "New PO" button — add onClick + modal + API
+  ✗ CampaignList.jsx: "New Campaign" button — add onClick + modal + API
+  ✗ KnowledgeBase.jsx: "New Article" button — add onClick + modal + API
+  ✗ TicketList.jsx: "New Ticket" button — add navigate to create page
+
+PRIORITY 3 — MOCK DATA PAGES (not using real API):
+  ✗ SlaTiersPage.jsx: Replace MOCK_SLA_TIERS with API calls
+  ✗ PlansList.jsx: Replace MOCK_PLANS with API calls
+  ✗ MarketingIntegrations.jsx: Replace INTEGRATIONS with API or config save
+  ✗ ServiceCatalog.jsx: Remove MOCK_SERVICES fallback
+
+PRIORITY 4 — MISSING DELETE/EDIT (can't manage existing data):
+  ✗ Add delete+edit to: ClientList, LeadList, ContactList, ContractList,
+    EmployeeList, VendorList, InventoryList, CampaignList
+
+PRIORITY 5 — STUB PAGES:
+  ✗ ProjectReports.jsx: Build real reports page
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  DETAILED AI BUILDER PROMPT — COPY THIS SECTION TO YOUR AI BUILDER
+# ══════════════════════════════════════════════════════════════════════════════
+
+"""
+You are refactoring the BitGuard Enterprise Platform — a Django + React (Vite) 
+monorepo — to be 100% production-ready. The platform manages: CRM, Commerce, ERP,
+Support, SOC, Contracts, HRM, SCM, Projects, ITAM, Billing, Marketing, Documents,
+Approvals, ITSM, Reports, and a BFF Command Center.
+
+CRITICAL CONTEXT:
+- Backend: Django REST Framework at /backend/
+- Frontend: React + Vite at /frontend/
+- API client: Axios with baseURL 'http://127.0.0.1:8000/api/' (DO NOT prefix with 'api/')
+- All API responses use envelope: { status: "success", data: {...} } — unwrap as response.data.data
+- EXCEPTION: SimpleJWT token endpoints return flat { access, refresh } — NOT wrapped in data.data
+- All frontend routes are under /admin/* prefix — ALL navigate() calls MUST use /admin/ prefix
+- Styling: Tailwind CSS dark theme (slate-900 backgrounds, white text, colored accent badges)
+
+═══════════════════════════════════════════════
+FIX 1: BROKEN NAVIGATION LINKS (3 files)
+═══════════════════════════════════════════════
+
+FILE: frontend/src/apps/crm/pages/ClientList.jsx LINE 70
+  CURRENT: navigate(`/crm/clients/${client.id}`)
+  FIX TO:  navigate(`/admin/crm/clients/${client.id}`)
+
+FILE: frontend/src/apps/crm/pages/QuoteList.jsx LINE 117
+  CURRENT: navigate(`/crm/quotes/${quote.id}`)
+  FIX TO:  navigate(`/admin/contracts/quotes/${quote.id}`)
+
+FILE: frontend/src/apps/erp/pages/InvoiceList.jsx LINE 145
+  CURRENT: navigate(`/erp/invoices/${inv.id}`)
+  FIX TO:  navigate(`/admin/erp/invoices/${inv.id}`)
+
+═══════════════════════════════════════════════
+FIX 2: WIRE ALL DEAD "CREATE" BUTTONS (10 pages)
+═══════════════════════════════════════════════
+
+For EACH page below, the "Add/New/Create" button has NO onClick handler.
+Wire each button to open a modal form that:
+  1. Shows a dark-themed modal (bg-slate-900, border border-slate-700)
+  2. Has labeled form fields matching the model
+  3. On submit, calls the correct API service method
+  4. On success, closes modal and reloads the data list
+  5. Shows error toast/alert on failure
+
+PAGE: LeadList.jsx — "New Lead" button (line 59)
+  MODAL FIELDS: first_name, last_name, company, email, phone, source (dropdown: website/referral/cold_call/event/social), status (new)
+  API CALL: crmService.createLead(data)
+
+PAGE: ContactList.jsx — "Add Contact" button (line 44)
+  MODAL FIELDS: first_name, last_name, email, phone, client (dropdown from crmService.getClients()), role
+  API CALL: crmService.createContact(data)
+
+PAGE: ContractList.jsx — "New Contract" button (line 34)
+  MODAL FIELDS: title, client (dropdown), sla_tier (dropdown), start_date, end_date, value, status (draft)
+  API CALL: contractsService.createContract(data)
+
+PAGE: EmployeeList.jsx — "Add Employee" button (line 29)
+  MODAL FIELDS: first_name, last_name, email, department (dropdown from hrmService.getDepartments()), job_title, salary, hire_date, status (active)
+  API CALL: hrmService.createEmployee(data)
+
+PAGE: VendorList.jsx — "Add Vendor" button (line 24)
+  MODAL FIELDS: name, email, phone, website, category, is_active (toggle)
+  API CALL: scmService.createVendor(data)
+
+PAGE: InventoryList.jsx — "Add Item" button (line 30)
+  MODAL FIELDS: name, sku, category, quantity_on_hand, reorder_level, unit_price
+  API CALL: scmService.createInventoryItem(data)
+
+PAGE: PurchaseOrderList.jsx — "New PO" button (line 42)
+  MODAL FIELDS: vendor (dropdown from scmService.getVendors()), notes, line items (name + qty + price)
+  API CALL: scmService.createPurchaseOrder(data)
+
+PAGE: CampaignList.jsx — "New Campaign" button (line 36)
+  MODAL FIELDS: name, type (email/social/ads/content), status (draft), start_date, end_date, budget
+  API CALL: marketingService.createCampaign(data) — import from core/api/marketingService.js
+
+PAGE: KnowledgeBase.jsx — "New Article" button (line 32)
+  MODAL FIELDS: title, category (dropdown: Account/Security/Contracts/Support/MSP), content (textarea)
+  API CALL: client.post('support/articles/', data)
+
+PAGE: TicketList.jsx — "New Ticket" button (line 49)
+  FIX: Add onClick={() => navigate('/admin/support/tickets/create')}
+  (The ticket create page already exists at that route)
+
+═══════════════════════════════════════════════
+FIX 3: ADD EDIT + DELETE TO ALL LIST PAGES (8 pages)
+═══════════════════════════════════════════════
+
+For EACH page below, add:
+  - EDIT: Click row or pencil icon → opens the same create modal pre-filled with existing data → calls update API
+  - DELETE: Trash icon on each row → confirmation dialog "Are you sure?" → calls delete API → reloads list
+
+Use this pattern for delete:
+  import DeleteConfirmationModal from '../../../core/components/shared/core/DeleteConfirmationModal';
+  (This component already exists in the codebase)
+
+PAGE: ClientList.jsx → crmService.updateClient(id, data) / crmService.deleteClient(id)
+PAGE: LeadList.jsx → crmService.updateLead(id, data) / crmService.deleteLead(id)
+PAGE: ContactList.jsx → crmService.updateContact(id, data) / crmService.deleteContact(id)
+PAGE: ContractList.jsx → contractsService.updateContract(id, data) / contractsService.deleteContract(id)
+PAGE: EmployeeList.jsx → hrmService.updateEmployee(id, data) / hrmService.deleteEmployee(id)
+PAGE: VendorList.jsx → scmService.updateVendor(id, data) / scmService.deleteVendor(id)
+PAGE: InventoryList.jsx → scmService.updateInventoryItem(id, data) / scmService.deleteInventoryItem(id)
+PAGE: CampaignList.jsx → marketingService.updateCampaign(id, data) / marketingService.deleteCampaign(id)
+
+═══════════════════════════════════════════════
+FIX 4: REPLACE MOCK DATA WITH REAL API (3 pages)
+═══════════════════════════════════════════════
+
+PAGE: SlaTiersPage.jsx
+  REMOVE: const MOCK_SLA_TIERS = [...] and all references to it
+  ADD: useState + useEffect that calls contractsService.getSlaTiers()
+  ADD: Create/Edit/Delete modals calling contractsService CRUD methods
+  NOTE: If backend endpoint doesn't exist, create it at:
+    backend/apps/contracts/views.py → SlaTierViewSet
+    backend/apps/contracts/urls.py → router.register('sla-tiers', SlaTierViewSet)
+
+PAGE: PlansList.jsx
+  REMOVE: const MOCK_PLANS = [...] and all references
+  ADD: Load from billingService.getPlans() API
+  ADD: CRUD modals
+
+PAGE: ServiceCatalog.jsx
+  REMOVE: const MOCK_SERVICES = [...] (line 11) and the .catch fallback (line 31)
+  KEEP: The API call to store/service-catalog/ — just remove the mock fallback
+
+═══════════════════════════════════════════════
+FIX 5: BUILD REAL PROJECT REPORTS PAGE
+═══════════════════════════════════════════════
+
+FILE: frontend/src/apps/projects/pages/ProjectReports.jsx
+  CURRENT: Stub page saying "not yet implemented"
+  
+  BUILD: Real reports showing:
+    - KPI Row: Total Projects, Completed %, On-Time %, Avg Duration
+    - Projects by Status chart (count per status)
+    - Projects by Priority breakdown
+    - Table of overdue projects with deadline + days overdue
+    - Budget utilization (if data available)
+  
+  DATA: Fetch from projectsService.getProjects() and compute in frontend
+
+═══════════════════════════════════════════════
+FIX 6: FIX HARDCODED KPIs (2 pages)
+═══════════════════════════════════════════════
+
+PAGE: ClientList.jsx
+  LINE 57: "Active Contracts" shows "--" → Compute from contractsService or remove
+  LINE 61: "Pending Tickets" shows "--" → Compute from support API or remove
+
+PAGE: CrmReportPage.jsx
+  LINE 43: "Lead Conversion Rate" hardcoded "28%" → Compute: (converted/total*100).toFixed(1)
+  LINE 48: "Avg Deal Size" hardcoded "$14,500" → Compute: sum(deal.value)/deal.count
+
+═══════════════════════════════════════════════
+FIX 7: WIRE DEAD ACTION BUTTONS (3 specific)
+═══════════════════════════════════════════════
+
+PAGE: EscalationList.jsx — "Assign" button (line 83)
+  FIX: onClick → open dropdown of team members → call API to assign ticket to that agent
+
+PAGE: InvoiceList.jsx — Download button (line 141)
+  FIX: onClick → window.open(apiBaseUrl + `erp/invoices/${inv.id}/download/`)
+
+PAGE: StoreProducts.jsx — "Filters" button (line 101)
+  FIX: onClick → toggle a filter panel with: product_type select, is_active toggle, price range
+"""
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  END OF AUDIT REPORT
+# ══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,25 @@
+Service Definition (apps.erp.models.Service):
+
+You define your standard offerings here.
+Action: Ensure every service has a base_price and a service_type (hourly/project/subscription).
+CRM (apps.crm.models):
+
+Lead to Opportunity: Sales rep talks to a Client.
+Drafting the Deal: They create a Contract draft. At this stage, you generate the Proforma Invoice.
+Technical Flow: Order -> Proforma Invoice PDF.
+Result: Client confirms.
+ERP / Operations (apps.erp.models):
+
+Once the Contract is signed, an InternalProject is created.
+Resource Allocation: You assert people (EmployeeProfile) to the project.
+Work Logging: They log time (TimeLog), which has a cost (salary) and a billable rate (price).
+Invoicing (apps.erp.models.Invoice):
+
+This is the bridge between CRM and ERP.
+Recurring: Automatically generated every month for Subscriptions.
+Milestone: Generated when a Project Milestone is marked "Complete" (e.g., "Deployment Done" -> Trigger Invoice).
+Financials:
+
+Revenue = Invoice.total (excluding tax).
+Cost (COGS) = TimeLog.hours * Employee.cost_rate + Expenses.
+Profit = Revenue - Cost.
