@@ -42,7 +42,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             'on_hold': qs.filter(status='on_hold').count(),
             'overdue': qs.filter(
                 status__in=['planning', 'active'],
-                deadline__lt=__import__('django.utils.timezone', fromlist=['timezone']).timezone.now().date()
+                deadline__lt=__import__('django.utils.timezone', fromlist=['now']).now().date()
             ).count(),
         })
 

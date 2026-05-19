@@ -51,7 +51,90 @@ const InvoiceCreate = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => {
+            let updated = { ...prev, [name]: value };
+            let updatedItems = [...prev.items];
+            
+            if (name === 'client') {
+                // If client changes and the currently selected contract or project doesn't belong to it, clear them
+                if (value) {
+                    const selectedContract = contracts.find(c => String(c.id) === String(prev.contract));
+                    if (selectedContract && String(selectedContract.client) !== String(value)) {
+                        updated.contract = '';
+                        updatedItems = updatedItems.filter(item => !item._isContractItem);
+                    }
+                    const selectedProject = projects.find(p => String(p.id) === String(prev.project));
+                    if (selectedProject && String(selectedProject.client) !== String(value)) {
+                        updated.project = '';
+                        updatedItems = updatedItems.filter(item => !item._isProjectItem);
+                    }
+                } else {
+                    updated.contract = '';
+                    updated.project = '';
+                    updatedItems = updatedItems.filter(item => !item._isContractItem && !item._isProjectItem);
+                }
+            }
+            
+            if (name === 'contract') {
+                // Remove old contract item
+                updatedItems = updatedItems.filter(item => !item._isContractItem);
+                
+                if (value) {
+                    const contractObj = contracts.find(c => String(c.id) === String(value));
+                    if (contractObj) {
+                        // Auto-populate client if not set or mismatched
+                        if (String(updated.client) !== String(contractObj.client)) {
+                            updated.client = String(contractObj.client);
+                        }
+                        
+                        // Add new contract item
+                        const clientObj = clients.find(cl => String(cl.id) === String(contractObj.client));
+                        const clientName = clientObj ? clientObj.name : 'Client';
+                        const slaTierText = contractObj.sla_tier_name ? ` (${contractObj.sla_tier_name} SLA)` : '';
+                        
+                        updatedItems.push({
+                            product_id: '',
+                            description: `${contractObj.contract_type.toUpperCase()} Retainer Fee - ${clientName}${slaTierText}`,
+                            quantity: 1,
+                            unit_price: parseFloat(contractObj.monthly_value || 0),
+                            tax_rate: 0,
+                            discount: 0,
+                            total: parseFloat(contractObj.monthly_value || 0),
+                            _isContractItem: true
+                        });
+                    }
+                }
+            }
+            
+            if (name === 'project') {
+                // Remove old project item
+                updatedItems = updatedItems.filter(item => !item._isProjectItem);
+                
+                if (value) {
+                    const projectObj = projects.find(p => String(p.id) === String(value));
+                    if (projectObj) {
+                        // Auto-populate client if not set or mismatched
+                        if (String(updated.client) !== String(projectObj.client)) {
+                            updated.client = String(projectObj.client);
+                        }
+                        
+                        // Add new project item
+                        updatedItems.push({
+                            product_id: '',
+                            description: `Project Delivery Services - ${projectObj.name}`,
+                            quantity: 1,
+                            unit_price: parseFloat(projectObj.budget || 0),
+                            tax_rate: 0,
+                            discount: 0,
+                            total: parseFloat(projectObj.budget || 0),
+                            _isProjectItem: true
+                        });
+                    }
+                }
+            }
+            
+            return { ...updated, items: updatedItems };
+        });
     };
 
     const handleItemsChange = (items) => {
@@ -63,7 +146,12 @@ const InvoiceCreate = () => {
         setLoading(true);
 
         try {
-            await erpService.createInvoice(formData);
+            // Filter out internal tracking properties before sending
+            const payload = {
+                ...formData,
+                items: formData.items.map(({ _isContractItem, _isProjectItem, ...item }) => item)
+            };
+            await erpService.createInvoice(payload);
             toast.success('Invoice created successfully!');
             navigate('/admin/erp/invoices');
         } catch (error) {
@@ -72,6 +160,14 @@ const InvoiceCreate = () => {
             setLoading(false);
         }
     };
+
+    const filteredProjects = formData.client 
+        ? projects.filter(p => String(p.client) === String(formData.client))
+        : projects;
+
+    const filteredContracts = formData.client
+        ? contracts.filter(c => String(c.client) === String(formData.client))
+        : contracts;
 
     return (
         <div className="max-w-5xl mx-auto space-y-8 pb-20 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -142,7 +238,7 @@ const InvoiceCreate = () => {
                                     className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-3 text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all appearance-none"
                                 >
                                     <option value="">-- No Project --</option>
-                                    {projects.map(p => (
+                                    {filteredProjects.map(p => (
                                         <option key={p.id} value={p.id}>{p.name}</option>
                                     ))}
                                 </select>
@@ -158,7 +254,7 @@ const InvoiceCreate = () => {
                                     className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-3 text-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all appearance-none"
                                 >
                                     <option value="">-- No Contract --</option>
-                                    {contracts.map(c => (
+                                    {filteredContracts.map(c => (
                                         <option key={c.id} value={c.id}>{c.contract_type.toUpperCase()} - {c.client_name}</option>
                                     ))}
                                 </select>

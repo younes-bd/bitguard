@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, Plus } from 'lucide-react';
 
-const InvoiceLineItems = ({ items, onChange, products = [] }) => {
-    const [lines, setLines] = useState(items || [
+const InvoiceLineItems = ({ items = [], onChange, products = [] }) => {
+    const [lines, setLines] = useState(items.length > 0 ? items : [
         { product_id: '', description: '', quantity: 1, unit_price: 0, tax_rate: 0, discount: 0, total: 0 }
     ]);
+
+    useEffect(() => {
+        // Sync lines state if items prop changes (e.g. contract or project auto-populate)
+        const hasDifferences = items.length !== lines.length || items.some((item, i) => {
+            const line = lines[i];
+            return !line || 
+                   item.description !== line.description || 
+                   item.unit_price !== line.unit_price || 
+                   item.product_id !== line.product_id ||
+                   item.quantity !== line.quantity;
+        });
+        if (hasDifferences) {
+            setLines(items.length > 0 ? items : [
+                { product_id: '', description: '', quantity: 1, unit_price: 0, tax_rate: 0, discount: 0, total: 0 }
+            ]);
+        }
+    }, [items]);
 
     const calculateLineTotal = (line) => {
         const subtotal = line.quantity * line.unit_price;

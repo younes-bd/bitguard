@@ -89,6 +89,16 @@ class InvoiceCreateSerializer(serializers.ModelSerializer):
         items = data.get('items', [])
         if not data.get('invoice_number'):
             data.pop('invoice_number', None)
+            
+        client = data.get('client')
+        contract = data.get('contract')
+        project = data.get('project')
+
+        if contract and contract.client != client:
+            raise serializers.ValidationError({"contract": "The selected contract does not belong to the selected client."})
+        if project and project.client != client:
+            raise serializers.ValidationError({"project": "The selected project does not belong to the selected client."})
+
         # Extract items for service layer processing
         self._items = items
         return data
