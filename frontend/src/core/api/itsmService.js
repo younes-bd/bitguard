@@ -119,6 +119,46 @@ class ItsmService {
             return { total_changes: 0, open_changes: 0, completed_changes: 0, total_problems: 0, open_problems: 0 };
         }
     }
+
+    async getServiceItems(params = {}) {
+        const response = await client.get('itsm/service-items/', { params });
+        return response.data?.data ?? response.data?.results ?? response.data ?? [];
+    }
+
+    async getServiceItem(id) {
+        const response = await client.get(`itsm/service-items/${id}/`);
+        return response.data?.data ?? response.data;
+    }
+
+    async createServiceItem(data) {
+        const response = await client.post('itsm/service-items/', data);
+        return response.data?.data ?? response.data;
+    }
+
+    async getServiceRequests(params = {}) {
+        const response = await client.get('itsm/service-requests/', { params });
+        return response.data?.data ?? response.data?.results ?? response.data ?? [];
+    }
+
+    async getServiceRequest(id) {
+        const response = await client.get(`itsm/service-requests/${id}/`);
+        return response.data?.data ?? response.data;
+    }
+
+    async createServiceRequest(data) {
+        const response = await client.post('itsm/service-requests/', data);
+        return response.data?.data ?? response.data;
+    }
+
+    async approveServiceRequest(id) {
+        const response = await client.post(`itsm/service-requests/${id}/approve/`);
+        return response.data?.data ?? response.data;
+    }
+
+    async rejectServiceRequest(id) {
+        const response = await client.post(`itsm/service-requests/${id}/reject/`);
+        return response.data?.data ?? response.data;
+    }
 }
 
 export const itsmService = new ItsmService();

@@ -103,6 +103,8 @@ import ItsmDashboard from '../../itsm/pages/ItsmDashboard';
 import ProblemsList from '../../itsm/pages/ProblemsList';
 import ChangeRequestList from '../../itsm/pages/ChangeRequestList';
 import ItsmSettings from '../../itsm/pages/ItsmSettings';
+import ITServiceCatalog from '../../itsm/pages/ITServiceCatalog';
+import ServiceRequestsTracker from '../../itsm/pages/ServiceRequestsTracker';
 
 // Blog Manager
 import BlogPostList from '../../blog/pages/BlogPostList';
@@ -133,7 +135,7 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Commerce Module */}
-            <Route path="store" element={<ModuleLayout title="Commerce" items={productMenu.store[0].items} accentColor="indigo" />}>
+            <Route path="store" element={<ModuleLayout title="Commerce & Storefront" items={productMenu.store[0].items} accentColor="indigo" />}>
                 <Route index element={<StoreDashboard />} />
                 <Route path="dashboard" element={<StoreDashboard />} />
                 {storeRoutes}
@@ -146,32 +148,32 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Finance & Operations Module */}
-            <Route path="erp" element={<ModuleLayout title="Finance & Operations" items={productMenu.erp} accentColor="emerald" />}>
+            <Route path="erp" element={<ModuleLayout title="Finance & ERP" items={productMenu.erp} accentColor="emerald" />}>
                 <Route index element={<ErpDashboard />} />
                 {erpRoutes}
             </Route>
 
             {/* Security Operations Center */}
-            <Route path="security" element={<ModuleLayout title="Security Operations Center" items={productMenu.security[0].items} accentColor="red" />}>
+            <Route path="security" element={<ModuleLayout title="Security Operations (SecOps)" items={productMenu.security[0].items} accentColor="red" />}>
                 <Route index element={<SocDashboard />} />
                 {socRoutes}
             </Route>
-            <Route path="soc" element={<Navigate to="../security" replace />} />
+            {/* Legacy /admin/soc removed — use /admin/security */}
 
             {/* Procurement Module */}
-            <Route path="scm" element={<ModuleLayout title="Procurement" items={productMenu.scm[0].items} accentColor="orange" />}>
+            <Route path="scm" element={<ModuleLayout title="Procurement & Supply Chain" items={productMenu.scm[0].items} accentColor="orange" />}>
                 <Route index element={<ScmDashboard />} />
                 {scmRoutes}
             </Route>
 
             {/* People & HR Module */}
-            <Route path="hrm" element={<ModuleLayout title="People & HR" items={productMenu.hrm[0].items} accentColor="pink" />}>
+            <Route path="hrm" element={<ModuleLayout title="Human Capital Management" items={productMenu.hrm[0].items} accentColor="pink" />}>
                 <Route index element={<HrmDashboard />} />
                 {hrmRoutes}
             </Route>
 
             {/* Service Desk Module */}
-            <Route path="support" element={<ModuleLayout title="Service Desk" items={productMenu.support[0].items} accentColor="teal" />}>
+            <Route path="support" element={<ModuleLayout title="IT Service Desk" items={productMenu.support[0].items} accentColor="teal" />}>
                 <Route index element={<SupportDashboard />} />
                 {supportRoutes}
             </Route>
@@ -183,12 +185,12 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Identity & Access Module */}
-            <Route path="iam" element={<ModuleLayout title="Identity & Access" items={productMenu.iam[0].items} accentColor="violet" />}>
+            <Route path="iam" element={<ModuleLayout title="Identity & Access Management" items={productMenu.iam[0].items} accentColor="violet" />}>
                 {identityRoutes}
             </Route>
 
             {/* Billing Module */}
-            <Route path="billing" element={<ModuleLayout title="Billing" items={productMenu.billing[0].items} accentColor="emerald" />}>
+            <Route path="billing" element={<ModuleLayout title="Subscription Billing" items={productMenu.billing[0].items} accentColor="emerald" />}>
                 <Route index element={<BillingAdminPage />} />
                 <Route path="overview" element={<BillingAdminPage />} />
                 <Route path="plans" element={<PlansList />} />
@@ -200,7 +202,7 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Analytics & Reports Module */}
-            <Route path="reports" element={<ModuleLayout title="Analytics & Reports" items={productMenu.reports[0].items} accentColor="violet" />}>
+            <Route path="reports" element={<ModuleLayout title="Enterprise Analytics" items={productMenu.reports[0].items} accentColor="violet" />}>
                 <Route index element={<ReportsDashboard />} />
                 <Route path="mrr" element={<MrrDashboard />} />
                 <Route path="revenue" element={<RevenueReport />} />
@@ -214,7 +216,7 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Contract Management Module */}
-            <Route path="contracts" element={<ModuleLayout title="Contract Management" items={productMenu.contracts[0].items} accentColor="amber" />}>
+            <Route path="contracts" element={<ModuleLayout title="Contracts & SLAs" items={productMenu.contracts[0].items} accentColor="amber" />}>
                 <Route index element={<ContractList />} />
                 <Route path="list" element={<ContractList />} />
                 <Route path="quotes" element={<QuoteList />} />
@@ -224,7 +226,7 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Asset Management Module (ITAM) */}
-            <Route path="itam" element={<ModuleLayout title="Asset Management" items={productMenu.itam[0].items} accentColor="teal" />}>
+            <Route path="itam" element={<ModuleLayout title="IT Asset Management (ITAM)" items={productMenu.itam[0].items} accentColor="teal" />}>
                 <Route index element={<AssetDashboard />} />
                 <Route path="assets" element={<AssetList />} />
                 <Route path="assets/:id" element={<AssetDetail />} />
@@ -234,7 +236,7 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Projects Module */}
-            <Route path="projects" element={<ModuleLayout title="Project Management" items={productMenu.projects} accentColor="cyan" />}>
+            <Route path="projects" element={<ModuleLayout title="Project Portfolio Management" items={productMenu.projects} accentColor="cyan" />}>
                 {projectsRoutes}
             </Route>
 
@@ -254,9 +256,10 @@ export const EnterpriseRoutes = () => {
             </Route>
 
             {/* Operations (ITSM) */}
-            <Route path="itsm" element={<ModuleLayout title="Operations (ITSM)" items={productMenu.itsm[0].items} accentColor="indigo" />}>
+            <Route path="itsm" element={<ModuleLayout title="IT Service Management" items={productMenu.itsm[0].items} accentColor="indigo" />}>
                 <Route index element={<ItsmDashboard />} />
-                <Route path="requests" element={<ItsmDashboard />} />
+                <Route path="catalog" element={<ITServiceCatalog />} />
+                <Route path="requests" element={<ServiceRequestsTracker />} />
                 <Route path="changes" element={<ChangeRequestList />} />
                 <Route path="problems" element={<ProblemsList />} />
                 <Route path="settings" element={<ItsmSettings />} />

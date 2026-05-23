@@ -87,3 +87,43 @@ class ChangeTask(TenantAwareModel):
 
     def __str__(self):
         return f"Task: {self.title} (CR-{self.change_request.pk})"
+
+class ServiceItem(TenantAwareModel):
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    icon = models.CharField(max_length=50, default='HelpCircle')
+    category = models.CharField(max_length=100, choices=[
+        ('Identity', 'Access & Identity'),
+        ('Cloud', 'Cloud & Infrastructure'),
+        ('Hardware', 'Office Devices'),
+        ('Support', 'General Support')
+    ])
+    is_active = models.BooleanField(default=True)
+    sla_tier = models.ForeignKey('contracts.SLATier', on_delete=models.SET_NULL, null=True, blank=True, related_name='service_items')
+    approval_required = models.BooleanField(default=False)
+    service_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='owned_services')
+    linked_product = models.ForeignKey('store.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='itsm_services', help_text="Link to Master Catalog for billable tickets")
+
+    def __str__(self):
+        return self.name
+
+class ServiceRequest(TenantAwareModel):
+    STATUS_CHOICES = [
+        ('pending_approval', 'Pending Approval'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed')
+    ]
+    service_item = models.ForeignKey(ServiceItem, on_delete=models.CASCADE, related_name='requests')
+    requester = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='service_requests')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending_approval')
+    form_data = models.JSONField(default=dict, blank=True)
+    ticket = models.OneToOneField('support.Ticket', on_delete=models.SET_NULL, null=True, blank=True, related_name='service_request')
+    created_at = models.DateTimeField(auto_now_add=True)
+    closed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"REQ-{self.pk}: {self.service_item.name} by {self.requester.username}"
+

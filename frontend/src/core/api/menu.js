@@ -6,57 +6,52 @@ import {
     Megaphone, LifeBuoy, Bell, CreditCard, BarChart3, FolderKanban, TrendingUp, BookOpen,
     Monitor, Cpu, Wrench, DollarSign, Tag, Globe, Plus, FolderOpen, CheckSquare, GitBranch,
     Award, Download, Clock, Repeat, Landmark, FileSpreadsheet, Scale, Image, Mail,
-    UserPlus, TrendingDown
+    UserPlus, TrendingDown, FileCheck, Terminal
 } from 'lucide-react';
 
-// Main Admin Suite
+// Main Enterprise Suite
 export const adminMenu = [
-    // 1. Command Center
+    // 0. Command Center
     { label: 'Command Center', icon: null, path: null },
     { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
     { label: 'Notifications', icon: Bell, path: '/admin/notifications' },
 
-    // 2. Revenue & Growth
-    { label: 'Revenue & Growth', icon: null, path: null },
+    // 1. Customer & Revenue
+    { label: 'Customer & Revenue', icon: null, path: null },
     { label: 'Sales & CRM', icon: Users, path: '/admin/crm', permissions: ['view_client'] },
-    { label: 'Service Catalog', icon: ShoppingBag, path: '/admin/store', permissions: ['view_product'] },
-    { label: 'Billing & Subscriptions', icon: CreditCard, path: '/admin/billing', permissions: ['view_plan'] },
-    { label: 'Marketing', icon: Megaphone, path: '/admin/marketing', permissions: ['view_campaign'] },
+    { label: 'Marketing Automation', icon: Megaphone, path: '/admin/marketing', permissions: ['view_campaign'] },
+    { label: 'Commerce & Storefront', icon: ShoppingBag, path: '/admin/store', permissions: ['view_product'] },
+    { label: 'Subscription Billing', icon: CreditCard, path: '/admin/billing', permissions: ['view_plan'] },
 
-    // 3. Service Operations
-    { label: 'Service Operations', icon: null, path: null },
-    { label: 'Service Desk', icon: LifeBuoy, path: '/admin/support', permissions: ['view_ticket'] },
-    { label: 'Contracts & SLAs', icon: FileText, path: '/admin/contracts', permissions: ['view_servicecontract'] },
-    { label: 'Project Management', icon: FolderKanban, path: '/admin/projects', permissions: ['view_internalproject'] },
+    // 2. Finance & Resources
+    { label: 'Finance & Resources', icon: null, path: null },
+    { label: 'Finance & ERP', icon: PieChart, path: '/admin/erp', permissions: ['view_internalproject'] },
+    { label: 'Procurement & Supply Chain', icon: Truck, path: '/admin/scm', permissions: ['view_vendor'] },
+    { label: 'Human Capital Management', icon: Building2, path: '/admin/hrm', permissions: ['view_employeeprofile'] },
+    { label: 'Project Portfolio Management', icon: FolderKanban, path: '/admin/projects', permissions: ['view_internalproject'] },
+
+    // 3. IT Service Management (ITSM)
+    { label: 'IT Service Management (ITSM)', icon: null, path: null },
+    { label: 'IT Service Desk', icon: LifeBuoy, path: '/admin/support', permissions: ['view_ticket'] },
+    { label: 'Service Catalog', icon: Tag, path: '/admin/itsm/catalog', permissions: ['view_changerequest'] },
     { label: 'Change Management', icon: GitBranch, path: '/admin/itsm', permissions: ['view_changerequest'] },
-    { label: 'IT Asset Management', icon: Monitor, path: '/admin/itam', permissions: ['view_managedendpoint'] },
-    { label: 'Procurement', icon: Layers, path: '/admin/scm', permissions: ['view_vendor'] },
+    { label: 'IT Asset Management (ITAM)', icon: Monitor, path: '/admin/itam', permissions: ['view_managedendpoint'] },
+    { label: 'Contracts & SLAs', icon: FileText, path: '/admin/contracts', permissions: ['view_servicecontract'] },
 
-    // 4. People & Governance
-    { label: 'People & Governance', icon: null, path: null },
-    { label: 'People & HR', icon: Building2, path: '/admin/hrm', permissions: ['view_employeeprofile'] },
-    { label: 'Approval Center', icon: CheckSquare, path: '/admin/approvals', permissions: ['view_approval'] },
+    // 4. Security & Governance
+    { label: 'Security & Governance', icon: null, path: null },
+    { label: 'Security Operations (SecOps)', icon: ShieldCheck, path: '/admin/security', permissions: ['view_incident'] },
+    { label: 'Identity & Access Management', icon: Key, path: '/admin/iam', permissions: ['view_user'] },
     { label: 'Document Management', icon: FolderOpen, path: '/admin/documents', permissions: ['view_document'] },
+    { label: 'Approval Center', icon: CheckSquare, path: '/admin/approvals', permissions: ['view_approval'] },
 
-    // 5. Finance
-    { label: 'Finance', icon: null, path: null },
-    { label: 'Finance & Billing', icon: PieChart, path: '/admin/erp', permissions: ['view_internalproject'] },
-
-    // 6. Security & Compliance
-    { label: 'Security & Compliance', icon: null, path: null },
-    { label: 'SOC (Security)', icon: ShieldCheck, path: '/admin/security', permissions: ['view_incident'] },
-    { label: 'Identity & Access', icon: Key, path: '/admin/iam', permissions: ['view_user'] },
-
-    // 7. Intelligence
-    { label: 'Intelligence', icon: null, path: null },
-    { label: 'Analytics & Reports', icon: BarChart3, path: '/admin/reports', permissions: ['view_dashboard'] },
-
-    // 8. Platform
-    { label: 'Platform', icon: null, path: null },
-    { label: 'System Admin', icon: Server, path: '/admin/system', permissions: ['view_tenant'] },
-    { label: 'Website & CMS', icon: Globe, path: '/admin/cms', permissions: ['view_page'] },
+    // 5. Intelligence & Platform
+    { label: 'Intelligence & Platform', icon: null, path: null },
+    { label: 'Enterprise Analytics', icon: BarChart3, path: '/admin/reports', permissions: ['view_dashboard'] },
+    { label: 'Platform Administration', icon: Server, path: '/admin/system', permissions: ['view_tenant'] },
+    { label: 'Content Management (CMS)', icon: Globe, path: '/admin/cms', permissions: ['view_page'] },
     { label: 'Blog Manager', icon: BookOpen, path: '/admin/blog', permissions: ['view_page'] },
-    { label: 'Client Portal', icon: Globe, path: '/admin/portal', permissions: ['view_client'] }
+    { label: 'Client Portal', icon: LayoutDashboard, path: '/admin/portal', permissions: ['view_client'] }
 ];
 
 export const productMenu = {
@@ -110,7 +105,13 @@ export const productMenu = {
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/system' },
                 { label: 'Platform Settings', icon: Settings, path: '/admin/system/settings' },
-                { label: 'System Logs', icon: Database, path: '/admin/system/logs' },
+                { label: 'Identity & Access (IAM)', icon: Users, path: '/admin/users' },
+                { label: 'Role-Based Access (RBAC)', icon: ShieldCheck, path: '/admin/roles' },
+                { label: 'API Keys & Secrets', icon: Key, path: '/admin/system/settings?tab=integrations' },
+                { label: 'Webhook Endpoints', icon: Globe, path: '/admin/system/settings?tab=integrations' },
+                { label: 'Disaster Recovery (Backups)', icon: Database, path: '/admin/system/settings?tab=retention' },
+                { label: 'Compliance Audit Trail', icon: FileText, path: '/admin/system/logs' },
+                { label: 'Live Server Telemetry', icon: Terminal, path: '/admin/system/server-logs' },
             ]
         }
     ],
@@ -158,11 +159,13 @@ export const productMenu = {
         {
             title: 'Accounts Receivable',
             items: [
+                { label: 'Document Hub', icon: FileCheck, path: '/admin/erp/documents' },
                 { label: 'Invoices', icon: FileText, path: '/admin/erp/invoices' },
                 { label: 'Time Billing', icon: Clock, path: '/admin/erp/time-billing' },
                 { label: 'Recurring Billing', icon: Repeat, path: '/admin/erp/recurring' },
                 { label: 'Delivery Notes', icon: Truck, path: '/admin/erp/delivery' },
                 { label: 'A/R Aging', icon: Clock, path: '/admin/erp/aging-report' },
+                { label: 'Product Catalog', icon: Tags, path: '/admin/erp/catalog' },
             ]
         },
         {
@@ -178,6 +181,7 @@ export const productMenu = {
                 { label: 'Journal Entries', icon: FileSpreadsheet, path: '/admin/erp/journal-entries' },
                 { label: 'Chart of Accounts', icon: Database, path: '/admin/erp/chart-of-accounts' },
                 { label: 'Fixed Assets', icon: Server, path: '/admin/erp/fixed-assets' },
+                { label: 'Deferred Revenue', icon: Layers, path: '/admin/erp/deferred-revenue' },
             ]
         },
         {
@@ -192,15 +196,16 @@ export const productMenu = {
             title: 'Configuration',
             items: [
                 { label: 'Settings', icon: Settings, path: '/admin/erp/settings' },
+                { label: 'Payment Terms', icon: FileText, path: '/admin/erp/settings/payment-terms' },
+                { label: 'Invoice Branding', icon: Paintbrush, path: '/admin/erp/settings/branding' },
             ]
         }
     ],
     store: [
         {
-            title: 'Service Catalog & Procurement',
+            title: 'Store & Procurement',
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/store/dashboard' },
-                { label: 'Service Catalog', icon: Tag, path: '/admin/store/services' },
                 { label: 'Categories', icon: Tags, path: '/admin/store/categories' },
                 { label: 'Products & Services', icon: Box, path: '/admin/store/products' },
                 { label: 'Procurement Orders', icon: ShoppingCart, path: '/admin/store/orders' },
@@ -336,9 +341,11 @@ export const productMenu = {
     ],
     itsm: [
         {
-            title: 'Operations',
+            title: 'ITIL Service Operations',
             items: [
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/itsm' },
+                { label: 'IT Service Catalog', icon: Tag, path: '/admin/itsm/catalog' },
+                { label: 'Service Requests', icon: CheckSquare, path: '/admin/itsm/requests' },
                 { label: 'Change Requests', icon: GitBranch, path: '/admin/itsm/changes' },
                 { label: 'Problem Management', icon: AlertCircle, path: '/admin/itsm/problems' },
                 { label: 'Settings', icon: Settings, path: '/admin/itsm/settings' },

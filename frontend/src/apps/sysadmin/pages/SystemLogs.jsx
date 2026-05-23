@@ -1,98 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, Clock, Server, Search, Filter } from 'lucide-react';
+import { Terminal, RefreshCw, AlertCircle, Download, Monitor } from 'lucide-react';
 import { sysadminService } from '../api/sysadminService';
 
 const SystemLogs = () => {
-    const [logs, setLogs] = useState([]);
+    const [logs, setLogs] = useState('');
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+
+    const fetchLogs = () => {
+        setLoading(true);
+        sysadminService.getServerLogs()
+            .then(res => setLogs(res.data.logs || 'No logs available.'))
+            .catch(err => setLogs(`Error fetching logs: ${err.message}`))
+            .finally(() => setLoading(false));
+    };
 
     useEffect(() => {
-        sysadminService.getAuditLogs()
-            .then(res => setLogs(res.data?.results || res.data || []))
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
+        fetchLogs();
     }, []);
 
-    const handleExport = async () => {
-        try {
-            const response = await sysadminService.exportAuditLogs();
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'audit_logs.csv');
-            document.body.appendChild(link);
-            link.click();
-        } catch (error) {
-            console.error('Failed to export CSV', error);
-        }
+    const handleDownload = () => {
+        const url = window.URL.createObjectURL(new Blob([logs]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'django_server_logs.txt');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">System Logs</h1>
-                    <p className="text-slate-400">Real-time monitoring and event history.</p>
+                    <h1 className="text-3xl font-extrabold text-white tracking-tight font-['Oswald'] uppercase flex items-center gap-3">
+                        <Monitor className="text-blue-500" /> Live Server Logs
+                    </h1>
+                    <p className="text-slate-400 mt-1">Raw diagnostic output from the backend infrastructure.</p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="p-2 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-slate-600 transition-colors bg-transparent">
-                        <Filter size={18} />
+                <div className="flex gap-3">
+                    <button onClick={fetchLogs} className="flex items-center gap-2 p-2 px-4 border border-slate-700 bg-slate-800 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
+                        <RefreshCw size={16} className={loading ? 'animate-spin' : ''} /> Refresh
                     </button>
-                    <button onClick={handleExport} className="bg-slate-800 text-slate-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors border-none cursor-pointer">Export CSV</button>
+                    <button onClick={handleDownload} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-500 transition-colors border-none cursor-pointer shadow-lg shadow-blue-900/20">
+                        <Download size={16} /> Download Logs
+                    </button>
                 </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 flex items-center gap-2">
-                <Search size={16} className="text-slate-500 ml-2" />
-                <input
-                    type="text"
-                    placeholder="Search logs by action or resource..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="flex-1 bg-transparent border-none text-slate-300 focus:ring-0 text-sm h-8 outline-none"
-                />
-            </div>
-
-            {/* Logs List */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-                <div className="p-4 border-b border-slate-800 bg-slate-950/50 flex justify-between items-center">
-                    <h3 className="text-sm font-semibold text-slate-300">Recent Events</h3>
-                    <span className="text-xs text-slate-500">Live Updating...</span>
-                </div>
-                <div className="divide-y divide-slate-800/50">
-                    {loading ? (
-                        <div className="p-8 text-center text-slate-500 text-sm">Loading audit logs...</div>
-                    ) : logs.length === 0 ? (
-                        <div className="p-8 text-center text-slate-500 text-sm">No activity recorded.</div>
-                    ) : logs.filter(l => l.action?.toLowerCase().includes(search.toLowerCase()) || l.resource_type?.toLowerCase().includes(search.toLowerCase())).map(log => (
-                        <div key={log.id} className="p-4 hover:bg-slate-800/30 transition-colors flex items-start gap-4">
-                            <div className={`mt-1 w-2 h-2 rounded-full shrink-0
-                                ${log.action === 'delete' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' :
-                                    log.action === 'settings_change' ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]' :
-                                        'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'}`}
-                            />
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <span className={`text-sm font-mono font-medium uppercase
-                                        ${log.action === 'delete' ? 'text-red-400' :
-                                            log.action === 'settings_change' ? 'text-amber-400' : 'text-emerald-400'}`}>
-                                        [{log.action}]
-                                    </span>
-                                    <span className="text-xs text-slate-500 flex items-center gap-1 shrink-0 ml-4">
-                                        <Clock size={12} /> {log.created_at ? new Date(log.created_at).toLocaleString() : 'Just now'}
-                                    </span>
-                                </div>
-                                <p className="text-slate-300 text-sm mt-0.5">{log.user_email || log.user_name || 'System'} modified {log.resource_type}. {log.details?.message}</p>
-                                <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                                    <Server size={12} />
-                                    <span>{log.ip_address || 'Internal Server'}</span>
-                                </div>
-                            </div>
+            <div className="bg-[#0D1117] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+                <div className="flex items-center justify-between p-3 bg-slate-900 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                        <div className="flex gap-1.5 mr-4">
+                            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                            <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                            <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
                         </div>
-                    ))}
+                        <Terminal size={16} className="text-slate-500" />
+                        <span className="text-xs font-mono text-slate-400">root@bitguard-enterprise: /var/log/django.log (tail -n 100)</span>
+                    </div>
+                    {loading && <span className="text-xs text-blue-400 flex items-center gap-2"><RefreshCw size={12} className="animate-spin" /> Polling stream...</span>}
                 </div>
+                
+                <div className="p-4 overflow-x-auto min-h-[500px] max-h-[700px] overflow-y-auto custom-scrollbar font-mono text-sm leading-relaxed">
+                    {loading && !logs ? (
+                        <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+                            <RefreshCw className="animate-spin mb-4" size={24} />
+                            <span>Establishing log stream connection...</span>
+                        </div>
+                    ) : (
+                        <pre className="text-slate-300 whitespace-pre-wrap break-all">
+                            {logs.split('\n').map((line, idx) => {
+                                let colorClass = 'text-slate-300';
+                                if (line.includes('ERROR') || line.includes('CRITICAL') || line.includes('Traceback') || line.includes('Exception')) {
+                                    colorClass = 'text-red-400 font-bold';
+                                } else if (line.includes('WARNING')) {
+                                    colorClass = 'text-amber-400';
+                                } else if (line.includes('INFO')) {
+                                    colorClass = 'text-blue-300';
+                                }
+                                
+                                return (
+                                    <div key={idx} className={`${colorClass} hover:bg-slate-800/50 px-2 rounded`}>
+                                        <span className="text-slate-600 select-none mr-4 text-xs">{String(idx + 1).padStart(3, '0')}</span>
+                                        {line}
+                                    </div>
+                                );
+                            })}
+                        </pre>
+                    )}
+                </div>
+            </div>
+            
+            <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={18} />
+                <p className="text-sm text-amber-400/90 leading-relaxed">
+                    <strong>Security Notice:</strong> Raw server logs may contain sensitive stack traces or environment variables if debug mode is active. Ensure proper access controls are maintained for this dashboard module.
+                </p>
             </div>
         </div>
     );

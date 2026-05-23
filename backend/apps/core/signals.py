@@ -37,6 +37,19 @@ def handle_deal_won(sender, instance, created, **kwargs):
             if created_proj:
                 logger.info(f"Created InternalProject from Deal {instance.id}")
 
+                Invoice = apps.get_model('erp', 'Invoice')
+                Invoice.objects.create(
+                    tenant=instance.tenant,
+                    client=instance.client,
+                    type='standard',
+                    status='draft',
+                    issue_date=timezone.now().date(),
+                    due_date=timezone.now().date(),
+                    subtotal=instance.amount or 0,
+                    total_amount=instance.amount or 0,
+                    reference=f"Auto-generated from Deal {instance.id}"
+                )
+
 @receiver(order_paid)
 def handle_order_paid(sender, order, request=None, **kwargs):
     """

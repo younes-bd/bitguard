@@ -17,6 +17,13 @@ class BaseModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='%(app_label)s_%(class)s_created')
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            current_tenant = get_current_tenant()
+            if current_tenant:
+                self.tenant = current_tenant
+        super().save(*args, **kwargs)
+
     class Meta:
         abstract = True
 

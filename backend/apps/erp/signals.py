@@ -5,6 +5,7 @@ Charter §6: Commerce actions propagate automatically to operations.
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.db.models import Sum
 import logging
 import datetime
 
@@ -117,65 +118,15 @@ def update_budget_on_expense(sender, instance, created, **kwargs):
             logger.error(f"Failed to update budget from expense: {e}", exc_info=True)
 
 
-@receiver(post_save, sender='contracts.Quote')
-def generate_invoice_from_quote_acceptance(sender, instance, created, **kwargs):
-    """
-    When a Quote is marked as 'accepted', automatically generate an Invoice.
-    """
-    if instance.status == 'accepted':
-        # Check if an invoice already exists for this quote (e.g., in reference)
-        from apps.erp.models import Invoice
-        if Invoice.objects.filter(reference=f"Quote #{instance.id}").exists():
-            return
-
-        try:
-            from apps.erp.services import InvoiceService
-            # We don't have a direct request object here, so we simulate a basic request context
-            # or directly call the service method adjusting for tenant.
-            # But wait, InvoiceService.create_from_quote needs a request object.
-            # We will manually create the invoice here if needed or bypass request requirement.
-            tenant = instance.tenant
-            
-            # Generate invoice number
-            year = timezone.now().year
-            count = Invoice.objects.filter(
-                tenant=tenant,
-                invoice_number__startswith=f"INV-QT-{year}-"
-            ).count()
-            inv_number = f"INV-QT-{year}-{str(count + 1).zfill(4)}"
-
-            invoice = Invoice.objects.create(
-                tenant=tenant,
-                client=instance.client,
-                invoice_number=inv_number,
-                type='standard',
-                subtotal=instance.subtotal,
-                discount_total=instance.subtotal * (instance.discount_percent / 100),
-                total_amount=instance.total,
-                status='draft',
-                issue_date=timezone.now().date(),
-                due_date=timezone.now().date() + datetime.timedelta(days=30),
-                reference=f"Quote #{instance.id}"
-            )
-            
-            from apps.erp.models import InvoiceItem
-            for line in instance.lines.all():
-                InvoiceItem.objects.create(
-                    tenant=tenant,
-                    invoice=invoice,
-                    description=line.description,
-                    quantity=line.quantity,
-                    unit_price=line.unit_price,
-                    tax_rate=0,
-                    discount=0,
-                    total=line.line_total
-                )
-                
-            logger.info(f"ERP Invoice {inv_number} created from Quote #{instance.id}")
-            
-        except Exception as e:
-            logger.error(f"Failed to generate invoice from Quote: {e}", exc_info=True)
-
+@receiver(post_save, sender='erp.Payment')
+def update_invoice_on_payment(sender, instance, created, **kwargs):
+    if created and instance.invoice:
+        total_paid = instance.invoice.payment_set.aggregate(Sum('amount'))['amount__sum'] or 0
+        if total_paid >= instance.invoice.total_amount:
+            instance.invoice.status = 'paid'
+        else:
+            instance.invoice.status = 'partially_paid'
+        instance.invoice.save()
 
 @receiver(post_save, sender='erp.Payment')
 def notify_on_payment_creation(sender, instance, created, **kwargs):

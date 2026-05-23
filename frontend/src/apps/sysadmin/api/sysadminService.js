@@ -21,5 +21,23 @@ export const sysadminService = {
 
   // Reports
   generateReport: () => apiClient.get('sysadmin/settings/generate_report/', { responseType: 'blob' }),
-  exportAuditLogs: (params) => apiClient.get('sysadmin/audit-logs/export_csv/', { params, responseType: 'blob' })
+  exportAuditLogs: (params) => apiClient.get('sysadmin/audit-logs/export_csv/', { params, responseType: 'blob' }),
+
+  // API Keys
+  getApiKeys: () => apiClient.get('sysadmin/api-keys/'),
+  createApiKey: (data) => apiClient.post('sysadmin/api-keys/', data),
+  deleteApiKey: (id) => apiClient.delete(`sysadmin/api-keys/${id}/`),
+
+  // Webhooks
+  getWebhooks: () => apiClient.get('sysadmin/webhooks/'),
+  createWebhook: (data) => apiClient.post('sysadmin/webhooks/', data),
+  deleteWebhook: (id) => apiClient.delete(`sysadmin/webhooks/${id}/`),
+
+  // Backups & Retention
+  getBackups: () => apiClient.get('sysadmin/backups/'),
+  triggerBackup: () => apiClient.post('sysadmin/backups/trigger/'),
+  pruneAuditLogs: (days) => apiClient.post('sysadmin/audit-logs/prune/', { days }),
+
+  // System Logs (Raw)
+  getServerLogs: () => apiClient.get('sysadmin/settings/server_logs/')
 };

@@ -1,8 +1,81 @@
+import uuid
 from django.db import models
 from django.utils import timezone
 from apps.core.models import BaseModel, TenantAwareModel
 from django.conf import settings
 import datetime
+
+
+# ─────────────────────────────────────────
+# PAYMENT TERMS
+# ─────────────────────────────────────────
+
+class PaymentTerms(TenantAwareModel):
+    """
+    Named payment term rules (e.g. Net 30, 2/10 Net 30, COD, Due on Receipt).
+    Automatically calculates due date when applied to an invoice.
+    """
+    name = models.CharField(max_length=100, help_text="e.g. Net 30, 2/10 Net 30")
+    days_due = models.IntegerField(default=30, help_text="Days until payment is due from invoice date")
+    discount_percent = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0,
+        help_text="Early-pay discount % (e.g. 2 for 2/10 Net 30)"
+    )
+    discount_days = models.IntegerField(
+        default=0, help_text="Days within which the early-pay discount applies"
+    )
+    description = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = 'Payment Terms'
+        verbose_name_plural = 'Payment Terms'
+
+    def calculate_due_date(self, from_date=None):
+        base = from_date or timezone.now().date()
+        return base + datetime.timedelta(days=self.days_due)
+
+    def __str__(self):
+        return self.name
+
+
+
+# ─────────────────────────────────────────
+# INVOICE BRANDING
+# ─────────────────────────────────────────
+
+class InvoiceBranding(TenantAwareModel):
+    """
+    Per-tenant branding applied when generating invoice PDFs.
+    Modelled after Zoho Invoice's company settings.
+    """
+    company_name = models.CharField(max_length=255)
+    company_address = models.TextField(blank=True)
+    company_phone = models.CharField(max_length=50, blank=True)
+    company_email = models.EmailField(blank=True)
+    company_website = models.URLField(blank=True)
+    tax_id = models.CharField(max_length=100, blank=True, help_text="VAT/Tax registration number")
+    logo_url = models.URLField(blank=True, help_text="Company logo displayed on PDF invoices")
+    primary_color = models.CharField(max_length=7, default='#1a56db', help_text="Hex color for PDF header")
+    invoice_footer = models.TextField(
+        blank=True,
+        help_text="Footer text shown on every invoice (e.g. banking details, thank-you message)"
+    )
+    bank_name = models.CharField(max_length=255, blank=True)
+    bank_account_number = models.CharField(max_length=100, blank=True)
+    bank_routing_number = models.CharField(max_length=100, blank=True)
+    bank_swift = models.CharField(max_length=50, blank=True)
+    default_payment_terms = models.ForeignKey(
+        PaymentTerms, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='branding_defaults'
+    )
+    default_currency = models.CharField(max_length=10, default='USD')
+
+    class Meta:
+        verbose_name = 'Invoice Branding'
+
+    def __str__(self):
+        return f"Branding for {self.company_name}"
+
 
 class TaxConfig(TenantAwareModel):
     name = models.CharField(max_length=50)
@@ -16,7 +89,9 @@ class Invoice(TenantAwareModel):
     TYPE_CHOICES = [
         ('standard', 'Standard Invoice'),
         ('proforma', 'Proforma Invoice'),
-        ('credit_note', 'Credit Note'),
+        ('quotation', 'Quotation / Devis'),
+        ('credit_note', 'Credit Note / Avoir'),
+        ('receipt', 'Payment Receipt'),
     ]
     STATUS_CHOICES = [
         ('draft', 'Draft'),
@@ -31,24 +106,40 @@ class Invoice(TenantAwareModel):
     invoice_number = models.CharField(max_length=100)
     client = models.ForeignKey('crm.Client', on_delete=models.CASCADE, related_name='invoices')
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='standard')
-    
+
     project = models.ForeignKey('erp.InternalProject', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
     contract = models.ForeignKey('contracts.ServiceContract', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
-    
+
     # Financial Totals (computed)
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     tax_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     discount_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    discount_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text="Invoice-level discount percentage")
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    
+
+    # Multi-currency support (Odoo/Zoho standard)
+    currency = models.CharField(max_length=10, default='USD')
+    exchange_rate = models.DecimalField(max_digits=12, decimal_places=6, default=1.000000, help_text="Rate vs base currency")
+
+    # Payment terms
+    payment_terms = models.ForeignKey(
+        'PaymentTerms', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='invoices'
+    )
+
     issue_date = models.DateField()
     due_date = models.DateField()
+    expiry_date = models.DateField(null=True, blank=True, help_text="For quotations: the date the quote expires")
     paid_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='draft')
-    
+
     # PDF and Reference
     reference = models.CharField(max_length=100, blank=True)
     notes = models.TextField(blank=True)
+
+    # Secure client self-service portal token (Zoho-style pay link)
+    payment_link_token = models.UUIDField(default=uuid.uuid4, editable=False)
+    pdf_generated_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Invoice'
@@ -98,13 +189,16 @@ class DeliveryNote(TenantAwareModel):
         ('delivered', 'Delivered'),
         ('returned', 'Returned'),
     ]
-    dn_number = models.CharField(max_length=100, unique=True)
+    dn_number = models.CharField(max_length=100)
     invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True, related_name='delivery_notes')
     client = models.ForeignKey('crm.Client', on_delete=models.CASCADE)
     shipping_address = models.TextField()
     tracking_number = models.CharField(max_length=100, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     delivery_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('tenant', 'dn_number')
 
     def __str__(self):
         return self.dn_number
@@ -508,3 +602,47 @@ class FixedAsset(TenantAwareModel):
 
     def __str__(self):
         return self.name
+
+
+# ─────────────────────────────────────────
+# DEFERRED REVENUE
+# ─────────────────────────────────────────
+
+class DeferredRevenue(TenantAwareModel):
+    """
+    Tracks prepaid/unearned revenue from contracts.
+    Each month, a recognition journal entry moves the amount from
+    Deferred Revenue (liability) to Revenue (income).
+    Modelled after Odoo's revenue recognition module.
+    """
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('completed', 'Fully Recognized'),
+        ('cancelled', 'Cancelled'),
+    ]
+    invoice = models.ForeignKey(
+        Invoice, on_delete=models.CASCADE, related_name='deferred_revenues'
+    )
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    recognized_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    recognition_start = models.DateField()
+    recognition_end = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    deferred_account = models.ForeignKey(
+        Account, on_delete=models.PROTECT, related_name='deferred_revenue_entries',
+        null=True, blank=True
+    )
+    revenue_account = models.ForeignKey(
+        Account, on_delete=models.PROTECT, related_name='recognized_revenue_entries',
+        null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Deferred Revenue'
+
+    @property
+    def remaining_amount(self):
+        return self.total_amount - self.recognized_amount
+
+    def __str__(self):
+        return f"Deferred Revenue — {self.invoice.invoice_number} ({self.remaining_amount} remaining)"

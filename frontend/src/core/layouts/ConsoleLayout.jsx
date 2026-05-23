@@ -45,28 +45,58 @@ const ConsoleLayout = () => {
     // Search handler — filters all admin menu items by label
     const handleSearch = (query) => {
         setSearchQuery(query);
-        if (query.trim().length < 2) {
-            setSearchResults([]);
-            setShowSearchResults(false);
-            return;
-        }
-        const q = query.toLowerCase();
-        const results = [];
-        adminMenu.forEach(item => {
-            if (item.label?.toLowerCase().includes(q)) {
-                results.push(item);
-            }
-            if (item.children) {
-                item.children.forEach(child => {
-                    if (child.label?.toLowerCase().includes(q)) {
-                        results.push({ ...child, parentLabel: item.label });
-                    }
-                });
-            }
-        });
-        setSearchResults(results.slice(0, 8));
-        setShowSearchResults(true);
     };
+
+    // Debounced API Search
+    useEffect(() => {
+        const fetchResults = async () => {
+            if (searchQuery.trim().length < 2) {
+                setSearchResults([]);
+                setShowSearchResults(false);
+                return;
+            }
+            const q = searchQuery.toLowerCase();
+            const results = [];
+            
+            // 1. Local Menu Search
+            adminMenu.forEach(item => {
+                if (item.label?.toLowerCase().includes(q)) {
+                    results.push(item);
+                }
+                if (item.children) {
+                    item.children.forEach(child => {
+                        if (child.label?.toLowerCase().includes(q)) {
+                            results.push({ ...child, parentLabel: item.label });
+                        }
+                    });
+                }
+            });
+            
+            // 2. Global Backend Search
+            try {
+                const response = await client.get(`/dashboard/search/?q=${encodeURIComponent(searchQuery)}`);
+                if (response.data?.status === 'success' && response.data?.data) {
+                    const apiResults = response.data.data.map(item => ({
+                        label: item.title,
+                        parentLabel: `Global \u2022 ${item.type.toUpperCase()}`,
+                        path: item.url
+                    }));
+                    results.push(...apiResults);
+                }
+            } catch (error) {
+                console.error("Global search error", error);
+            }
+            
+            setSearchResults(results.slice(0, 10));
+            setShowSearchResults(true);
+        };
+
+        const timerId = setTimeout(() => {
+            fetchResults();
+        }, 300);
+
+        return () => clearTimeout(timerId);
+    }, [searchQuery]);
 
     // Close search results on click outside
     useEffect(() => {

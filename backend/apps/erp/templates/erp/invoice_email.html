@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #1a56db; color: #fff; text-decoration: none; border-radius: 4px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>New Invoice from {{ company_name }}</h2>
+        <p>Dear {{ invoice.client.name }},</p>
+        <p>Please find attached Invoice <strong>{{ invoice.invoice_number }}</strong> for the amount of <strong>{{ invoice.currency }} {{ invoice.total_amount }}</strong>.</p>
+        <p>Payment is due by {{ invoice.due_date }}.</p>
+        
+        {% if invoice.payment_link_token %}
+            <p>You can view and pay your invoice securely online by clicking the button below:</p>
+            <a href="https://yourdomain.com/portal/invoice/{{ invoice.payment_link_token }}" class="btn">View & Pay Invoice</a>
+        {% endif %}
+
+        <p><br>Thank you for your business!</p>
+        <p>Sincerely,<br>{{ company_name }}</p>
+    </div>
+</body>
+</html>

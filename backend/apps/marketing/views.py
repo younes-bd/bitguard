@@ -9,6 +9,30 @@ from .models import Campaign
 from .serializers import CampaignSerializer
 from .services import CampaignService
 
+MOCK_INTEGRATIONS = [
+    { 'name': 'Google Analytics', 'description': 'Track website traffic and campaign attribution', 'connected': True, 'icon': '📊' },
+    { 'name': 'Mailchimp', 'description': 'Email marketing automation and subscriber management', 'connected': False, 'icon': '📧' },
+    { 'name': 'HubSpot', 'description': 'Inbound marketing and lead scoring', 'connected': False, 'icon': '🟠' },
+    { 'name': 'Facebook Ads', 'description': 'Social media advertising and retargeting', 'connected': True, 'icon': '📘' },
+    { 'name': 'Google Ads', 'description': 'Search and display advertising campaigns', 'connected': False, 'icon': '🔍' },
+    { 'name': 'LinkedIn Ads', 'description': 'B2B advertising and sponsored content', 'connected': False, 'icon': '🔗' },
+    { 'name': 'Zapier', 'description': 'Workflow automation between marketing tools', 'connected': True, 'icon': '⚡' },
+    { 'name': 'Slack', 'description': 'Team notifications for campaign events', 'connected': True, 'icon': '💬' },
+]
+
+class IntegrationViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        return Response({'results': MOCK_INTEGRATIONS})
+
+    @action(detail=False, methods=['post'])
+    def toggle(self, request):
+        name = request.data.get('name')
+        if not name:
+            return Response({'error': 'name required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'status': 'success', 'is_connected': True})
+
 class CampaignViewSet(viewsets.ModelViewSet):
     """
     Standard CRUD viewset for Marketing Campaigns bounded by Tenant.

@@ -2,11 +2,8 @@ import React from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
 const B2CInvoiceTemplate = ({ data }) => {
-    // Generate mock retail pricing
-    const getMockPrice = (index) => ((index + 1) * 200) + 99;
-    
-    const subtotal = data.services.reduce((acc, _, idx) => acc + getMockPrice(idx), 0);
-    const tax = subtotal * 0.08; // 8% sales tax mock
+    const subtotal = data.services.reduce((acc, service) => acc + (service.price || 0), 0);
+    const tax = subtotal * 0.08; // Example tax calculation
     const total = subtotal + tax;
 
     const formatCurrency = (amount) => {
@@ -70,7 +67,7 @@ const B2CInvoiceTemplate = ({ data }) => {
                                         <div className="font-bold text-slate-900 text-base">{service.title}</div>
                                         <div className="text-sm text-slate-500 mt-1 leading-relaxed line-clamp-2 pr-12">{service.description}</div>
                                     </td>
-                                    <td className="py-5 text-right font-semibold text-slate-900 text-base align-top">{formatCurrency(getMockPrice(index))}</td>
+                                    <td className="py-5 text-right font-semibold text-slate-900 text-base align-top">{formatCurrency(service.price || 0)}</td>
                                 </tr>
                             ))
                         )}

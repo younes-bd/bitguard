@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import SystemSetting, AuditTrail
+from .models import SystemSetting, AuditTrail, PlatformAPIKey, WebhookEndpoint, DatabaseBackup
 
 class SystemSettingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,3 +19,25 @@ class AuditTrailSerializer(serializers.ModelSerializer):
         model = AuditTrail
         fields = ['id', 'user', 'user_email', 'user_name', 'action', 'resource_type', 'resource_id', 'details', 'ip_address', 'created_at']
         read_only_fields = fields
+
+class PlatformAPIKeySerializer(serializers.ModelSerializer):
+    created_by_email = serializers.EmailField(source='created_by.email', read_only=True)
+    
+    class Meta:
+        model = PlatformAPIKey
+        fields = ['id', 'name', 'key_prefix', 'is_active', 'last_used_at', 'expires_at', 'created_by_email', 'created_at']
+        read_only_fields = ['id', 'key_prefix', 'last_used_at', 'created_by_email', 'created_at']
+
+class WebhookEndpointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WebhookEndpoint
+        fields = ['id', 'name', 'url', 'is_active', 'events', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+class DatabaseBackupSerializer(serializers.ModelSerializer):
+    triggered_by_email = serializers.EmailField(source='triggered_by.email', read_only=True)
+
+    class Meta:
+        model = DatabaseBackup
+        fields = ['id', 'filename', 'size_bytes', 'status', 'triggered_by_email', 'created_at']
+        read_only_fields = ['id', 'filename', 'size_bytes', 'status', 'triggered_by_email', 'created_at']

@@ -4,8 +4,10 @@ import PortalLayout from '../layouts/PortalLayout';
 import PortalDashboard from '../pages/PortalDashboard';
 import PortalTickets from '../pages/PortalTickets';
 import PortalInvoices from '../pages/PortalInvoices';
+import ClientPortalInvoice from '../pages/ClientPortalInvoice';
 
 export const PortalRoutes = (
+    <React.Fragment>
     <Route path="/portal" element={<PortalLayout />}>
         <Route index element={<PortalDashboard />} />
         <Route path="tickets" element={<PortalTickets />} />
@@ -23,4 +25,6 @@ export const PortalRoutes = (
             </div>
         } />
     </Route>
+    <Route path="/portal/invoice/:token" element={<ClientPortalInvoice />} />
+    </React.Fragment>
 );

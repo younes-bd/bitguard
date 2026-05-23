@@ -35,3 +35,23 @@ def trigger_ai_triage(sender, instance, created, **kwargs):
                     resource=f"support.Ticket:{instance.pk}", 
                     payload={"new_priority": priority, "reasoning": reasoning}
                 )
+
+@receiver(post_save, sender=Ticket)
+def trigger_audit_on_ticket_closure(sender, instance, created, **kwargs):
+    """
+    Signal: ITSM Incident Closure -> Log audit event.
+    When a ticket is closed, log it for compliance and SOC visibility.
+    """
+    if not created and instance.status == 'closed':
+        # Check if we already logged the closure to prevent duplicate logs on multiple saves
+        # We can just log it using AuditService
+        class DummyRequest:
+            user = instance.assigned_to or instance.created_by
+            META = {'REMOTE_ADDR': '127.0.0.1'}
+            
+        AuditService.log_action(
+            DummyRequest(), 
+            action="TICKET_CLOSED", 
+            resource=f"support.Ticket:{instance.pk}", 
+            payload={"ticket_title": instance.title, "resolution": "Ticket was marked as closed."}
+        )

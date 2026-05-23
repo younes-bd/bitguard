@@ -6,7 +6,7 @@ import {
     TrendingUp, Package, Clock, CheckCircle2, ArrowUpRight,
     RefreshCw, Server, Building2, Zap, DollarSign,
     FolderKanban, Monitor, FolderOpen, CheckSquare, GitBranch, Bell,
-    PlusCircle, Globe
+    PlusCircle, Globe, CreditCard, Tag, BarChart3, BookOpen, Key
 } from 'lucide-react';
 import { dashboardService } from '../api/dashboardService';
 import ErrorBoundary from '../../../core/components/ErrorBoundary';
@@ -114,12 +114,13 @@ const CommandCenter = () => {
     const [activity, setActivity] = useState([]);
     const [loading, setLoading] = useState(true);
     const [lastRefresh, setLastRefresh] = useState(null);
+    const [dateRange, setDateRange] = useState('30days');
 
     const fetchAll = useCallback(async () => {
         setLoading(true);
         try {
             const [m, h, a] = await Promise.all([
-                dashboardService.getMetrics().catch(() => ({})),
+                dashboardService.getMetrics({ range: dateRange }).catch(() => ({})),
                 dashboardService.getSystemHealth().catch(() => ({})),
                 dashboardService.getRecentActivity(8).catch(() => []),
             ]);
@@ -195,128 +196,60 @@ const CommandCenter = () => {
         },
     ];
 
-    // ── Module Tiles (Enterprise scale layout) ───────────────────────────
-    const moduleTiles = [
+    // ── Enterprise Pillars (Module Overview) ─────────────────────────────
+    const enterprisePillars = [
         {
-            title: 'Sales & CRM',
-            path: '/admin/crm',
-            icon: Users, color: 'blue',
-            kpi: metrics.crm?.active_clients,
-            kpiLabel: 'clients',
-            status: (metrics.crm?.active_clients > 0) ? 'active' : 'idle',
+            name: 'Customer & Revenue',
+            icon: DollarSign,
+            tiles: [
+                { title: 'Sales & CRM', path: '/admin/crm', icon: Users, color: 'blue', kpi: metrics.crm?.active_clients, kpiLabel: 'clients', status: (metrics.crm?.active_clients > 0) ? 'active' : 'idle' },
+                { title: 'Marketing Automation', path: '/admin/marketing', icon: Megaphone, color: 'purple', kpi: metrics.marketing?.active_campaigns, kpiLabel: 'campaigns', status: (metrics.marketing?.active_campaigns > 0) ? 'active' : 'idle' },
+                { title: 'Commerce & Storefront', path: '/admin/store', icon: Package, color: 'emerald', kpi: metrics.store?.pending_orders, kpiLabel: 'pending orders', status: (metrics.store?.pending_orders > 0) ? 'active' : 'idle' },
+                { title: 'Subscription Billing', path: '/admin/billing', icon: CreditCard, color: 'indigo', kpi: metrics.billing?.active_subs, kpiLabel: 'active subs', status: 'active' },
+            ]
         },
         {
-            title: 'Service Catalog',
-            path: '/admin/store',
-            icon: Package, color: 'indigo',
-            kpi: metrics.store?.pending_orders,
-            kpiLabel: 'pending orders',
-            status: (metrics.store?.pending_orders > 0) ? 'active' : 'idle',
+            name: 'Finance & Resources',
+            icon: PieChart,
+            tiles: [
+                { title: 'Finance & ERP', path: '/admin/erp', icon: PieChart, color: 'emerald', kpi: metrics.erp?.overdue_invoices, kpiLabel: 'overdue invoices', status: (metrics.erp?.overdue_invoices > 0) ? 'warning' : 'active' },
+                { title: 'Procurement & Supply Chain', path: '/admin/scm', icon: Truck, color: 'orange', kpi: metrics.scm?.pending_orders, kpiLabel: 'pending POs', status: (metrics.scm?.low_stock_items > 0) ? 'warning' : 'active' },
+                { title: 'Human Capital Management', path: '/admin/hrm', icon: Building2, color: 'pink', kpi: metrics.hrm?.headcount, kpiLabel: 'employees', status: (metrics.hrm?.headcount > 0) ? 'active' : 'idle' },
+                { title: 'Project Portfolio Management', path: '/admin/projects', icon: FolderKanban, color: 'cyan', kpi: metrics.projects?.active_projects, kpiLabel: 'active', status: (metrics.projects?.active_projects > 0) ? 'active' : 'idle' },
+            ]
         },
         {
-            title: 'Finance & Billing',
-            path: '/admin/erp',
-            icon: DollarSign, color: 'emerald',
-            kpi: metrics.erp?.overdue_invoices,
-            kpiLabel: 'overdue invoices',
-            status: (metrics.erp?.overdue_invoices > 0) ? 'warning' : 'active',
+            name: 'IT Service Management (ITSM)',
+            icon: LifeBuoy,
+            tiles: [
+                { title: 'IT Service Desk', path: '/admin/support', icon: LifeBuoy, color: 'amber', kpi: metrics.support?.open_tickets, kpiLabel: 'open tickets', status: (metrics.support?.open_tickets > 0) ? 'active' : 'idle' },
+                { title: 'Service Catalog', path: '/admin/itsm/catalog', icon: Tag, color: 'blue', kpi: metrics.itsm?.requests, kpiLabel: 'requests', status: 'active' },
+                { title: 'Change Management', path: '/admin/itsm', icon: GitBranch, color: 'indigo', kpi: metrics.itsm?.open_changes, kpiLabel: 'changes', status: (metrics.itsm?.open_changes > 0) ? 'active' : 'idle' },
+                { title: 'IT Asset Management', path: '/admin/itam', icon: Monitor, color: 'teal', kpi: metrics.itam?.total_assets, kpiLabel: 'assets', status: (metrics.itam?.total_assets > 0) ? 'active' : 'idle' },
+                { title: 'Contracts & SLAs', path: '/admin/contracts', icon: FileText, color: 'rose', kpi: metrics.contracts?.active_contracts, kpiLabel: 'active contracts', status: (metrics.contracts?.active_contracts > 0) ? 'active' : 'idle' },
+            ]
         },
         {
-            title: 'SOC (Security)',
-            path: '/admin/security',
-            icon: ShieldCheck, color: 'rose',
-            kpi: metrics.security?.open_alerts,
-            kpiLabel: 'open alerts',
-            status: (metrics.security?.open_alerts > 0) ? 'warning' : 'active',
+            name: 'Security & Governance',
+            icon: ShieldCheck,
+            tiles: [
+                { title: 'Security Operations (SecOps)', path: '/admin/security', icon: ShieldCheck, color: 'rose', kpi: metrics.security?.open_alerts, kpiLabel: 'open alerts', status: (metrics.security?.open_alerts > 0) ? 'warning' : 'active' },
+                { title: 'Identity & Access Management', path: '/admin/iam', icon: Key, color: 'violet', kpi: metrics.iam?.users, kpiLabel: 'users', status: 'active' },
+                { title: 'Document Management', path: '/admin/documents', icon: FolderOpen, color: 'cyan', kpi: metrics.documents?.total, kpiLabel: 'documents', status: (metrics.documents?.total > 0) ? 'active' : 'idle' },
+                { title: 'Approval Center', path: '/admin/approvals', icon: CheckSquare, color: 'amber', kpi: metrics.approvals?.pending, kpiLabel: 'pending approvals', status: (metrics.approvals?.pending > 0) ? 'warning' : 'active' },
+            ]
         },
         {
-            title: 'Service Desk',
-            path: '/admin/support',
-            icon: LifeBuoy, color: 'amber',
-            kpi: metrics.support?.open_tickets,
-            kpiLabel: 'open tickets',
-            status: (metrics.support?.open_tickets > 0) ? 'active' : 'idle',
-        },
-        {
-            title: 'Marketing',
-            path: '/admin/marketing',
-            icon: Megaphone, color: 'purple',
-            kpi: metrics.marketing?.active_campaigns,
-            kpiLabel: 'campaigns',
-            status: (metrics.marketing?.active_campaigns > 0) ? 'active' : 'idle',
-        },
-        {
-            title: 'People & HR',
-            path: '/admin/hrm',
-            icon: Building2, color: 'pink',
-            kpi: metrics.hrm?.headcount,
-            kpiLabel: 'employees',
-            status: (metrics.hrm?.headcount > 0) ? 'active' : 'idle',
-        },
-        {
-            title: 'Procurement',
-            path: '/admin/scm',
-            icon: Truck, color: 'orange',
-            kpi: metrics.scm?.pending_orders,
-            kpiLabel: 'pending POs',
-            status: (metrics.scm?.low_stock_items > 0) ? 'warning' : 'active',
-        },
-        {
-            title: 'Identity & Access',
-            path: '/admin/iam',
-            icon: ShieldCheck, color: 'violet',
-            kpi: undefined,
-            kpiLabel: '',
-            status: 'active',
-        },
-        {
-            title: 'Contracts & SLAs',
-            path: '/admin/contracts',
-            icon: FileText, color: 'amber',
-            kpi: metrics.contracts?.active_contracts,
-            kpiLabel: 'active',
-            status: (metrics.contracts?.active_contracts > 0) ? 'active' : 'idle',
-        },
-        {
-            title: 'Project Management',
-            path: '/admin/projects',
-            icon: FolderKanban, color: 'cyan',
-            kpi: metrics.projects?.active_projects,
-            kpiLabel: 'active',
-            status: (metrics.projects?.active_projects > 0) ? 'active' : 'idle',
-        },
-        {
-            title: 'IT Asset Management',
-            path: '/admin/itam',
-            icon: Monitor, color: 'teal',
-            kpi: metrics.itam?.total_assets,
-            kpiLabel: 'assets',
-            status: (metrics.itam?.total_assets > 0) ? 'active' : 'idle',
-        },
-        {
-            title: 'Document Vault',
-            path: '/admin/documents',
-            icon: FolderOpen, color: 'cyan',
-            kpi: metrics.documents?.total,
-            kpiLabel: 'documents',
-            status: (metrics.documents?.total > 0) ? 'active' : 'idle',
-        },
-        {
-            title: 'Approval Center',
-            path: '/admin/approvals',
-            icon: CheckSquare, color: 'amber',
-            kpi: metrics.approvals?.pending,
-            kpiLabel: 'pending',
-            status: (metrics.approvals?.pending > 0) ? 'warning' : 'active',
-        },
-        {
-            title: 'Change Management',
-            path: '/admin/itsm',
-            icon: GitBranch, color: 'indigo',
-            kpi: metrics.itsm?.open_changes,
-            kpiLabel: 'changes',
-            status: (metrics.itsm?.open_changes > 0) ? 'active' : 'idle',
-        },
+            name: 'Intelligence & Platform',
+            icon: Server,
+            tiles: [
+                { title: 'Enterprise Analytics', path: '/admin/reports', icon: BarChart3, color: 'indigo', kpi: undefined, kpiLabel: '', status: 'active' },
+                { title: 'Platform Administration', path: '/admin/system', icon: Server, color: 'slate', kpi: undefined, kpiLabel: '', status: 'active' },
+                { title: 'Content Management (CMS)', path: '/admin/cms', icon: Globe, color: 'sky', kpi: metrics.cms?.pages, kpiLabel: 'pages', status: 'active' },
+                { title: 'Blog Manager', path: '/admin/blog', icon: BookOpen, color: 'amber', kpi: metrics.blog?.posts, kpiLabel: 'posts', status: 'active' },
+                { title: 'Client Portal', path: '/admin/portal', icon: Globe, color: 'blue', kpi: undefined, kpiLabel: '', status: 'active' },
+            ]
+        }
     ];
 
     const dbHealthy = health?.database?.status === 'Healthy';
@@ -429,6 +362,19 @@ const CommandCenter = () => {
                         <Globe size={15} />
                         <span>View Website</span>
                     </Link>
+                    
+                    {/* Date Range Picker */}
+                    <select 
+                        value={dateRange}
+                        onChange={(e) => setDateRange(e.target.value)}
+                        className="px-3 py-2.5 bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-lg text-slate-300 text-xs font-bold focus:outline-none focus:border-blue-500/50 transition-colors"
+                    >
+                        <option value="7days">Last 7 Days</option>
+                        <option value="30days">Last 30 Days</option>
+                        <option value="90days">Last 90 Days</option>
+                        <option value="thisYear">This Year</option>
+                    </select>
+
                     {/* Refresh button */}
                     <button
                         onClick={fetchAll}
@@ -456,16 +402,20 @@ const CommandCenter = () => {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
                 {/* Module Tile Grid (Expanded Big Tech Layout) */}
-                <div className="xl:col-span-2 space-y-4">
-                    <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <Activity size={14} className="text-blue-500" />
-                        Module Overview
-                    </h2>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                        {moduleTiles.map((tile) => (
-                            <ModuleTile key={tile.title} {...tile} />
-                        ))}
-                    </div>
+                <div className="xl:col-span-2 space-y-8">
+                    {enterprisePillars.map((pillar) => (
+                        <div key={pillar.name} className="space-y-4">
+                            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <pillar.icon size={14} className="text-blue-500" />
+                                {pillar.name}
+                            </h2>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                {pillar.tiles.map((tile) => (
+                                    <ModuleTile key={tile.title} {...tile} />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
                 {/* Right column: Actions + Health + Activity */}

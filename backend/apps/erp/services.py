@@ -13,8 +13,13 @@ from .models import (
     RecurringInvoice, RecurringInvoiceItem,
     Account, JournalEntry, JournalEntryLine, BankAccount,
     BankTransaction, CreditNote, FixedAsset,
+    PaymentTerms, InvoiceBranding, DeferredRevenue,
 )
 import datetime
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 # ─── UTILITIES ────────────────────────────────────────────────────────────────
@@ -44,16 +49,19 @@ class InvoiceService(BaseService):
     @classmethod
     def auto_number(cls, request, doc_type='standard'):
         """Generate next sequential invoice number per tenant and type."""
-        tenant = cls.get_tenant_context(request)
-        prefixes = {'standard': 'INV', 'proforma': 'PRO', 'credit_note': 'CN'}
-        prefix = prefixes.get(doc_type, 'INV')
-        year = timezone.now().year
-        existing = Invoice.objects.filter(
-            tenant=tenant,
-            invoice_number__startswith=f"{prefix}-{year}-"
-        ).count()
-        seq = str(existing + 1).zfill(4)
-        return f"{prefix}-{year}-{seq}"
+        from apps.core.models import Tenant
+        with transaction.atomic():
+            tenant = cls.get_tenant_context(request)
+            request.tenant = Tenant.objects.select_for_update().get(id=tenant.id)
+            prefixes = {'standard': 'INV', 'proforma': 'PRO', 'credit_note': 'CN'}
+            prefix = prefixes.get(doc_type, 'INV')
+            year = timezone.now().year
+            existing = Invoice.objects.filter(
+                tenant=request.tenant,
+                invoice_number__startswith=f"{prefix}-{year}-"
+            ).count()
+            seq = str(existing + 1).zfill(4)
+            return f"{prefix}-{year}-{seq}"
 
     @classmethod
     @transaction.atomic
@@ -986,3 +994,434 @@ class DepreciationService(BaseService):
                 {'monthly_amount': str(monthly_depreciation)}
             )
         return {'assets_processed': processed}
+
+
+# ─── PDF GENERATION ─────────────────────────────────────────────────────────────
+
+class PdfService(BaseService):
+    """
+    Generates professional invoice PDFs using Django templates + WeasyPrint.
+    Falls back to a plain-text representation if WeasyPrint is not installed.
+    Modelled after Odoo's PDF report engine.
+    """
+
+    @classmethod
+    def render_invoice_html(cls, invoice: Invoice) -> str:
+        """Render the invoice as an HTML string using the Odoo-style template."""
+        from django.template.loader import render_to_string
+        branding = InvoiceBranding.objects.filter(tenant=invoice.tenant).first()
+        context = {
+            'invoice': invoice,
+            'items': invoice.items.select_related('product').all(),
+            'payments': invoice.payments.all(),
+            'branding': branding,
+            'balance_due': invoice.total_amount - sum(p.amount for p in invoice.payments.all()),
+        }
+        return render_to_string('erp/invoice_pdf.html', context)
+
+    @classmethod
+    def generate_pdf_bytes(cls, invoice: Invoice) -> bytes:
+        """Returns the PDF as raw bytes. Uses WeasyPrint if available."""
+        html_content = cls.render_invoice_html(invoice)
+        try:
+            from weasyprint import HTML
+            pdf_bytes = HTML(string=html_content).write_pdf()
+            invoice.pdf_generated_at = timezone.now()
+            invoice.save(update_fields=['pdf_generated_at'])
+            return pdf_bytes
+        except ImportError:
+            logger.warning("WeasyPrint not installed. Returning HTML as bytes.")
+            return html_content.encode('utf-8')
+        except Exception as e:
+            logger.error(f"PDF generation failed for invoice {invoice.invoice_number}: {e}")
+            raise
+
+
+# ─── INVOICE EMAIL DELIVERY ──────────────────────────────────────────────────────
+
+class InvoiceEmailService(BaseService):
+    """
+    Sends branded HTML email with PDF invoice attachment.
+    Mirrors Zoho Invoice's email delivery workflow.
+    """
+
+    @classmethod
+    def send_invoice(cls, invoice: Invoice, recipient_email: str = None, cc: list = None) -> bool:
+        """
+        Send the invoice PDF to the client's primary contact.
+        Falls back gracefully if email is not configured.
+        """
+        from django.core.mail import EmailMessage
+        from django.template.loader import render_to_string
+
+        # Resolve recipient
+        if not recipient_email:
+            contact = getattr(invoice.client, 'contacts', None)
+            if contact:
+                primary = contact.filter(is_primary=True).first() or contact.first()
+                recipient_email = primary.email if primary else invoice.client.email
+            else:
+                recipient_email = getattr(invoice.client, 'email', None)
+
+        if not recipient_email:
+            raise ValueError("No email address found for client. Cannot send invoice.")
+
+        branding = InvoiceBranding.objects.filter(tenant=invoice.tenant).first()
+        company_name = branding.company_name if branding else 'Your Vendor'
+
+        subject = f"Invoice {invoice.invoice_number} from {company_name}"
+        body_html = render_to_string('erp/invoice_email.html', {
+            'invoice': invoice,
+            'branding': branding,
+            'company_name': company_name,
+        })
+
+        try:
+            pdf_bytes = PdfService.generate_pdf_bytes(invoice)
+            email = EmailMessage(
+                subject=subject,
+                body=body_html,
+                from_email=None,  # Uses DEFAULT_FROM_EMAIL
+                to=[recipient_email],
+                cc=cc or [],
+            )
+            email.content_subtype = 'html'
+            email.attach(
+                f"{invoice.invoice_number}.pdf",
+                pdf_bytes,
+                'application/pdf'
+            )
+            email.send(fail_silently=False)
+            # Mark invoice as sent
+            if invoice.status == 'draft':
+                invoice.status = 'sent'
+                invoice.save(update_fields=['status'])
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send invoice {invoice.invoice_number} email: {e}")
+            raise
+
+
+# ─── TAX RULES ENGINE ─────────────────────────────────────────────────────────────
+
+class TaxRulesService(BaseService):
+    """
+    Automatically determines the correct tax rate for an invoice line item
+    based on the product catalog item and tenant default tax configuration.
+    Modelled after Odoo's fiscal position / tax mapping engine.
+    """
+
+    @classmethod
+    def get_rate_for_item(cls, tenant, catalog_item=None) -> float:
+        """
+        Returns the tax rate (as a float percentage) for a given catalog item.
+        Priority: catalog item tax_config > tenant default TaxConfig > 0
+        """
+        from apps.erp.models import TaxConfig
+        if catalog_item and catalog_item.tax_config_id:
+            return float(catalog_item.tax_config.rate)
+        # Fall back to tenant's first active tax config
+        default_tax = TaxConfig.objects.filter(tenant=tenant, is_active=True).first()
+        return float(default_tax.rate) if default_tax else 0.0
+
+    @classmethod
+    def apply_taxes_to_invoice(cls, invoice: Invoice):
+        """
+        Recalculates tax on all line items of an invoice using the rules engine.
+        Saves updated totals back to the invoice.
+        """
+        subtotal = tax_total = discount_total = 0
+        for item in invoice.items.select_related('product').all():
+            qty = float(item.quantity)
+            price = float(item.unit_price)
+            discount = float(item.discount)
+            line_sub = qty * price
+            line_tax = line_sub * (float(item.tax_rate) / 100)
+            line_total = line_sub + line_tax - discount
+            item.total = line_total
+            item.save(update_fields=['total'])
+            subtotal += line_sub
+            tax_total += line_tax
+            discount_total += discount
+
+        # Apply invoice-level discount on top
+        invoice_discount = subtotal * (float(invoice.discount_percent) / 100)
+        invoice.subtotal = subtotal
+        invoice.tax_total = tax_total
+        invoice.discount_total = discount_total + invoice_discount
+        invoice.total_amount = subtotal + tax_total - discount_total - invoice_discount
+        invoice.save(update_fields=['subtotal', 'tax_total', 'discount_total', 'total_amount'])
+        return invoice
+
+
+# ─── CLIENT PORTAL SERVICE ────────────────────────────────────────────────────────
+
+class ClientPortalService:
+    """
+    Validates a payment link token and returns safe, read-only invoice data
+    for client-facing self-service portal. No authentication required.
+    Modelled after Zoho Invoice's client portal.
+    """
+
+    @classmethod
+    def get_invoice_by_token(cls, token: str):
+        """Returns the invoice matching the payment_link_token, or None."""
+        try:
+            return Invoice.objects.select_related(
+                'client', 'tenant', 'payment_terms'
+            ).prefetch_related('items', 'payments').get(
+                payment_link_token=token
+            )
+        except (Invoice.DoesNotExist, Exception):
+            return None
+
+    @classmethod
+    def build_portal_payload(cls, invoice: Invoice) -> dict:
+        """Returns a safe, minimal payload for the client portal — no internal data."""
+        payments = invoice.payments.all()
+        total_paid = sum(p.amount for p in payments)
+        branding = InvoiceBranding.objects.filter(tenant=invoice.tenant).first()
+        return {
+            'invoice_number': invoice.invoice_number,
+            'status': invoice.status,
+            'issue_date': str(invoice.issue_date),
+            'due_date': str(invoice.due_date),
+            'currency': invoice.currency,
+            'subtotal': float(invoice.subtotal),
+            'tax_total': float(invoice.tax_total),
+            'discount_total': float(invoice.discount_total),
+            'total_amount': float(invoice.total_amount),
+            'total_paid': float(total_paid),
+            'balance_due': float(invoice.total_amount - total_paid),
+            'items': [
+                {
+                    'description': item.description,
+                    'quantity': float(item.quantity),
+                    'unit_price': float(item.unit_price),
+                    'tax_rate': float(item.tax_rate),
+                    'total': float(item.total),
+                }
+                for item in invoice.items.all()
+            ],
+            'company': {
+                'name': branding.company_name if branding else '',
+                'address': branding.company_address if branding else '',
+                'email': branding.company_email if branding else '',
+                'logo_url': branding.logo_url if branding else '',
+            },
+            'notes': invoice.notes,
+        }
+
+
+# ─── AR AGING REPORT SERVICE ──────────────────────────────────────────────────────
+
+class AgingReportService(BaseService):
+    """
+    Computes full Accounts Receivable (AR) aging report.
+    Matches Odoo's Partner Ledger / Aging Report & Zoho Invoice's aging report.
+    Buckets: Current, 1–30, 31–60, 61–90, 90+
+    """
+
+    BUCKETS = [
+        ('current', 0, 0),
+        ('1_30', 1, 30),
+        ('31_60', 31, 60),
+        ('61_90', 61, 90),
+        ('over_90', 91, None),
+    ]
+
+    @classmethod
+    def get_report(cls, request) -> dict:
+        """Returns per-client AR aging breakdown and totals."""
+        tenant = cls.get_tenant_context(request)
+        today = datetime.date.today()
+
+        open_invoices = Invoice.objects.filter(
+            tenant=tenant,
+            status__in=['sent', 'partially_paid', 'overdue']
+        ).select_related('client').prefetch_related('payments')
+
+        client_map = {}  # client_id -> {client_name, buckets}
+        totals = {b[0]: 0 for b in cls.BUCKETS}
+
+        for inv in open_invoices:
+            paid = sum(p.amount for p in inv.payments.all())
+            balance = float(inv.total_amount - paid)
+            if balance <= 0:
+                continue
+
+            days_overdue = (today - inv.due_date).days
+
+            bucket = 'over_90'
+            for name, low, high in cls.BUCKETS:
+                if low == 0 and high == 0:
+                    bucket = 'current' if days_overdue <= 0 else bucket
+                elif high is None:
+                    if days_overdue >= low:
+                        bucket = name
+                elif low <= days_overdue <= high:
+                    bucket = name
+                    break
+
+            cid = str(inv.client_id)
+            if cid not in client_map:
+                client_map[cid] = {
+                    'client_id': cid,
+                    'client_name': inv.client.name,
+                    'current': 0, '1_30': 0, '31_60': 0, '61_90': 0, 'over_90': 0,
+                    'total': 0,
+                }
+            client_map[cid][bucket] += balance
+            client_map[cid]['total'] += balance
+            totals[bucket] += balance
+
+        grand_total = sum(totals.values())
+        return {
+            'as_of_date': str(today),
+            'clients': list(client_map.values()),
+            'totals': {**totals, 'grand_total': grand_total},
+        }
+
+    @classmethod
+    def export_csv(cls, request) -> str:
+        """Returns the aging report as CSV string."""
+        import csv
+        import io
+        report = cls.get_report(request)
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['Client', 'Current', '1-30 Days', '31-60 Days', '61-90 Days', '90+ Days', 'Total'])
+        for row in report['clients']:
+            writer.writerow([
+                row['client_name'],
+                row['current'], row['1_30'], row['31_60'],
+                row['61_90'], row['over_90'], row['total'],
+            ])
+        t = report['totals']
+        writer.writerow(['TOTAL', t['current'], t['1_30'], t['31_60'], t['61_90'], t['over_90'], t['grand_total']])
+        return output.getvalue()
+
+
+# ─── CURRENCY SERVICE ────────────────────────────────────────────────────────────────
+
+class CurrencyService:
+    """
+    Handles multi-currency invoice support.
+    Converts invoice amounts to the tenant's base reporting currency.
+    Modelled after Odoo's multi-currency / exchange rate module.
+    """
+    SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'DZD', 'MAD', 'AED', 'SAR', 'CAD', 'AUD']
+
+    @classmethod
+    def convert_to_base(cls, amount: float, from_currency: str, exchange_rate: float) -> float:
+        """
+        Converts an amount from a foreign currency to base currency.
+        exchange_rate = how many base units = 1 foreign unit.
+        e.g. if base is USD and invoice is in EUR at rate 1.08, then 100 EUR = 108 USD.
+        """
+        if from_currency == 'USD' or exchange_rate == 1:
+            return amount
+        return round(amount * exchange_rate, 2)
+
+    @classmethod
+    def get_invoice_base_total(cls, invoice: Invoice) -> float:
+        """Returns the invoice total in the tenant's base/reporting currency."""
+        return cls.convert_to_base(
+            float(invoice.total_amount),
+            invoice.currency,
+            float(invoice.exchange_rate)
+        )
+
+    @classmethod
+    def format_currency(cls, amount: float, currency: str) -> str:
+        """Returns a formatted currency string."""
+        symbols = {'USD': '$', 'EUR': '\u20ac', 'GBP': '\u00a3', 'DZD': 'DA ', 'MAD': 'MAD ', 'AED': 'AED '}
+        symbol = symbols.get(currency, f"{currency} ")
+        return f"{symbol}{amount:,.2f}"
+
+
+# ─── DEFERRED REVENUE SERVICE ──────────────────────────────────────────────────────
+
+class DeferredRevenueService(BaseService):
+    """
+    Manages the monthly recognition of deferred (prepaid) revenue.
+    Modelled after Odoo's revenue recognition / deferred revenue module.
+    """
+
+    @classmethod
+    @transaction.atomic
+    def create_deferred_schedule(
+        cls, invoice: Invoice, recognition_start, recognition_end,
+        deferred_account=None, revenue_account=None
+    ) -> DeferredRevenue:
+        """Creates a deferred revenue schedule for a prepaid invoice."""
+        return DeferredRevenue.objects.create(
+            tenant=invoice.tenant,
+            invoice=invoice,
+            total_amount=invoice.total_amount,
+            recognized_amount=0,
+            recognition_start=recognition_start,
+            recognition_end=recognition_end,
+            deferred_account=deferred_account,
+            revenue_account=revenue_account,
+            status='active',
+        )
+
+    @classmethod
+    @transaction.atomic
+    def run_monthly_recognition(cls, request) -> dict:
+        """
+        Processes all active deferred revenue records and creates
+        monthly journal entries moving amounts to recognized revenue.
+        """
+        from django.utils import timezone
+        tenant = cls.get_tenant_context(request)
+        today = timezone.now().date()
+        records = DeferredRevenue.objects.filter(
+            tenant=tenant, status='active',
+            recognition_start__lte=today
+        ).select_related('invoice', 'deferred_account', 'revenue_account')
+
+        processed = 0
+        for rec in records:
+            if rec.remaining_amount <= 0:
+                rec.status = 'completed'
+                rec.save(update_fields=['status'])
+                continue
+
+            # Calculate months in schedule
+            delta_months = (
+                (rec.recognition_end.year - rec.recognition_start.year) * 12 +
+                rec.recognition_end.month - rec.recognition_start.month
+            ) or 1
+            monthly_amount = round(float(rec.total_amount) / delta_months, 2)
+            recognize = min(monthly_amount, float(rec.remaining_amount))
+
+            # Create journal entry if accounts are configured
+            if rec.deferred_account and rec.revenue_account:
+                entry = JournalEntry.objects.create(
+                    tenant=tenant,
+                    date=today,
+                    reference=f"Deferred Rev Recognition — {rec.invoice.invoice_number}",
+                    is_posted=True
+                )
+                JournalEntryLine.objects.create(
+                    tenant=tenant, journal_entry=entry,
+                    account=rec.deferred_account,
+                    debit=recognize, credit=0,
+                    description='Deferred revenue recognized'
+                )
+                JournalEntryLine.objects.create(
+                    tenant=tenant, journal_entry=entry,
+                    account=rec.revenue_account,
+                    debit=0, credit=recognize,
+                    description='Revenue recognized from deferred'
+                )
+
+            rec.recognized_amount += recognize
+            if rec.recognized_amount >= rec.total_amount:
+                rec.status = 'completed'
+            rec.save(update_fields=['recognized_amount', 'status'])
+            processed += 1
+
+        return {'records_processed': processed}

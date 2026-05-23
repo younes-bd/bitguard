@@ -83,6 +83,20 @@ client.interceptors.response.use(
                 window.location.href = '/login';
             }
         }
+
+        // Handle 403 Forbidden
+        if (error.response?.status === 403) {
+            console.error('Access Denied: You do not have permission to perform this action.');
+            // Dispatch a custom event that the UI can listen to for showing a toast
+            window.dispatchEvent(new CustomEvent('api:error:403', { detail: error.response?.data?.message || 'Access Denied' }));
+        }
+
+        // Handle 500 Internal Server Error
+        if (error.response?.status >= 500) {
+            console.error('Server Error: Something went wrong on our end.');
+            window.dispatchEvent(new CustomEvent('api:error:500', { detail: error.response?.data?.message || 'Internal Server Error' }));
+        }
+
         return Promise.reject(error);
     }
 );

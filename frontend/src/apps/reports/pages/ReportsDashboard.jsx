@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Users, LifeBuoy, ShieldAlert, BarChart3, Activity, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, Users, LifeBuoy, ShieldAlert, BarChart3, Activity, ArrowUpRight, DollarSign } from 'lucide-react';
 import { reportsService } from '../../../core/api/reportsService';
 import ExecutiveSummary from './ExecutiveSummary';
 

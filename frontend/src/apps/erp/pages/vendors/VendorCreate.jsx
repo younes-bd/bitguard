@@ -43,11 +43,12 @@ const VendorCreate = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <button 
+                        type="button"
                         onClick={() => navigate('/admin/erp/vendors')}
                         className="p-2 bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors"
                     >
@@ -62,7 +63,7 @@ const VendorCreate = () => {
                     </div>
                 </div>
                 <button 
-                    onClick={handleSubmit}
+                    type="submit"
                     disabled={loading || !form.name}
                     className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 transition-all shadow-lg shadow-emerald-500/20"
                 >
@@ -232,7 +233,7 @@ const VendorCreate = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     );
 };
 

@@ -66,6 +66,16 @@ class TicketViewSet(viewsets.ModelViewSet):
             return Response({'error': str(e)}, status=drf_status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post'])
+    def escalate(self, request, pk=None):
+        """Escalates a support ticket to an ITSM Problem."""
+        ticket = self.get_object()
+        try:
+            TicketService.escalate_to_problem(request, ticket)
+            return Response({'status': 'escalated', 'problem_id': ticket.problem.id})
+        except Exception as e:
+            return Response({'error': str(e)}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
     def create_kb_from_ticket(self, request, pk=None):
         """Converts the ticket to a KB article."""
         ticket = self.get_object()

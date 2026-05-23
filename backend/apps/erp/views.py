@@ -6,6 +6,7 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from .permissions import IsERPAccessible
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from apps.core.utils.response import standard_response
@@ -15,6 +16,7 @@ from .models import (
     ErpVendor, ErpPurchaseOrder, RecurringInvoice,
     Account, JournalEntry, BankAccount, BankTransaction,
     FixedAsset, CreditNote,
+    PaymentTerms, InvoiceBranding, DeferredRevenue,
 )
 from .serializers import (
     InvoiceSerializer, PaymentSerializer, ExpenseSerializer,
@@ -24,19 +26,25 @@ from .serializers import (
     VendorSerializer, PurchaseOrderSerializer, RecurringInvoiceSerializer,
     AccountSerializer, JournalEntrySerializer, BankAccountSerializer,
     BankTransactionSerializer, FixedAssetSerializer, CreditNoteSerializer,
+    PaymentTermsSerializer, InvoiceBrandingSerializer,
+    DeferredRevenueSerializer,
 )
 from .services import (
     InvoiceService, PaymentService, ExpenseService,
     InternalProjectService, EnterpriseService, DeliveryNoteService,
     VendorService, PurchaseOrderService, RecurringInvoiceService,
     JournalEntryService, BankService, FinancialReportingService,
+    PdfService, InvoiceEmailService, TaxRulesService, ClientPortalService,
+    AgingReportService, CurrencyService, DeferredRevenueService,
 )
+import django_filters.rest_framework
+from django.http import HttpResponse
 
 
 # ─── INVOICE ──────────────────────────────────────────────────────────────────
 
 class InvoiceViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = InvoiceSerializer
 
     def get_queryset(self):
@@ -92,35 +100,63 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='convert-to-invoice')
     def convert_to_invoice(self, request, pk=None):
         invoice = self.get_object()
-        if invoice.type != 'proforma':
-            return standard_response(False, "Only proforma invoices can be converted.", {}, status=status.HTTP_400_BAD_REQUEST)
+        if invoice.type not in ('proforma', 'quotation'):
+            return standard_response(False, "Only proforma or quotation documents can be converted.", {}, status=status.HTTP_400_BAD_REQUEST)
         InvoiceService.update_invoice(request, invoice, {'type': 'standard', 'status': 'sent'})
-        # Now create the ledger entries since this is now a real invoice
-        from .services import GeneralLedgerService
-        GeneralLedgerService.record_entry(
-            request, "Accounts Receivable", invoice.total_amount, 'debit',
-            invoice.pk, 'invoice', f"Converted from Proforma: {invoice.invoice_number}"
-        )
-        GeneralLedgerService.record_entry(
-            request, "Revenue", invoice.subtotal, 'credit',
-            invoice.pk, 'invoice', f"Revenue: {invoice.invoice_number}"
-        )
-        return standard_response(True, "Converted to standard invoice",
-                                          self.get_serializer(invoice).data)
+        if invoice.type == 'proforma':
+            from .services import GeneralLedgerService
+            GeneralLedgerService.record_entry(
+                request, "Accounts Receivable", invoice.total_amount, 'debit',
+                invoice.pk, 'invoice', f"Converted from Proforma #{invoice.invoice_number}"
+            )
+        invoice.refresh_from_db()
+        return standard_response(True, "Converted to standard invoice", self.get_serializer(invoice).data)
 
-    @action(detail=False, methods=['get'], url_path='aging-report')
-    def aging_report(self, request):
-        report = InvoiceService.get_aging_report(request)
-        return standard_response(True, "AR Aging Report", report)
+    @action(detail=True, methods=['post'], url_path='accept-quotation')
+    def accept_quotation(self, request, pk=None):
+        invoice = self.get_object()
+        if invoice.type != 'quotation':
+            return standard_response(False, "This document is not a quotation.", {}, status=status.HTTP_400_BAD_REQUEST)
+        InvoiceService.update_invoice(request, invoice, {'status': 'sent'})
+        return standard_response(True, "Quotation accepted", {})
+
+    @action(detail=True, methods=['post'], url_path='decline-quotation')
+    def decline_quotation(self, request, pk=None):
+        invoice = self.get_object()
+        InvoiceService.update_invoice(request, invoice, {'status': 'void'})
+        return standard_response(True, "Quotation declined", {})
 
     @action(detail=True, methods=['get'], url_path='download-pdf')
     def download_pdf(self, request, pk=None):
-        from django.http import HttpResponse
         invoice = self.get_object()
-        pdf_bytes = InvoiceService.generate_pdf(request, invoice)
-        response = HttpResponse(pdf_bytes, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="Invoice_{invoice.invoice_number}.pdf"'
-        return response
+        try:
+            pdf_bytes = PdfService.generate_pdf_bytes(invoice)
+            response = HttpResponse(pdf_bytes, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="Invoice_{invoice.invoice_number}.pdf"'
+            return response
+        except Exception as e:
+            return standard_response(False, f"Failed to generate PDF: {str(e)}", {}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['post'], url_path='send-email')
+    def send_email(self, request, pk=None):
+        invoice = self.get_object()
+        try:
+            InvoiceEmailService.send_invoice(invoice)
+            return standard_response(True, "Invoice emailed to client successfully", {})
+        except Exception as e:
+            return standard_response(False, str(e), {}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], url_path='aging-report')
+    def aging_report(self, request):
+        export = request.query_params.get('export', 'false').lower() == 'true'
+        if export:
+            csv_data = AgingReportService.export_csv(request)
+            response = HttpResponse(csv_data, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="AR_Aging_Report.csv"'
+            return response
+        
+        report = AgingReportService.get_report(request)
+        return standard_response(True, "Aging Report", report)
 
     @action(detail=False, methods=['get'], url_path='profit-loss')
     def profit_loss(self, request):
@@ -135,7 +171,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 # ─── PAYMENT ──────────────────────────────────────────────────────────────────
 
 class PaymentViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = PaymentSerializer
 
     def get_queryset(self):
@@ -158,7 +194,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
 # ─── EXPENSE ──────────────────────────────────────────────────────────────────
 
 class ExpenseViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = ExpenseSerializer
 
     def get_queryset(self):
@@ -207,7 +243,7 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 # ─── DELIVERY NOTES ───────────────────────────────────────────────────────────
 
 class DeliveryNoteViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = DeliveryNoteSerializer
 
     def get_queryset(self):
@@ -250,7 +286,7 @@ class DeliveryNoteViewSet(viewsets.ModelViewSet):
 # ─── VENDOR ───────────────────────────────────────────────────────────────────
 
 class VendorViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = VendorSerializer
 
     def get_queryset(self):
@@ -273,7 +309,7 @@ class VendorViewSet(viewsets.ModelViewSet):
 # ─── PURCHASE ORDERS ──────────────────────────────────────────────────────────
 
 class PurchaseOrderViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = PurchaseOrderSerializer
 
     def get_queryset(self):
@@ -299,7 +335,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 # ─── RECURRING INVOICES ───────────────────────────────────────────────────────
 
 class RecurringInvoiceViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = RecurringInvoiceSerializer
 
     def get_queryset(self):
@@ -326,7 +362,7 @@ class RecurringInvoiceViewSet(viewsets.ModelViewSet):
 # ─── CLIENT STATEMENT ─────────────────────────────────────────────────────────
 
 class ClientStatementView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
 
     def get(self, request, client_id):
         statement = InvoiceService.get_client_statement(request, client_id)
@@ -336,7 +372,7 @@ class ClientStatementView(APIView):
 # ─── READ-ONLY VIEWS ──────────────────────────────────────────────────────────
 
 class TaxConfigViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = TaxConfigSerializer
 
     def get_queryset(self):
@@ -345,7 +381,7 @@ class TaxConfigViewSet(viewsets.ModelViewSet):
 
 
 class CostCenterViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = CostCenterSerializer
 
     def get_queryset(self):
@@ -354,7 +390,7 @@ class CostCenterViewSet(viewsets.ModelViewSet):
 
 
 class BudgetLineViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = BudgetLineSerializer
 
     def get_queryset(self):
@@ -363,7 +399,7 @@ class BudgetLineViewSet(viewsets.ModelViewSet):
 
 
 class GeneralLedgerViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = GeneralLedgerSerializer
 
     def get_queryset(self):
@@ -372,7 +408,7 @@ class GeneralLedgerViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class InternalProjectViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = InternalProjectSerializer
 
     def get_queryset(self):
@@ -397,7 +433,7 @@ class InternalProjectViewSet(viewsets.ModelViewSet):
 
 
 class RiskViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = RiskSerializer
 
     def get_queryset(self):
@@ -408,7 +444,7 @@ class RiskViewSet(viewsets.ModelViewSet):
 # ─── ERP DASHBOARD ────────────────────────────────────────────────────────────
 
 class ErpDashboardView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
 
     def get(self, request):
         stats = EnterpriseService.get_dashboard_stats(request)
@@ -416,7 +452,7 @@ class ErpDashboardView(APIView):
 
 
 class MonthlyFinancialsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
 
     def get(self, request):
         months = int(request.query_params.get('months', 6))
@@ -429,7 +465,7 @@ class MonthlyFinancialsView(APIView):
 # ─────────────────────────────────────────
 
 class AccountViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = AccountSerializer
 
     def get_queryset(self):
@@ -438,16 +474,30 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 
 class JournalEntryViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = JournalEntrySerializer
 
     def get_queryset(self):
         from apps.core.services.base import BaseService
         return BaseService.filter_by_context(JournalEntry.objects.all(), self.request).prefetch_related('lines__account')
 
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
+        lines = data.pop('lines', [])
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        entry = JournalEntryService.create_journal_entry(
+            request, 
+            serializer.validated_data['date'], 
+            serializer.validated_data.get('reference', ''), 
+            serializer.validated_data.get('description', ''), 
+            lines
+        )
+        return standard_response(True, "Journal entry created", self.get_serializer(entry).data, status=status.HTTP_201_CREATED)
+
 
 class BankAccountViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = BankAccountSerializer
 
     def get_queryset(self):
@@ -456,16 +506,32 @@ class BankAccountViewSet(viewsets.ModelViewSet):
 
 
 class BankTransactionViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = BankTransactionSerializer
 
     def get_queryset(self):
         from apps.core.services.base import BaseService
         return BaseService.filter_by_context(BankTransaction.objects.all(), self.request).select_related('bank_account')
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        bank_account = serializer.validated_data['bank_account']
+        bank_account_id = bank_account.id if hasattr(bank_account, 'id') else bank_account
+        
+        transaction = BankService.record_transaction(
+            request,
+            bank_account_id,
+            serializer.validated_data['type'],
+            serializer.validated_data['amount'],
+            serializer.validated_data.get('description', ''),
+            serializer.validated_data.get('reference', '')
+        )
+        return standard_response(True, "Bank transaction created", self.get_serializer(transaction).data, status=status.HTTP_201_CREATED)
+
 
 class FixedAssetViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = FixedAssetSerializer
 
     def get_queryset(self):
@@ -480,7 +546,7 @@ class FixedAssetViewSet(viewsets.ModelViewSet):
 
 
 class CreditNoteViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
     serializer_class = CreditNoteSerializer
 
     def get_queryset(self):
@@ -489,7 +555,7 @@ class CreditNoteViewSet(viewsets.ModelViewSet):
 
 
 class BalanceSheetView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
 
     def get(self, request):
         date_str = request.query_params.get('date')
@@ -501,7 +567,7 @@ class BalanceSheetView(APIView):
 
 
 class CashFlowView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
 
     def get(self, request):
         start_date = request.query_params.get('start_date')
@@ -515,7 +581,7 @@ class CashFlowView(APIView):
 
 
 class ProfitLossView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsERPAccessible]
 
     def get(self, request):
         from django.utils import timezone
@@ -527,3 +593,38 @@ class ProfitLossView(APIView):
             date_to = today
         report = InvoiceService.get_profit_loss(request, date_from, date_to)
         return standard_response(True, 'Profit & Loss Report', report)
+
+
+class ClientPortalInvoiceView(APIView):
+    """
+    Publicly accessible view for clients to pay or view their invoice.
+    Requires no authentication, only the secret token.
+    """
+    permission_classes = []
+    
+    def get(self, request, token):
+        invoice = ClientPortalService.get_invoice_by_token(token)
+        if not invoice:
+            return standard_response(False, "Invoice not found or invalid token", {}, status=status.HTTP_404_NOT_FOUND)
+        
+        payload = ClientPortalService.build_portal_payload(invoice)
+        return standard_response(True, "Invoice details", payload)
+
+
+class PaymentTermsViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsERPAccessible]
+    serializer_class = PaymentTermsSerializer
+    def get_queryset(self):
+        return PaymentTerms.objects.filter(tenant=self.request.user.tenant)
+
+class InvoiceBrandingViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsERPAccessible]
+    serializer_class = InvoiceBrandingSerializer
+    def get_queryset(self):
+        return InvoiceBranding.objects.filter(tenant=self.request.user.tenant)
+
+class DeferredRevenueViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsERPAccessible]
+    serializer_class = DeferredRevenueSerializer
+    def get_queryset(self):
+        return DeferredRevenue.objects.filter(tenant=self.request.user.tenant)

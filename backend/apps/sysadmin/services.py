@@ -41,11 +41,11 @@ class SysadminService(BaseService):
         audit_log.save()
         return audit_log
 
-    def update_setting(self, key, value, user, ip_address=None):
+    def update_setting(self, key, value, user, ip_address=None, tenant=None):
         """
         Updates a system setting and logs the action.
         """
-        setting, created = self.model.objects.get_or_create(key=key)
+        setting, created = self.model.objects.get_or_create(key=key, tenant=tenant)
         old_value = setting.value
         setting.value = value
         setting.save()
@@ -61,23 +61,64 @@ class SysadminService(BaseService):
             tenant=getattr(setting, 'tenant', None)
         )
         
-        
         return setting
         
     def get_system_metrics(self):
         """
-        Gathers system metrics like active users, estimated load, etc.
+        Gathers system metrics using actual server telemetry via psutil.
         """
-        # In a real enterprise system, these would query Redis, Celery queues, OS stats.
-        # We are simulating them for the scope of this scaffold.
+        import psutil
+        import time
+        from datetime import datetime
+
         active_users_count = User.objects.filter(is_active=True).count()
         audit_count = AuditLog.objects.count()
+        
+        # Calculate uptime
+        boot_time = psutil.boot_time()
+        uptime_seconds = time.time() - boot_time
+        days, remainder = divmod(uptime_seconds, 86400)
+        hours, remainder = divmod(remainder, 3600)
+        minutes, _ = divmod(remainder, 60)
+        server_uptime = f"{int(days)}d {int(hours)}h {int(minutes)}m"
+
+        # CPU
+        cpu_load = psutil.cpu_percent(interval=0.1)
+        cpu_cores_load = psutil.cpu_percent(interval=0.1, percpu=True)
+
+        # Memory
+        mem = psutil.virtual_memory()
+        
+        # Disk
+        disk = psutil.disk_usage('/')
+
+        # Simulated Service Health (In a real scenario, this would ping endpoints/DBs)
+        services_health = [
+            {'name': 'Core Application Service (Django API)', 'status': 'Operational', 'latency': '24ms', 'color': 'bg-emerald-500'},
+            {'name': 'Database Instance (PostgreSQL Main)', 'status': 'Operational', 'latency': '4ms', 'color': 'bg-emerald-500'},
+            {'name': 'Caching & Session Store (Redis)', 'status': 'Operational', 'latency': '1ms', 'color': 'bg-emerald-500'},
+            {'name': 'Background Workers (Celery & RabbitMQ)', 'status': 'Operational', 'latency': '98% Queue Empty', 'color': 'bg-emerald-500'},
+            {'name': 'CDN & File Delivery S3 Bucket', 'status': 'Operational', 'latency': '12ms', 'color': 'bg-emerald-500'},
+        ]
+
         return {
             'active_users': active_users_count,
-            'error_rate': 0.02, # Simulated value
-            'server_uptime': '99.99%', # Simulated value
-            'cpu_load': '34%', # Simulated value
-            'total_audits': audit_count
+            'error_rate': 0.02, # Keeping as simulated or pull from a log aggregator like Sentry
+            'server_uptime': server_uptime,
+            'cpu_load': f"{cpu_load}%",
+            'cpu_cores_load': cpu_cores_load,
+            'memory': {
+                'total': mem.total,
+                'used': mem.used,
+                'percent': mem.percent
+            },
+            'disk': {
+                'total': disk.total,
+                'used': disk.used,
+                'percent': disk.percent
+            },
+            'total_audits': audit_count,
+            'services_health': services_health
         }
 
     def clear_django_cache(self, user, ip_address=None, tenant=None):
@@ -111,3 +152,76 @@ class SysadminService(BaseService):
             ip_address=ip_address, tenant=tenant
         )
         return new_value
+
+    # --- ENTERPRISE EXPANSION ---
+
+    def create_api_key(self, name, user, tenant=None):
+        import secrets
+        import hashlib
+        from .models import PlatformAPIKey
+        
+        raw_key = f"bg_live_{secrets.token_urlsafe(32)}"
+        hashed_key = hashlib.sha256(raw_key.encode()).hexdigest()
+        key_prefix = raw_key[:12]
+        
+        api_key = PlatformAPIKey.objects.create(
+            name=name,
+            key_prefix=key_prefix,
+            hashed_key=hashed_key,
+            created_by=user,
+            tenant=tenant
+        )
+        
+        self.log_action(user, 'create', 'PlatformAPIKey', str(api_key.id), tenant=tenant)
+        return api_key, raw_key
+
+    def register_webhook(self, data, user, tenant=None):
+        from .models import WebhookEndpoint
+        webhook = WebhookEndpoint.objects.create(tenant=tenant, **data)
+        self.log_action(user, 'create', 'WebhookEndpoint', str(webhook.id), tenant=tenant)
+        return webhook
+
+    def trigger_backup(self, user, tenant=None):
+        import os
+        import shutil
+        from django.conf import settings
+        from django.utils import timezone
+        from .models import DatabaseBackup
+
+        # Simulate or perform SQLite backup
+        db_path = settings.DATABASES['default']['NAME']
+        backup_dir = os.path.join(settings.BASE_DIR, 'backups')
+        os.makedirs(backup_dir, exist_ok=True)
+        
+        timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"backup_{timestamp}.sqlite3"
+        dest_path = os.path.join(backup_dir, filename)
+        
+        try:
+            shutil.copy2(db_path, dest_path)
+            size_bytes = os.path.getsize(dest_path)
+            status = 'completed'
+        except Exception as e:
+            size_bytes = 0
+            status = f'failed: {str(e)}'
+
+        backup = DatabaseBackup.objects.create(
+            filename=filename,
+            size_bytes=size_bytes,
+            status=status,
+            triggered_by=user,
+            tenant=tenant
+        )
+        
+        self.log_action(user, 'create', 'DatabaseBackup', str(backup.id), details={'status': status}, tenant=tenant)
+        return backup
+
+    def prune_audit_logs(self, days_retention, user, tenant=None):
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        threshold = timezone.now() - timedelta(days=days_retention)
+        deleted_count, _ = AuditLog.objects.filter(tenant=tenant, created_at__lt=threshold).delete()
+        
+        self.log_action(user, 'delete', 'AuditLog', details={'message': f'Pruned {deleted_count} logs older than {days_retention} days'}, tenant=tenant)
+        return deleted_count

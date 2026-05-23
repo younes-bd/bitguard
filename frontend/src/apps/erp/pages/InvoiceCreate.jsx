@@ -26,6 +26,9 @@ const InvoiceCreate = () => {
         status: 'draft',
         reference: '',
         notes: '',
+        currency: 'USD',
+        discount_type: 'amount',
+        discount_value: 0,
         items: []
     });
 
@@ -292,6 +295,48 @@ const InvoiceCreate = () => {
                                     placeholder="PO #, Project Ref"
                                     value={formData.reference}
                                     onChange={handleChange}
+                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800/50">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">Currency</label>
+                                <select
+                                    name="currency"
+                                    value={formData.currency}
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all appearance-none"
+                                >
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="AUD">AUD ($)</option>
+                                    <option value="CAD">CAD ($)</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">Discount Type</label>
+                                <select
+                                    name="discount_type"
+                                    value={formData.discount_type}
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all appearance-none"
+                                >
+                                    <option value="amount">Fixed Amount</option>
+                                    <option value="percentage">Percentage (%)</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Discount Value</label>
+                                <input
+                                    type="number"
+                                    name="discount_value"
+                                    value={formData.discount_value}
+                                    onChange={handleChange}
+                                    min="0"
+                                    step="0.01"
                                     className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none"
                                 />
                             </div>

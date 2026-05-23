@@ -75,7 +75,7 @@ class SystemSettingViewSet(viewsets.ModelViewSet):
         
         settings_data = request.data.get('settings', {})
         for key, value in settings_data.items():
-            service.update_setting(key, value, request.user, ip)
+            service.update_setting(key, value, request.user, ip, tenant=tenant)
             
         return Response({'status': 'Settings updated successfully'})
 
@@ -102,6 +102,20 @@ class SystemSettingViewSet(viewsets.ModelViewSet):
             response.write(f"- {setting.key}: {setting.value}\n")
             
         return response
+
+    @action(detail=False, methods=['get'])
+    def server_logs(self, request):
+        import os
+        from django.conf import settings
+        log_path = os.path.join(settings.BASE_DIR, 'django.log')
+        if not os.path.exists(log_path):
+            return Response({'logs': "No backend log file found at django.log"})
+        
+        # Tail the last 100 lines
+        with open(log_path, 'r') as f:
+            lines = f.readlines()
+            tail_lines = lines[-100:]
+        return Response({'logs': "".join(tail_lines)})
 
 class AuditTrailViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -146,3 +160,72 @@ class AuditTrailViewSet(viewsets.ReadOnlyModelViewSet):
             ])
             
         return response
+
+    @action(detail=False, methods=['post'])
+    def prune(self, request):
+        days = request.data.get('days', 90)
+        service = SysadminService()
+        tenant = getattr(request.user, 'tenant', None)
+        deleted = service.prune_audit_logs(days, request.user, tenant)
+        return Response({'status': f'Successfully pruned {deleted} audit logs older than {days} days.'})
+
+from .models import PlatformAPIKey, WebhookEndpoint, DatabaseBackup
+from .serializers import PlatformAPIKeySerializer, WebhookEndpointSerializer, DatabaseBackupSerializer
+
+class APIKeyViewSet(viewsets.ModelViewSet):
+    queryset = PlatformAPIKey.objects.all()
+    serializer_class = PlatformAPIKeySerializer
+    permission_classes = [permissions.IsAuthenticated, IsPlatformAdmin]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = super().get_queryset()
+        if not user.is_superuser and getattr(user, 'tenant', None):
+            return qs.filter(tenant=user.tenant)
+        return qs
+
+    def create(self, request, *args, **kwargs):
+        name = request.data.get('name', 'New API Key')
+        service = SysadminService()
+        tenant = getattr(request.user, 'tenant', None)
+        api_key, raw_secret = service.create_api_key(name, request.user, tenant)
+        data = self.get_serializer(api_key).data
+        data['raw_secret'] = raw_secret # Only returned once
+        return Response(data, status=status.HTTP_201_CREATED)
+
+class WebhookEndpointViewSet(viewsets.ModelViewSet):
+    queryset = WebhookEndpoint.objects.all()
+    serializer_class = WebhookEndpointSerializer
+    permission_classes = [permissions.IsAuthenticated, IsPlatformAdmin]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = super().get_queryset()
+        if not user.is_superuser and getattr(user, 'tenant', None):
+            return qs.filter(tenant=user.tenant)
+        return qs
+
+    def perform_create(self, serializer):
+        tenant = getattr(self.request.user, 'tenant', None)
+        serializer.save(tenant=tenant)
+        service = SysadminService()
+        service.log_action(self.request.user, 'create', 'WebhookEndpoint', str(serializer.instance.id), tenant=tenant)
+
+class DatabaseBackupViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = DatabaseBackup.objects.all()
+    serializer_class = DatabaseBackupSerializer
+    permission_classes = [permissions.IsAuthenticated, IsPlatformAdmin]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = super().get_queryset()
+        if not user.is_superuser and getattr(user, 'tenant', None):
+            return qs.filter(tenant=user.tenant)
+        return qs
+
+    @action(detail=False, methods=['post'])
+    def trigger(self, request):
+        service = SysadminService()
+        tenant = getattr(request.user, 'tenant', None)
+        backup = service.trigger_backup(request.user, tenant)
+        return Response(self.get_serializer(backup).data)

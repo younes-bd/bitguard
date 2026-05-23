@@ -18,7 +18,7 @@ def provision_assets_from_order(sender, instance, created, **kwargs):
 
         for item in instance.items.all():
             # Check if product is hardware
-            if item.product.product_type == 'hardware' or 'hardware' in item.product.name.toLowerCase():
+            if item.product.product_type == 'hardware' or 'hardware' in item.product.name.lower():
                 # Provision the asset
                 Asset.objects.create(
                     name=item.product.name,

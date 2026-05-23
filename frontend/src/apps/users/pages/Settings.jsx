@@ -15,6 +15,9 @@ const Settings = () => {
     useEffect(() => {
         const fetchSecurityData = async () => {
             try {
+                const profile = await userService.getProfile();
+                setIs2FAEnabled(profile?.is_2fa_enabled || false);
+
                 const logs = await userService.getSecurityLogs();
                 const devList = await userService.getSecurityDevices();
                 setLoginActivity(Array.isArray(logs) ? logs : []);

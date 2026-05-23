@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Printer, ChevronDown, CheckCircle, Search } from 'lucide-react';
+import { FileText, Printer, ChevronDown, CheckCircle, Search, Box } from 'lucide-react';
 import SERVICES from '../../../core/data/servicesData';
+import api from '../../../core/api/client';
 import ProposalTemplate from '../components/documents/ProposalTemplate';
 import SOWTemplate from '../components/documents/SOWTemplate';
 import MSATemplate from '../components/documents/MSATemplate';
@@ -31,10 +32,29 @@ const DocumentGenerator = () => {
     const [docNumber, setDocNumber] = useState(`DOC-${Math.floor(Math.random() * 10000)}`);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
-    // Available services from servicesData.js
+    const [catalogItems, setCatalogItems] = useState([]);
+    const [selectedCatalogIds, setSelectedCatalogIds] = useState([]);
+
+    useEffect(() => {
+        api.get('/store/products/').then(res => {
+            const data = res.data.data || res.data || [];
+            // Map the API products to have an id and title for compatibility
+            const mapped = Array.isArray(data) ? data.map(item => ({
+                ...item,
+                id: item.id.toString(),
+                title: item.name,
+                description: item.description || '',
+                price: parseFloat(item.price) || 0
+            })) : [];
+            setCatalogItems(mapped);
+        }).catch(err => console.error("Failed to fetch catalog", err));
+    }, []);
+
+    // Available services from servicesData.js (for MSAs and Proposals)
     const availableServices = Object.keys(SERVICES).map(key => ({
         id: key,
-        ...SERVICES[key]
+        ...SERVICES[key],
+        price: 0 // Brochures don't have prices
     }));
 
     const handlePrint = () => {
@@ -46,6 +66,14 @@ const DocumentGenerator = () => {
             setSelectedServiceKeys(selectedServiceKeys.filter(k => k !== id));
         } else {
             setSelectedServiceKeys([...selectedServiceKeys, id]);
+        }
+    };
+
+    const toggleCatalogItem = (id) => {
+        if (selectedCatalogIds.includes(id)) {
+            setSelectedCatalogIds(selectedCatalogIds.filter(k => k !== id));
+        } else {
+            setSelectedCatalogIds([...selectedCatalogIds, id]);
         }
     };
 
@@ -61,10 +89,14 @@ const DocumentGenerator = () => {
                 date,
                 type: docType
             },
-            services: selectedServiceKeys.map(k => ({
-                id: k,
-                ...SERVICES[k]
-            }))
+            services: [
+                ...selectedServiceKeys.map(k => ({
+                    id: k,
+                    ...SERVICES[k],
+                    price: 0
+                })),
+                ...catalogItems.filter(item => selectedCatalogIds.includes(item.id))
+            ]
         };
     };
 
@@ -155,6 +187,43 @@ const DocumentGenerator = () => {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className={`text-sm font-semibold truncate ${isSelected ? 'text-blue-400' : 'text-slate-300'}`}>{service.title}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-slate-800"></div>
+
+                    {/* Master Catalog Selection */}
+                    <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Master Catalog Items ({selectedCatalogIds.length})</label>
+                        <p className="text-xs text-slate-500 mb-3 leading-relaxed">Select billable products or services (requires real pricing).</p>
+                        
+                        <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar border border-slate-800 rounded-xl p-2 bg-slate-950/50">
+                            {catalogItems.length === 0 ? (
+                                <div className="p-4 text-center text-xs text-slate-500">No items found in Master Catalog</div>
+                            ) : catalogItems.map(item => {
+                                const isSelected = selectedCatalogIds.includes(item.id);
+                                return (
+                                    <div 
+                                        key={item.id} 
+                                        onClick={() => toggleCatalogItem(item.id)}
+                                        className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors border ${
+                                            isSelected 
+                                            ? 'bg-emerald-500/10 border-emerald-500/30' 
+                                            : 'bg-slate-900 border-transparent hover:bg-slate-800'
+                                        }`}
+                                    >
+                                        <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 border transition-colors ${
+                                            isSelected ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-600 bg-slate-800'
+                                        }`}>
+                                            {isSelected && <CheckCircle size={12} />}
+                                        </div>
+                                        <div className="flex-1 min-w-0 flex justify-between items-center gap-2">
+                                            <p className={`text-sm font-semibold truncate ${isSelected ? 'text-emerald-400' : 'text-slate-300'}`}>{item.title}</p>
+                                            <span className="text-xs text-slate-500 font-mono">${item.price.toFixed(2)}</span>
                                         </div>
                                     </div>
                                 );

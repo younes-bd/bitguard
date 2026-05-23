@@ -11,6 +11,8 @@ from .views import (
     AccountViewSet, JournalEntryViewSet, BankAccountViewSet,
     BankTransactionViewSet, FixedAssetViewSet, CreditNoteViewSet,
     BalanceSheetView, CashFlowView, ProfitLossView,
+    PaymentTermsViewSet, InvoiceBrandingViewSet,
+    DeferredRevenueViewSet, ClientPortalInvoiceView,
 )
 
 router = DefaultRouter()
@@ -33,7 +35,12 @@ router.register(r'bank-accounts', BankAccountViewSet, basename='bank-account')
 router.register(r'bank-transactions', BankTransactionViewSet, basename='bank-transaction')
 router.register(r'fixed-assets', FixedAssetViewSet, basename='fixed-asset')
 router.register(r'credit-notes', CreditNoteViewSet, basename='credit-note')
+router.register(r'payment-terms', PaymentTermsViewSet, basename='payment-terms')
+router.register(r'invoice-branding', InvoiceBrandingViewSet, basename='invoice-branding')
+router.register(r'deferred-revenue', DeferredRevenueViewSet, basename='deferred-revenue')
+
 urlpatterns = [
+    path('portal/invoice/<uuid:token>/', ClientPortalInvoiceView.as_view(), name='client-portal-invoice'),
     path('dashboard/', ErpDashboardView.as_view(), name='erp-dashboard'),
     path('dashboard/monthly/', MonthlyFinancialsView.as_view(), name='erp-dashboard-monthly'),
     path('client-statement/<uuid:client_id>/', ClientStatementView.as_view(), name='client-statement'),

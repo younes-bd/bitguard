@@ -29,6 +29,7 @@ class Product(models.Model):
         ('physical', 'Physical Hardware'),
         ('subscription', 'Subscription/Service'),
         ('service_bundle', 'Service Bundle'),
+        ('service', 'Professional Service'),
     ]
     STATUS_CHOICES = [
         ('draft', 'Draft'),
@@ -63,6 +64,12 @@ class Product(models.Model):
     stock_quantity = models.IntegerField(default=0, help_text="Available stock")
     track_stock = models.BooleanField(default=False, help_text="Auto-decrement stock on sale?")
     is_active = models.BooleanField(default=True) # Deprecated in favor of status
+    
+    # Financial & ERP Accounting Integration
+    unit_label = models.CharField(max_length=50, default='unit', help_text="e.g. hour, month, unit, license")
+    tax_config = models.ForeignKey('erp.TaxConfig', on_delete=models.SET_NULL, null=True, blank=True, related_name='store_products')
+    income_account = models.ForeignKey('erp.Account', on_delete=models.SET_NULL, null=True, blank=True, related_name='store_income_products', help_text="CoA account to credit on sale")
+    expense_account = models.ForeignKey('erp.Account', on_delete=models.SET_NULL, null=True, blank=True, related_name='store_expense_products', help_text="CoA account to debit on purchase")
     
     # Advanced Commerce
     categories = models.ManyToManyField(Category, blank=True, related_name='products')

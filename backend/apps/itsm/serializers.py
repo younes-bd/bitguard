@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ChangeRequest, ChangeTask, Problem
+from .models import ChangeRequest, ChangeTask, Problem, ServiceItem, ServiceRequest
 
 class ProblemSerializer(serializers.ModelSerializer):
     assigned_to_name = serializers.CharField(source='assigned_to.get_full_name', read_only=True)
@@ -40,4 +40,29 @@ class ChangeRequestSerializer(serializers.ModelSerializer):
             'tasks', 'problem_id', 'created_at', 'updated_at'
         ]
         read_only_fields = ('created_at', 'updated_at', 'approved_by')
+
+class ServiceItemSerializer(serializers.ModelSerializer):
+    sla_tier_name = serializers.CharField(source='sla_tier.name', read_only=True)
+    service_owner_name = serializers.CharField(source='service_owner.get_full_name', read_only=True)
+
+    class Meta:
+        model = ServiceItem
+        fields = [
+            'id', 'name', 'description', 'icon', 'category', 'is_active',
+            'sla_tier', 'sla_tier_name', 'approval_required', 'service_owner', 'service_owner_name'
+        ]
+
+class ServiceRequestSerializer(serializers.ModelSerializer):
+    service_item_details = ServiceItemSerializer(source='service_item', read_only=True)
+    requester_name = serializers.CharField(source='requester.get_full_name', read_only=True)
+    ticket_id = serializers.PrimaryKeyRelatedField(source='ticket', read_only=True)
+
+    class Meta:
+        model = ServiceRequest
+        fields = [
+            'id', 'service_item', 'service_item_details', 'requester', 'requester_name',
+            'status', 'form_data', 'ticket_id', 'created_at', 'closed_at'
+        ]
+        read_only_fields = ('created_at', 'closed_at')
+
 

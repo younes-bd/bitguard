@@ -5,3 +5,6 @@ class HrmConfig(AppConfig):
     name = 'apps.hrm'
     label = 'hrm'
     verbose_name = 'Human Resources'
+
+    def ready(self):
+        import apps.hrm.signals

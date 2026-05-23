@@ -88,3 +88,56 @@ def trigger_lead_scoring_on_lead_change(sender, instance, created, **kwargs):
         from apps.crm.services import LeadScoringService
         LeadScoringService.update_lead_score(instance.id)
 
+@receiver(post_save, sender='crm.Deal')
+def trigger_contract_on_deal_won(sender, instance, created, **kwargs):
+    """
+    Signal: CRM Deal 'Won' -> Generate baseline Service Contract & Initial Invoice.
+    """
+    # Check if the deal was just moved to 'won'
+    if instance.stage == 'won':
+        from apps.contracts.models import ServiceContract
+        from apps.erp.models import Invoice
+        import datetime
+        from django.utils import timezone
+        
+        # Avoid creating duplicates if the signal fires multiple times
+        contract_exists = ServiceContract.objects.filter(client=instance.client, start_date=timezone.now().date()).exists()
+        if not contract_exists:
+            # Find a default SLA tier (or create one)
+            from apps.contracts.models import SLATier
+            sla_tier = SLATier.objects.filter(name='Standard').first()
+            if not sla_tier:
+                sla_tier = SLATier.objects.create(
+                    name='Standard',
+                    first_response_hours=24,
+                    resolution_hours=72,
+                    uptime_percent=99.0
+                )
+            
+            # Generate a basic Service Contract
+            contract = ServiceContract.objects.create(
+                tenant=instance.tenant,
+                client=instance.client,
+                contract_type='project',
+                sla_tier=sla_tier,
+                status='draft',
+                start_date=timezone.now().date(),
+                end_date=timezone.now().date() + datetime.timedelta(days=365),
+                monthly_value=instance.amount / 12 if instance.amount else 0
+            )
+            
+            # Generate Initial Invoice for the Deal
+            invoice = Invoice.objects.create(
+                tenant=instance.tenant,
+                client=instance.client,
+                invoice_number=f"INV-DEAL-{instance.id}-{timezone.now().strftime('%Y%m%d')}",
+                type='standard',
+                status='draft',
+                issue_date=timezone.now().date(),
+                due_date=timezone.now().date() + datetime.timedelta(days=15),
+                amount=instance.amount
+            )
+            # Link to the deal notes or references if applicable
+            invoice.notes = f"Initial invoice generated from Deal: {instance.title}"
+            invoice.save(update_fields=['notes'])
+

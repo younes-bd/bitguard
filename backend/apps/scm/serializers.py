@@ -16,12 +16,15 @@ class InventoryItemSerializer(serializers.ModelSerializer):
     quantity_available = serializers.ReadOnlyField()
     is_low_stock = serializers.ReadOnlyField()
 
+    name = serializers.CharField(source='product_name')
+    unit_price = serializers.DecimalField(source='unit_cost', max_digits=12, decimal_places=2, required=False)
+
     class Meta:
         model = InventoryItem
         fields = [
-            'id', 'product_id', 'product_name', 'sku', 'quantity_on_hand',
+            'id', 'product_id', 'name', 'sku', 'quantity_on_hand',
             'quantity_reserved', 'quantity_available', 'reorder_level',
-            'unit_cost', 'location', 'vendor', 'is_low_stock', 'created_at',
+            'unit_price', 'location', 'vendor', 'is_low_stock', 'created_at',
         ]
         read_only_fields = ['id', 'created_at']
 

@@ -50,6 +50,18 @@ export const erpService = {
         const r = await client.post(`erp/invoices/${id}/convert-to-invoice/`);
         return r.data?.data ?? r.data;
     },
+    convertQuotationToInvoice: async (id) => {
+        const r = await client.post(`erp/invoices/${id}/convert-to-invoice/`);
+        return r.data?.data ?? r.data;
+    },
+    acceptQuotation: async (id) => {
+        const r = await client.post(`erp/invoices/${id}/accept-quotation/`);
+        return r.data?.data ?? r.data;
+    },
+    declineQuotation: async (id) => {
+        const r = await client.post(`erp/invoices/${id}/decline-quotation/`);
+        return r.data?.data ?? r.data;
+    },
     getAgingReport: async () => {
         const r = await client.get('erp/invoices/aging-report/');
         return r.data?.data ?? r.data;
@@ -364,6 +376,68 @@ export const erpService = {
     },
     applyCreditNote: async (id, invoiceId) => {
         const r = await client.post(`erp/credit-notes/${id}/apply/`, { invoice_id: invoiceId });
+        return r.data?.data ?? r.data;
+    },
+    createCreditNote: async (data) => {
+        const r = await client.post('erp/credit-notes/', data);
+        return r.data?.data ?? r.data;
+    },
+    getCatalogItems: async (params) => {
+        const r = await client.get('store/products/', { params });
+        return r.data?.data ?? r.data;
+    },
+
+    // ─── PAYMENT TERMS ────────────────────────────────────────────────────────
+    getPaymentTerms: async (params = {}) => {
+        const r = await client.get('erp/payment-terms/', { params });
+        return r.data?.data ?? r.data;
+    },
+    createPaymentTerm: async (data) => {
+        const r = await client.post('erp/payment-terms/', data);
+        return r.data?.data ?? r.data;
+    },
+    updatePaymentTerm: async (id, data) => {
+        const r = await client.patch(`erp/payment-terms/${id}/`, data);
+        return r.data?.data ?? r.data;
+    },
+    deletePaymentTerm: async (id) => {
+        const r = await client.delete(`erp/payment-terms/${id}/`);
+        return r.data?.data ?? r.data;
+    },
+
+    // ─── INVOICE BRANDING ─────────────────────────────────────────────────────
+    getInvoiceBrandings: async (params = {}) => {
+        const r = await client.get('erp/invoice-branding/', { params });
+        return r.data?.data ?? r.data;
+    },
+    createInvoiceBranding: async (data) => {
+        const r = await client.post('erp/invoice-branding/', data);
+        return r.data?.data ?? r.data;
+    },
+    updateInvoiceBranding: async (id, data) => {
+        const r = await client.patch(`erp/invoice-branding/${id}/`, data);
+        return r.data?.data ?? r.data;
+    },
+    deleteInvoiceBranding: async (id) => {
+        const r = await client.delete(`erp/invoice-branding/${id}/`);
+        return r.data?.data ?? r.data;
+    },
+
+    // ─── DEFERRED REVENUE ─────────────────────────────────────────────────────
+    getDeferredRevenues: async (params = {}) => {
+        const r = await client.get('erp/deferred-revenue/', { params });
+        return r.data?.data ?? r.data;
+    },
+    createDeferredRevenue: async (data) => {
+        const r = await client.post('erp/deferred-revenue/', data);
+        return r.data?.data ?? r.data;
+    },
+    updateDeferredRevenue: async (id, data) => {
+        const r = await client.patch(`erp/deferred-revenue/${id}/`, data);
+        return r.data?.data ?? r.data;
+    },
+    deleteDeferredRevenue: async (id) => {
+        const r = await client.delete(`erp/deferred-revenue/${id}/`);
         return r.data?.data ?? r.data;
     },
 };

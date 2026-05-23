@@ -12,9 +12,11 @@ export default function ProjectsReport() {
             client.get('projects/').catch(() => ({ data: [] })),
             client.get('hrm/time-logs/', { params: { limit: 500 } }).catch(() => ({ data: [] }))
         ]).then(([projRes, timeRes]) => {
+            const pData = projRes.data?.results || projRes.data;
+            const tData = timeRes.data?.results || timeRes.data;
             setData({
-                projects: projRes.data?.results || projRes.data || [],
-                timeLogs: timeRes.data?.results || timeRes.data || []
+                projects: Array.isArray(pData) ? pData : [],
+                timeLogs: Array.isArray(tData) ? tData : []
             });
         }).finally(() => setLoading(false));
     }, []);
@@ -27,21 +29,21 @@ export default function ProjectsReport() {
     );
 
     const statuses = {
-        active: data.projects.filter(p => p.status === 'in_progress').length,
-        completed: data.projects.filter(p => p.status === 'completed').length,
-        atRisk: data.projects.filter(p => p.status === 'at_risk' || p.status === 'delayed').length,
+        active: data.projects?.filter(p => p.status === 'in_progress')?.length || 0,
+        completed: data.projects?.filter(p => p.status === 'completed')?.length || 0,
+        atRisk: data.projects?.filter(p => p.status === 'at_risk' || p.status === 'delayed')?.length || 0,
     };
 
-    const totalBillable = data.timeLogs.filter(t => t.billable).reduce((sum, t) => sum + parseFloat(t.hours || 0), 0);
-    const totalNonBillable = data.timeLogs.filter(t => !t.billable).reduce((sum, t) => sum + parseFloat(t.hours || 0), 0);
+    const totalBillable = data.timeLogs?.filter(t => t.billable)?.reduce((sum, t) => sum + parseFloat(t.hours || 0), 0) || 0;
+    const totalNonBillable = data.timeLogs?.filter(t => !t.billable)?.reduce((sum, t) => sum + parseFloat(t.hours || 0), 0) || 0;
 
     // Calculate budget vs actuals for active projects
-    const projectBudgets = data.projects.slice(0, 5).map(p => {
-        const loggedHours = data.timeLogs.filter(t => String(t.project) === String(p.id)).reduce((s, t) => s + parseFloat(t.hours || 0), 0);
+    const projectBudgets = data.projects?.slice(0, 5)?.map(p => {
+        const loggedHours = data.timeLogs?.filter(t => String(t.project) === String(p.id))?.reduce((s, t) => s + parseFloat(t.hours || 0), 0) || 0;
         const budget = p.estimated_hours || 0;
         const pct = budget > 0 ? Math.min(Math.round((loggedHours / budget) * 100), 100) : 0;
         return { name: p.name, logged: loggedHours, budget, pct, isOver: loggedHours > budget };
-    });
+    }) || [];
 
     return (
         <div className="space-y-6 max-w-7xl mx-auto pb-12 px-4 sm:px-6 animate-in fade-in duration-500">

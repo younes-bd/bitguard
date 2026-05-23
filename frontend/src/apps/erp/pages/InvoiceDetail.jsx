@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { erpService } from '../../../core/api/erpService';
 import {
     ArrowLeft, Printer, Download, Mail,
-    CheckCircle, AlertCircle, Clock, FileCheck, RefreshCcw
+    CheckCircle, AlertCircle, Clock, FileCheck, RefreshCcw, Link
 } from 'lucide-react';
 
 const InvoiceDetail = () => {
@@ -129,7 +129,33 @@ const InvoiceDetail = () => {
                         <Download size={18} />
                         <span>PDF Export</span>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all shadow-lg shadow-blue-500/20 font-medium">
+                    {invoice.payment_link_url && (
+                        <button 
+                            onClick={() => {
+                                navigator.clipboard.writeText(invoice.payment_link_url);
+                                alert("Payment link copied to clipboard!");
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors border border-slate-700/50"
+                        >
+                            <Link size={18} />
+                            <span>Copy Link</span>
+                        </button>
+                    )}
+                    <button 
+                        onClick={async () => {
+                            setActionLoading(true);
+                            try {
+                                await erpService.sendInvoiceToClient(id);
+                                alert("Invoice dispatched successfully!");
+                            } catch (e) {
+                                alert("Failed to dispatch invoice.");
+                            } finally {
+                                setActionLoading(false);
+                            }
+                        }}
+                        disabled={actionLoading}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white rounded-xl transition-all shadow-lg shadow-blue-500/20 font-medium"
+                    >
                         <Mail size={18} />
                         <span>Dispatch to Client</span>
                     </button>

@@ -1,11 +1,8 @@
 import React from 'react';
 
 const CommercialInvoiceTemplate = ({ data }) => {
-    // Generate mock pricing for the invoice presentation since servicesData doesn't have prices
-    const getMockPrice = (index) => ((index + 1) * 1500) + 500;
-    
-    const subtotal = data.services.reduce((acc, _, idx) => acc + getMockPrice(idx), 0);
-    const tax = subtotal * 0.08; // 8% tax mock
+    const subtotal = data.services.reduce((acc, service) => acc + (service.price || 0), 0);
+    const tax = subtotal * 0.08; // Example tax calculation
     const total = subtotal + tax;
 
     const formatCurrency = (amount) => {
@@ -82,8 +79,8 @@ const CommercialInvoiceTemplate = ({ data }) => {
                                         <div className="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">{service.description}</div>
                                     </td>
                                     <td className="py-4 text-right text-slate-700 align-top">1</td>
-                                    <td className="py-4 text-right text-slate-700 align-top">{formatCurrency(getMockPrice(index))}</td>
-                                    <td className="py-4 text-right font-semibold text-slate-900 align-top">{formatCurrency(getMockPrice(index))}</td>
+                                    <td className="py-4 text-right text-slate-700 align-top">{formatCurrency(service.price || 0)}</td>
+                                    <td className="py-4 text-right font-semibold text-slate-900 align-top">{formatCurrency(service.price || 0)}</td>
                                 </tr>
                             ))
                         )}

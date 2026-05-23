@@ -29,7 +29,11 @@ const SysadminDashboard = () => {
     active_users: 0,
     error_rate: 0,
     server_uptime: '0%',
-    cpu_load: '0%'
+    cpu_load: '0%',
+    cpu_cores_load: [],
+    memory: { total: 0, used: 0, percent: 0 },
+    disk: { total: 0, used: 0, percent: 0 },
+    services_health: []
   });
 
   const [activities, setActivities] = useState([]);
@@ -51,6 +55,8 @@ const SysadminDashboard = () => {
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 30000); // refresh every 30s
+    return () => clearInterval(interval);
   }, []);
 
   const handleAction = async (actionName, triggerFn) => {
@@ -87,6 +93,14 @@ const SysadminDashboard = () => {
     }
   };
 
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <div className="p-8 max-w-7xl mx-auto animate-fade-in-up relative">
       {notification && (
@@ -110,12 +124,12 @@ const SysadminDashboard = () => {
         </div>
       </div>
 
-      {/* KPI KPIs Grid */}
+      {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <MetricCard onClick={() => navigate('/admin/iam/sessions')} title="Active Connections" value={metrics.active_users.toLocaleString()} icon={Users} trend="+12.5%" colorClass="bg-blue-500/10 text-blue-400 border-blue-500/20" />
-        <MetricCard onClick={() => setTelemetryModal('health')} title="Global Uptime" value={metrics.server_uptime} icon={Server} trend="+0.01%" colorClass="bg-emerald-500/10 text-emerald-400 border-emerald-500/20" />
+        <MetricCard onClick={() => setTelemetryModal('health')} title="Global Uptime" value={metrics.server_uptime} icon={Server} colorClass="bg-emerald-500/10 text-emerald-400 border-emerald-500/20" />
         <MetricCard onClick={() => navigate('/admin/system/logs')} title="System Error Rate" value={`${metrics.error_rate}%`} icon={AlertTriangle} trend="-0.02%" colorClass="bg-amber-500/10 text-amber-400 border-amber-500/20" />
-        <MetricCard onClick={() => setTelemetryModal('performance')} title="Average CPU Load" value={metrics.cpu_load} icon={Activity} trend="-5%" colorClass="bg-purple-500/10 text-purple-400 border-purple-500/20" />
+        <MetricCard onClick={() => setTelemetryModal('performance')} title="Average CPU Load" value={metrics.cpu_load} icon={Activity} colorClass="bg-purple-500/10 text-purple-400 border-purple-500/20" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -191,13 +205,7 @@ const SysadminDashboard = () => {
                   <Server className="text-emerald-400" /> Services Health & Status
                 </h3>
                 <div className="space-y-3">
-                  {[
-                    { name: 'Core Application Service (Django API)', status: 'Operational', latency: '24ms', color: 'bg-emerald-500' },
-                    { name: 'Database Instance (PostgreSQL Main)', status: 'Operational', latency: '4ms', color: 'bg-emerald-500' },
-                    { name: 'Caching & Session Store (Redis)', status: 'Operational', latency: '1ms', color: 'bg-emerald-500' },
-                    { name: 'Background Workers (Celery & RabbitMQ)', status: 'Operational', latency: '98% Queue Empty', color: 'bg-emerald-500' },
-                    { name: 'CDN & File Delivery S3 Bucket', status: 'Operational', latency: '12ms', color: 'bg-emerald-500' },
-                  ].map((service, idx) => (
+                  {(metrics.services_health || []).map((service, idx) => (
                     <div key={idx} className="flex justify-between items-center p-3 bg-slate-950/50 rounded-xl border border-slate-850">
                       <div>
                         <div className="text-sm font-semibold text-white">{service.name}</div>
@@ -223,7 +231,7 @@ const SysadminDashboard = () => {
                       <span>{metrics.cpu_load} Average</span>
                     </div>
                     <div className="grid grid-cols-4 gap-2">
-                      {[32, 45, 18, 29].map((load, idx) => (
+                      {(metrics.cpu_cores_load || []).map((load, idx) => (
                         <div key={idx} className="bg-slate-950/50 p-2 rounded-lg border border-slate-850 text-center">
                           <span className="block text-[10px] text-slate-500">Core {idx + 1}</span>
                           <span className="text-sm font-bold text-white">{load}%</span>
@@ -240,19 +248,19 @@ const SysadminDashboard = () => {
                     <div>
                       <div className="flex justify-between text-xs font-semibold text-slate-400 mb-1">
                         <span>Memory Utilisation</span>
-                        <span>8.2 GB / 16.0 GB (51%)</span>
+                        <span>{formatBytes(metrics.memory?.used || 0)} / {formatBytes(metrics.memory?.total || 0)} ({metrics.memory?.percent || 0}%)</span>
                       </div>
                       <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-850">
-                        <div className="bg-blue-500 h-full" style={{ width: '51%' }}></div>
+                        <div className="bg-blue-500 h-full" style={{ width: `${metrics.memory?.percent || 0}%` }}></div>
                       </div>
                     </div>
                     <div>
                       <div className="flex justify-between text-xs font-semibold text-slate-400 mb-1">
-                        <span>NVMe Main Partition Disk Storage</span>
-                        <span>124.6 GB / 250.0 GB (49%)</span>
+                        <span>Main Partition Disk Storage</span>
+                        <span>{formatBytes(metrics.disk?.used || 0)} / {formatBytes(metrics.disk?.total || 0)} ({metrics.disk?.percent || 0}%)</span>
                       </div>
                       <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-850">
-                        <div className="bg-amber-500 h-full" style={{ width: '49%' }}></div>
+                        <div className="bg-amber-500 h-full" style={{ width: `${metrics.disk?.percent || 0}%` }}></div>
                       </div>
                     </div>
                   </div>

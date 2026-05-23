@@ -16,13 +16,16 @@ class SystemHealthService:
         except OperationalError:
             db_status = 'Unreachable'
 
-        # Basic OS/Container Resource Metrics (Simulated/Standard Lib)
-        cpu_usage = 0.0
-        if hasattr(os, 'getloadavg'):
-            try:
-                cpu_usage = round((os.getloadavg()[0] / os.cpu_count()) * 100, 2)
-            except Exception:
-                pass
+        # Basic OS/Container Resource Metrics using psutil
+        try:
+            import psutil
+            cpu_usage = psutil.cpu_percent(interval=0.1)
+            memory_percent = psutil.virtual_memory().percent
+            disk_usage = psutil.disk_usage('/').percent
+        except ImportError:
+            cpu_usage = 0.0
+            memory_percent = 0.0
+            disk_usage = 0.0
 
         return {
             "database": {
@@ -30,8 +33,8 @@ class SystemHealthService:
             },
             "infrastructure": {
                 "cpu_percent": cpu_usage,
-                "memory_percent": 45.0,  # Placeholder or implement via /proc/meminfo
-                "disk_usage": 60.0       # Placeholder
+                "memory_percent": memory_percent,
+                "disk_usage": disk_usage
             },
             "platform": {
                 "version": "1.0.0-enterprise",

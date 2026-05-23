@@ -5,3 +5,6 @@ class ScmConfig(AppConfig):
     name = 'apps.scm'
     label = 'scm'
     verbose_name = 'Supply Chain Management'
+
+    def ready(self):
+        import apps.scm.signals

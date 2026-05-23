@@ -8,14 +8,24 @@ logger = logging.getLogger(__name__)
 
 class CommandCenterAnalyticsService:
     @classmethod
-    def get_global_metrics(cls, tenant=None):
+    def get_global_metrics(cls, tenant=None, date_range='30days'):
         """
         Gathers high-level KPIs across all 9 deployed modules for the BFF
         Command Center. Tenant-scoped when tenant is provided.
         """
         now = timezone.now()
         today = now.date()
-        thirty_days_ago = now - timedelta(days=30)
+        
+        if date_range == '7days':
+            past_date = now - timedelta(days=7)
+        elif date_range == '90days':
+            past_date = now - timedelta(days=90)
+        elif date_range == 'thisYear':
+            past_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        else:
+            past_date = now - timedelta(days=30)
+            
+        thirty_days_ago = past_date # Keep the variable name to avoid renaming it everywhere
 
         metrics = {}
 
@@ -278,14 +288,14 @@ class CommandCenterAnalyticsService:
 
         # ── 15. Billing ────────────────────────────────────────────────────────
         try:
-            from apps.store.models import Subscription
+            from apps.billing.models import Subscription
             subs = Subscription.objects.all()
             if tenant:
-                subs = subs.filter(customer__tenant=tenant)
+                subs = subs.filter(tenant=tenant)
             
             metrics["billing"] = {
                 "active_subscriptions": subs.filter(status="active").count(),
-                "mrr": float(subs.filter(status="active").aggregate(total=Sum("plan__price"))["total"] or 0),
+                "mrr": float(subs.filter(status="active").aggregate(total=Sum("plan__price_monthly"))["total"] or 0),
             }
         except Exception as e:
             logger.warning(f"Billing analytics error: {e}")

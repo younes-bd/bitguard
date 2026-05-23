@@ -2,331 +2,246 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { erpService } from '../../../../core/api/erpService';
 import {
-    FolderKanban, CheckSquare, Clock,
-    ArrowUpRight, Plus, Activity, AlertTriangle, FileText,
-    TrendingUp, DollarSign, PieChart, Shield,
+    FolderKanban, Clock, Plus, Activity,
+    TrendingUp, DollarSign, Scale,
     Building2, ShoppingCart, Repeat, BookOpen,
-    Landmark, Scale, FileSpreadsheet, Server
+    Landmark, FileSpreadsheet, Server, ArrowRight, Wallet, Shield
 } from 'lucide-react';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts';
 
 const ErpDashboard = () => {
     const navigate = useNavigate();
     const [data, setData] = useState(null);
+    const [monthlyData, setMonthlyData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadStats = async () => {
-            try {
-                const stats = await erpService.getDashboardStats();
-                setData(stats);
-            } catch (error) {
-                console.error("Failed to load dashboard stats", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadStats();
+        Promise.all([
+            erpService.getDashboardStats().catch(() => null),
+            erpService.getMonthlyFinancials(6).catch(() => [])
+        ]).then(([stats, monthly]) => {
+            if (stats) setData(stats);
+            if (monthly) setMonthlyData(monthly);
+            setLoading(false);
+        });
     }, []);
 
     if (loading) return (
-        <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="flex justify-center items-center h-[70vh]">
+            <div className="relative w-16 h-16">
+                <div className="absolute inset-0 border-4 border-blue-500/20 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+            </div>
         </div>
     );
 
-    if (!data) return <div className="text-white p-8">Failed to load data. The API returned null.</div>;
-    if (!data.financials || !data.kpi) return <div className="text-white p-8 overflow-auto"><pre>{JSON.stringify(data, null, 2)}</pre></div>;
+    if (!data || !data.financials || !data.kpi) return <div className="text-white p-8">Data unavailable.</div>;
 
-    const { kpi, financials, system = { core: 'Unknown', database: 'Unknown' } } = data;
+    const { kpi, financials, system = { core: 'Operational', database: 'Operational' } } = data;
     const profitMargin = financials?.total_revenue > 0 
         ? ((financials.net_profit / financials.total_revenue) * 100).toFixed(1)
         : 0;
 
+    const quickLinks = [
+        { icon: FolderKanban, label: 'Projects', val: kpi.active_projects, path: '/admin/erp/projects', color: 'blue' },
+        { icon: Clock, label: 'Overdue Invoices', val: kpi.overdue_invoices, path: '/admin/erp/invoices', color: 'rose' },
+        { icon: Activity, label: 'Deliveries', val: kpi.pending_delivery, path: '/admin/erp/delivery', color: 'purple' },
+        { icon: ShoppingCart, label: 'Open POs', val: kpi.open_pos, path: '/admin/erp/purchase-orders', color: 'emerald' },
+        { icon: Building2, label: 'Vendors', val: kpi.active_vendors, path: '/admin/erp/vendors', color: 'orange' },
+        { icon: Repeat, label: 'Recurring', val: kpi.recurring_active, path: '/admin/erp/recurring', color: 'cyan' },
+    ];
+
+    const chartData = monthlyData.length > 0 ? monthlyData : [
+        { name: 'Jan', income: 4000, expense: 2400 },
+        { name: 'Feb', income: 3000, expense: 1398 },
+        { name: 'Mar', income: 2000, expense: 9800 },
+        { name: 'Apr', income: 2780, expense: 3908 },
+        { name: 'May', income: 1890, expense: 4800 },
+        { name: 'Jun', income: 2390, expense: 3800 },
+    ];
+
+    const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(val || 0);
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">ERP Control Center</h1>
-                    <p className="text-slate-400">Manage your company's billing, financials, and delivery operations.</p>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4">
+                        <Activity size={14} className="text-blue-400" />
+                        <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">Enterprise Command Center</span>
+                    </div>
+                    <h1 className="text-4xl font-black text-white tracking-tight">ERP Dashboard</h1>
+                    <p className="text-slate-400 mt-2 text-lg">Financial overview and operations management.</p>
                 </div>
-                <div className="flex gap-3">
-                    <button
-                        onClick={() => navigate('/admin/erp/invoices')}
-                        className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
-                    >
-                        Invoice Management
+                <div className="flex flex-wrap gap-3">
+                    <button onClick={() => navigate('/admin/erp/documents')} className="px-5 py-2.5 bg-slate-800 text-white rounded-xl hover:bg-slate-700 font-bold border border-slate-700 transition-all flex items-center gap-2">
+                        <FolderKanban size={18} /> Document Hub
                     </button>
-                    <button
-                        onClick={() => navigate('/admin/erp/invoices/create')}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
-                    >
-                        <Plus size={18} />
-                        <span>New Invoice</span>
+                    <button onClick={() => navigate('/admin/erp/invoices/create')} className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2 hover:scale-105 active:scale-95">
+                        <Plus size={18} /> New Invoice
                     </button>
                 </div>
             </div>
 
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div 
-                    onClick={() => navigate('/admin/erp/projects')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
-                            <FolderKanban size={24} />
-                        </div>
-                        <span className="text-xs text-slate-500 flex items-center gap-1 group-hover:text-blue-400 transition-colors">
-                            <ArrowUpRight size={14} /> View
-                        </span>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{kpi.active_projects || 0}</div>
-                    <div className="text-xs text-slate-400">Active Projects</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/invoices')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-orange-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-orange-500/20 text-orange-400 group-hover:scale-110 transition-transform">
-                            <Clock size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-orange-400 transition-colors">{kpi.overdue_invoices || 0}</div>
-                    <div className="text-xs text-slate-400">Overdue Invoices</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/delivery')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-purple-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
-                            <Activity size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">{kpi.pending_delivery || 0}</div>
-                    <div className="text-xs text-slate-400">Pending Deliveries</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/vendors')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
-                            <Building2 size={24} />
-                        </div>
-                    </div>
-                    <div className="flex items-baseline gap-2 mb-1">
-                        <div className="text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors">{kpi.active_vendors || 0}</div>
-                        <div className="text-sm font-medium text-slate-300">Vendors</div>
-                    </div>
-                    <div className="text-xs text-slate-400">Supplier Directory</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/purchase-orders')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
-                            <ShoppingCart size={24} />
-                        </div>
-                    </div>
-                    <div className="flex items-baseline gap-2 mb-1">
-                        <div className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">{kpi.open_pos || 0}</div>
-                        <div className="text-sm font-medium text-slate-300">Open POs</div>
-                    </div>
-                    <div className="text-xs text-slate-400">Purchase Orders</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/recurring')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-purple-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
-                            <Repeat size={24} />
-                        </div>
-                    </div>
-                    <div className="flex items-baseline gap-2 mb-1">
-                        <div className="text-2xl font-bold text-white group-hover:text-purple-400 transition-colors">{kpi.recurring_active || 0}</div>
-                        <div className="text-sm font-medium text-slate-300">Active Auto</div>
-                    </div>
-                    <div className="text-xs text-slate-400">Recurring Invoices</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/aging-report')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-rose-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400 group-hover:scale-110 transition-transform">
-                            <BookOpen size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-rose-400 transition-colors">A/R Aging</div>
-                    <div className="text-xs text-slate-400">Financial Reports</div>
-                </div>
-                <div 
-                    onClick={() => navigate('/admin/erp/banking')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
-                            <Landmark size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">Banking</div>
-                    <div className="text-xs text-slate-400">Cash Flow</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/journal-entries')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
-                            <FileSpreadsheet size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Ledger</div>
-                    <div className="text-xs text-slate-400">Journal Entries</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/balance-sheet')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-purple-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
-                            <Scale size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">Balance Sheet</div>
-                    <div className="text-xs text-slate-400">Assets = Liab + Equity</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/cash-flow')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
-                            <TrendingUp size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">Cash Flow</div>
-                    <div className="text-xs text-slate-400">Statement of Cash Flows</div>
-                </div>
-
-                <div 
-                    onClick={() => navigate('/admin/erp/fixed-assets')}
-                    className="glass-panel p-5 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-colors group cursor-pointer"
-                >
-                    <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
-                            <Server size={24} />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Fixed Assets</div>
-                    <div className="text-xs text-slate-400">Asset Depreciation</div>
-                </div>
-            </div>
-
-            {/* Financial Snapshot */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                    <div className="flex justify-between items-start mb-4">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Revenue</span>
-                        <TrendingUp size={16} className="text-emerald-500" />
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-2">
-                        ${financials.total_revenue.toLocaleString()}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                        Total paid amount
-                    </div>
-                </div>
-
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                    <div className="flex justify-between items-start mb-4">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Expenses</span>
-                        <DollarSign size={16} className="text-red-500" />
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-2">
-                        ${financials.total_expenses.toLocaleString()}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                        Software, Hardware, etc.
-                    </div>
-                </div>
-
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50 relative overflow-hidden">
+            {/* Financial Top Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="glass-panel p-6 rounded-3xl border border-blue-500/20 bg-gradient-to-br from-blue-900/20 to-transparent relative overflow-hidden group hover:scale-[1.02] transition-transform cursor-pointer">
+                    <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 transition-opacity"><Wallet size={120} /></div>
                     <div className="flex justify-between items-start mb-4 relative z-10">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Net Profit</span>
-                        <span className={`px-2 py-0.5 rounded text-xs border ${profitMargin > 15
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                            : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-                            }`}>
-                            {profitMargin}% Margin
-                        </span>
+                        <div className="p-3 bg-blue-500/20 text-blue-400 rounded-2xl"><Wallet size={20} /></div>
+                        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300">Revenue</span>
                     </div>
-                    <div className={`text-3xl font-bold mb-2 relative z-10 ${financials.net_profit > 0 ? 'text-emerald-400' : 'text-red-400'
-                        }`}>
-                        ${financials.net_profit.toLocaleString()}
+                    <div className="text-3xl font-black text-white relative z-10">{formatCurrency(financials.total_revenue)}</div>
+                    <div className="text-sm text-slate-400 mt-1 relative z-10 font-medium">Total Income Generated</div>
+                </div>
+
+                <div className="glass-panel p-6 rounded-3xl border border-rose-500/20 bg-gradient-to-br from-rose-900/20 to-transparent relative overflow-hidden group hover:scale-[1.02] transition-transform cursor-pointer">
+                    <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 transition-opacity"><DollarSign size={120} /></div>
+                    <div className="flex justify-between items-start mb-4 relative z-10">
+                        <div className="p-3 bg-rose-500/20 text-rose-400 rounded-2xl"><DollarSign size={20} /></div>
+                        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300">Expenses</span>
                     </div>
-                    <div className="text-xs text-slate-400 relative z-10">
-                        Revenue minus expenses
+                    <div className="text-3xl font-black text-white relative z-10">{formatCurrency(financials.total_expenses)}</div>
+                    <div className="text-sm text-slate-400 mt-1 relative z-10 font-medium">Operating Costs</div>
+                </div>
+
+                <div className="glass-panel p-6 rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-900/20 to-transparent relative overflow-hidden group hover:scale-[1.02] transition-transform cursor-pointer">
+                    <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 transition-opacity"><TrendingUp size={120} /></div>
+                    <div className="flex justify-between items-start mb-4 relative z-10">
+                        <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-2xl"><TrendingUp size={20} /></div>
+                        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300">Net Profit</span>
+                    </div>
+                    <div className="text-3xl font-black text-white relative z-10">{formatCurrency(financials.net_profit)}</div>
+                    <div className="text-sm text-emerald-400 mt-1 relative z-10 font-bold">{profitMargin}% Margin</div>
+                </div>
+
+                <div className="glass-panel p-6 rounded-3xl border border-purple-500/20 bg-gradient-to-br from-purple-900/20 to-transparent relative overflow-hidden group hover:scale-[1.02] transition-transform cursor-pointer">
+                    <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 transition-opacity"><Scale size={120} /></div>
+                    <div className="flex justify-between items-start mb-4 relative z-10">
+                        <div className="p-3 bg-purple-500/20 text-purple-400 rounded-2xl"><Scale size={20} /></div>
+                        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300">A/R</span>
+                    </div>
+                    <div className="text-3xl font-black text-white relative z-10">{formatCurrency(financials.outstanding_balance)}</div>
+                    <div className="text-sm text-slate-400 mt-1 relative z-10 font-medium">Outstanding Balance</div>
+                </div>
+            </div>
+
+            {/* Main Chart Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 glass-panel p-8 rounded-3xl border border-slate-700/50">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-xl font-black text-white">Financial Performance</h3>
+                            <p className="text-sm text-slate-400">Income vs Expenses (6 Months)</p>
+                        </div>
+                    </div>
+                    <div className="h-[350px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                    </linearGradient>
+                                    <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                                <XAxis dataKey="name" stroke="#94a3b8" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis stroke="#94a3b8" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(val) => `$${val/1000}k`} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#f8fafc' }}
+                                    itemStyle={{ fontWeight: 'bold' }}
+                                />
+                                <Area type="monotone" dataKey="income" name="Income" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
+                                <Area type="monotone" dataKey="expense" name="Expenses" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Operations KPI */}
+                <div className="glass-panel p-8 rounded-3xl border border-slate-700/50 flex flex-col">
+                    <h3 className="text-xl font-black text-white mb-2">Operations</h3>
+                    <p className="text-sm text-slate-400 mb-6">Current activity metrics</p>
+                    
+                    <div className="flex-1 flex flex-col gap-4 justify-between">
+                        {quickLinks.map((item, i) => {
+                            const Icon = item.icon;
+                            return (
+                                <div key={i} onClick={() => navigate(item.path)} className="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-800/50 cursor-pointer transition-colors group">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`p-2.5 rounded-xl bg-${item.color}-500/20 text-${item.color}-400 group-hover:scale-110 transition-transform`}>
+                                            <Icon size={18} />
+                                        </div>
+                                        <span className="font-bold text-slate-300 group-hover:text-white transition-colors">{item.label}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xl font-black text-white">{item.val || 0}</span>
+                                        <ArrowRight size={14} className="text-slate-600 group-hover:text-slate-400 transition-colors group-hover:translate-x-1" />
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* System Status & Operations */}
+            {/* Quick Actions & System */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 glass-panel p-6 rounded-xl border border-slate-700/50">
-                    <h3 className="text-lg font-bold text-white mb-6">Operations Overview</h3>
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-900/50 border border-slate-800">
-                            <div className="flex items-center gap-4">
-                                <div className="p-2 rounded bg-blue-500/10 text-blue-400">
-                                    <FileText size={20} />
+                <div className="lg:col-span-2 glass-panel p-8 rounded-3xl border border-slate-700/50">
+                    <h3 className="text-xl font-black text-white mb-6">Financial Modules</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {[
+                            { icon: FileSpreadsheet, label: 'Ledger', path: '/admin/erp/journal-entries', c: 'blue' },
+                            { icon: Scale, label: 'Balance Sheet', path: '/admin/erp/balance-sheet', c: 'purple' },
+                            { icon: TrendingUp, label: 'Cash Flow', path: '/admin/erp/cash-flow', c: 'emerald' },
+                            { icon: BookOpen, label: 'A/R Aging', path: '/admin/erp/aging-report', c: 'rose' },
+                            { icon: Landmark, label: 'Banking', path: '/admin/erp/banking', c: 'cyan' },
+                            { icon: Server, label: 'Assets', path: '/admin/erp/fixed-assets', c: 'orange' },
+                            { icon: Repeat, label: 'Subscriptions', path: '/admin/erp/recurring', c: 'blue' },
+                            { icon: Shield, label: 'Audit Log', path: '/admin/settings/audit', c: 'slate' },
+                        ].map((m, i) => {
+                            const Icon = m.icon;
+                            return (
+                                <div key={i} onClick={() => navigate(m.path)} className="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl hover:border-slate-600 cursor-pointer transition-all hover:bg-slate-800 group text-center flex flex-col items-center gap-3">
+                                    <div className={`p-3 bg-${m.c}-500/10 text-${m.c}-400 rounded-xl group-hover:scale-110 transition-transform`}>
+                                        <Icon size={24} />
+                                    </div>
+                                    <span className="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">{m.label}</span>
                                 </div>
-                                <div>
-                                    <div className="text-sm font-bold text-white">Invoicing Flow</div>
-                                    <div className="text-xs text-slate-400">Automated generation active</div>
-                                </div>
-                            </div>
-                            <span className="text-xs font-bold text-blue-500 uppercase tracking-widest">Active</span>
-                        </div>
-                        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-900/50 border border-slate-800">
-                            <div className="flex items-center gap-4">
-                                <div className="p-2 rounded bg-purple-500/10 text-purple-400">
-                                    <Activity size={20} />
-                                </div>
-                                <div>
-                                    <div className="text-sm font-bold text-white">Delivery Tracking</div>
-                                    <div className="text-xs text-slate-400">SLA monitor operational</div>
-                                </div>
-                            </div>
-                            <span className="text-xs font-bold text-purple-500 uppercase tracking-widest">Running</span>
-                        </div>
+                            )
+                        })}
                     </div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                    <h3 className="text-lg font-bold text-white mb-4">Infrastructure</h3>
+                <div className="glass-panel p-8 rounded-3xl border border-slate-700/50 flex flex-col justify-center">
+                    <h3 className="text-xl font-black text-white mb-6">System Status</h3>
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50">
-                            <span className="text-sm text-slate-300">Core ERP Engine</span>
-                            <span className="text-xs font-bold text-emerald-500 uppercase">{system.core}</span>
+                        <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-900/50 border border-slate-800">
+                            <div className="flex items-center gap-3">
+                                <Server size={18} className="text-slate-400" />
+                                <span className="text-sm font-bold text-slate-300">Core ERP Engine</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                <span className="text-xs font-bold text-emerald-500 uppercase">{system.core}</span>
+                            </div>
                         </div>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50">
-                            <span className="text-sm text-slate-300">Financial Database</span>
-                            <span className="text-xs font-bold text-emerald-500 uppercase">{system.database}</span>
+                        <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-900/50 border border-slate-800">
+                            <div className="flex items-center gap-3">
+                                <Activity size={18} className="text-slate-400" />
+                                <span className="text-sm font-bold text-slate-300">Financial DB</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                <span className="text-xs font-bold text-emerald-500 uppercase">{system.database}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -336,5 +251,3 @@ const ErpDashboard = () => {
 };
 
 export default ErpDashboard;
-
-

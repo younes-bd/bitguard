@@ -13,7 +13,23 @@ from .models import (
     RecurringInvoice, RecurringInvoiceItem,
     Account, JournalEntry, JournalEntryLine, BankAccount,
     BankTransaction, CreditNote, FixedAsset,
+    PaymentTerms, InvoiceBranding, DeferredRevenue,
 )
+
+class PaymentTermsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentTerms
+        fields = '__all__'
+
+class InvoiceBrandingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvoiceBranding
+        fields = '__all__'
+
+class DeferredRevenueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeferredRevenue
+        fields = '__all__'
 
 
 class TaxConfigSerializer(serializers.ModelSerializer):
@@ -45,21 +61,25 @@ class InvoiceSerializer(serializers.ModelSerializer):
     aging_bucket = serializers.ReadOnlyField()
     payment_count = serializers.SerializerMethodField()
     total_paid = serializers.SerializerMethodField()
+    payment_link_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Invoice
         fields = [
             'id', 'invoice_number', 'client', 'client_name', 'client_email',
             'type', 'project', 'contract', 'items',
-            'subtotal', 'tax_total', 'discount_total', 'total_amount',
-            'issue_date', 'due_date', 'paid_at', 'status',
+            'subtotal', 'tax_total', 'discount_total', 'discount_percent', 'total_amount',
+            'currency', 'exchange_rate', 'payment_terms',
+            'issue_date', 'due_date', 'expiry_date', 'paid_at', 'status',
             'reference', 'notes', 'balance_due',
             'days_overdue', 'aging_bucket',
             'payment_count', 'total_paid',
+            'payment_link_token', 'payment_link_url',
             'created_at', 'updated_at',
         ]
         read_only_fields = [
             'id', 'subtotal', 'tax_total', 'discount_total', 'total_amount',
+            'payment_link_token', 'payment_link_url',
             'created_at', 'updated_at'
         ]
 
@@ -72,6 +92,17 @@ class InvoiceSerializer(serializers.ModelSerializer):
 
     def get_total_paid(self, obj):
         return float(sum(p.amount for p in obj.payments.all()))
+        
+    def get_payment_link_url(self, obj):
+        request = self.context.get('request')
+        if request and obj.payment_link_token:
+            from django.urls import reverse
+            try:
+                path = reverse('client-portal-invoice', kwargs={'token': obj.payment_link_token})
+                return request.build_absolute_uri(path)
+            except:
+                pass
+        return None
 
 
 class InvoiceCreateSerializer(serializers.ModelSerializer):
