@@ -11,17 +11,42 @@ const UserEditor = ({ user, onSave, onCancel }) => {
         last_name: user ? user.last_name : '',
         phone_number: user ? user.phone_number : '',
         role_ids: user ? user.roles.map(r => r.id) : [],
+        tenant_id: user?.tenant || '',
+        contact_id: user?.contact_id || '',
         is_active: user ? user.is_active : true,
         password: '', // Only for new users
     });
     
     const [roles, setRoles] = useState([]);
+    const [tenants, setTenants] = useState([]);
+    const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [fetchingRoles, setFetchingRoles] = useState(true);
 
     useEffect(() => {
         loadRoles();
+        loadTenants();
+        loadContacts();
     }, []);
+
+    const loadTenants = async () => {
+        try {
+            const data = await iamService.getTenants();
+            setTenants(Array.isArray(data) ? data : []);
+        } catch (error) {
+            toast.error("Failed to load SaaS tenants");
+        }
+    };
+
+    const loadContacts = async () => {
+        try {
+            const { crmService } = await import('../../../../core/api/crmService');
+            const data = await crmService.getContacts();
+            setContacts(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Failed to load CRM contacts", error);
+        }
+    };
 
     const loadRoles = async () => {
         try {
@@ -173,6 +198,41 @@ const UserEditor = ({ user, onSave, onCancel }) => {
                                         />
                                     </div>
                                 )}
+                                
+                                <div className="pt-4 border-t border-slate-800/50">
+                                    <h4 className="text-xs font-bold text-white mb-4">Enterprise Assignment (Optional)</h4>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Scenario A: SaaS Tenant (Workspace)</label>
+                                            <select
+                                                value={formData.tenant_id}
+                                                onChange={(e) => setFormData({ ...formData, tenant_id: e.target.value })}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all text-sm font-bold"
+                                            >
+                                                <option value="">-- No Tenant (Global Master) --</option>
+                                                {tenants.map(t => (
+                                                    <option key={t.id} value={t.id}>{t.name} ({t.domain})</option>
+                                                ))}
+                                            </select>
+                                            <p className="text-[10px] text-slate-500 mt-1">Assigns this user to a rented software workspace.</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Scenario B: Client Portal (CRM Link)</label>
+                                            <select
+                                                value={formData.contact_id}
+                                                onChange={(e) => setFormData({ ...formData, contact_id: e.target.value })}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all text-sm font-bold"
+                                            >
+                                                <option value="">-- Not a Portal Client --</option>
+                                                {contacts.map(c => (
+                                                    <option key={c.id} value={c.id}>{c.first_name} {c.last_name} ({c.email})</option>
+                                                ))}
+                                            </select>
+                                            <p className="text-[10px] text-slate-500 mt-1">Links this identity to a CRM Contact for portal access.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

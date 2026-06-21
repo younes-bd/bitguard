@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate, Link } from 'react-router-dom';
 import Sidebar from '../components/shared/core/Sidebar';
 import {
     Shield, Activity, Server, Globe,
@@ -10,12 +10,15 @@ import {
 import client from '../api/client';
 import { iamService } from '../api/iamService';
 import { useSidebarState } from '../hooks/useSidebarState';
+import { useAuth } from '../hooks/useAuth';
 
 const PlatformLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useSidebarState();
     const [user, setUser] = useState({ first_name: 'Admin', last_name: 'User', email: 'admin@bitguard.com' });
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
+    const { logout } = useAuth();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -40,23 +43,27 @@ const PlatformLayout = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
+        logout();
+        navigate('/login');
     };
 
-    const platformItems = [
-        { icon: Activity, label: 'Dashboard', path: '/app/soc' },
-        { icon: Globe, label: 'Connect (Apps)', path: '/app/soc/workspaces' },
-        { icon: Shield, label: 'Analyze (Events)', path: '/app/soc/security' },
-        { icon: Shield, label: 'Remediation', path: '/app/soc/assets' }, // Mapped to Assets/Endpoints for now
-        { icon: LifeBuoy, label: 'Support Tools', path: '/app/soc/remote' },
+    const platformSections = [
+        {
+            title: 'Platform',
+            items: [
+                { icon: Activity, label: 'Dashboard', path: '/app/soc' },
+                { icon: Globe, label: 'Connect (Apps)', path: '/app/soc/workspaces' },
+                { icon: Shield, label: 'Analyze (Events)', path: '/app/soc/security' },
+                { icon: Server, label: 'Remediation', path: '/app/soc/assets' },
+                { icon: LifeBuoy, label: 'Support Tools', path: '/app/soc/remote' },
+            ]
+        }
     ];
 
     return (
         <div className="min-h-screen bg-slate-950 flex text-slate-100 font-sans selection:bg-emerald-500/30">
             {/* Sidebar with specialized title and back link */}
-            <Sidebar title="BitGuard Ops" items={platformItems} backLink="/dashboard" collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+            <Sidebar title="BitGuard Ops" sections={platformSections} backLink="/dashboard" collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} moduleKey="platform" />
 
             <main className={`flex-1 relative bg-gradient-to-br from-slate-950 to-slate-900 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}`}>
                 {/* Technical Header */}
@@ -108,25 +115,25 @@ const PlatformLayout = () => {
                                 <div className="bg-slate-950/95 backdrop-blur-2xl border border-emerald-500/30 border-t-[3px] border-t-emerald-500 rounded-b-lg shadow-[0_10px_40px_-10px_rgba(16,185,129,0.3)] overflow-hidden [clip-path:polygon(20px_0,100%_0,100%_100%,0_100%,0_20px)] animate-in fade-in zoom-in-95 duration-200">
                                     {/* User Header */}
                                     <div className="p-4 border-b border-white/5 bg-gradient-to-r from-emerald-900/20 to-transparent relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 text-[100px] leading-none text-emerald-500/5 -translate-y-1/2 translate-x-1/2 pointer-events-none font-['Oswald']">U</div>
-                                        <div className="font-semibold text-white mb-0.5 font-['Oswald'] tracking-wide text-lg">{user.first_name || 'Admin'}</div>
+                                        <div className="absolute top-0 right-0 text-[100px] leading-none text-emerald-500/5 -translate-y-1/2 translate-x-1/2 pointer-events-none font-bold tracking-tight">U</div>
+                                        <div className="font-bold tracking-tight text-white mb-0.5 text-lg">{user.first_name || 'Admin'}</div>
                                         <div className="text-xs text-emerald-400/80 truncate font-mono">{user.email}</div>
                                     </div>
 
                                     {/* Menu Items */}
                                     <div className="p-2 space-y-1">
-                                        <button className="flex items-center gap-3 w-full text-slate-300 p-2.5 rounded-lg text-sm hover:bg-emerald-500/10 hover:text-emerald-400 transition-all duration-300 group/item bg-transparent border border-transparent hover:border-emerald-500/20 text-left">
+                                        <Link to="/account/personal-info" className="flex items-center gap-3 w-full text-slate-300 p-2.5 rounded-lg text-sm hover:bg-emerald-500/10 hover:text-emerald-400 transition-all duration-300 group/item bg-transparent border border-transparent hover:border-emerald-500/20 text-left no-underline">
                                             <div className="w-6 h-6 rounded bg-slate-900 flex items-center justify-center text-emerald-500/50 group-hover/item:text-emerald-400 group-hover/item:bg-emerald-500/20 transition-colors">
                                                 <UserIcon size={14} />
                                             </div>
                                             <span className="font-medium">Profile</span>
-                                        </button>
-                                        <button className="flex items-center gap-3 w-full text-slate-300 p-2.5 rounded-lg text-sm hover:bg-emerald-500/10 hover:text-emerald-400 transition-all duration-300 group/item bg-transparent border border-transparent hover:border-emerald-500/20 text-left">
+                                        </Link>
+                                        <Link to="/account/security" className="flex items-center gap-3 w-full text-slate-300 p-2.5 rounded-lg text-sm hover:bg-emerald-500/10 hover:text-emerald-400 transition-all duration-300 group/item bg-transparent border border-transparent hover:border-emerald-500/20 text-left no-underline">
                                             <div className="w-6 h-6 rounded bg-slate-900 flex items-center justify-center text-emerald-500/50 group-hover/item:text-emerald-400 group-hover/item:bg-emerald-500/20 transition-colors">
                                                 <Settings size={14} />
                                             </div>
                                             <span className="font-medium">Settings</span>
-                                        </button>
+                                        </Link>
 
                                         <div className="h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent my-1"></div>
 

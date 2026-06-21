@@ -4,6 +4,7 @@ import client from '../api/client';
 import { iamService } from '../api/iamService';
 import { User, LogOut, Settings, LayoutDashboard, Home, Users } from 'lucide-react';
 import AccountsSidebar from './AccountsSidebar';
+import { useAuth } from '../hooks/useAuth';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -30,6 +31,7 @@ class ErrorBoundary extends React.Component {
 const AccountsLayout = () => {
     const [user, setUser] = useState({ first_name: 'User', email: '', avatar: null });
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -51,9 +53,8 @@ const AccountsLayout = () => {
     }
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
+        logout();
+        navigate('/login');
     };
 
     return (
@@ -67,7 +68,7 @@ const AccountsLayout = () => {
                             <div className="absolute inset-0 bg-blue-500 blur-md opacity-20 group-hover:opacity-40 transition-opacity rounded-full"></div>
                             <img src="/assets/logo/logo.png" alt="BitGuard" className="relative h-[30px] w-auto brightness-0 invert drop-shadow-[0_0_5px_rgba(56,189,248,0.3)] group-hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.6)] transition-all duration-300" onError={(e) => e.target.style.display = 'none'} />
                         </div>
-                        <span className="text-white text-[24px] font-bold tracking-tight leading-none inline-block mt-[-4px] drop-shadow-[0_0_5px_rgba(56,189,248,0.3)] group-hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.8)] transition-all">BITGUARD</span>
+                        <span className="text-white text-[32px] font-bold tracking-tight leading-none inline-block transform scale-x-[0.85] origin-left drop-shadow-[0_0_5px_rgba(56,189,248,0.3)] group-hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.8)] transition-all">BITGUARD</span>
                         <span className="ml-2 px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-bold text-slate-400 tracking-wider uppercase border border-slate-700">Account</span>
                     </Link>
                 </div>

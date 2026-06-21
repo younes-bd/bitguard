@@ -3,8 +3,8 @@ from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from apps.billing.models import Order, Subscription, Plan
-from .models import LicenseKey
+from apps.billing.models import Subscription, Plan
+from .models import LicenseKey, Order
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 

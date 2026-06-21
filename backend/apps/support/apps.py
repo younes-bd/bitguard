@@ -1,4 +1,4 @@
-from django.apps import AppConfig
+﻿from django.apps import AppConfig
 
 
 class SupportConfig(AppConfig):
@@ -6,4 +6,5 @@ class SupportConfig(AppConfig):
     name = 'apps.support'
 
     def ready(self):
-        import apps.support.signals
+        import apps.support.infrastructure.signals
+

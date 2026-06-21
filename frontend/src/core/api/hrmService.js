@@ -56,5 +56,25 @@ export const hrmService = {
     getCertifications: async (params = {}) => {
         const response = await client.get('hrm/certifications/', { params });
         return response.data?.data ?? response.data;
+    },
+    getJobPositions: async (params = {}) => {
+        const response = await client.get('hrm/job-positions/', { params });
+        return response.data?.data ?? response.data;
+    },
+    getJobApplications: async (params = {}) => {
+        const response = await client.get('hrm/job-applications/', { params });
+        return response.data?.data ?? response.data;
+    },
+    getPayrollPeriods: async (params = {}) => {
+        const response = await client.get('hrm/payroll-periods/', { params });
+        return response.data?.data ?? response.data;
+    },
+    // ─── DOCUMENT GENERATION ──────────────────────────────────────────────────
+    downloadDocument: async (model, id) => {
+        const response = await client.post('reporting/generated/generate/', {
+            record_model: model,
+            record_id: id,
+        });
+        return response.data;
     }
 };

@@ -1,21 +1,22 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import OnboardingWizard from '../pages/OnboardingWizard';
+import OnboardingWizard from '../pages/modals/OnboardingWizard';
 import CrmDashboard from '../pages/dashboards/CrmDashboard';
-import ClientList from '../pages/ClientList';
-import ClientCreate from '../pages/ClientCreate';
-import ClientDetail from '../pages/ClientDetail';
-import ContactList from '../pages/ContactList';
-import LeadList from '../pages/LeadList';
-import DealsPipeline from '../pages/DealsPipeline';
-import ContractList from '../pages/ContractList';
-import QuoteList from '../pages/QuoteList';
-import QuoteDetail from '../pages/QuoteDetail';
-import InteractionList from '../pages/InteractionList';
-import OrderList from '../pages/OrderList';
-import CrmSettings from '../pages/CrmSettings';
-import CrmReportPage from '../pages/CrmReportPage';
-import DocumentGenerator from '../pages/DocumentGenerator';
+import ClientList from '../pages/lists/ClientList';
+import ClientCreate from '../pages/profiles/ClientCreate';
+import ClientDetail from '../pages/profiles/ClientDetail';
+import ContactList from '../pages/lists/ContactList';
+import LeadList from '../pages/lists/LeadList';
+import DealsPipeline from '../pages/dashboards/DealsPipeline';
+import ContractList from '../pages/lists/ContractList';
+import QuoteList from '../pages/lists/QuoteList';
+import QuoteDetail from '../pages/profiles/QuoteDetail';
+import InteractionList from '../pages/lists/InteractionList';
+import OrderList from '../pages/lists/OrderList';
+import CrmSettings from '../pages/settings/CrmSettings';
+import CrmReportPage from '../pages/dashboards/CrmReportPage';
+import SalesCollateral from '../pages/dashboards/SalesCollateral';
+
 
 export const crmRoutes = (
     <>
@@ -29,8 +30,9 @@ export const crmRoutes = (
         <Route path="contacts" element={<ContactList />} />
         <Route path="leads" element={<LeadList />} />
         <Route path="deals" element={<DealsPipeline />} />
-        <Route path="generate-document" element={<DocumentGenerator />} />
+
         <Route path="activities" element={<InteractionList />} />
+        <Route path="collateral" element={<SalesCollateral />} />
 
         {/* Keep legacy routes aliased just in case */}
         <Route path="contracts" element={<ContractList />} />

@@ -40,30 +40,39 @@ INSTALLED_APPS = [
     'apps.soc',
     'apps.auth',
     'apps.website',
+    'apps.portal',
+    'apps.cms',
     'apps.blog',
     'apps.store',
     'apps.billing',
     'apps.crm',
-    'apps.erp',
     'apps.notifications',
     'integrations.ai_engine',
     'integrations.automation',
     'api',
     'apps.audit',
-    'apps.reports',
+
     'apps.dashboard',
     'apps.support',
     'apps.marketing',
     # New business modules (Sprint 3 & 4)
+    'apps.accounting',
     'apps.hrm',
-    'apps.scm',
+    'apps.purchase',
+    'apps.inventory',
     'apps.contracts',
     'apps.projects',    # Dedicated Project Management (PSA)
-    'apps.itam',        # IT Asset Management
+    'apps.assets',        # Generic Asset Management
     'apps.sysadmin',    # System Administration
-    'apps.itsm',        # Next-Gen IT Service Management
-    'apps.documents',   # Next-Gen Document Vault
+    'apps.services',        # Generic Service Management
+    'apps.edms',        # Electronic Document Management System
+    'apps.reporting',   # PDF Reporting Engine
+    'apps.sale',
     'apps.approvals',   # Next-Gen Enterprise Approvals
+    'apps.mrp',         # Manufacturing Resource Planning
+    'apps.pos',         # Point of Sale
+    'apps.fleet',       # Fleet Management
+    'apps.discuss',     # Internal Communication / Team Chat
     'django_celery_beat',
 ]
 

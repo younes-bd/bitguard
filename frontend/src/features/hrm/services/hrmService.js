@@ -1,4 +1,4 @@
-import client from '../../../shared/core/services/client';
+import client from '../../../core/api/client';
 
 const hrmService = {
     // Employees

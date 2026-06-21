@@ -11,8 +11,14 @@ class BaseService:
     def get_tenant_context(request):
         """
         Retrieves the tenant from the request, ensuring it exists for restricted actions.
+        Fallback to request.user.employee_profile.tenant if middleware missed it due to JWT auth timing.
         """
         tenant = getattr(request, 'tenant', None)
+        if not tenant and request and hasattr(request, 'user') and request.user.is_authenticated:
+            if hasattr(request.user, 'employee_profile') and request.user.employee_profile.tenant:
+                tenant = request.user.employee_profile.tenant
+            elif hasattr(request.user, 'tenant') and request.user.tenant:
+                tenant = request.user.tenant
         return tenant
 
     @classmethod
@@ -20,13 +26,14 @@ class BaseService:
         """
         Filters a queryset based on the current tenant context.
         Charter Compliance: appends .filter(tenant=request.tenant) to every query.
+        Uses same fallback logic as get_tenant_context() to avoid silent empty returns.
         """
-        tenant = getattr(request, 'tenant', None)
-        
+        tenant = cls.get_tenant_context(request)
+
         if not tenant:
-            # If no tenant is resolved, we return an empty queryset to ensure isolation
+            # If no tenant is resolved even after fallback, return empty queryset
             return queryset.none()
-            
+
         return queryset.filter(tenant=tenant)
 
     @classmethod

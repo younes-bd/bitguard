@@ -42,6 +42,18 @@ export const contractsService = {
         const response = await client.post(`${base}/quotes/${id}/send/`);
         return response.data?.data ?? response.data;
     },
+    downloadQuote: async (id) => {
+        const { default: reportingService } = await import('./reportingService');
+        const res = await reportingService.generateReport(null, 'contracts.Quote', id);
+        if (res && res.file) window.open(res.file, '_blank');
+        return res;
+    },
+    downloadContract: async (id) => {
+        const { default: reportingService } = await import('./reportingService');
+        const res = await reportingService.generateReport(null, 'contracts.ServiceContract', id);
+        if (res && res.file) window.open(res.file, '_blank');
+        return res;
+    },
 
     // SLA Tiers
     getSlaTiers: async () => {
@@ -70,6 +82,15 @@ export const contractsService = {
         const response = await client.patch(`${base}/sla-breaches/${id}/`, { acknowledged: true });
         return response.data?.data ?? response.data;
     },
+
+    // ─── DOCUMENT GENERATION ──────────────────────────────────────────────────
+    downloadDocument: async (model, id) => {
+        const response = await client.post('reporting/generated/generate/', {
+            record_model: model,
+            record_id: id,
+        });
+        return response.data;
+    }
 };
 
 export default contractsService;

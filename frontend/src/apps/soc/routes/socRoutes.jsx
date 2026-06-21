@@ -2,22 +2,22 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import DashboardRouter from '../../dashboard/routes/DashboardRouter';
 import SocDashboard from '../pages/dashboards/SocDashboard';
-import WorkspaceManager from '../pages/WorkspaceManager';
-import AssetsPage from '../pages/AssetsPage';
-import AlertsPage from '../pages/AlertsPage';
-import IncidentsPage from '../pages/IncidentsPage';
-import VulnerabilitiesPage from '../pages/VulnerabilitiesPage';
-import IntelPage from '../pages/IntelPage';
-import RemoteSupport from '../pages/RemoteSupport';
-import EmailSecurity from '../pages/EmailSecurity';
-import CloudSecurity from '../pages/CloudSecurity';
-import NetworkSecurity from '../pages/NetworkSecurity';
-import AlertDetails from '../pages/AlertDetails';
-import IncidentDetails from '../pages/IncidentDetails';
-import SecurityGapsPage from '../pages/SecurityGapsPage';
-import LogAnalysisPage from '../pages/LogAnalysisPage';
-import RiskRegister from '../pages/RiskRegister';
-import ComplianceRegister from '../pages/ComplianceRegister';
+import WorkspaceManager from '../pages/lists/WorkspaceManager';
+import AssetsPage from '../pages/lists/AssetsPage';
+import AlertsPage from '../pages/lists/AlertsPage';
+import IncidentsPage from '../pages/lists/IncidentsPage';
+import VulnerabilitiesPage from '../pages/compliance/VulnerabilitiesPage';
+import IntelPage from '../pages/lists/IntelPage';
+import RemoteSupport from '../pages/features/RemoteSupport';
+import EmailSecurity from '../pages/features/EmailSecurity';
+import CloudSecurity from '../pages/features/CloudSecurity';
+import NetworkSecurity from '../pages/features/NetworkSecurity';
+import AlertDetails from '../pages/details/AlertDetails';
+import IncidentDetails from '../pages/details/IncidentDetails';
+import SecurityGapsPage from '../pages/compliance/SecurityGapsPage';
+import LogAnalysisPage from '../pages/lists/LogAnalysisPage';
+import RiskRegister from '../pages/compliance/RiskRegister';
+import ComplianceRegister from '../pages/compliance/ComplianceRegister';
 
 export const socRoutes = (
     <>

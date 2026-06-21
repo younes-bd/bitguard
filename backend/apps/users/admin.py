@@ -3,8 +3,8 @@ from .models import User, Role, SecurityPolicy, ApiKey
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'first_name', 'last_name', 'tenant', 'is_staff', 'is_active', 'is_locked')
-    list_filter = ('is_staff', 'is_active', 'tenant')
+    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_locked')
+    list_filter = ('is_staff', 'is_active')
     search_fields = ('email', 'first_name', 'last_name')
 
 @admin.register(Role)
@@ -14,7 +14,7 @@ class RoleAdmin(admin.ModelAdmin):
 
 @admin.register(SecurityPolicy)
 class SecurityPolicyAdmin(admin.ModelAdmin):
-    list_display = ('tenant', 'password_complexity', 'mfa_required', 'session_timeout')
+    list_display = ('password_complexity', 'mfa_required', 'session_timeout')
     list_filter = ('mfa_required', 'password_complexity')
 
 @admin.register(ApiKey)

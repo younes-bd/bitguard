@@ -5,4 +5,5 @@ class SocConfig(AppConfig):
     name = 'apps.soc'
 
     def ready(self):
-        import apps.soc.signals
+        import apps.soc.infrastructure.signals
+

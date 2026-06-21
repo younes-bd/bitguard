@@ -31,6 +31,15 @@ export const projectsService = {
     getMembers: (projectId) => client.get(`${base}/projects/${projectId}/members/`).then(r => r.data),
     addMember: (projectId, userId) => client.post(`${base}/projects/${projectId}/add_member/`, { user_id: userId }).then(r => r.data),
     removeMember: (projectId, userId) => client.post(`${base}/projects/${projectId}/remove_member/`, { user_id: userId }).then(r => r.data),
+
+    // ─── DOCUMENT GENERATION ──────────────────────────────────────────────────
+    downloadDocument: async (model, id) => {
+        const response = await client.post('reporting/generated/generate/', {
+            record_model: model,
+            record_id: id,
+        });
+        return response.data;
+    }
 };
 
 export default projectsService;

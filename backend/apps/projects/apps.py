@@ -1,4 +1,4 @@
-from django.apps import AppConfig
+﻿from django.apps import AppConfig
 
 
 class ProjectsConfig(AppConfig):
@@ -7,4 +7,5 @@ class ProjectsConfig(AppConfig):
     verbose_name = 'Project Management'
 
     def ready(self):
-        import apps.projects.signals
+        import apps.projects.infrastructure.signals
+

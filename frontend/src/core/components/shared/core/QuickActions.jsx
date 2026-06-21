@@ -21,7 +21,7 @@ const QuickActions = () => {
         { label: 'Create Task', icon: CheckSquare, path: '/admin/projects', color: 'text-blue-400', bg: 'bg-blue-400/10' },
         { label: 'New Quote', icon: FileText, path: '/admin/crm/quotes', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
         { label: 'Add Lead', icon: UserPlus, path: '/admin/crm/clients', color: 'text-purple-400', bg: 'bg-purple-400/10' },
-        { label: 'Log IT Problem', icon: AlertCircle, path: '/admin/itsm/problems', color: 'text-rose-400', bg: 'bg-rose-400/10' },
+        { label: 'Log IT Problem', icon: AlertCircle, path: '/admin/services/problems', color: 'text-rose-400', bg: 'bg-rose-400/10' },
         { label: 'Schedule Event', icon: Calendar, path: '/admin/hrm/time', color: 'text-amber-400', bg: 'bg-amber-400/10' },
     ];
 

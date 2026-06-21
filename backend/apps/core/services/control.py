@@ -13,15 +13,15 @@ class ControlService(BaseService):
         """
         Observability (Section 19): Exposes workflow states and pending obligations.
         """
-        InternalProject = apps.get_model('erp', 'InternalProject')
+        Project = apps.get_model('projects', 'Project')
         Order = apps.get_model('billing', 'Order')
         Ticket = apps.get_model('crm', 'Ticket')
 
         return {
             "obligations": {
-                "active": InternalProject.objects.filter(status='active').count(),
-                "planning": InternalProject.objects.filter(status='planning').count(),
-                "stalled": InternalProject.objects.filter(status='planning', created_at__lt=BaseService.get_stale_threshold()).count()
+                "active": Project.objects.filter(status='active').count(),
+                "planning": Project.objects.filter(status='planning').count(),
+                "stalled": Project.objects.filter(status='planning', created_at__lt=BaseService.get_stale_threshold()).count()
             },
             "commerce": {
                 "pending_orders": Order.objects.filter(status='pending').count(),

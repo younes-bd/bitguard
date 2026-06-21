@@ -14,7 +14,7 @@ class AuditService(BaseService):
         Charter Compliance: Creates immutable entry with user, IP, and payload.
         """
         user = None
-        if request and hasattr(request, 'user') and request.user.is_authenticated:
+        if request and hasattr(request, 'user') and request.user is not None and hasattr(request.user, 'is_authenticated') and request.user.is_authenticated:
             user = request.user
             
         tenant = getattr(request, 'tenant', None)

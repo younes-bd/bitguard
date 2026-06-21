@@ -32,6 +32,12 @@ export const iamService = {
         return response.data?.data ?? response.data;
     },
 
+    // --- Tenancy ---
+    getTenants: async (params = {}) => {
+        const response = await client.get('tenants/', { params });
+        return response.data?.data?.tenants ?? response.data?.results ?? response.data ?? [];
+    },
+
     // --- Access (Roles) ---
     getRoles: async () => {
         const response = await client.get('iam/roles/');

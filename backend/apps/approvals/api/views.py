@@ -1,0 +1,44 @@
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from ..domain.models import ApprovalRequest, ApprovalStep
+from ..api.serializers import ApprovalRequestSerializer, ApprovalStepSerializer
+from ..application.services import ApprovalService
+
+class ApprovalRequestViewSet(viewsets.ModelViewSet):
+    serializer_class = ApprovalRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = ApprovalRequest.objects.all().order_by('-created_at')
+        tenant = getattr(self.request, 'tenant', None)
+        if tenant:
+            return qs.filter(tenant=tenant)
+        if self.request.user.is_staff:
+            return qs
+        return qs.none()
+
+    def create(self, request, *args, **kwargs):
+        # Override to ensure requester is attached cleanly via the service layer
+        approval = ApprovalService.submit_request(request.data, request)
+        serializer = self.get_serializer(approval)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        approval = self.get_object()
+        comments = request.data.get('comments', '')
+        processed = ApprovalService.approve(approval, request, comments)
+        return Response(self.get_serializer(processed).data)
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        approval = self.get_object()
+        comments = request.data.get('comments', '')
+        processed = ApprovalService.reject(approval, request, comments)
+        return Response(self.get_serializer(processed).data)
+
+class ApprovalStepViewSet(viewsets.ModelViewSet):
+    queryset = ApprovalStep.objects.all().order_by('approval_request', 'step_order')
+    serializer_class = ApprovalStepSerializer
+    permission_classes = [permissions.IsAuthenticated]

@@ -72,7 +72,7 @@ class WorkflowEngine:
     def _get_entity_type(obj):
         from apps.billing.models import Order
         from apps.soc.models import Incident  # Correct model name (not SecurityIncident)
-        from apps.erp.models import InternalProject
+        from apps.projects.domain.models import Project as InternalProject
 
         if isinstance(obj, Order): return 'ORDER'
         if isinstance(obj, Incident): return 'INCIDENT'

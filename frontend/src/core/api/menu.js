@@ -6,216 +6,281 @@ import {
     Megaphone, LifeBuoy, Bell, CreditCard, BarChart3, FolderKanban, TrendingUp, BookOpen,
     Monitor, Cpu, Wrench, DollarSign, Tag, Globe, Plus, FolderOpen, CheckSquare, GitBranch,
     Award, Download, Clock, Repeat, Landmark, FileSpreadsheet, Scale, Image, Mail,
-    UserPlus, TrendingDown, FileCheck, Terminal
+    UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle
 } from 'lucide-react';
 
-// Main Enterprise Suite
-export const adminMenu = [
-    // 0. Command Center
-    { label: 'Command Center', icon: null, path: null },
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
-    { label: 'Notifications', icon: Bell, path: '/admin/notifications' },
-
-    // 1. Customer & Revenue
-    { label: 'Customer & Revenue', icon: null, path: null },
-    { label: 'Sales & CRM', icon: Users, path: '/admin/crm', permissions: ['view_client'] },
-    { label: 'Marketing Automation', icon: Megaphone, path: '/admin/marketing', permissions: ['view_campaign'] },
-    { label: 'Commerce & Storefront', icon: ShoppingBag, path: '/admin/store', permissions: ['view_product'] },
-    { label: 'Subscription Billing', icon: CreditCard, path: '/admin/billing', permissions: ['view_plan'] },
-
-    // 2. Finance & Resources
-    { label: 'Finance & Resources', icon: null, path: null },
-    { label: 'Finance & ERP', icon: PieChart, path: '/admin/erp', permissions: ['view_internalproject'] },
-    { label: 'Procurement & Supply Chain', icon: Truck, path: '/admin/scm', permissions: ['view_vendor'] },
-    { label: 'Human Capital Management', icon: Building2, path: '/admin/hrm', permissions: ['view_employeeprofile'] },
-    { label: 'Project Portfolio Management', icon: FolderKanban, path: '/admin/projects', permissions: ['view_internalproject'] },
-
-    // 3. IT Service Management (ITSM)
-    { label: 'IT Service Management (ITSM)', icon: null, path: null },
-    { label: 'IT Service Desk', icon: LifeBuoy, path: '/admin/support', permissions: ['view_ticket'] },
-    { label: 'Service Catalog', icon: Tag, path: '/admin/itsm/catalog', permissions: ['view_changerequest'] },
-    { label: 'Change Management', icon: GitBranch, path: '/admin/itsm', permissions: ['view_changerequest'] },
-    { label: 'IT Asset Management (ITAM)', icon: Monitor, path: '/admin/itam', permissions: ['view_managedendpoint'] },
-    { label: 'Contracts & SLAs', icon: FileText, path: '/admin/contracts', permissions: ['view_servicecontract'] },
-
-    // 4. Security & Governance
-    { label: 'Security & Governance', icon: null, path: null },
-    { label: 'Security Operations (SecOps)', icon: ShieldCheck, path: '/admin/security', permissions: ['view_incident'] },
-    { label: 'Identity & Access Management', icon: Key, path: '/admin/iam', permissions: ['view_user'] },
-    { label: 'Document Management', icon: FolderOpen, path: '/admin/documents', permissions: ['view_document'] },
-    { label: 'Approval Center', icon: CheckSquare, path: '/admin/approvals', permissions: ['view_approval'] },
-
-    // 5. Intelligence & Platform
-    { label: 'Intelligence & Platform', icon: null, path: null },
-    { label: 'Enterprise Analytics', icon: BarChart3, path: '/admin/reports', permissions: ['view_dashboard'] },
-    { label: 'Platform Administration', icon: Server, path: '/admin/system', permissions: ['view_tenant'] },
-    { label: 'Content Management (CMS)', icon: Globe, path: '/admin/cms', permissions: ['view_page'] },
-    { label: 'Blog Manager', icon: BookOpen, path: '/admin/blog', permissions: ['view_page'] },
-    { label: 'Client Portal', icon: LayoutDashboard, path: '/admin/portal', permissions: ['view_client'] }
+// ─── ERP Apps Grid Definition ──────────────────────────────────────────────────
+export const erpApps = [
+    { label: 'Sales', icon: ShoppingBag, path: '/admin/sales', permissions: ['view_saleorder'] },
+    { label: 'CRM', icon: Users, path: '/admin/crm', permissions: ['view_client'] },
+    { label: 'Point of Sale', icon: Monitor, path: '/admin/pos', permissions: ['view_possession'] },
+    { label: 'Accounting', icon: PieChart, path: '/admin/accounting', permissions: ['view_invoice'] },
+    { label: 'Invoicing', icon: FileText, path: '/admin/invoicing', permissions: ['view_invoice'] },
+    { label: 'Expenses', icon: CreditCard, path: '/admin/expenses', permissions: ['view_invoice'] },
+    { label: 'Purchase', icon: ShoppingCart, path: '/admin/purchase', permissions: ['view_purchaseorder'] },
+    { label: 'Inventory', icon: Box, path: '/admin/inventory', permissions: ['view_inventory'] },
+    { label: 'Manufacturing', icon: Wrench, path: '/admin/mrp', permissions: ['view_manufacturingorder'] },
+    { label: 'Employees', icon: Building2, path: '/admin/hrm', permissions: ['view_employee'] },
+    { label: 'Recruitment', icon: UserPlus, path: '/admin/recruitment', permissions: ['view_employee'] },
+    { label: 'Time Off', icon: Clock, path: '/admin/timeoff', permissions: ['view_employee'] },
+    { label: 'Fleet', icon: Truck, path: '/admin/fleet', permissions: ['view_vehicle'] },
+    { label: 'Project', icon: FolderKanban, path: '/admin/projects', permissions: ['view_internalproject'] },
+    { label: 'Timesheets', icon: Clock, path: '/admin/timesheets', permissions: ['view_internalproject'] },
+    { label: 'Helpdesk', icon: LifeBuoy, path: '/admin/helpdesk', permissions: ['view_ticket'] },
+    { label: 'Documents', icon: FolderOpen, path: '/admin/edms', permissions: ['view_document'] },
+    { label: 'Website', icon: Globe, path: '/admin/cms', permissions: ['view_page'] },
+    { label: 'eLearning', icon: BookOpen, path: '/admin/elearning', permissions: ['view_page'] },
+    { label: 'Email Marketing', icon: Mail, path: '/admin/email-marketing', permissions: ['view_campaign'] },
+    { label: 'Discuss', icon: MessageSquare, path: '/admin/discuss', permissions: [] },
+    { label: 'Calendar', icon: Calendar, path: '/admin/calendar', permissions: [] },
 ];
 
+// ─── Main Admin Sidebar (Sections Format) ────────────────────────────────────
+// STRICT ODOO 17/18 MATCH: EXACT APP NAMING + MISSING APPS
+export const adminSections = [
+    {
+        title: 'Dashboards',
+        items: [
+            { label: 'Command Center', icon: LayoutDashboard, path: '/admin' },
+            { label: 'Notifications', icon: Bell, path: '/admin/notifications' },
+        ]
+    },
+    {
+        title: 'Sales',
+        items: [
+            { label: 'Sales', icon: ShoppingBag, path: '/admin/sales', permissions: ['view_saleorder'] },
+            { label: 'CRM', icon: Users, path: '/admin/crm', permissions: ['view_client'] },
+            { label: 'Point of Sale', icon: Monitor, path: '/admin/pos', permissions: ['view_possession'] },
+            { label: 'Subscription (Billing)', icon: CreditCard, path: '/admin/billing', permissions: ['view_plan'] },
+            { label: 'Contracts & SLA (Sign)', icon: FileText, path: '/admin/contracts', permissions: ['view_servicecontract'] },
+            { label: 'Rental', icon: Calendar, path: '/admin/rental', permissions: [] }, // NEW
+        ]
+    },
+    {
+        title: 'Services',
+        items: [
+            { label: 'Project', icon: FolderKanban, path: '/admin/projects', permissions: ['view_internalproject'] },
+            { label: 'Timesheets', icon: Clock, path: '/admin/timesheets', permissions: ['view_internalproject'] },
+            { label: 'Helpdesk', icon: LifeBuoy, path: '/admin/helpdesk', permissions: ['view_ticket'] },
+            { label: 'IT Service Desk (Field Service)', icon: LifeBuoy, path: '/admin/support', permissions: ['view_ticket'] },
+            { label: 'Service Catalog (Appointments)', icon: Tag, path: '/admin/services/catalog', permissions: ['view_changerequest'] },
+            { label: 'Change Management (Planning)', icon: GitBranch, path: '/admin/services', permissions: ['view_changerequest'] },
+        ]
+    },
+    {
+        title: 'Accounting',
+        items: [
+            { label: 'Accounting', icon: PieChart, path: '/admin/accounting', permissions: ['view_invoice'] },
+            { label: 'Invoicing', icon: FileText, path: '/admin/invoicing', permissions: ['view_invoice'] },
+            { label: 'Expenses', icon: CreditCard, path: '/admin/expenses', permissions: ['view_invoice'] },
+            { label: 'Spreadsheet', icon: FileSpreadsheet, path: '/admin/spreadsheet', permissions: [] }, // NEW
+        ]
+    },
+    {
+        title: 'Inventory & MRP',
+        items: [
+            { label: 'Inventory', icon: Box, path: '/admin/inventory', permissions: ['view_inventory'] },
+            { label: 'Manufacturing', icon: Wrench, path: '/admin/mrp', permissions: ['view_manufacturingorder'] },
+            { label: 'Purchase', icon: ShoppingCart, path: '/admin/purchase', permissions: ['view_purchaseorder'] },
+            { label: 'Maintenance', icon: Monitor, path: '/admin/assets', permissions: ['view_managedendpoint'] },
+            { label: 'Quality', icon: ShieldCheck, path: '/admin/quality', permissions: [] }, // NEW
+            { label: 'PLM', icon: Layers, path: '/admin/plm', permissions: [] }, // NEW
+        ]
+    },
+    {
+        title: 'Human Resources',
+        items: [
+            { label: 'Employees', icon: Building2, path: '/admin/hrm', permissions: ['view_employee'] },
+            { label: 'Recruitment', icon: UserPlus, path: '/admin/recruitment', permissions: ['view_employee'] },
+            { label: 'Time Off', icon: Clock, path: '/admin/timeoff', permissions: ['view_employee'] },
+            { label: 'Fleet', icon: Truck, path: '/admin/fleet', permissions: ['view_vehicle'] },
+            { label: 'Appraisals', icon: Award, path: '/admin/appraisals', permissions: [] }, // NEW
+            { label: 'Referrals', icon: Share2, path: '/admin/referrals', permissions: [] }, // NEW
+        ]
+    },
+    {
+        title: 'Marketing',
+        items: [
+            { label: 'Marketing Automation', icon: Megaphone, path: '/admin/marketing', permissions: ['view_campaign'] },
+            { label: 'Email Marketing', icon: Mail, path: '/admin/email-marketing', permissions: ['view_campaign'] },
+            { label: 'Social Marketing', icon: Share2, path: '/admin/social', permissions: [] }, // NEW
+            { label: 'SMS Marketing', icon: Smartphone, path: '/admin/sms', permissions: [] }, // NEW
+            { label: 'Events', icon: Calendar, path: '/admin/events', permissions: [] }, // NEW
+            { label: 'Surveys', icon: FileQuestion, path: '/admin/surveys', permissions: [] }, // NEW
+        ]
+    },
+    {
+        title: 'Website',
+        items: [
+            { label: 'Website', icon: Globe, path: '/admin/cms', permissions: ['view_page'] },
+            { label: 'eCommerce', icon: Tags, path: '/admin/store', permissions: ['view_product'] },
+            { label: 'Blog', icon: BookOpen, path: '/admin/blog', permissions: ['view_page'] },
+            { label: 'eLearning', icon: Book, path: '/admin/elearning', permissions: ['view_page'] },
+            { label: 'Client Portal (Forum)', icon: LayoutDashboard, path: '/admin/portal', permissions: ['view_client'] },
+            { label: 'Live Chat', icon: MessageCircle, path: '/admin/livechat', permissions: [] }, // NEW
+        ]
+    },
+    {
+        title: 'Productivity',
+        items: [
+            { label: 'Discuss', icon: MessageSquare, path: '/admin/discuss', permissions: [] },
+            { label: 'Calendar', icon: Calendar, path: '/admin/calendar', permissions: [] },
+            { label: 'Documents', icon: FolderOpen, path: '/admin/edms', permissions: ['view_document'] },
+            { label: 'Approvals', icon: CheckSquare, path: '/admin/approvals', permissions: ['view_approval'] },
+            { label: 'Studio', icon: FileText, path: '/admin/reporting', permissions: ['view_report'] },
+            { label: 'Knowledge', icon: BookOpen, path: '/admin/knowledge', permissions: [] }, // NEW
+            { label: 'WhatsApp', icon: PhoneCall, path: '/admin/whatsapp', permissions: [] }, // NEW
+        ]
+    },
+    {
+        title: 'Administration',
+        items: [
+            { label: 'Enterprise Analytics (Dashboards)', icon: BarChart3, path: '/admin/analytics', permissions: ['view_dashboard'] },
+            { label: 'Security Operations Center', icon: ShieldCheck, path: '/admin/security', permissions: ['view_incident'] },
+            { label: 'Users & Companies', icon: Key, path: '/admin/iam', permissions: ['view_user'] },
+            { label: 'Settings', icon: Server, path: '/admin/system', permissions: ['view_tenant'] },
+            { label: 'Apps', icon: Grid, path: '/admin/system/apps', permissions: ['view_tenant'] },
+        ]
+    },
+];
+
+export const adminMenu = adminSections.flatMap(s => [
+    { label: s.title, icon: null, path: null },
+    ...s.items
+]);
+
+// ─── Module Sub-Navigation (The Sidebar for each App) ────────────────────────
 export const productMenu = {
+    // ── LEGACY RESTORED & ENHANCED ──
+
     contracts: [
         {
-            title: 'Contract Management',
+            title: 'Sign',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/contracts' },
-                { label: 'Service Contracts', icon: FileText, path: '/admin/contracts/list' },
-                { label: 'Quotes', icon: ShoppingCart, path: '/admin/contracts/quotes' },
-                { label: 'SLA Tiers', icon: ShieldCheck, path: '/admin/contracts/sla-tiers' },
-                { label: 'SLA Breaches', icon: AlertCircle, path: '/admin/contracts/sla-breaches' },
+                { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/contracts' },
+                { label: 'Documents', icon: FileText, path: '/admin/contracts/list' },
+                { label: 'Templates', icon: ShoppingCart, path: '/admin/contracts/quotes' },
+                { label: 'Logs', icon: ShieldCheck, path: '/admin/contracts/sla-tiers' },
                 { label: 'Settings', icon: Settings, path: '/admin/contracts/settings' },
             ]
         }
     ],
     billing: [
         {
-            title: 'Billing',
+            title: 'Subscriptions',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/billing' },
-                { label: 'My Subscription', icon: CreditCard, path: '/admin/billing' },
-                { label: 'Plans', icon: Layers, path: '/admin/billing/plans' },
-                { label: 'Invoices', icon: FileText, path: '/admin/billing/invoices' },
-                { label: 'Dunning', icon: AlertCircle, path: '/admin/billing/dunning' },
+                { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/billing' },
+                { label: 'Subscriptions', icon: CreditCard, path: '/admin/billing' },
+                { label: 'Products', icon: Layers, path: '/admin/billing/plans' },
+                { label: 'Customers', icon: Users, path: '/admin/billing/invoices' },
                 { label: 'Settings', icon: Settings, path: '/admin/billing/settings' },
             ]
         }
     ],
-    reports: [
+    analytics: [
         {
-            title: 'Analytics & Reports',
+            title: 'Dashboards',
             items: [
-                { label: 'Executive Summary', icon: PieChart, path: '/admin/reports/executive-summary' },
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/reports' },
-                { label: 'Revenue Health', icon: DollarSign, path: '/admin/reports/mrr' },
-                { label: 'Revenue Analytics', icon: TrendingUp, path: '/admin/reports/revenue' },
-                { label: 'Finance & P&L', icon: DollarSign, path: '/admin/reports/finance' },
-                { label: 'CRM & Sales', icon: Users, path: '/admin/reports/crm' },
-                { label: 'Service Desk Ops', icon: LifeBuoy, path: '/admin/reports/support' },
-                { label: 'Project Management', icon: FolderKanban, path: '/admin/reports/projects' },
-                { label: 'People & HR', icon: Users, path: '/admin/reports/hrm' },
-                { label: 'Security', icon: ShieldCheck, path: '/admin/reports/security' },
-                { label: 'Export Data', icon: Download, path: '/admin/reports/export' },
+                { label: 'Overview', icon: PieChart, path: '/admin/analytics/executive-summary' },
+                { label: 'Finance', icon: DollarSign, path: '/admin/analytics/finance' },
+                { label: 'Sales', icon: Users, path: '/admin/analytics/crm' },
+                { label: 'Project', icon: FolderKanban, path: '/admin/analytics/projects' },
+                { label: 'Settings', icon: Settings, path: '/admin/analytics/settings' },
             ]
         }
     ],
     system: [
         {
-            title: 'Platform Administration',
+            title: 'Settings',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/system' },
-                { label: 'Platform Settings', icon: Settings, path: '/admin/system/settings' },
-                { label: 'Identity & Access (IAM)', icon: Users, path: '/admin/users' },
-                { label: 'Role-Based Access (RBAC)', icon: ShieldCheck, path: '/admin/roles' },
-                { label: 'API Keys & Secrets', icon: Key, path: '/admin/system/settings?tab=integrations' },
-                { label: 'Webhook Endpoints', icon: Globe, path: '/admin/system/settings?tab=integrations' },
-                { label: 'Disaster Recovery (Backups)', icon: Database, path: '/admin/system/settings?tab=retention' },
-                { label: 'Compliance Audit Trail', icon: FileText, path: '/admin/system/logs' },
-                { label: 'Live Server Telemetry', icon: Terminal, path: '/admin/system/server-logs' },
+                { label: 'General Settings', icon: LayoutDashboard, path: '/admin/system' },
+                { label: 'Integrations', icon: Globe, path: '/admin/system/settings?tab=integrations' },
+                { label: 'Database', icon: Database, path: '/admin/system/settings?tab=retention' },
+                { label: 'Technical', icon: Terminal, path: '/admin/system/server-logs' },
+            ]
+        }
+    ],
+    accounting: [
+        {
+            title: 'Accounting',
+            items: [
+                { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/accounting' },
+                { label: 'Customers', icon: FileText, path: '/admin/accounting/invoices' },
+                { label: 'Vendors', icon: ShoppingCart, path: '/admin/accounting/vendor-bills' },
+                { label: 'Accounting', icon: FileSpreadsheet, path: '/admin/accounting/journal-entries' },
+                { label: 'Reporting', icon: Activity, path: '/admin/accounting/reports' },
+                { label: 'Configuration', icon: Settings, path: '/admin/accounting/settings' },
+            ]
+        }
+    ],
+    purchase: [
+        {
+            title: 'Purchase',
+            items: [
+                { label: 'Orders', icon: LayoutDashboard, path: '/admin/purchase' },
+                { label: 'Products', icon: Box, path: '/admin/purchase/rfqs' },
+                { label: 'Reporting', icon: Activity, path: '/admin/purchase/orders' },
+                { label: 'Configuration', icon: Settings, path: '/admin/purchase/vendors' },
+            ]
+        }
+    ],
+    inventory: [
+        {
+            title: 'Inventory',
+            items: [
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/inventory' },
+                { label: 'Operations', icon: Truck, path: '/admin/inventory/receipts' },
+                { label: 'Products', icon: Box, path: '/admin/inventory/products' },
+                { label: 'Reporting', icon: Activity, path: '/admin/inventory/reports' },
+                { label: 'Configuration', icon: Settings, path: '/admin/inventory/settings' },
+            ]
+        }
+    ],
+    hrm: [
+        {
+            title: 'Employees',
+            items: [
+                { label: 'Employees', icon: Users, path: '/admin/hrm/employees' },
+                { label: 'Contracts', icon: FileText, path: '/admin/hrm/contracts' },
+                { label: 'Departments', icon: Layers, path: '/admin/hrm/org-chart' },
+                { label: 'Reporting', icon: Activity, path: '/admin/hrm/attendance' },
+                { label: 'Configuration', icon: Settings, path: '/admin/hrm/settings' },
             ]
         }
     ],
     projects: [
         {
-            title: 'Execution',
+            title: 'Project',
             items: [
-                { label: 'Project Portfolio', icon: FolderKanban, path: '/admin/projects' },
-                { label: 'Active Kanban', icon: Layers, path: '/admin/projects/kanban' },
-            ]
-        },
-        {
-            title: 'Analytics',
-            items: [
-                { label: 'Resource Loading', icon: Users, path: '/admin/projects/resources' },
-                { label: 'Status Reports', icon: BarChart3, path: '/admin/projects/reports' },
-                { label: 'Time Tracking', icon: Clock, path: '/admin/projects/time' },
+                { label: 'Projects', icon: FolderKanban, path: '/admin/projects/list' },
+                { label: 'Tasks', icon: Layout, path: '/admin/projects/kanban' },
+                { label: 'Reporting', icon: PieChart, path: '/admin/projects/reports' },
+                { label: 'Configuration', icon: Settings, path: '/admin/projects/resources' },
             ]
         }
     ],
-    crm: [
+    sales: [
         {
-            title: 'Sales & CRM',
+            title: 'Sales',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/crm' },
-                { label: 'Onboard Client', icon: Plus, path: '/admin/crm/onboarding' },
-                { label: 'Clients', icon: Users, path: '/admin/crm/clients' },
-                { label: 'Contacts', icon: Users, path: '/admin/crm/contacts' },
-                { label: 'Leads', icon: AlertCircle, path: '/admin/crm/leads' },
-                { label: 'Deals', icon: Layers, path: '/admin/crm/deals' },
-                { label: 'Document Generator', icon: FileText, path: '/admin/crm/generate-document' },
-                { label: 'Activities', icon: FileText, path: '/admin/crm/activities' },
-                { label: 'Reports', icon: PieChart, path: '/admin/crm/reports' },
-                { label: 'Settings', icon: Settings, path: '/admin/crm/settings' },
-            ]
-        }
-    ],
-    erp: [
-        {
-            title: 'Dashboard',
-            items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/erp/overview' },
-            ]
-        },
-        {
-            title: 'Accounts Receivable',
-            items: [
-                { label: 'Document Hub', icon: FileCheck, path: '/admin/erp/documents' },
-                { label: 'Invoices', icon: FileText, path: '/admin/erp/invoices' },
-                { label: 'Time Billing', icon: Clock, path: '/admin/erp/time-billing' },
-                { label: 'Recurring Billing', icon: Repeat, path: '/admin/erp/recurring' },
-                { label: 'Delivery Notes', icon: Truck, path: '/admin/erp/delivery' },
-                { label: 'A/R Aging', icon: Clock, path: '/admin/erp/aging-report' },
-                { label: 'Product Catalog', icon: Tags, path: '/admin/erp/catalog' },
-            ]
-        },
-        {
-            title: 'Accounts Payable',
-            items: [
-                { label: 'Expenses', icon: Layers, path: '/admin/erp/expenses' },
-            ]
-        },
-        {
-            title: 'Accounting & Ledgers',
-            items: [
-                { label: 'Banking & Cash', icon: Landmark, path: '/admin/erp/banking' },
-                { label: 'Journal Entries', icon: FileSpreadsheet, path: '/admin/erp/journal-entries' },
-                { label: 'Chart of Accounts', icon: Database, path: '/admin/erp/chart-of-accounts' },
-                { label: 'Fixed Assets', icon: Server, path: '/admin/erp/fixed-assets' },
-                { label: 'Deferred Revenue', icon: Layers, path: '/admin/erp/deferred-revenue' },
-            ]
-        },
-        {
-            title: 'Financial Reports',
-            items: [
-                { label: 'Profit & Loss', icon: TrendingUp, path: '/admin/erp/profit-loss' },
-                { label: 'Balance Sheet', icon: Scale, path: '/admin/erp/balance-sheet' },
-                { label: 'Cash Flow', icon: Activity, path: '/admin/erp/cash-flow' },
-            ]
-        },
-        {
-            title: 'Configuration',
-            items: [
-                { label: 'Settings', icon: Settings, path: '/admin/erp/settings' },
-                { label: 'Payment Terms', icon: FileText, path: '/admin/erp/settings/payment-terms' },
-                { label: 'Invoice Branding', icon: Paintbrush, path: '/admin/erp/settings/branding' },
+                { label: 'Orders', icon: ShoppingBag, path: '/admin/sales/orders' },
+                { label: 'To Invoice', icon: FileText, path: '/admin/sales/quotations' },
+                { label: 'Products', icon: Box, path: '/admin/sales/products' },
+                { label: 'Reporting', icon: Activity, path: '/admin/sales/reports' },
+                { label: 'Configuration', icon: Settings, path: '/admin/sales/settings' },
             ]
         }
     ],
     store: [
         {
-            title: 'Store & Procurement',
+            title: 'eCommerce',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/store/dashboard' },
-                { label: 'Categories', icon: Tags, path: '/admin/store/categories' },
-                { label: 'Products & Services', icon: Box, path: '/admin/store/products' },
-                { label: 'Procurement Orders', icon: ShoppingCart, path: '/admin/store/orders' },
-                { label: 'Client Accounts', icon: Users, path: '/admin/store/customers' },
-                { label: 'Client Subscriptions', icon: RefreshCw, path: '/admin/store/subscriptions' },
-                { label: 'Fulfillment & Logistics', icon: Truck, path: '/admin/store/shipping' },
-                { label: 'Integrations', icon: Puzzle, path: '/admin/store/addons' },
-                { label: 'Campaign Pages', icon: Megaphone, path: '/admin/store/landing-pages' },
-                { label: 'Analytics', icon: Activity, path: '/admin/store/tracking' },
-                { label: 'Settings', icon: Settings, path: '/admin/store/settings' },
+                { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/store/dashboard' },
+                { label: 'Orders', icon: ShoppingCart, path: '/admin/store/orders' },
+                { label: 'Products', icon: Box, path: '/admin/store/products' },
+                { label: 'eCommerce Categories', icon: Tags, path: '/admin/store/categories' },
+                { label: 'Reporting', icon: Activity, path: '/admin/store/tracking' },
+                { label: 'Configuration', icon: Settings, path: '/admin/store/settings' },
             ]
         }
     ],
@@ -226,71 +291,42 @@ export const productMenu = {
                 { label: 'Overview', icon: LayoutDashboard, path: '/admin/security' },
                 { label: 'Alerts', icon: AlertCircle, path: '/admin/security/alerts' },
                 { label: 'Incidents', icon: ShieldCheck, path: '/admin/security/incidents' },
-                { label: 'Endpoints', icon: Server, path: '/admin/security/assets' },
-                { label: 'Risk Register', icon: ShieldCheck, path: '/admin/security/risks' },
+                { label: 'Assets', icon: Server, path: '/admin/security/assets' },
                 { label: 'Compliance', icon: FileText, path: '/admin/security/compliance' },
-                { label: 'Workspaces', icon: Layers, path: '/admin/security/workspaces' },
-                { label: 'Cloud Apps', icon: Box, path: '/admin/security/cloud' },
-                { label: 'Network Events', icon: Activity, path: '/admin/security/network' },
-                { label: 'Remote Sessions', icon: RefreshCw, path: '/admin/security/remote' },
-                { label: 'Email Security', icon: FileText, path: '/admin/security/email' },
-                { label: 'Threat Intel', icon: Database, path: '/admin/security/intel' },
-                { label: 'Log Analysis', icon: PieChart, path: '/admin/security/logs' },
-                { label: 'Security Gaps', icon: AlertCircle, path: '/admin/security/gaps' },
+                { label: 'Logs', icon: PieChart, path: '/admin/security/logs' },
+                { label: 'Settings', icon: Settings, path: '/admin/security/settings' },
             ]
         }
     ],
-    scm: [
+    crm: [
         {
-            title: 'Procurement',
+            title: 'CRM',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/scm' },
-                { label: 'Inventory', icon: Database, path: '/admin/scm/inventory' },
-                { label: 'Vendors', icon: Users, path: '/admin/scm/vendors' },
-                { label: 'Purchase Orders', icon: ShoppingCart, path: '/admin/scm/purchase-orders' },
-                { label: 'Settings', icon: Settings, path: '/admin/scm/settings' },
-            ]
-        }
-    ],
-    hrm: [
-        {
-            title: 'People & HR',
-            items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/hrm' },
-                { label: 'Employees', icon: Users, path: '/admin/hrm/employees' },
-                { label: 'Onboarding', icon: UserPlus, path: '/admin/hrm/onboarding' },
-                { label: 'Leave Management', icon: RefreshCw, path: '/admin/hrm/leaves' },
-                { label: 'Time Tracking', icon: Activity, path: '/admin/hrm/time' },
-                { label: 'Certifications', icon: Award, path: '/admin/hrm/certifications' },
-                { label: 'Payroll Runs', icon: DollarSign, path: '/admin/hrm/payroll' },
-                { label: 'Settings', icon: Settings, path: '/admin/hrm/settings' },
+                { label: 'Sales', icon: Activity, path: '/admin/crm/deals' },
+                { label: 'Leads', icon: Users, path: '/admin/crm/clients' },
+                { label: 'Reporting', icon: Activity, path: '/admin/crm/reports' },
+                { label: 'Configuration', icon: Settings, path: '/admin/crm/settings' },
             ]
         }
     ],
     iam: [
         {
-            title: 'Identity & Access',
+            title: 'Users & Companies',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/iam' },
                 { label: 'Users', icon: Users, path: '/admin/iam/users' },
-                { label: 'Roles & Permissions', icon: Key, path: '/admin/iam/roles' },
-                { label: 'Tenants', icon: Building2, path: '/admin/iam/tenants' },
-                { label: 'Audit Logs', icon: FileText, path: '/admin/iam/audit' },
-                { label: 'Settings', icon: Settings, path: '/admin/iam/settings' },
+                { label: 'Companies', icon: Building2, path: '/admin/iam/tenants' },
+                { label: 'Groups', icon: Key, path: '/admin/iam/roles' },
             ]
         }
     ],
     support: [
         {
-            title: 'Service Desk',
+            title: 'Field Service',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/support' },
-                { label: 'Tickets', icon: FileText, path: '/admin/support/tickets' },
-                { label: 'Escalations', icon: AlertCircle, path: '/admin/support/escalations' },
-                { label: 'SLA Breaches', icon: ShieldCheck, path: '/admin/support/sla-breaches' },
-                { label: 'Live SLA Board', icon: Activity, path: '/admin/support/sla-live' },
-                { label: 'Knowledge Base', icon: BookOpen, path: '/admin/support/knowledge-base' },
-                { label: 'Settings', icon: Settings, path: '/admin/support/settings' },
+                { label: 'Tasks', icon: LayoutDashboard, path: '/admin/support' },
+                { label: 'Planning', icon: Calendar, path: '/admin/support/tickets' },
+                { label: 'Reporting', icon: Activity, path: '/admin/support/sla-live' },
+                { label: 'Configuration', icon: Settings, path: '/admin/support/settings' },
             ]
         }
     ],
@@ -298,70 +334,194 @@ export const productMenu = {
         {
             title: 'Marketing Automation',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/marketing' },
                 { label: 'Campaigns', icon: Megaphone, path: '/admin/marketing/campaigns' },
-                { label: 'Creative Assets', icon: Image, path: '/admin/marketing/assets' },
-                { label: 'Email Campaigns', icon: Mail, path: '/admin/marketing/email' },
-                { label: 'Integrations', icon: Puzzle, path: '/admin/marketing/integrations' },
-                { label: 'Settings', icon: Settings, path: '/admin/marketing/settings' },
+                { label: 'Activities', icon: Activity, path: '/admin/marketing/activities' },
+                { label: 'Reporting', icon: BarChart3, path: '/admin/marketing/analytics' },
+                { label: 'Configuration', icon: Settings, path: '/admin/marketing/settings' },
             ]
         }
     ],
     cms: [
         {
-            title: 'Website Builder',
+            title: 'Website',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/cms' },
-                { label: 'All Pages', icon: FileText, path: '/admin/cms' },
-                { label: 'Landing Pages', icon: LayoutDashboard, path: '/admin/cms/landing-pages' },
-                { label: 'Create New Page', icon: Plus, path: '/admin/cms/pages/new' },
-                { label: 'Inquiries', icon: Activity, path: '/admin/cms/inquiries' },
-                { label: 'Settings', icon: Settings, path: '/admin/cms/settings' },
+                { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/cms' },
+                { label: 'Pages', icon: FileText, path: '/admin/cms' },
+                { label: 'Menus', icon: LayoutDashboard, path: '/admin/cms/landing-pages' },
+                { label: 'Configuration', icon: Settings, path: '/admin/cms/settings' },
             ]
         }
     ],
-    // ── Future Enhancement Modules ──
-    documents: [
+    edms: [
         {
-            title: 'Document Management',
+            title: 'Documents',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/documents' },
-                { label: 'Settings', icon: Settings, path: '/admin/documents/settings' },
+                { label: 'Workspace', icon: FolderOpen, path: '/admin/edms' },
+                { label: 'Folders', icon: Building2, path: '/admin/edms/workspaces' },
+                { label: 'Tags', icon: Tags, path: '/admin/edms/tags' },
+                { label: 'Configuration', icon: Settings, path: '/admin/edms/settings' },
             ]
         }
     ],
     approvals: [
         {
-            title: 'Approval Center',
+            title: 'Approvals',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/approvals' },
-                { label: 'Settings', icon: Settings, path: '/admin/approvals/settings' },
+                { label: 'My Approvals', icon: LayoutDashboard, path: '/admin/approvals' },
+                { label: 'Configuration', icon: Settings, path: '/admin/approvals/settings' },
             ]
         }
     ],
-    itsm: [
+    services: [
         {
-            title: 'ITIL Service Operations',
+            title: 'Planning',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/itsm' },
-                { label: 'IT Service Catalog', icon: Tag, path: '/admin/itsm/catalog' },
-                { label: 'Service Requests', icon: CheckSquare, path: '/admin/itsm/requests' },
-                { label: 'Change Requests', icon: GitBranch, path: '/admin/itsm/changes' },
-                { label: 'Problem Management', icon: AlertCircle, path: '/admin/itsm/problems' },
-                { label: 'Settings', icon: Settings, path: '/admin/itsm/settings' },
+                { label: 'Schedule', icon: Calendar, path: '/admin/services' },
+                { label: 'Reporting', icon: Activity, path: '/admin/services/requests' },
+                { label: 'Configuration', icon: Settings, path: '/admin/services/settings' },
             ]
         }
     ],
-    itam: [
+    assets: [
         {
-            title: 'Asset Management',
+            title: 'Maintenance',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/itam' },
-                { label: 'All Assets', icon: Monitor, path: '/admin/itam/assets' },
-                { label: 'Depreciation', icon: TrendingDown, path: '/admin/itam/depreciation' },
-                { label: 'License Manager', icon: Key, path: '/admin/itam/licenses' },
-                { label: 'Settings', icon: Settings, path: '/admin/itam/settings' },
+                { label: 'Equipments', icon: Monitor, path: '/admin/assets/assets' },
+                { label: 'Maintenance Requests', icon: Wrench, path: '/admin/assets/requests' },
+                { label: 'Reporting', icon: Activity, path: '/admin/assets/depreciation' },
+                { label: 'Configuration', icon: Settings, path: '/admin/assets/settings' },
             ]
         }
-    ]
+    ],
+    reporting: [
+        {
+            title: 'Studio',
+            items: [
+                { label: 'Customizations', icon: LayoutDashboard, path: '/admin/reporting' },
+                { label: 'Reports', icon: FileText, path: '/admin/reporting/templates' },
+                { label: 'Views', icon: Layout, path: '/admin/reporting/generated' },
+                { label: 'Automations', icon: Zap, path: '/admin/reporting/settings' },
+            ]
+        }
+    ],
+
+    // ── NEW ODOO APPS ──
+    pos: [
+        {
+            title: 'Point of Sale',
+            items: [
+                { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/pos' },
+                { label: 'Orders', icon: ShoppingBag, path: '/admin/pos/orders' },
+                { label: 'Sessions', icon: Clock, path: '/admin/pos/sessions' },
+                { label: 'Payments', icon: CreditCard, path: '/admin/pos/payments' },
+                { label: 'Customers', icon: Users, path: '/admin/pos/customers' },
+                { label: 'Products', icon: Box, path: '/admin/pos/products' },
+                { label: 'Configuration', icon: Settings, path: '/admin/pos/settings' },
+            ]
+        }
+    ],
+    timesheets: [
+        {
+            title: 'Timesheets',
+            items: [
+                { label: 'My Timesheets', icon: Clock, path: '/admin/timesheets' },
+                { label: 'All Timesheets', icon: Users, path: '/admin/timesheets/all' },
+                { label: 'Reporting', icon: BarChart3, path: '/admin/timesheets/reports' },
+            ]
+        }
+    ],
+    helpdesk: [
+        {
+            title: 'Helpdesk',
+            items: [
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/helpdesk' },
+                { label: 'Tickets', icon: LifeBuoy, path: '/admin/helpdesk/tickets' },
+                { label: 'SLA Policies', icon: ShieldCheck, path: '/admin/helpdesk/sla' },
+                { label: 'Reporting', icon: BarChart3, path: '/admin/helpdesk/reports' },
+            ]
+        }
+    ],
+    mrp: [
+        {
+            title: 'Manufacturing',
+            items: [
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/mrp' },
+                { label: 'Manufacturing Orders', icon: Wrench, path: '/admin/mrp/orders' },
+                { label: 'Work Orders', icon: Settings, path: '/admin/mrp/work-orders' },
+                { label: 'Products', icon: Box, path: '/admin/mrp/products' },
+                { label: 'Bills of Materials', icon: Layers, path: '/admin/mrp/bom' },
+                { label: 'Work Centers', icon: Building2, path: '/admin/mrp/work-centers' },
+            ]
+        }
+    ],
+    recruitment: [
+        {
+            title: 'Recruitment',
+            items: [
+                { label: 'Job Positions', icon: LayoutDashboard, path: '/admin/recruitment/jobs' },
+                { label: 'Applications', icon: FileText, path: '/admin/recruitment/applications' },
+                { label: 'Reporting', icon: BarChart3, path: '/admin/recruitment/reports' },
+            ]
+        }
+    ],
+    timeoff: [
+        {
+            title: 'Time Off',
+            items: [
+                { label: 'My Time Off', icon: Clock, path: '/admin/timeoff' },
+                { label: 'Approvals', icon: CheckSquare, path: '/admin/timeoff/approvals' },
+                { label: 'Allocations', icon: Layers, path: '/admin/timeoff/allocations' },
+                { label: 'Reporting', icon: BarChart3, path: '/admin/timeoff/reports' },
+            ]
+        }
+    ],
+    fleet: [
+        {
+            title: 'Fleet',
+            items: [
+                { label: 'Vehicles', icon: Truck, path: '/admin/fleet/vehicles' },
+                { label: 'Odometer Logs', icon: Clock, path: '/admin/fleet/odometer' },
+                { label: 'Contracts', icon: FileText, path: '/admin/fleet/contracts' },
+                { label: 'Services', icon: Wrench, path: '/admin/fleet/services' },
+                { label: 'Configuration', icon: Settings, path: '/admin/fleet/settings' },
+            ]
+        }
+    ],
+    invoicing: [
+        {
+            title: 'Invoicing',
+            items: [
+                { label: 'Invoices', icon: FileText, path: '/admin/invoicing/invoices' },
+                { label: 'Credit Notes', icon: FileText, path: '/admin/invoicing/credit-notes' },
+                { label: 'Payments', icon: DollarSign, path: '/admin/invoicing/payments' },
+                { label: 'Customers', icon: Users, path: '/admin/invoicing/customers' },
+            ]
+        }
+    ],
+    expenses: [
+        {
+            title: 'Expenses',
+            items: [
+                { label: 'My Expenses', icon: CreditCard, path: '/admin/expenses' },
+                { label: 'Expense Reports', icon: FileText, path: '/admin/expenses/reports' },
+                { label: 'Approvals', icon: CheckSquare, path: '/admin/expenses/approvals' },
+            ]
+        }
+    ],
+    
+    // Placeholder menus for newly injected modules
+    rental: [{ title: 'Rental', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/rental' }] }],
+    spreadsheet: [{ title: 'Spreadsheet', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/spreadsheet' }] }],
+    quality: [{ title: 'Quality', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/quality' }] }],
+    plm: [{ title: 'PLM', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/plm' }] }],
+    appraisals: [{ title: 'Appraisals', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/appraisals' }] }],
+    referrals: [{ title: 'Referrals', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/referrals' }] }],
+    social: [{ title: 'Social Marketing', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/social' }] }],
+    sms: [{ title: 'SMS Marketing', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/sms' }] }],
+    events: [{ title: 'Events', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/events' }] }],
+    surveys: [{ title: 'Surveys', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/surveys' }] }],
+    elearning: [{ title: 'eLearning', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/elearning' }] }],
+    livechat: [{ title: 'Live Chat', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/livechat' }] }],
+    knowledge: [{ title: 'Knowledge', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/knowledge' }] }],
+    whatsapp: [{ title: 'WhatsApp', items: [{ label: 'Dashboard', icon: LayoutDashboard, path: '/admin/whatsapp' }] }],
 };

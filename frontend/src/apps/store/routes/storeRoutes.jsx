@@ -2,18 +2,18 @@ import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 
 import StoreDashboard from '../pages/dashboards/StoreDashboard';
-import StoreCustomization from '../pages/StoreCustomization';
-import CategoryManagement from '../pages/CategoryManagement';
-import StoreProducts from '../pages/StoreProducts';
-import StoreOrders from '../pages/StoreOrders';
-import CustomerManagement from '../pages/CustomerManagement';
-import ShippingSettings from '../pages/ShippingSettings';
-import LandingPages from '../pages/LandingPages';
-import PixelTracking from '../pages/PixelTracking';
-import AddOnManagement from '../pages/AddOnManagement';
-import SubscriptionManagement from '../pages/SubscriptionManagement';
-import StoreSettings from '../pages/StoreSettings';
-import ServiceCatalog from '../pages/ServiceCatalog';
+import StoreCustomization from '../pages/settings/StoreCustomization';
+import CategoryManagement from '../pages/lists/CategoryManagement';
+import StoreProducts from '../pages/lists/StoreProducts';
+import StoreOrders from '../pages/lists/StoreOrders';
+import CustomerManagement from '../pages/lists/CustomerManagement';
+import ShippingSettings from '../pages/settings/ShippingSettings';
+import LandingPages from '../pages/features/LandingPages';
+import PixelTracking from '../pages/features/PixelTracking';
+import AddOnManagement from '../pages/settings/AddOnManagement';
+import SubscriptionManagement from '../pages/lists/SubscriptionManagement';
+import StoreSettings from '../pages/settings/StoreSettings';
+import ServiceCatalog from '../pages/lists/ServiceCatalog';
 
 export const storeRoutes = (
     <>

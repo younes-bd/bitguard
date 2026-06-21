@@ -2,7 +2,7 @@
 
 This document is the **Technical Source of Truth** for the BitGuard Enterprise Platform. Any developer, AI agent, or architect contributing to this repository must follow the conventions defined herein.
 
-> BitGuard is an IT technology company delivering: **Managed IT Services (MSP)**, **SaaS products**, **Digital products**, **Physical hardware**, and **Professional Services**.
+> **COMPANY IDENTITY:** BitGuard is a **Do-It-All Managed Service Provider (MSP) and Full-Service IT Enterprise**. It delivers: **Managed IT Services (MSP)**, **Web Development & E-Commerce**, **AI Automation & Data Analytics**, **Cloud Infrastructure**, **Cybersecurity & SOC**, **Physical Security**, and **Digital Transformation**. BitGuard is NOT a cybersecurity SaaS company. All seven service pillars are equal in importance. Reference companies: CDW, Accenture Technology, Logicalis, Presidio, NWN Carousel.
 
 ---
 
@@ -10,8 +10,8 @@ This document is the **Technical Source of Truth** for the BitGuard Enterprise P
 
 The platform is an Enterprise B2B multi-tenant SaaS operating on a decoupled client-server architecture:
 
-*   **Backend Layer**: Django + Django REST Framework (DRF) serving JSON APIs.
-*   **Frontend Layer**: React + Vite using Feature-Sliced Design (FSD).
+*   **Backend Layer**: Django + Django REST Framework (DRF) serving JSON APIs using strictly enforced **Domain-Driven Design (DDD)**.
+*   **Frontend Layer**: React + Vite using strictly enforced **Feature-Sliced Design (FSD)**. *FSD is the enterprise standard for ALL modules across the entire frontend repository to ensure infinite horizontal scalability.*
 *   **Aggregation Layer (BFF)**: The `dashboard` app is a read-only BFF aggregator for the Admin Command Center. It owns no database tables.
 *   **Event Layer**: Django signals wire cross-module lifecycle events (e.g., Deal won → InternalProject created, Order paid → CRM Client created, Quote accepted → Invoice created).
 *   **Audit Layer**: `AuditService` is called by every service-layer mutation. Every revenue and security event produces an immutable audit log entry.
@@ -160,7 +160,9 @@ backend/
 
 ## 5. Frontend Architecture (React)
 
-Located in `frontend/` using **Feature-Sliced Design (FSD)**.
+Located in `frontend/` using strictly enforced **Feature-Sliced Design (FSD)**.
+
+*FSD is mandatory for all frontend development. Every domain (CRM, ERP, SOC, etc.) must organize its UI into specific sub-folders (e.g., `dashboards/`, `lists/`, `details/`, `settings/`) to prevent flat-directory bloat. Flat directories are not enterprise standard and must be refactored on sight.*
 
 ### Directory Layout
 ```text

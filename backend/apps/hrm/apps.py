@@ -1,4 +1,4 @@
-from django.apps import AppConfig
+﻿from django.apps import AppConfig
 
 class HrmConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -7,4 +7,5 @@ class HrmConfig(AppConfig):
     verbose_name = 'Human Resources'
 
     def ready(self):
-        import apps.hrm.signals
+        import apps.hrm.infrastructure.signals
+

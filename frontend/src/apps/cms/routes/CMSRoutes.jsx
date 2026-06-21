@@ -4,11 +4,12 @@ import ModuleLayout from '../../../core/layouts/ModuleLayout';
 import { productMenu } from '../../../core/api/menu';
 
 // Lazy loading the pages
-const CMSDashboard = React.lazy(() => import('../pages/CMSDashboard'));
-const PageEditor = React.lazy(() => import('../pages/PageEditor'));
-const InquiriesPage = React.lazy(() => import('../pages/InquiriesPage'));
-const CmsSettings = React.lazy(() => import('../pages/CmsSettings'));
-const LandingPagesManager = React.lazy(() => import('../pages/LandingPagesManager'));
+const CMSDashboard = React.lazy(() => import('../pages/dashboards/CMSDashboard'));
+const PageEditor = React.lazy(() => import('../pages/features/PageEditor'));
+const InquiriesPage = React.lazy(() => import('../pages/lists/InquiriesPage'));
+const CmsSettings = React.lazy(() => import('../pages/settings/CmsSettings'));
+const LandingPagesManager = React.lazy(() => import('../pages/lists/LandingPagesManager'));
+const MediaLibrary = React.lazy(() => import('../pages/features/MediaLibrary'));
 
 const LoadingScreen = () => (
     <div className="flex h-full items-center justify-center p-8 bg-slate-950">
@@ -96,6 +97,21 @@ const CMSRoutes = () => {
                             items={productMenu.cms[0].items}
                         >
                             <LandingPagesManager />
+                        </ModuleLayout>
+                    }
+                />
+
+                {/* Media Library */}
+                <Route
+                    path="/media"
+                    element={
+                        <ModuleLayout
+                            title="Media Library"
+                            subtitle="Manage images and files"
+                            icon="Image"
+                            items={productMenu.cms[0].items}
+                        >
+                            <MediaLibrary />
                         </ModuleLayout>
                     }
                 />

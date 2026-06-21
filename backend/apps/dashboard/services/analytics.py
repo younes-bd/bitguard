@@ -73,7 +73,7 @@ class CommandCenterAnalyticsService:
 
         # ── 3. ERP / Finance ──────────────────────────────────────────────────
         try:
-            from apps.erp.models import Invoice, Payment
+            from apps.accounting.domain.models import Invoice, Payment
             invoices = Invoice.objects.all()
             payments = Payment.objects.all()
             if tenant:
@@ -167,20 +167,23 @@ class CommandCenterAnalyticsService:
 
         # ── 8. SCM ────────────────────────────────────────────────────────────
         try:
-            from apps.scm.models import PurchaseOrder, InventoryItem
-            pos = PurchaseOrder.objects.all()
-            items = InventoryItem.objects.all()
-            if tenant:
-                pos = pos.filter(tenant=tenant)
-                items = items.filter(tenant=tenant)
-            metrics["scm"] = {
-                "pending_orders": pos.filter(status__in=["draft", "sent"]).count(),
-                "low_stock_items": items.filter(quantity_on_hand__lte=10).count(),
-                "total_vendors": pos.values("vendor").distinct().count(),
+            metrics["purchase"] = {
+                "pending_orders": apps.get_model('purchase', 'PurchaseOrder').objects.filter(
+                    tenant=tenant, status='pending'
+                ).count(),
+                "total_vendors": apps.get_model('purchase', 'Vendor').objects.filter(
+                    tenant=tenant
+                ).count()
+            }
+            metrics["inventory"] = {
+                "low_stock_items": apps.get_model('inventory', 'InventoryItem').objects.filter(
+                    tenant=tenant, quantity_on_hand__lt=models.F('reorder_level')
+                ).count()
             }
         except Exception as e:
             logger.warning(f"SCM analytics error: {e}")
-            metrics["scm"] = {"pending_orders": 0, "low_stock_items": 0, "total_vendors": 0}
+            metrics["purchase"] = {"pending_orders": 0, "total_vendors": 0}
+            metrics["inventory"] = {"low_stock_items": 0}
 
         # ── 9. Contracts & SLA ────────────────────────────────────────────────
         try:
@@ -273,7 +276,7 @@ class CommandCenterAnalyticsService:
 
         # ── 14. Documents ──────────────────────────────────────────────────────
         try:
-            from apps.documents.models import Document
+            from apps.edms.domain.models import Document
             docs = Document.objects.all()
             if tenant:
                 docs = docs.filter(tenant=tenant)
@@ -318,7 +321,7 @@ class CommandCenterAnalyticsService:
         # ── Needs Attention (Alerts) ──────────────────────────────────────────
         try:
             from apps.contracts.models import SLABreach
-            from apps.erp.models import Invoice
+            from apps.accounting.domain.models import Invoice
             from apps.projects.models import Task
             
             unpaid_invoices = Invoice.objects.filter(status='overdue')

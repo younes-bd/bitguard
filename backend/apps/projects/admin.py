@@ -1,29 +1,49 @@
 from django.contrib import admin
-from .models import Project, Task, Milestone, TimeLog
+from .domain import models
 
+# Auto-generated Admin for projects
 
-@admin.register(Project)
+@admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'project_type', 'status', 'priority', 'client', 'manager', 'deadline', 'progress']
-    list_filter = ['status', 'project_type', 'priority']
-    search_fields = ['name', 'client__name']
-    readonly_fields = ['progress']
+    pass
 
+@admin.register(models.Sprint)
+class SprintAdmin(admin.ModelAdmin):
+    pass
 
-@admin.register(Task)
+@admin.register(models.TaskStage)
+class TaskStageAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.ProjectTag)
+class ProjectTagAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['title', 'project', 'status', 'priority', 'assignee', 'due_date']
-    list_filter = ['status', 'priority']
-    search_fields = ['title', 'project__name']
+    pass
 
+@admin.register(models.TaskComment)
+class TaskCommentAdmin(admin.ModelAdmin):
+    pass
 
-@admin.register(Milestone)
+@admin.register(models.TaskAttachment)
+class TaskAttachmentAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.ProjectRisk)
+class ProjectRiskAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.Milestone)
 class MilestoneAdmin(admin.ModelAdmin):
-    list_display = ['name', 'project', 'due_date', 'is_completed', 'invoice_on_completion']
-    list_filter = ['is_completed']
+    pass
 
-
-@admin.register(TimeLog)
+@admin.register(models.TimeLog)
 class TimeLogAdmin(admin.ModelAdmin):
-    list_display = ['user', 'task', 'date', 'hours', 'is_billable']
-    list_filter = ['is_billable', 'date']
+    pass
+
+@admin.register(models.Timesheet)
+class TimesheetAdmin(admin.ModelAdmin):
+    pass
+

@@ -5,7 +5,7 @@ export const crmService = {
     getClients: async (params = {}) => {
         try {
             const response = await client.get('crm/clients/', { params });
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Fetch Clients Error:", error);
             throw error;
@@ -15,7 +15,7 @@ export const crmService = {
     getClient: async (id) => {
         try {
             const response = await client.get(`crm/clients/${id}/`);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Fetch Client ${id} Error:`, error);
             throw error;
@@ -25,7 +25,7 @@ export const crmService = {
     createClient: async (data) => {
         try {
             const response = await client.post('crm/clients/', data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Create Client Error:", error);
             throw error;
@@ -35,7 +35,7 @@ export const crmService = {
     updateClient: async (id, data) => {
         try {
             const response = await client.patch(`crm/clients/${id}/`, data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Update Client ${id} Error:`, error);
             throw error;
@@ -45,7 +45,7 @@ export const crmService = {
     deleteClient: async (id) => {
         try {
             const response = await client.delete(`crm/clients/${id}/`);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Delete Client ${id} Error:`, error);
             throw error;
@@ -56,7 +56,7 @@ export const crmService = {
     getContacts: async (params = {}) => {
         try {
             const response = await client.get('crm/contacts/', { params });
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Fetch Contacts Error:", error);
             throw error;
@@ -66,7 +66,7 @@ export const crmService = {
     createContact: async (data) => {
         try {
             const response = await client.post('crm/contacts/', data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Create Contact Error:", error);
             throw error;
@@ -76,7 +76,7 @@ export const crmService = {
     updateContact: async (id, data) => {
         try {
             const response = await client.patch(`crm/contacts/${id}/`, data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Update Contact ${id} Error:`, error);
             throw error;
@@ -86,7 +86,7 @@ export const crmService = {
     deleteContact: async (id) => {
         try {
             const response = await client.delete(`crm/contacts/${id}/`);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Delete Contact ${id} Error:`, error);
             throw error;
@@ -97,7 +97,7 @@ export const crmService = {
     getLeads: async (params = {}) => {
         try {
             const response = await client.get('crm/leads/', { params });
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Fetch Leads Error:", error);
             throw error;
@@ -107,7 +107,7 @@ export const crmService = {
     createLead: async (data) => {
         try {
             const response = await client.post('crm/leads/', data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Create Lead Error:", error);
             throw error;
@@ -117,7 +117,7 @@ export const crmService = {
     updateLead: async (id, data) => {
         try {
             const response = await client.patch(`crm/leads/${id}/`, data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Update Lead ${id} Error:`, error);
             throw error;
@@ -127,9 +127,19 @@ export const crmService = {
     deleteLead: async (id) => {
         try {
             const response = await client.delete(`crm/leads/${id}/`);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Delete Lead ${id} Error:`, error);
+            throw error;
+        }
+    },
+
+    convertLead: async (id) => {
+        try {
+            const response = await client.post(`crm/leads/${id}/convert/`);
+            return response.data?.data ?? response.data?.results ?? response.data;
+        } catch (error) {
+            console.error(`Convert Lead ${id} Error:`, error);
             throw error;
         }
     },
@@ -138,7 +148,7 @@ export const crmService = {
     getDeals: async (params = {}) => {
         try {
             const response = await client.get('crm/deals/', { params });
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Fetch Deals Error:", error);
             throw error;
@@ -148,7 +158,7 @@ export const crmService = {
     createDeal: async (data) => {
         try {
             const response = await client.post('crm/deals/', data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Create Deal Error:", error);
             throw error;
@@ -158,7 +168,7 @@ export const crmService = {
     updateDeal: async (id, data) => {
         try {
             const response = await client.patch(`crm/deals/${id}/`, data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Update Deal Error:", error);
             throw error;
@@ -168,7 +178,7 @@ export const crmService = {
     deleteDeal: async (id) => {
         try {
             const response = await client.delete(`crm/deals/${id}/`);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Delete Deal ${id} Error:`, error);
             throw error;
@@ -179,7 +189,7 @@ export const crmService = {
     getActivities: async (params = {}) => {
         try {
             const response = await client.get('crm/activities/', { params });
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Fetch Activities Error:", error);
             throw error;
@@ -189,10 +199,29 @@ export const crmService = {
     createActivity: async (data) => {
         try {
             const response = await client.post('crm/activities/', data);
-            return response.data.data;
+            return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error("Create Activity Error:", error);
             throw error;
         }
+    },
+
+    getClientOrders: async (clientId) => {
+        try {
+            const response = await client.get('store/orders/', { params: { client: clientId } });
+            return response.data?.data ?? response.data?.results ?? response.data ?? [];
+        } catch (error) {
+            console.error(`Fetch Orders for Client ${clientId} Error:`, error);
+            return [];
+        }
+    },
+
+    // ─── DOCUMENT GENERATION ──────────────────────────────────────────────────
+    downloadDocument: async (model, id) => {
+        const response = await client.post('reporting/generated/generate/', {
+            record_model: model,
+            record_id: id,
+        });
+        return response.data;
     }
 };

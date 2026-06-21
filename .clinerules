@@ -1,0 +1,9 @@
+# Enterprise AI Agent Rules
+
+> **CRITICAL DIRECTIVE**: You are operating within the BitGuard Enterprise Platform monorepo. Before making ANY architectural changes, creating new apps, or refactoring existing code, you MUST:
+> 
+> 1. Use your file reading tools to read `CHARTER.md` and `ARCHITECTURE.md` located in the root of this repository.
+> 2. Strictly enforce **Feature-Sliced Design (FSD)** for all React frontend code. Flat folder structures are strictly forbidden and must be refactored on sight.
+> 3. Strictly enforce **Domain-Driven Design (DDD)** for all Django backend code. Views orchestrate, but services dictate business logic.
+>
+> Failure to read the charter and enforce these architectures violates the enterprise standard.

@@ -85,7 +85,7 @@ Rules:
 This is a foundational property of the system, not a feature.
 
 8. Backend Standards (Django)
-- Code is organized by business responsibility.
+- Code is organized by business responsibility, strictly enforcing **Domain-Driven Design (DDD)**.
 - Business logic lives in services, not views.
 - Views orchestrate; services decide.
 - Models represent truth, not behavior.
@@ -95,7 +95,9 @@ This is a foundational property of the system, not a feature.
 - Silent side effects are unacceptable.
 
 9. Frontend Standards (React)
-- Feature-oriented structure.
+- Strictly enforced **Feature-Sliced Design (FSD)** structure is mandatory.
+- Every domain (CRM, ERP, SOC, etc.) must organize its UI into specific sub-folders (e.g., `dashboards/`, `lists/`, `settings/`).
+- Flat directories are forbidden and must be refactored on sight.
 - UI components are stateless where possible.
 - Business rules never live in the UI.
 - Authorization is enforced by the backend.

@@ -2,25 +2,24 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProductLayout from '../layouts/ProductLayout';
 import { crmRoutes } from '../../apps/crm/routes/crmRoutes';
-import { erpRoutes } from '../../apps/erp/routes/erpRoutes';
+import { accountingRoutes } from '../../apps/accounting/routes/accountingRoutes';
 import { socRoutes } from '../../apps/soc/routes/socRoutes';
 import { hrmRoutes } from '../../apps/hrm/routes/hrmRoutes';
-import { scmRoutes } from '../../apps/scm/routes/scmRoutes';
+import { purchaseRoutes } from '../../apps/purchase/routes/purchaseRoutes';
+import { inventoryRoutes } from '../../apps/inventory/routes/inventoryRoutes';
 import { supportRoutes } from '../../apps/support/routes/supportRoutes';
 import { marketingRoutes } from '../../apps/marketing/routes/marketingRoutes';
 
 import CrmDashboard from '../../apps/crm/pages/dashboards/CrmDashboard';
-import ErpDashboard from '../../apps/erp/pages/dashboards/ErpDashboard';
+import AccountingDashboard from '../../apps/accounting/pages/dashboards/AccountingDashboard';
 import SocDashboard from '../../apps/soc/pages/dashboards/SocDashboard';
 import HrmDashboard from '../../apps/hrm/pages/dashboards/HrmDashboard';
-import ScmDashboard from '../../apps/scm/pages/dashboards/ScmDashboard';
-import SupportDashboard from '../../apps/support/pages/SupportDashboard';
-import MarketingDashboard from '../../apps/marketing/pages/MarketingDashboard';
-import ClientPortalDashboard from '../../apps/portal/pages/ClientPortalDashboard';
+
+import SupportDashboard from '../../apps/support/pages/dashboards/SupportDashboard';
+import MarketingDashboard from '../../apps/marketing/pages/dashboards/MarketingDashboard';
+import ClientPortalDashboard from '../../apps/portal/pages/dashboards/ClientPortalDashboard';
 
 import SubscriptionGuard from '../api/auth/SubscriptionGuard';
-import ProtectedRoute from '../api/auth/ProtectedRoute';
-
 
 
 export const PortalRoutes = () => {
@@ -39,9 +38,9 @@ export const PortalRoutes = () => {
                 {crmRoutes}
             </Route>
 
-            <Route path="erp" element={<SubscriptionGuard requiredProduct="erp"><ProductLayout /></SubscriptionGuard>}>
-                <Route index element={<ErpDashboard />} />
-                {erpRoutes}
+            <Route path="accounting" element={<SubscriptionGuard requiredProduct="accounting"><ProductLayout /></SubscriptionGuard>}>
+                <Route index element={<AccountingDashboard />} />
+                {accountingRoutes}
             </Route>
 
             <Route path="soc" element={<SubscriptionGuard requiredProduct="soc"><ProductLayout /></SubscriptionGuard>}>
@@ -54,12 +53,15 @@ export const PortalRoutes = () => {
                 {hrmRoutes}
             </Route>
 
-            <Route path="scm" element={<SubscriptionGuard requiredProduct="scm"><ProductLayout /></SubscriptionGuard>}>
-                <Route index element={<ScmDashboard />} />
-                {scmRoutes}
+            <Route path="purchase" element={<SubscriptionGuard requiredProduct="purchase"><ProductLayout /></SubscriptionGuard>}>
+                {purchaseRoutes}
+            </Route>
+            
+            <Route path="inventory" element={<SubscriptionGuard requiredProduct="inventory"><ProductLayout /></SubscriptionGuard>}>
+                {inventoryRoutes}
             </Route>
 
-            <Route path="marketing" element={<ProductLayout />}>
+            <Route path="marketing" element={<SubscriptionGuard requiredProduct="marketing"><ProductLayout /></SubscriptionGuard>}>
                 <Route index element={<MarketingDashboard />} />
                 {marketingRoutes}
             </Route>

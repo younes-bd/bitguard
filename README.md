@@ -8,6 +8,7 @@ Includes:
 
 Email: admin@bitguard.tech
 Password: admin
+follo AI_INSTRUCTIONS.md
 
 Quick start:
 
@@ -21,10 +22,18 @@ Quick start:
 8) python3 manage.py createsuperuser
 9) python3 manage.py data.py
 10) python3 manage.py runserver
+python manage.py check                  # No system check errors
+pytest apps/erp apps/scm apps/accounting
+python manage.py makemigrations --check # No unmigrated model changes
+python manage.py test apps.erp          # All ERP tests pass
 11) Frontend: cd frontend; npm install; npm start npm run dev
 celery -A config worker -l info 
 celery -A config beat -l info
-
+python manage.py test apps.crm.tests
+python manage.py test apps.accounting.tests
+python manage.py test apps.projects.tests
+python manage.py test apps.scm.tests
+python manage.py test apps.hrm.tests
 
 Load and apply the BitGuard Platform Charter (CHARTER.md).
 git status
@@ -149,3 +158,6 @@ API Routes:
 
 
 Workflow Diagram showing how your platform should operate as a unified tech company management system: Website Visitor → CRM Lead → Deal Pipeline → Contract → Invoice → Billing → Client Portal → Support → SOC → Projects → HRM → SCM → ITAM → Reports.
+
+
+I just want you to audit my website and make sure it matches with enterprise grade like my IT enterprise that offers SaaS services and managed services and like other IT enterprise. But I want you to make a full audit including the navigation bar, the headers, the sections, all of the pages of my website module and make it much with enterprise grade. Give me a audit, please. 

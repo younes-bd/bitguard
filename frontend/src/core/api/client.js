@@ -25,8 +25,8 @@ client.interceptors.request.use(
             }
         }
 
-        // Dynamic Tenant Resolution (Fallback to bitguard.tech for now)
-        const tenantId = localStorage.getItem('tenant_id') || 'bitguard.tech';
+        // Dynamic Tenant Resolution
+        const tenantId = localStorage.getItem('bitguard_tenant_id') || localStorage.getItem('tenant_id') || 'bitguard.tech';
         if (config.headers.set) {
             config.headers.set('X-Tenant-ID', tenantId);
         } else {

@@ -1,0 +1,10 @@
+Operations to perform:
+  Apply all migrations: accounting, admin, ai_engine, approvals, audit, auth, automation, billing, blog, cms, contenttypes, contracts, core, crm, django_celery_beat, edms, erp, hrm, inventory, itam, itsm, marketing, notifications, projects, purchase, reporting, sale, sessions, sites, soc, store, support, sysadmin, taggit, tenants, users, website
+Running migrations:
+  Applying accounting.0002_initial... OK
+  Applying store.0003_initial... OK
+  Applying projects.0001_initial... OK
+  Applying crm.0002_initial... OK
+  Applying contracts.0003_initial... OK
+  Applying projects.0002_initial... OK
+  Applying hrm.0002_initial...

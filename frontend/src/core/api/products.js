@@ -1,7 +1,7 @@
-import crmManifest from '../pages/crm/manifest';
-import erpManifest from '../pages/erp/manifest';
-import storeManifest from '../pages/store/manifest';
-import socManifest from '../pages/soc/manifest';
+import crmManifest from '../../features/hrm/manifest';
+import erpManifest from '../../features/hrm/manifest';
+import storeManifest from '../../features/hrm/manifest';
+import socManifest from '../../features/hrm/manifest';
 
 export const products = [
     crmManifest,

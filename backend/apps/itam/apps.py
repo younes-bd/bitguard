@@ -1,4 +1,4 @@
-from django.apps import AppConfig
+﻿from django.apps import AppConfig
 
 
 class ItamConfig(AppConfig):
@@ -7,4 +7,5 @@ class ItamConfig(AppConfig):
     verbose_name = 'IT Asset Management'
 
     def ready(self):
-        import apps.itam.signals
+        import apps.itam.infrastructure.signals
+

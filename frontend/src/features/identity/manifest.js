@@ -1,5 +1,5 @@
 import IdentityDashboard from './dashboards/IdentityDashboard';
-import { identityRoutes } from './routes';
+import { identityRoutes } from '../hrm/routes';
 
 export default {
     slug: "identity",

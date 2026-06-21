@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useTenant } from '../../../core/context/TenantContext';
-import CommandCenter from '../pages/CommandCenter';
+import CommandCenter from '../pages/dashboards/CommandCenter';
 
 const DashboardRouter = () => {
     const { tenant, hasProduct } = useTenant();

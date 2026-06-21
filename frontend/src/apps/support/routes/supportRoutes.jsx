@@ -1,14 +1,14 @@
 import { Route } from 'react-router-dom';
-import SupportDashboard from '../pages/SupportDashboard';
-import SlaBreachLog from '../pages/SlaBreachLog';
-import EscalationList from '../pages/EscalationList';
-import KnowledgeBase from '../pages/KnowledgeBase';
-import TicketList from '../pages/TicketList';
-import TicketDetails from '../pages/TicketDetails';
-import TicketCreate from '../pages/TicketCreate';
-import SupportSettings from '../pages/SupportSettings';
-import CustomerTickets from '../pages/CustomerTickets';
-import SlaLiveDashboard from '../pages/SlaLiveDashboard';
+import SupportDashboard from '../pages/dashboards/SupportDashboard';
+import SlaBreachLog from '../pages/lists/SlaBreachLog';
+import EscalationList from '../pages/lists/EscalationList';
+import KnowledgeBase from '../pages/features/KnowledgeBase';
+import TicketList from '../pages/lists/TicketList';
+import TicketDetails from '../pages/details/TicketDetails';
+import TicketCreate from '../pages/features/TicketCreate';
+import SupportSettings from '../pages/settings/SupportSettings';
+import CustomerTickets from '../pages/lists/CustomerTickets';
+import SlaLiveDashboard from '../pages/dashboards/SlaLiveDashboard';
 
 export const supportRoutes = (
     <>

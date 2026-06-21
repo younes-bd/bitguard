@@ -6,7 +6,7 @@ from apps.tenants.models import Tenant
 from apps.contracts.models import SLATier
 from apps.support.models import Ticket
 from apps.approvals.models import ApprovalRequest, ApprovalStep
-from .models import ServiceItem, ServiceRequest
+from .models import ServiceItem, ServiceRequest, ServiceCategory
 from .services import ITSMService
 
 User = get_user_model()
@@ -33,12 +33,14 @@ class ITSMWorkflowTest(TestCase):
             coverage="always_on"
         )
         
+        self.category_cloud = ServiceCategory.objects.create(tenant=self.tenant, name='Cloud', slug='cloud')
+        self.category_id = ServiceCategory.objects.create(tenant=self.tenant, name='Identity', slug='identity')
         self.service_item_auto = ServiceItem.objects.create(
             tenant=self.tenant,
             name="VM Provisioning",
             description="Provision a cloud virtual machine",
             icon="Cloud",
-            category="Cloud",
+            category=self.category_cloud,
             is_active=True,
             sla_tier=self.sla,
             approval_required=False,
@@ -50,7 +52,7 @@ class ITSMWorkflowTest(TestCase):
             name="Database Access",
             description="Request DB client access",
             icon="Database",
-            category="Identity",
+            category=self.category_id,
             is_active=True,
             sla_tier=self.sla,
             approval_required=True,

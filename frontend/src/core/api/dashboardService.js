@@ -45,6 +45,17 @@ export const dashboardService = {
             console.error("Dashboard Activity Error:", error);
             return [];
         }
+    },
+
+    globalSearch: async (query) => {
+        if (!query || query.length < 2) return [];
+        try {
+            const response = await client.get(`dashboard/search/?q=${encodeURIComponent(query)}`);
+            return response.data?.data ?? [];
+        } catch (error) {
+            console.error("Global Search Error:", error);
+            return [];
+        }
     }
 };
 

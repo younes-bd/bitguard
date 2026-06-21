@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import (
+from .domain.models import (
     StoreCustomization, Category, Product, LicenseKey, CustomerProfile,
     Order, OrderItem, OrderTimeline, ShippingSetting, LandingPage, TrackingConfig,
-    AddOn, SubscriptionPlan, Subscription, StoreSetting, PartnerRequest
+    AddOn, SubscriptionPlan, Subscription, StoreSetting, PartnerRequest,
+    Cart, CartItem, Coupon
 )
 
 class LicenseKeyInline(admin.TabularInline):
@@ -72,7 +73,7 @@ class AddOnAdmin(admin.ModelAdmin):
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'billing_cycle', 'is_active')
+    list_display = ('name', 'price_monthly', 'billing_cycle', 'is_active')
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
@@ -87,3 +88,19 @@ class PartnerRequestAdmin(admin.ModelAdmin):
     list_display = ('company_name', 'contact_person', 'status', 'created_at')
     list_filter = ('status',)
     search_fields = ('company_name', 'contact_person', 'email')
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 1
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'session_id', 'created_at', 'updated_at')
+    search_fields = ('user__email', 'session_id')
+    inlines = [CartItemInline]
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount_type', 'amount', 'is_active', 'valid_to')
+    list_filter = ('is_active', 'discount_type')
+    search_fields = ('code',)

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import PortalLayout from '../layouts/PortalLayout';
-import PortalDashboard from '../pages/PortalDashboard';
-import PortalTickets from '../pages/PortalTickets';
-import PortalInvoices from '../pages/PortalInvoices';
-import ClientPortalInvoice from '../pages/ClientPortalInvoice';
+import PortalDashboard from '../pages/dashboards/PortalDashboard';
+import PortalTickets from '../pages/lists/PortalTickets';
+import PortalInvoices from '../pages/lists/PortalInvoices';
+import ClientPortalInvoice from '../pages/details/ClientPortalInvoice';
 
 export const PortalRoutes = (
     <React.Fragment>

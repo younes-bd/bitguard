@@ -37,18 +37,27 @@ class Command(BaseCommand):
         tenant = self._ensure_tenant()
         admin = self._ensure_admin(tenant)
 
-        self._seed_crm(tenant, admin)
-        self._seed_support(tenant, admin)
-        self._seed_billing(tenant, admin)
-        self._seed_soc(tenant, admin)
-        self._seed_hrm(tenant, admin)
-        self._seed_scm(tenant, admin)
-        self._seed_projects(tenant, admin)
-        self._seed_contracts(tenant, admin)
-        self._seed_itam(tenant, admin)
-        self._seed_notifications(tenant, admin)
+        seeders = [
+            ("CRM", self._seed_crm),
+            ("Support", self._seed_support),
+            ("Billing", self._seed_billing),
+            ("SOC", self._seed_soc),
+            ("HRM", self._seed_hrm),
+            ("SCM", self._seed_scm),
+            ("Projects", self._seed_projects),
+            ("Contracts", self._seed_contracts),
+            ("ITAM", self._seed_itam),
+            ("Notifications", self._seed_notifications),
+        ]
+
+        for name, seeder in seeders:
+            try:
+                seeder(tenant, admin)
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f"\n  ⚠️  {name} seeder error (skipped): {e}\n"))
 
         self.stdout.write(self.style.SUCCESS("\n✅  Demo seed complete! Refresh the dashboard to see live data.\n"))
+
 
     # ─────────────────────────────────────────────────────────────────────────
     # Helpers
@@ -60,11 +69,11 @@ class Command(BaseCommand):
     def _ensure_tenant(self):
         from apps.tenants.models import Tenant
         tenant, created = Tenant.objects.get_or_create(
-            domain="demo.bitguard.tech",
-            defaults={"name": "BitGuard Demo Corp", "is_active": True},
+            domain="bitguard.tech",
+            defaults={"name": "BitGuard", "is_active": True},
         )
         if created:
-            self._ok("Created tenant: BitGuard Demo Corp")
+            self._ok("Created tenant: BitGuard")
         else:
             self._ok("Tenant already exists — reusing")
         return tenant
@@ -76,7 +85,6 @@ class Command(BaseCommand):
                 "username": "admin",
                 "is_staff": True,
                 "is_superuser": True,
-                "tenant": tenant,
             },
         )
         if created:
@@ -84,21 +92,21 @@ class Command(BaseCommand):
             user.save()
             self._ok("Created admin user")
         else:
-            # Make sure existing admin is linked to demo tenant
-            if user.tenant is None:
-                user.tenant = tenant
-                user.save(update_fields=["tenant"])
             self._ok("Admin user already exists")
+            
+        from apps.users.models import TenantMembership
+        TenantMembership.objects.get_or_create(user=user, tenant=tenant)
         return user
 
     def _flush(self):
         self.stdout.write(self.style.WARNING("  ⚠️  Flushing demo data…"))
         from apps.crm.models import Client, Deal, Contact, Lead, Activity
         from apps.support.models import Ticket, KnowledgeArticle
-        from apps.billing.models import Plan, Subscription, Invoice
+        from apps.billing.models import Plan, Subscription
+        from apps.accounting.models import Invoice
         from apps.soc.models import Alert, Incident
         from apps.hrm.models import Employee, LeaveRequest
-        from apps.scm.models import PurchaseOrder, InventoryItem
+        from apps.purchase.models import PurchaseOrder, InventoryItem
         from apps.projects.models import Project, Task
         from apps.notifications.models import Notification
 
@@ -220,17 +228,20 @@ class Command(BaseCommand):
 
         for title, priority, status in tickets_data:
             due = now + timedelta(hours=random.choice([4, 8, 24, 48, 72]))
-            Ticket.objects.get_or_create(
-                title=title, tenant=tenant,
-                defaults={
-                    "description": f"User reported: {title}. Requires immediate attention.",
-                    "status": status,
-                    "priority": priority,
-                    "customer": admin,
-                    "assigned_to": admin,
-                    "due_date": due,
-                }
-            )
+            try:
+                Ticket.objects.get_or_create(
+                    title=title, tenant=tenant,
+                    defaults={
+                        "description": f"User reported: {title}. Requires immediate attention.",
+                        "status": status,
+                        "priority": priority,
+                        "customer": admin,
+                        "assigned_to": admin,
+                        "due_date": due,
+                    }
+                )
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f"    Skipped ticket '{title}': {e}"))
         self._ok(f"{len(tickets_data)} tickets")
 
         # Knowledge Articles
@@ -250,7 +261,8 @@ class Command(BaseCommand):
 
     def _seed_billing(self, tenant, admin):
         self.stdout.write("\n  ── Billing")
-        from apps.billing.models import Plan, Subscription, Invoice
+        from apps.billing.models import Plan, Subscription
+        from apps.accounting.models import Invoice
 
         now = timezone.now()
 
@@ -378,10 +390,11 @@ class Command(BaseCommand):
                     "username": email.split("@")[0],
                     "first_name": first,
                     "last_name": last,
-                    "tenant": tenant,
                 }
             )
             # Create employee
+            from apps.users.models import TenantMembership
+            TenantMembership.objects.get_or_create(user=emp_user, tenant=tenant)
             dept, _ = Department.objects.get_or_create(
                 name=departments[i % len(departments)],
                 tenant=tenant
@@ -417,14 +430,15 @@ class Command(BaseCommand):
 
     def _seed_scm(self, tenant, admin):
         self.stdout.write("\n  ── SCM / Procurement")
-        from apps.scm.models import PurchaseOrder, InventoryItem, Vendor
+        from apps.purchase.models import PurchaseOrder, InventoryItem
+        from apps.core.models import Partner
 
         vendors = ["Dell Technologies", "Palo Alto Networks", "CrowdStrike", "Cisco Systems"]
         for i, vendor_name in enumerate(vendors):
-            vendor_obj, _ = Vendor.objects.get_or_create(
+            vendor_obj, _ = Partner.objects.get_or_create(
                 name=vendor_name,
                 tenant=tenant,
-                defaults={"status": "active"}
+                defaults={"is_vendor": True}
             )
             PurchaseOrder.objects.get_or_create(
                 vendor=vendor_obj,

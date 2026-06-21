@@ -1,0 +1,23 @@
+=== TENANTS ===
+ID: cfc72aac-52e3-44fb-847c-5041cbd1bda2 | Domain: 'bitguard.tech' | Name: BitGuard
+ID: 0aff5946-c015-4cc6-9d06-416cdf204651 | Domain: 'demo.bitguard.tech' | Name: BitGuard Demo Corp
+
+=== CLIENTS ===
+Name: Apex Dynamics | Tenant Domain: 'demo.bitguard.tech'
+Name: NovaTech Solutions | Tenant Domain: 'demo.bitguard.tech'
+Name: Pinnacle Financial | Tenant Domain: 'demo.bitguard.tech'
+Name: Meridian Healthcare | Tenant Domain: 'demo.bitguard.tech'
+Name: BlueRidge Consulting | Tenant Domain: 'demo.bitguard.tech'
+Name: Starline Retail | Tenant Domain: 'demo.bitguard.tech'
+Name: Coastal Manufacturing | Tenant Domain: 'demo.bitguard.tech'
+Name: Summit Logistics | Tenant Domain: 'demo.bitguard.tech'
+Name: CyberDyne Systems | Tenant Domain: 'demo.bitguard.tech'
+Name: Massive Dynamic | Tenant Domain: 'demo.bitguard.tech'
+
+=== PARTNERS (Vendors) ===
+Name: Dell Technologies | Type: vendor | Tenant Domain: 'demo.bitguard.tech'
+
+=== TEMPLATES ===
+Name: Odoo Standard Invoice | Tenant Domain: 'demo.bitguard.tech'
+Name: Odoo Professional Quotation | Tenant Domain: 'demo.bitguard.tech'
+Name: Standard Purchase Order | Tenant Domain: 'demo.bitguard.tech'

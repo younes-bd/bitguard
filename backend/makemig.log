@@ -1,0 +1,9 @@
+SystemCheckError: System check identified some issues:
+
+ERRORS:
+fleet.Vehicle.driver: (fields.E300) Field defines a relation with model 'hrm.EmployeeProfile', which is either not installed, or is abstract.
+fleet.Vehicle.driver: (fields.E307) The field fleet.Vehicle.driver was declared with a lazy reference to 'hrm.employeeprofile', but app 'hrm' doesn't provide model 'employeeprofile'.
+fleet.VehicleLog.driver: (fields.E300) Field defines a relation with model 'hrm.EmployeeProfile', which is either not installed, or is abstract.
+fleet.VehicleLog.driver: (fields.E307) The field fleet.VehicleLog.driver was declared with a lazy reference to 'hrm.employeeprofile', but app 'hrm' doesn't provide model 'employeeprofile'.
+pos.POSConfig.company: (fields.E300) Field defines a relation with model 'core.Tenant', which is either not installed, or is abstract.
+pos.POSConfig.company: (fields.E307) The field pos.POSConfig.company was declared with a lazy reference to 'core.tenant', but app 'core' doesn't provide model 'tenant'.
