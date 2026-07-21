@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { erpService } from '../../../../core/api/erpService';
 import { crmService } from '../../../../core/api/crmService';
 import { contractsService } from '../../../../core/api/contractsService';
-import { storeService } from '../../../../core/api/storeService';
+import { ecommerceService } from '../../../../core/api/ecommerceService';
 import { toast } from 'react-hot-toast';
 import { Save, ArrowLeft, FileText, User, Tag, Briefcase, FileSignature } from 'lucide-react';
 import InvoiceLineItems from '../billing/InvoiceLineItems';
@@ -44,7 +44,7 @@ const InvoiceCreate = () => {
                     crmService.getClients(),
                     erpService.getProjects(),
                     contractsService.getContracts(),
-                    storeService.getProducts()
+                    ecommerceService.getProducts()
                 ]);
                 setClients(Array.isArray(clientsRes) ? clientsRes : clientsRes.results || []);
                 setProjects(Array.isArray(projectsRes) ? projectsRes : projectsRes.results || []);

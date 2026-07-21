@@ -6,7 +6,7 @@ components = {
     "campaigns": ["CampaignList", "EmailCampaigns", "SocialCampaigns", "SmsCampaigns"],
     "content": ["ContentCalendar", "ContentLibrary", "PostDrafts", "ApprovalWorkflow"],
     "ai": ["PostGeneration", "BlogGeneration", "TranslationRewriting"],
-    "assets": ["AssetList", "BrandKit", "TemplatesList"],
+    "maintenance": ["AssetList", "BrandKit", "TemplatesList"],
     "social": ["Scheduler", "PublishingQueue", "EngagementMonitor"],
     "video": ["AiVideoGeneration", "ShortsReels"],
     "analytics": ["AnalyticsDashboard", "AudienceGrowth"],

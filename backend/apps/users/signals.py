@@ -1,1 +1,1 @@
-﻿from .infrastructure.signals import *
+from .infrastructure.signals import *

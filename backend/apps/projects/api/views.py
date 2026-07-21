@@ -2,11 +2,24 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Count, Q
-from ..domain.models import Project, Task, Milestone, TimeLog
+from ..domain.models import Project, Task, Milestone, TimeLog, Sprint, TaskTag
 from ..api.serializers import (
     ProjectListSerializer, ProjectDetailSerializer,
-    TaskSerializer, MilestoneSerializer, TimeLogSerializer
+    TaskSerializer, MilestoneSerializer, TimeLogSerializer,
+    SprintSerializer, TaskTagSerializer
 )
+
+class SprintViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SprintSerializer
+    def get_queryset(self):
+        return Sprint.objects.filter(tenant=self.request.user.tenant)
+
+class TaskTagViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = TaskTagSerializer
+    def get_queryset(self):
+        return TaskTag.objects.filter(tenant=self.request.user.tenant)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -171,3 +184,38 @@ class TimeLogViewSet(viewsets.ModelViewSet):
         if project_id:
             qs = qs.filter(task__project_id=project_id)
         return qs
+
+    @action(detail=True, methods=['post'])
+    def bill(self, request, pk=None):
+        from apps.accounting.domain.models import Invoice, InvoiceLine
+        from django.utils import timezone
+        
+        log = self.get_object()
+        if log.billed:
+            return Response({'error': 'Time log is already billed.'}, status=400)
+            
+        project = log.task.project
+        # Find or create draft invoice for this project/client
+        invoice = Invoice.objects.filter(
+            tenant=log.tenant, reference=f"PROJECT-{project.id}", status='draft'
+        ).first() or Invoice.objects.create(
+            tenant=log.tenant, client=project.client, status='draft',
+            issue_date=timezone.now().date(), reference=f"PROJECT-{project.id}",
+            created_by=request.user
+        )
+        InvoiceLine.objects.create(
+            tenant=log.tenant, invoice=invoice, description=f"[{project.name}] {log.description}",
+            quantity=log.hours, unit_price=project.hourly_rate or 0,
+            subtotal=(log.hours * (project.hourly_rate or 0))
+        )
+        log.billed = True
+        log.save()
+        return Response({'invoice_id': invoice.id})
+
+from ..domain.models import TaskTimesheet
+from .serializers import TaskTimesheetSerializer
+
+class TaskTimesheetViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = TaskTimesheetSerializer
+    def get_queryset(self): return TaskTimesheet.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else TaskTimesheet.objects.all()

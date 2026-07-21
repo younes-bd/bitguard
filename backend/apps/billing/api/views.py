@@ -177,8 +177,8 @@ class StripeWebhookView(View):
                     
             elif data.get('metadata', {}).get('type') == 'product':
                 try:
-                    from apps.store.models import Order
-                    from apps.store.services import CommerceService
+                    from apps.ecommerce.domain.models import Order
+                    from apps.ecommerce.services import CommerceService
                     # In CommerceService, we set payment_intent_id = session.id
                     # The session ID in stripe data is data.get('id')
                     session_id = data.get('id')

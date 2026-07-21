@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contracts', '0003_initial'),
-        ('store', '0003_initial'),
+        ('ecommerce', '0003_initial'),
         ('support', '0002_initial'),
         ('tenants', '0002_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 ('approval_required', models.BooleanField(default=False)),
                 ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='services.servicecategory')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
-                ('linked_product', models.ForeignKey(blank=True, help_text='Link to Master Catalog for billable tickets', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='itsm_services', to='store.product')),
+                ('linked_product', models.ForeignKey(blank=True, help_text='Link to Master Catalog for billable tickets', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='itsm_services', to='ecommerce.product')),
                 ('service_owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='owned_services', to=settings.AUTH_USER_MODEL)),
                 ('sla_tier', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='service_items', to='contracts.slatier')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),

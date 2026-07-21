@@ -144,7 +144,7 @@ Both modules were deeply audited against Odoo Documents, Odoo QWeb Reports, and 
 ##### [MODIFY] frontend/src/apps/reporting/pages/dashboards/ReportingDashboard.jsx
 - Replace static cards with live KPIs: total templates, PDFs generated this month, last generated report.
 
-##### [MODIFY] frontend/src/apps/dashboard/routes/EnterpriseRouter.jsx
+##### [MODIFY] frontend/src/apps/board/routes/EnterpriseRouter.jsx
 - Register `<Route path="generated" element={<GeneratedDocuments />} />`
 - Register `<Route path="settings" element={<ReportingSettings />} />`
 

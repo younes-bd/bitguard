@@ -1,16 +1,16 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Puzzle, Check, ExternalLink, Loader2 } from 'lucide-react';
 import { marketingService } from '../../../../core/api/marketingService';
 
 const MOCK_INTEGRATIONS = [
-    { name: 'Google Analytics', description: 'Track website traffic and campaign attribution', connected: true, icon: 'ðŸ“Š' },
-    { name: 'Mailchimp', description: 'Email marketing automation and subscriber management', connected: false, icon: 'ðŸ“§' },
-    { name: 'HubSpot', description: 'Inbound marketing and lead scoring', connected: false, icon: 'ðŸŸ ' },
-    { name: 'Facebook Ads', description: 'Social media advertising and retargeting', connected: true, icon: 'ðŸ“˜' },
-    { name: 'Google Ads', description: 'Search and display advertising campaigns', connected: false, icon: 'ðŸ”' },
-    { name: 'LinkedIn Ads', description: 'B2B advertising and sponsored content', connected: false, icon: 'ðŸ”—' },
-    { name: 'Zapier', description: 'Workflow automation between marketing tools', connected: true, icon: 'âš¡' },
-    { name: 'Slack', description: 'Team notifications for campaign events', connected: true, icon: 'ðŸ’¬' },
+    { name: 'Google Analytics', description: 'Track website traffic and campaign attribution', connected: true, icon: '📊' },
+    { name: 'Mailchimp', description: 'Mass Mailing automation and subscriber management', connected: false, icon: '📧' },
+    { name: 'HubSpot', description: 'Inbound marketing and lead scoring', connected: false, icon: '🟠' },
+    { name: 'Facebook Ads', description: 'Social media advertising and retargeting', connected: true, icon: '📘' },
+    { name: 'Google Ads', description: 'Search and display advertising campaigns', connected: false, icon: '🔍' },
+    { name: 'LinkedIn Ads', description: 'B2B advertising and sponsored content', connected: false, icon: '🔗' },
+    { name: 'Zapier', description: 'Workflow automation between marketing tools', connected: true, icon: '⚡' },
+    { name: 'Slack', description: 'Team notifications for campaign events', connected: true, icon: '💬' },
 ];
 
 const MarketingIntegrations = () => {

@@ -5,7 +5,7 @@ django.setup()
 
 from django.test import Client
 from apps.users.domain.models import User
-from apps.tenants.models import Tenant
+from apps.tenants.domain.models import Tenant
 from rest_framework_simplejwt.tokens import RefreshToken
 
 tenant = Tenant.objects.first()

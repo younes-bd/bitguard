@@ -10,7 +10,7 @@ const controlService = {
      * Section 19 (Observability).
      */
     getSystemHealth: async () => {
-        const response = await client.get('dashboard/health/');
+        const response = await client.get('board/health/');
         return response.data?.data ?? response.data ?? {};
     },
 
@@ -18,7 +18,7 @@ const controlService = {
      * Retrieves platform policy configuration.
      */
     updatePolicy: async (policyData) => {
-        const response = await client.patch('sysadmin/policy/', policyData);
+        const response = await client.patch('base_setup/settings/', policyData);
         return response.data?.data ?? response.data ?? {};
     }
 };

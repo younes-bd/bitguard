@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { 
     Building2, User, CreditCard, ShieldCheck, Database, Server, CheckCircle2,
     ChevronRight, ChevronLeft, ArrowRight, Activity, Globe, Package

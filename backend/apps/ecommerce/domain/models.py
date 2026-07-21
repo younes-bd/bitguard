@@ -1,0 +1,285 @@
+from django.db import models
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+from apps.core.models import TenantAwareModel
+
+class StoreCustomization(models.Model):
+    tenant = models.OneToOneField('tenants.Tenant', on_delete=models.CASCADE, related_name='store_customization', null=True, blank=True)
+    active_theme = models.CharField(max_length=50, default='default')
+    logo_url = models.URLField(blank=True)
+    layout_json = models.JSONField(default=dict, blank=True)
+    navigation_json = models.JSONField(default=dict, blank=True)
+
+    def __str__(self):
+        return f"Store Customization ({self.tenant})"
+
+class Category(models.Model):
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='categories', null=True, blank=True)
+    website = models.ForeignKey('website.Website', on_delete=models.CASCADE, null=True, blank=True, related_name='store_categories')
+    parent_category = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories')
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    is_visible = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class Product(models.Model):
+    TYPE_CHOICES = [
+        ('digital', 'Digital Download'),
+        ('physical', 'Physical Hardware'),
+        ('subscription', 'Subscription/Service'),
+        ('service_bundle', 'Service Bundle'),
+        ('service', 'Professional Service'),
+    ]
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('active', 'Active'),
+        ('archived', 'Archived'),
+    ]
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='products', null=True, blank=True)
+    website = models.ForeignKey('website.Website', on_delete=models.CASCADE, null=True, blank=True, related_name='store_products')
+    description = models.TextField(blank=True)
+    product_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='digital')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    sku = models.CharField(max_length=100, blank=True, null=True)
+    stripe_price_id = models.CharField(max_length=100, blank=True, help_text="Stripe Price ID for Checkout")
+    file = models.FileField(upload_to='products/', null=True, blank=True)
+    image = models.ImageField(upload_to='products/images/', null=True, blank=True)
+    brand = models.CharField(max_length=100, blank=True, help_text="Hardware or software vendor (e.g., Cisco, Microsoft)")
+    vendor = models.CharField(max_length=100, blank=True, help_text="Distributor (e.g., Ingram Micro, TD SYNNEX)")
+    weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Weight for shipping calculations")
+    dimensions = models.CharField(max_length=100, blank=True, help_text="L x W x H for shipping")
+    warranty_months = models.IntegerField(default=12, help_text="Warranty period in months")
+    license_type = models.CharField(max_length=50, blank=True, help_text="Perpetual, Subscription, Trial, OEM")
+    delivery_type = models.CharField(max_length=50, choices=[('instant', 'Instant Download'), ('email', 'Email Delivery'), ('shipping', 'Physical Shipping')], default='instant')
+    min_quantity = models.IntegerField(default=1, help_text="Minimum B2B order quantity")
+    max_quantity = models.IntegerField(null=True, blank=True, help_text="Maximum B2B order quantity")
+    is_featured = models.BooleanField(default=False)
+    sort_order = models.IntegerField(default=0)
+    specifications = models.JSONField(default=dict, blank=True, help_text="Hardware specs (CPU, RAM, Storage)")
+    features = models.JSONField(default=list, blank=True, help_text="List of features")
+    stock_quantity = models.IntegerField(default=0, help_text="Available stock")
+    track_stock = models.BooleanField(default=False, help_text="Auto-decrement stock on sale?")
+    is_active = models.BooleanField(default=True) # Deprecated in favor of status
+    
+    # Rental Support (Odoo Parity)
+    is_rental = models.BooleanField(default=False, help_text="Can this product be rented?")
+    rental_pricing = models.JSONField(default=dict, blank=True, help_text="e.g. {'hourly': 10, 'daily': 50, 'weekly': 200, 'monthly': 600}")
+    
+    # Financial & ERP Accounting Integration
+    unit_label = models.CharField(max_length=50, default='unit', help_text="e.g. hour, month, unit, license")
+    tax_config = models.ForeignKey('accounting.TaxConfig', on_delete=models.SET_NULL, null=True, blank=True, related_name='store_products')
+    income_account = models.ForeignKey('accounting.Account', on_delete=models.SET_NULL, null=True, blank=True, related_name='store_income_products', help_text="CoA account to credit on sale")
+    expense_account = models.ForeignKey('accounting.Account', on_delete=models.SET_NULL, null=True, blank=True, related_name='store_expense_products', help_text="CoA account to debit on purchase")
+    
+    # Advanced Commerce
+    categories = models.ManyToManyField(Category, blank=True, related_name='products')
+    components = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='bundles')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def is_bundle(self):
+        return self.product_type == 'service_bundle'
+
+    def __str__(self):
+        return self.name
+
+
+class ProductAttribute(models.Model):
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='product_attributes', null=True, blank=True)
+    name = models.CharField(max_length=100, help_text="e.g. Color, Size, Material")
+    
+    def __str__(self):
+        return self.name
+
+class ProductAttributeValue(models.Model):
+    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE, related_name='values')
+    value = models.CharField(max_length=100, help_text="e.g. Red, XL, Cotton")
+    
+    def __str__(self):
+        return f"{self.attribute.name}: {self.value}"
+
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
+    attribute_values = models.ManyToManyField(ProductAttributeValue, related_name='variants')
+    sku = models.CharField(max_length=100, blank=True, null=True)
+    price_extra = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Additional cost for this variant")
+    stock_quantity = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='products/variants/', null=True, blank=True)
+    
+    def __str__(self):
+        variant_name = " - ".join([v.value for v in self.attribute_values.all()])
+        return f"{self.product.name} ({variant_name})"
+
+class LicenseKey(models.Model):
+    """
+    License keys for digital software products.
+    """
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='licenses')
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='licenses', null=True, blank=True)
+    key = models.CharField(max_length=200, unique=True)
+    is_used = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='licenses')
+    assigned_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.key
+
+class CustomerProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='store_customer_profile')
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='customers', null=True, blank=True)
+    phone = models.CharField(max_length=50, blank=True)
+    address = models.TextField(blank=True)
+    status = models.CharField(max_length=50, default='active')
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Customer: {self.user.username}"
+
+class Order(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='store_orders')
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='store_orders', null=True, blank=True)
+    website = models.ForeignKey('website.Website', on_delete=models.CASCADE, null=True, blank=True, related_name='store_orders_website')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    variant = models.ForeignKey(ProductVariant, on_delete=models.SET_NULL, null=True, blank=True) # Legacy 1:1 format, keeping for backwards compatibility
+    invoice = models.ForeignKey('accounting.Invoice', on_delete=models.SET_NULL, null=True, blank=True, related_name='store_orders')
+    status = models.CharField(max_length=50, default='pending')
+    payment_status = models.CharField(max_length=50, default='pending')
+    fulfillment_status = models.CharField(max_length=50, default='unfulfilled')
+    payment_intent_id = models.CharField(max_length=100, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Order #{self.id}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    variant = models.ForeignKey(ProductVariant, on_delete=models.SET_NULL, null=True, blank=True)
+    quantity = models.IntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    options = models.JSONField(default=dict, blank=True)
+
+    def __str__(self):
+        return f"{self.quantity}x {self.product.name if self.product else 'Deleted Product'} (Order #{self.order.id})"
+
+class OrderTimeline(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='timeline')
+    state = models.CharField(max_length=50)
+    note = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class ShippingSetting(models.Model):
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='shipping_settings', null=True, blank=True)
+    zone_name = models.CharField(max_length=100)
+    rate = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    delivery_methods = models.JSONField(default=list, blank=True)
+    tracking_integration = models.JSONField(default=dict, blank=True)
+
+
+
+class TrackingConfig(models.Model):
+    tenant = models.OneToOneField('tenants.Tenant', on_delete=models.CASCADE, related_name='tracking_config', null=True, blank=True)
+    facebook_pixel_id = models.CharField(max_length=100, blank=True)
+    google_analytics_id = models.CharField(max_length=100, blank=True)
+    conversion_mapping = models.JSONField(default=dict, blank=True)
+
+class AddOn(models.Model):
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='addons', null=True, blank=True)
+    name = models.CharField(max_length=100)
+    provider = models.CharField(max_length=100)
+    is_enabled = models.BooleanField(default=False)
+    config_json = models.JSONField(default=dict, blank=True)
+
+class SubscriptionPlan(models.Model):
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='subscription_plans', null=True, blank=True)
+    name = models.CharField(max_length=100)
+    billing_cycle = models.CharField(max_length=50, choices=[('monthly', 'Monthly'), ('yearly', 'Yearly')], null=True, blank=True)
+    price_monthly = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    price_yearly = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    trial_days = models.IntegerField(default=0)
+    features = models.JSONField(default=list, blank=True)
+    is_active = models.BooleanField(default=True)
+
+class Subscription(models.Model):
+    customer = models.ForeignKey(CustomerProfile, on_delete=models.CASCADE, related_name='subscriptions')
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.RESTRICT)
+    status = models.CharField(max_length=50, default='active')
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+    next_renewal_date = models.DateTimeField(null=True, blank=True)
+
+class StoreSetting(models.Model):
+    tenant = models.OneToOneField('tenants.Tenant', on_delete=models.CASCADE, related_name='store_settings', null=True, blank=True)
+    currency = models.CharField(max_length=10, default='USD')
+    tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    email_templates = models.JSONField(default=dict, blank=True)
+    policies = models.JSONField(default=dict, blank=True)
+    api_keys = models.JSONField(default=dict, blank=True)
+
+class PartnerRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    company_name = models.CharField(max_length=255)
+    contact_person = models.CharField(max_length=255)
+    email = models.EmailField()
+    interest_areas = models.JSONField(default=list)
+    notes = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.company_name} ({self.status})"
+
+class Coupon(TenantAwareModel):
+    code = models.CharField(max_length=50, unique=True)
+    discount_type = models.CharField(max_length=20, choices=[('percentage', 'Percentage'), ('fixed', 'Fixed Amount')])
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active = models.BooleanField(default=True)
+    valid_from = models.DateTimeField(null=True, blank=True)
+    valid_to = models.DateTimeField(null=True, blank=True)
+    usage_limit = models.IntegerField(null=True, blank=True)
+    times_used = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return self.code
+
+class Cart(TenantAwareModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='carts')
+    session_id = models.CharField(max_length=255, null=True, blank=True)
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Cart {self.pk} (User: {self.user})"
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variant = models.ForeignKey(ProductVariant, on_delete=models.SET_NULL, null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1)
+    
+    def __str__(self):
+        return f"{self.quantity}x {self.product.name}"
+
+
+class PaymentProvider(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+    provider_type = models.CharField(max_length=50, choices=[('stripe', 'Stripe'), ('paypal', 'PayPal'), ('wire', 'Wire Transfer')])
+    website = models.ForeignKey('website.Website', on_delete=models.CASCADE, null=True, blank=True)

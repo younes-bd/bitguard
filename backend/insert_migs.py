@@ -8,13 +8,13 @@ c = conn.cursor()
 now = datetime.now().isoformat()
 
 migrations = [
-    ('assets', '0001_initial'),
+    ('maintenance', '0001_initial'),
     ('services', '0001_initial'),
     ('cms', '0001_initial'),
     ('cms', '0002_initial'),
     ('notifications', '0001_initial'),
-    ('support', '0001_initial'),
-    ('support', '0002_initial'),
+    ('helpdesk', '0001_initial'),
+    ('helpdesk', '0002_initial'),
 ]
 
 for app, name in migrations:

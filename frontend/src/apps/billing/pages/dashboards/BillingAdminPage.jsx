@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, CheckCircle, XCircle, Calendar, RefreshCw, ExternalLink, Pause, Play, Trash2 } from 'lucide-react';
 import { billingService } from '../../../../core/api/billingService';
 

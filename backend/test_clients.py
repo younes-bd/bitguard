@@ -6,6 +6,6 @@ django.setup()
 from apps.crm.domain.models import Client
 print('Clients:', Client.objects.count())
 
-from apps.tenants.models import Tenant
+from apps.tenants.domain.models import Tenant
 tenant = Tenant.objects.get(id='cfc72aac-52e3-44fb-847c-5041cbd1bda2')
 print("Clients for tenant:", Client.objects.filter(tenant=tenant).count())

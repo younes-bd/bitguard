@@ -17,7 +17,7 @@ import {
     Calendar,
     Search
 } from 'lucide-react';
-import { storeService } from '../../../../core/api/storeService';
+import { ecommerceService } from '../../../../core/api/ecommerceService';
 
 const ClientTab = ({ label, icon: Icon, isActive, onClick }) => (
     <button
@@ -90,7 +90,7 @@ const AssetsTab = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const licRes = await storeService.getLicenses();
+                const licRes = await ecommerceService.getLicenses();
                 // Filter only active licenses if needed
                 setLicenses(licRes || []);
             } catch (err) {
@@ -191,7 +191,7 @@ const OrdersTab = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const res = await storeService.getOrders();
+                const res = await ecommerceService.getOrders();
                 setOrders(res || []);
             } catch (err) {
                 console.error("Failed to fetch orders", err);

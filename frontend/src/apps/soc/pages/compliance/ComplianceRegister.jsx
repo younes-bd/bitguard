@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Plus, Search, FileText, CheckCircle, AlertTriangle, XCircle, User } from 'lucide-react';
 import client from '../../../../core/api/client';
 import toast from 'react-hot-toast';

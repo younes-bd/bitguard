@@ -24,9 +24,17 @@ export const projectsService = {
     createMilestone: (data) => client.post(`${base}/milestones/`, data).then(r => r.data),
     completeMilestone: (id) => client.post(`${base}/milestones/${id}/complete/`).then(r => r.data),
 
-    // Time Logs
+    // Time Logs & Timesheets
     getTimeLogs: (params = {}) => client.get(`${base}/time-logs/`, { params }).then(r => r.data?.results ?? r.data ?? []),
     logTime: (data) => client.post(`${base}/time-logs/`, data).then(r => r.data),
+    billTimeLog: (id) => client.post(`${base}/time-logs/${id}/bill/`).then(r => r.data),
+    getTaskTimesheets: (params = {}) => client.get(`${base}/task-timesheets/`, { params }).then(r => r.data?.results ?? r.data ?? []),
+
+    // Sprints & Tags
+    getSprints: (params = {}) => client.get(`${base}/sprints/`, { params }).then(r => r.data?.results ?? r.data ?? []),
+    createSprint: (data) => client.post(`${base}/sprints/`, data).then(r => r.data),
+    getTaskTags: (params = {}) => client.get(`${base}/task-tags/`, { params }).then(r => r.data?.results ?? r.data ?? []),
+
     // Team
     getMembers: (projectId) => client.get(`${base}/projects/${projectId}/members/`).then(r => r.data),
     addMember: (projectId, userId) => client.post(`${base}/projects/${projectId}/add_member/`, { user_id: userId }).then(r => r.data),

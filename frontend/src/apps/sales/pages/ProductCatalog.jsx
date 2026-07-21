@@ -22,7 +22,7 @@ const ProductCatalog = () => {
             setLoading(true);
             const [prodRes, taxRes] = await Promise.all([
                 api.get('/store/products/'),
-                api.get('/erp/taxes/') // assuming this exists, fallback if not
+                api.get('/accounting/taxes/')
             ]);
             setProducts(prodRes.data.data || prodRes.data);
             setTaxes(taxRes.data.data || taxRes.data || []);

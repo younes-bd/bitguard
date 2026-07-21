@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('crm', '0002_initial'),
-        ('store', '0003_initial'),
+        ('ecommerce', '0003_initial'),
         ('tenants', '0002_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('price_subtotal', models.DecimalField(decimal_places=2, default=0, max_digits=12)),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
                 ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lines', to='sale.saleorder')),
-                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='store.product')),
+                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='ecommerce.product')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),
             ],
             options={

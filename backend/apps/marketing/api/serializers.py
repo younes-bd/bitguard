@@ -18,3 +18,30 @@ class CampaignSerializer(serializers.ModelSerializer):
             'interactions_count'
         ]
         read_only_fields = ['id', 'tenant', 'created_by', 'created_at', 'updated_at', 'interactions_count']
+
+from ..domain.models import MassMailing, SocialPost, SMSCampaign, Event, Survey
+
+class MassMailingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MassMailing
+        fields = '__all__'
+
+class SocialPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SocialPost
+        fields = '__all__'
+
+class SMSCampaignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMSCampaign
+        fields = '__all__'
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
+
+class SurveySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Survey
+        fields = '__all__'

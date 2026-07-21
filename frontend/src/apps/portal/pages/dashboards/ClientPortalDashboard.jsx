@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import client from '../../../../core/api/client';
-import { Ticket, FileText, Briefcase, Activity, AlertCircle, Clock, CheckCircle2, Cloud, ShieldCheck, Server } from 'lucide-react';
+import { Ticket, FileText, Briefcase, Activity, AlertCircle, Clock, CheckCircle2, Cloud, ShieldCheck, Server, ShoppingCart, Target, User } from 'lucide-react';
 
 const ClientPortalDashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
@@ -45,10 +45,20 @@ const ClientPortalDashboard = () => {
         );
     }
 
-    const { client: clientProfile, tickets, invoices, projects, tenants, contracts } = dashboardData;
+    const { 
+        client: clientProfile, 
+        counts, 
+        recent_invoices, 
+        recent_tickets, 
+        recent_orders,
+        recent_projects,
+        open_invoices,
+        open_tickets,
+        active_contracts
+    } = dashboardData;
 
     return (
-        <div className="p-8 space-y-8 animate-in fade-in duration-500">
+        <div className="p-8 space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -70,128 +80,134 @@ const ClientPortalDashboard = () => {
                 </div>
             </div>
 
-            {/* Top Summaries */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <div className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm">
+            {/* Odoo-style Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <Link to="/portal/orders" className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div className="flex items-center justify-between mb-3">
-                        <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 border border-blue-500/20">
-                            <Ticket className="w-5 h-5" />
+                        <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-500 border border-indigo-500/20 group-hover:scale-110 transition-transform">
+                            <ShoppingCart className="w-5 h-5" />
                         </div>
-                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{tickets?.length || 0}</span>
+                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{counts?.orders || 0}</span>
                     </div>
-                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Support Tickets</h4>
-                </div>
-                
-                <div className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm">
+                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Sale Orders</h4>
+                </Link>
+
+                <Link to="/portal/invoices" className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div className="flex items-center justify-between mb-3">
-                        <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                        <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 border border-emerald-500/20 group-hover:scale-110 transition-transform">
                             <FileText className="w-5 h-5" />
                         </div>
-                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{invoices?.filter(i => i.status !== 'paid').length || 0}</span>
+                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{counts?.invoices || 0}</span>
                     </div>
-                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Unpaid Invoices</h4>
-                </div>
-
-                <div className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm">
+                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Invoices</h4>
+                    {open_invoices > 0 && <p className="text-xs text-red-400 mt-1">{open_invoices} to pay</p>}
+                </Link>
+                
+                <Link to="/portal/tickets" className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div className="flex items-center justify-between mb-3">
-                        <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500 border border-purple-500/20">
+                        <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                            <Ticket className="w-5 h-5" />
+                        </div>
+                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{counts?.tickets || 0}</span>
+                    </div>
+                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Support Tickets</h4>
+                    {open_tickets > 0 && <p className="text-xs text-amber-500 mt-1">{open_tickets} open</p>}
+                </Link>
+
+                <Link to="/portal/projects" className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500 border border-purple-500/20 group-hover:scale-110 transition-transform">
                             <Briefcase className="w-5 h-5" />
                         </div>
-                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{projects?.length || 0}</span>
+                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{counts?.projects || 0}</span>
                     </div>
-                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Deployments</h4>
-                </div>
+                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Projects</h4>
+                </Link>
 
-                <div className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm">
+                <Link to="/portal/subscriptions" className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div className="flex items-center justify-between mb-3">
-                        <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-500 border border-cyan-500/20">
+                        <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-500 border border-cyan-500/20 group-hover:scale-110 transition-transform">
                             <Cloud className="w-5 h-5" />
                         </div>
-                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{tenants?.length || 0}</span>
+                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{counts?.subscriptions || 0}</span>
                     </div>
-                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Workspaces</h4>
-                </div>
+                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Subscriptions</h4>
+                </Link>
 
-                <div className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm">
+                <Link to="/portal/contracts" className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div className="flex items-center justify-between mb-3">
-                        <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 border border-amber-500/20">
+                        <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 border border-amber-500/20 group-hover:scale-110 transition-transform">
                             <ShieldCheck className="w-5 h-5" />
                         </div>
-                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{contracts?.length || 0}</span>
+                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{counts?.contracts || 0}</span>
                     </div>
                     <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Contracts</h4>
-                </div>
+                    {active_contracts > 0 && <p className="text-xs text-emerald-500 mt-1">{active_contracts} active</p>}
+                </Link>
+
+                <Link to="/portal/assets" className="dark:bg-slate-800/50 bg-white border dark:border-slate-700/50 border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="w-10 h-10 bg-teal-500/10 rounded-xl flex items-center justify-center text-teal-500 border border-teal-500/20 group-hover:scale-110 transition-transform">
+                            <Target className="w-5 h-5" />
+                        </div>
+                        <span className="text-2xl font-extrabold dark:text-white text-slate-900">{counts?.assets || 0}</span>
+                    </div>
+                    <h4 className="dark:text-slate-400 text-slate-500 text-sm font-medium">Managed Assets</h4>
+                </Link>
             </div>
 
-            {/* SaaS Tenants & Cloud Workspaces */}
-            <div className="dark:bg-slate-900/50 bg-white border dark:border-slate-800 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                <div className="p-6 border-b dark:border-slate-800 border-slate-100 flex justify-between items-center">
-                    <h3 className="font-bold dark:text-white text-slate-900 flex items-center gap-2">
-                        <Cloud className="w-5 h-5 text-cyan-500" /> Cloud Workspaces
-                    </h3>
-                </div>
-                <div className="p-6">
-                    {tenants?.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {tenants.map((tenant, i) => (
-                                <div key={i} className="dark:bg-slate-800/40 bg-slate-50 border dark:border-slate-700/50 border-slate-200 rounded-xl p-5 dark:hover:border-blue-500/30 hover:border-blue-500/30 transition-all">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <h4 className="font-bold text-lg dark:text-white text-slate-900">{tenant.name}</h4>
-                                            <p className="dark:text-slate-400 text-slate-500 text-sm mt-1">{tenant.domain}</p>
-                                        </div>
-                                        <span className={`px-3 py-1 rounded text-xs font-bold uppercase ${tenant.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
-                                            {tenant.is_active ? 'Active' : 'Suspended'}
-                                        </span>
-                                    </div>
-                                    <div className="mt-4 flex flex-wrap gap-2">
-                                        {tenant.allowed_modules && tenant.allowed_modules.map((mod, idx) => (
-                                            <span key={idx} className="px-2 py-1 dark:bg-slate-700/50 bg-slate-200 dark:text-slate-300 text-slate-700 text-xs rounded dark:border-slate-600 border-slate-300">
-                                                {mod}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <div className="mt-4 pt-4 border-t dark:border-slate-700/50 border-slate-200 flex justify-between items-center">
-                                        <span className="text-xs dark:text-slate-400 text-slate-500 uppercase font-bold tracking-wider">Plan: <span className="dark:text-white text-slate-900">{tenant.subscription_plan}</span></span>
-                                        <a href={`https://${tenant.domain}.bitguard.app`} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:text-blue-400 flex items-center gap-1 font-bold">
-                                            Console â†’
-                                        </a>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="p-8 text-center dark:text-slate-500 text-slate-400 flex flex-col items-center">
-                            <Server className="w-12 h-12 mb-3 opacity-20" />
-                            <p>You have no active Cloud Workspaces.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Detailed Lists */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Tickets Sector */}
+            {/* Detailed Lists - Recent items mapped side by side */}
+            <div className=" grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                {/* Your Details Sector (Odoo Parity) */}
                 <div className="dark:bg-slate-900/50 bg-white border dark:border-slate-800 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                     <div className="p-6 border-b dark:border-slate-800 border-slate-100 flex justify-between items-center">
                         <h3 className="font-bold dark:text-white text-slate-900 flex items-center gap-2">
-                            <Ticket className="w-5 h-5 text-blue-500" /> Recent Tickets
+                            <User className="w-5 h-5 text-blue-500" /> Your Details
+                        </h3>
+                        <Link to="/portal/account" className="text-sm text-blue-500 hover:text-blue-400 font-medium">
+                            Edit Account
+                        </Link>
+                    </div>
+                    <div className="p-6 space-y-4">
+                        <div>
+                            <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Name</div>
+                            <div className="font-medium text-slate-200">{clientProfile?.name || 'Not provided'}</div>
+                        </div>
+                        <div>
+                            <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Email</div>
+                            <div className="font-medium text-slate-200">{clientProfile?.email || 'Not provided'}</div>
+                        </div>
+                        <div>
+                            <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Company / Tenant</div>
+                            <div className="font-medium text-slate-200">{clientProfile?.tenant_name || 'BitGuard Platform'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sale Orders Sector */}
+                <div className="dark:bg-slate-900/50 bg-white border dark:border-slate-800 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="p-6 border-b dark:border-slate-800 border-slate-100 flex justify-between items-center">
+                        <h3 className="font-bold dark:text-white text-slate-900 flex items-center gap-2">
+                            <ShoppingCart className="w-5 h-5 text-indigo-500" /> Recent Orders & Quotes
                         </h3>
                     </div>
                     <div className="p-0">
-                        {tickets?.length > 0 ? (
+                        {recent_orders?.length > 0 ? (
                             <ul className="divide-y dark:divide-slate-800 divide-slate-100">
-                                {tickets.slice(0, 5).map((t, i) => (
-                                    <li key={i} className="p-6 dark:hover:bg-slate-800/30 hover:bg-slate-50 transition-colors">
-                                        <div className="flex justify-between mb-2">
-                                            <span className="font-bold dark:text-white text-slate-900 truncate pr-4">{t.summary}</span>
-                                            <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${t.status === 'open' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>
-                                                {t.status}
-                                            </span>
+                                {recent_orders.map((order, i) => (
+                                    <li key={i} className="p-6 dark:hover:bg-slate-800/30 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                        <div>
+                                            <div className="font-bold dark:text-white text-slate-900 font-mono mb-1">{order.number}</div>
+                                            <div className="text-xs dark:text-slate-500 text-slate-400">
+                                                Date: {new Date(order.date).toLocaleDateString()}
+                                            </div>
                                         </div>
-                                        <div className="flex items-center text-xs dark:text-slate-500 text-slate-400 gap-4">
-                                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(t.created_at).toLocaleDateString()}</span>
-                                            <span className="capitalize text-slate-400 flex items-center gap-1">Priority: {t.priority}</span>
+                                        <div className="text-right">
+                                            <div className="font-bold text-lg dark:text-white text-slate-900">${parseFloat(order.amount).toLocaleString()}</div>
+                                            <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${order.status === 'done' || order.status === 'sale' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'}`}>
+                                                {order.status}
+                                            </span>
                                         </div>
                                     </li>
                                 ))}
@@ -199,7 +215,7 @@ const ClientPortalDashboard = () => {
                         ) : (
                             <div className="p-8 text-center dark:text-slate-500 text-slate-400 flex flex-col items-center">
                                 <CheckCircle2 className="w-12 h-12 mb-3 opacity-20" />
-                                <p>No active support tickets. You're all caught up!</p>
+                                <p>No recent orders found.</p>
                             </div>
                         )}
                     </div>
@@ -213,20 +229,19 @@ const ClientPortalDashboard = () => {
                         </h3>
                     </div>
                     <div className="p-0">
-                        {invoices?.length > 0 ? (
+                        {recent_invoices?.length > 0 ? (
                             <ul className="divide-y dark:divide-slate-800 divide-slate-100">
-                                {invoices.slice(0, 5).map((inv, i) => (
+                                {recent_invoices.map((inv, i) => (
                                     <li key={i} className="p-6 dark:hover:bg-slate-800/30 hover:bg-slate-50 transition-colors flex justify-between items-center">
                                         <div>
-                                            <div className="font-bold dark:text-white text-slate-900 font-mono mb-1">{inv.invoice_number}</div>
+                                            <div className="font-bold dark:text-white text-slate-900 font-mono mb-1">{inv.number}</div>
                                             <div className="text-xs dark:text-slate-500 text-slate-400 flex items-center gap-2">
-                                                <span>Issued: {new Date(inv.issued_date).toLocaleDateString()}</span>
-                                                <span className={`${inv.status === 'overdue' ? 'text-red-500' : ''}`}>Due: {new Date(inv.due_date).toLocaleDateString()}</span>
+                                                <span>Issued: {new Date(inv.date).toLocaleDateString()}</span>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-bold text-lg dark:text-white text-slate-900">${parseFloat(inv.total).toLocaleString()}</div>
-                                            <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${inv.status === 'paid' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : inv.status === 'overdue' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'}`}>
+                                            <div className="font-bold text-lg dark:text-white text-slate-900">${parseFloat(inv.amount).toLocaleString()}</div>
+                                            <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${inv.status === 'paid' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : inv.status === 'overdue' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'}`}>
                                                 {inv.status}
                                             </span>
                                         </div>
@@ -241,46 +256,71 @@ const ClientPortalDashboard = () => {
                         )}
                     </div>
                 </div>
-            </div>
 
-            {/* Contracts Sector */}
-            <div className="dark:bg-slate-900/50 bg-white border dark:border-slate-800 border-slate-200 rounded-2xl overflow-hidden shadow-sm mt-8">
-                <div className="p-6 border-b dark:border-slate-800 border-slate-100 flex justify-between items-center">
-                    <h3 className="font-bold dark:text-white text-slate-900 flex items-center gap-2">
-                        <ShieldCheck className="w-5 h-5 text-amber-500" /> Service Contracts & SLAs
-                    </h3>
-                </div>
-                <div className="p-0">
-                    {contracts?.length > 0 ? (
-                        <ul className="divide-y dark:divide-slate-800 divide-slate-100">
-                            {contracts.map((contract, i) => (
-                                <li key={i} className="p-6 dark:hover:bg-slate-800/30 hover:bg-slate-50 transition-colors flex justify-between items-center">
-                                    <div>
-                                        <div className="font-bold dark:text-white text-slate-900 mb-1">{contract.title || `Contract #${contract.id}`}</div>
-                                        <div className="text-xs dark:text-slate-500 text-slate-400 flex items-center gap-2">
-                                            <span>Valid: {new Date(contract.start_date).toLocaleDateString()} - {new Date(contract.end_date).toLocaleDateString()}</span>
+                {/* Tickets Sector */}
+                <div className="dark:bg-slate-900/50 bg-white border dark:border-slate-800 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="p-6 border-b dark:border-slate-800 border-slate-100 flex justify-between items-center">
+                        <h3 className="font-bold dark:text-white text-slate-900 flex items-center gap-2">
+                            <Ticket className="w-5 h-5 text-blue-500" /> Recent Tickets
+                        </h3>
+                    </div>
+                    <div className="p-0">
+                        {recent_tickets?.length > 0 ? (
+                            <ul className="divide-y dark:divide-slate-800 divide-slate-100">
+                                {recent_tickets.map((t, i) => (
+                                    <li key={i} className="p-6 dark:hover:bg-slate-800/30 hover:bg-slate-50 transition-colors">
+                                        <div className="flex justify-between mb-2">
+                                            <span className="font-bold dark:text-white text-slate-900 truncate pr-4">{t.subject}</span>
+                                            <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${t.status === 'open' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>
+                                                {t.status}
+                                            </span>
                                         </div>
-                                    </div>
-                                    <div className="text-right flex flex-col items-end">
-                                        <span className={`inline-block mb-1 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${contract.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'}`}>
-                                            {contract.status || 'Active'}
-                                        </span>
-                                        <div className="font-bold text-lg dark:text-white text-slate-900">${parseFloat(contract.amount || 0).toLocaleString()}</div>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <div className="p-8 text-center dark:text-slate-500 text-slate-400 flex flex-col items-center">
-                            <CheckCircle2 className="w-12 h-12 mb-3 opacity-20" />
-                            <p>No active service contracts found.</p>
-                        </div>
-                    )}
+                                        <div className="flex items-center text-xs dark:text-slate-500 text-slate-400 gap-4">
+                                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {t.date}</span>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div className="p-8 text-center dark:text-slate-500 text-slate-400 flex flex-col items-center">
+                                <CheckCircle2 className="w-12 h-12 mb-3 opacity-20" />
+                                <p>No active support tickets. You're all caught up!</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
+
+                {/* Projects Sector */}
+                <div className="dark:bg-slate-900/50 bg-white border dark:border-slate-800 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="p-6 border-b dark:border-slate-800 border-slate-100 flex justify-between items-center">
+                        <h3 className="font-bold dark:text-white text-slate-900 flex items-center gap-2">
+                            <Briefcase className="w-5 h-5 text-purple-500" /> Recent Projects
+                        </h3>
+                    </div>
+                    <div className="p-0">
+                        {recent_projects?.length > 0 ? (
+                            <ul className="divide-y dark:divide-slate-800 divide-slate-100">
+                                {recent_projects.map((p, i) => (
+                                    <li key={i} className="p-6 dark:hover:bg-slate-800/30 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                        <div className="font-bold dark:text-white text-slate-900 truncate pr-4">{p.name}</div>
+                                        <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                                            {p.status}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div className="p-8 text-center dark:text-slate-500 text-slate-400 flex flex-col items-center">
+                                <CheckCircle2 className="w-12 h-12 mb-3 opacity-20" />
+                                <p>No active projects.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
             </div>
         </div>
     );
 };
 
 export default ClientPortalDashboard;
-

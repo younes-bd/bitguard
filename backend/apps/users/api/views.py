@@ -2,19 +2,42 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from apps.core.utils.response import standard_response
-from apps.core.permissions import HasRole, IsSuperAdmin
-from ..domain.models import User, Role, SecurityPolicy
-from ..api.serializers import UserSerializer, RoleSerializer, SecurityPolicySerializer
+from apps.core.permissions import HasRole, IsSuperAdmin, IsPlatformAdmin
+from django.contrib.contenttypes.models import ContentType
+from ..domain.models import User, Role, SecurityPolicy, RolePermission, RecordRule
+from ..api.serializers import (
+    UserSerializer, RoleSerializer, SecurityPolicySerializer,
+    RolePermissionSerializer, ContentTypeSerializer, RecordRuleSerializer
+)
 
 class RoleViewSet(viewsets.ModelViewSet):
-    queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [IsAuthenticated, IsSuperAdmin | HasRole(['SUPER_ADMIN'])]
+    permission_classes = [IsPlatformAdmin]
+
+    def get_queryset(self):
+        from django.db.models import Count
+        return Role.objects.annotate(user_count=Count('users')).order_by('category', 'name')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return standard_response(True, "Roles retrieved successfully", {"roles": serializer.data})
+
+    @action(detail=True, methods=['get'])
+    def users(self, request, pk=None):
+        role = self.get_object()
+        users = role.users.all()
+        serializer = UserSerializer(users, many=True)
+        return standard_response(True, "Users retrieved", serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def assign_users(self, request, pk=None):
+        role = self.get_object()
+        user_ids = request.data.get('user_ids', [])
+        # Set the users for this role
+        users = User.objects.filter(id__in=user_ids)
+        role.users.set(users)
+        return standard_response(True, "Users assigned successfully")
 
     @action(detail=False, methods=['get'])
     def permissions(self, request):
@@ -77,10 +100,16 @@ class UserViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return standard_response(True, "User deleted successfully", status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get', 'patch'])
     def me(self, request):
-        serializer = self.get_serializer(request.user)
-        return standard_response(True, "Current user retrieved", serializer.data)
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return standard_response(True, "Current user retrieved", serializer.data)
+        elif request.method == 'PATCH':
+            serializer = self.get_serializer(request.user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return standard_response(True, "Profile updated successfully", serializer.data)
 
     @action(detail=True, methods=['post'])
     def lock(self, request, pk=None):
@@ -205,3 +234,52 @@ class UserViewSet(viewsets.ModelViewSet):
             }
         ]
         return standard_response(True, "Active sessions retrieved", active_sessions)
+
+class RolePermissionViewSet(viewsets.ModelViewSet):
+    queryset = RolePermission.objects.all()
+    serializer_class = RolePermissionSerializer
+    permission_classes = [IsPlatformAdmin]
+    
+    @action(detail=False, methods=['get'])
+    def matrix(self, request):
+        qs = self.get_queryset()
+        serializer = self.get_serializer(qs, many=True)
+        matrix_data = {}
+        for item in serializer.data:
+            role_id = str(item['role'])
+            ct_id = str(item['content_type'])
+            if role_id not in matrix_data:
+                matrix_data[role_id] = {'permissions': {}}
+            matrix_data[role_id]['permissions'][ct_id] = {
+                'can_read': item['can_read'],
+                'can_write': item['can_write'],
+                'can_create': item['can_create'],
+                'can_delete': item['can_delete'],
+            }
+        return standard_response(True, "Permission Matrix", matrix_data)
+
+class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ContentType.objects.all()
+    serializer_class = ContentTypeSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        # Grouping by app_label to match expected format
+        from collections import defaultdict
+        grouped = defaultdict(list)
+        for item in serializer.data:
+            grouped[item['app_label']].append(item)
+        return standard_response(True, "Content Types", dict(grouped))
+
+class RecordRuleViewSet(viewsets.ModelViewSet):
+    queryset = RecordRule.objects.all()
+    serializer_class = RecordRuleSerializer
+    permission_classes = [IsPlatformAdmin]
+
+class SecurityPolicyViewSet(viewsets.ModelViewSet):
+    queryset = SecurityPolicy.objects.all()
+    serializer_class = SecurityPolicySerializer
+    permission_classes = [IsPlatformAdmin]

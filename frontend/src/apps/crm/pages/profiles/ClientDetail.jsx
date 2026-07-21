@@ -210,7 +210,7 @@ const ClientDetail = () => {
                     <TabButton id="contracts" label={`Contracts (${contracts.length})`} icon={ContractIcon} />
                     <TabButton id="invoices" label={`Invoices (${invoices.length})`} icon={InvoiceIcon} />
                     <TabButton id="orders" label="Store Orders" icon={ShoppingCart} />
-                    <TabButton id="assets" label="Assets" icon={Server} />
+                    <TabButton id="maintenance" label="Assets" icon={Server} />
                     <TabButton id="timeline" label="Timeline" icon={Activity} />
                 </div>
             </div>
@@ -438,7 +438,7 @@ const ClientDetail = () => {
                 )}
 
                 {/* ASSETS TAB */}
-                {activeTab === 'assets' && (
+                {activeTab === 'maintenance' && (
                     <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -446,7 +446,7 @@ const ClientDetail = () => {
                                 Managed Infrastructure
                             </h3>
                             <button 
-                                onClick={() => navigate('/admin/assets/assets')}
+                                onClick={() => navigate('/admin/maintenance/assets')}
                                 className="text-sm text-blue-400 hover:text-blue-300"
                             >
                                 Manage in ITAM â†’

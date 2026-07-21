@@ -1,8 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
-import PublicLayout from './layouts/PublicLayout';
-import AccountsLayout from './layouts/AccountsLayout';
+import WebsiteLayout from './layouts/WebsiteLayout';
 import ProtectedRoute from './api/auth/ProtectedRoute';
 
 // Override global alert to utilize enterprise toast notifications
@@ -27,30 +26,12 @@ import { WebsiteRoutes } from '../apps/website/routes/WebsiteRoutes';
 import { BlogRoutes } from '../apps/blog/routes/BlogRoutes';
 
 // Feature Pages - Store
-import ProductCatalog from '../apps/store/pages/lists/ProductCatalog';
-import ProductDetail from '../apps/store/pages/details/ProductDetail';
-import Checkout from '../apps/store/pages/features/Checkout';
-
-// Accounts Pages
-import AccountHome from '../apps/users/pages/dashboards/AccountHome';
-import PersonalInfo from '../apps/users/pages/profiles/PersonalInfo';
-import EditName from '../apps/users/pages/edit/EditName';
-import EditPhone from '../apps/users/pages/edit/EditPhone';
-import EditBirthday from '../apps/users/pages/edit/EditBirthday';
-import EditGender from '../apps/users/pages/edit/EditGender';
-import EditPhoto from '../apps/users/pages/edit/EditPhoto';
-import EditLanguage from '../apps/users/pages/edit/EditLanguage';
-import EditCurrency from '../apps/users/pages/edit/EditCurrency';
-import EditAddress from '../apps/users/pages/edit/EditAddress';
-import ChangePassword from '../apps/users/pages/edit/ChangePassword';
-import ActivityLog from '../apps/users/pages/lists/ActivityLog';
-import People from '../apps/users/pages/lists/People';
-import Security from '../apps/users/pages/settings/Security';
-import DataPrivacy from '../apps/users/pages/settings/DataPrivacy';
-import Payments from '../apps/users/pages/lists/Payments';
+import ProductCatalog from '../apps/ecommerce/pages/public/ProductCatalog';
+import ProductDetail from '../apps/ecommerce/pages/public/ProductDetail';
+import Checkout from '../apps/ecommerce/pages/public/Checkout';
 
 // Core Routing
-import { EnterpriseRoutes } from '../apps/dashboard/routes/EnterpriseRouter';
+import { EnterpriseRoutes } from '../apps/board/routes/EnterpriseRouter';
 import { useAuth } from './hooks/useAuth';
 import { PortalRoutes } from './routes/PortalRoutes';
 
@@ -71,7 +52,7 @@ const AppContent = () => {
             <Route path="/blog/*" element={<BlogRoutes />} />
 
             {/* Public Store Routes */}
-            <Route element={<PublicLayout />}>
+            <Route element={<WebsiteLayout />}>
                 <Route path="/store" element={<ProductCatalog />} />
                 <Route path="/store/checkout" element={<Checkout />} />
                 <Route path="/store/:slug" element={<ProductDetail />} />
@@ -81,27 +62,6 @@ const AppContent = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-
-            {/* Protected Accounts Routes */}
-            <Route element={<ProtectedRoute><AccountsLayout /></ProtectedRoute>}>
-                <Route path="/account/home" element={<AccountHome />} />
-                <Route path="/account/personal-info" element={<PersonalInfo />} />
-                <Route path="/account/personal-info/name" element={<EditName />} />
-                <Route path="/account/personal-info/phone" element={<EditPhone />} />
-                <Route path="/account/personal-info/birthday" element={<EditBirthday />} />
-                <Route path="/account/personal-info/gender" element={<EditGender />} />
-                <Route path="/account/personal-info/photo" element={<EditPhoto />} />
-                <Route path="/account/personal-info/language" element={<EditLanguage />} />
-                <Route path="/account/personal-info/currency" element={<EditCurrency />} />
-                <Route path="/account/personal-info/address" element={<EditAddress />} />
-                <Route path="/account/people" element={<People />} />
-                <Route path="/account/security/password" element={<ChangePassword />} />
-                <Route path="/account/security/activity" element={<ActivityLog />} />
-                <Route path="/account/security" element={<Security />} />
-                <Route path="/account/data-privacy" element={<DataPrivacy />} />
-                <Route path="/account/payments" element={<Payments />} />
-                <Route path="/account" element={<Navigate to="/account/home" replace />} />
-            </Route>
 
             {/* Core Framework Routing (Role Based) */}
             <Route path="/admin/*" element={
@@ -119,7 +79,7 @@ const AppContent = () => {
             {/* Redirects */}
             <Route path="/dashboard" element={<Navigate to={isAdmin ? "/admin" : "/portal"} replace />} />
             {/* Role-aware settings redirect (H-11 fix) */}
-            <Route path="/settings" element={<Navigate to={isAdmin ? "/admin/settings" : "/account/security"} replace />} />
+            <Route path="/settings" element={<Navigate to={isAdmin ? "/admin/settings" : "/portal/security"} replace />} />
 
             {/* Public Marketing Routes — wildcard LAST so all specific routes above match first */}
             <Route path="/*" element={<WebsiteRoutes />} />

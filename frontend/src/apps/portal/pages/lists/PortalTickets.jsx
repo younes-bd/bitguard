@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { supportService } from '../../../../core/api/supportService';
+import { helpdeskService } from '../../../../core/api/helpdeskService';
 
 const statusBadge = (status) => {
     const map = { open: 'bg-amber-500/10 text-amber-400', in_progress: 'bg-blue-500/10 text-blue-400', resolved: 'bg-emerald-500/10 text-emerald-400' };
@@ -12,7 +12,7 @@ const PortalTickets = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        supportService.getTickets()
+        helpdeskService.getTickets()
             .then(data => { setTickets(Array.isArray(data) ? data : (data?.results ?? [])); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);
@@ -32,7 +32,7 @@ const PortalTickets = () => {
                             <div key={t.id} className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex justify-between items-center hover:border-slate-700 transition-colors">
                                 <div>
                                     <p className="text-white font-medium">{t.title ?? t.subject}</p>
-                                    <p className="text-slate-500 text-xs mt-1">{t.created_at?.split('T')[0]} Â· {t.priority ?? 'normal'} priority</p>
+                                    <p className="text-slate-500 text-xs mt-1">{t.created_at?.split('T')[0]} · {t.priority ?? 'normal'} priority</p>
                                 </div>
                                 {statusBadge(t.status)}
                             </div>

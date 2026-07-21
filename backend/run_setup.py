@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     print("--- Checking Internal Tenant ---")
     internal_tenant_uuid = "cfc72aac-52e3-44fb-847c-5041cbd1bda2"
-    from apps.tenants.models import Tenant
+    from apps.tenants.domain.models import Tenant
     tenant, created = Tenant.objects.get_or_create(
         domain=internal_tenant_uuid,
         defaults={

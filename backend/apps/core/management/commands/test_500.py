@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from rest_framework.test import APIClient
-from apps.users.models import User
+from apps.users.domain.models import User
 
 class Command(BaseCommand):
     def handle(self, *args, **options):

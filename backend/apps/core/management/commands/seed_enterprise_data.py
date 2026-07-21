@@ -3,12 +3,12 @@ import datetime
 from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from apps.tenants.models import Tenant
+from apps.tenants.domain.models import Tenant
 from apps.crm.domain.models import Client
 from apps.core.domain.models import Partner
 from apps.accounting.domain.models import Invoice, InvoiceItem
 from apps.purchase.domain.models import PurchaseOrder, PurchaseOrderLine, Vendor
-from apps.inventory.domain.models import DeliveryNote
+from apps.delivery.domain.models import DeliveryNote
 from apps.reporting.domain.models import ReportTemplate, ReportEngineSettings
 
 class Command(BaseCommand):

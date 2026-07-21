@@ -39,8 +39,8 @@ if os.path.exists(f"{src_dir}/InvoiceBranding.jsx"):
 if os.path.exists(f"{src_dir}/PaymentTerms.jsx"):
     shutil.move(f"{src_dir}/PaymentTerms.jsx", f"{dest_accounting}/PaymentTerms.jsx")
 if os.path.exists(f"{src_dir}/ErpSettings.jsx"):
-    os.makedirs("frontend/src/apps/sysadmin/pages/settings", exist_ok=True)
-    shutil.move(f"{src_dir}/ErpSettings.jsx", "frontend/src/apps/sysadmin/pages/settings/ErpSettings.jsx")
+    os.makedirs("frontend/src/apps/base_setup/pages/settings", exist_ok=True)
+    shutil.move(f"{src_dir}/ErpSettings.jsx", "frontend/src/apps/base_setup/pages/settings/ErpSettings.jsx")
 
 # Billing
 move_dir_contents(f"{src_dir}/billing", f"{dest_billing}/billing")

@@ -1,24 +1,27 @@
 import client from './client';
 
 export const analyticsService = {
-    getRevenueReport: async () => {
-        const response = await client.get('dashboard/revenue/');
+    getRevenueReport: async (params = {}) => {
+        const response = await client.get('board/revenue/', { params });
         return response.data?.data ?? response.data;
     },
-    getCrmReport: async () => {
-        const response = await client.get('dashboard/crm/');
+    getCrmReport: async (params = {}) => {
+        const response = await client.get('board/crm/', { params });
         return response.data?.data ?? response.data;
     },
-    getSupportReport: async () => {
-        const response = await client.get('dashboard/support/');
+    getSupportReport: async (params = {}) => {
+        const response = await client.get('board/support/', { params });
         return response.data?.data ?? response.data;
     },
-    getSecurityReport: async () => {
-        const response = await client.get('dashboard/security/');
+    getSecurityReport: async (params = {}) => {
+        const response = await client.get('board/security/', { params });
         return response.data?.data ?? response.data;
     },
-    exportReport: async (type, format = 'csv') => {
-        const response = await client.get(`dashboard/export/${type}/?format=${format}`, { responseType: 'blob' });
+    exportReport: async (type, params = {}) => {
+        const response = await client.get(`board/export/${type}/`, { 
+            params: { format: 'csv', ...params },
+            responseType: 'blob' 
+        });
         return response.data;
     }
 };

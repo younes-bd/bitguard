@@ -433,8 +433,8 @@ Delete Pattern:  Use DeleteConfirmationModal from core/components/shared/core/De
 # ═══════════════════════════════════════════════════════════════════════════════
 # MODULE 18: SYSTEM ADMINISTRATION (/admin/system/*)
 # ═══════════════════════════════════════════════════════════════════════════════
-# Route file: frontend/src/apps/sysadmin/routes/sysadminRoutes.jsx
-# Backend:    backend/apps/sysadmin/
+# Route file: frontend/src/apps/base_setup/routes/sysadminRoutes.jsx
+# Backend:    backend/apps/base_setup/
 
 ## STATUS: ✅ FUNCTIONAL
 - SysadminDashboard: Platform health ✓
@@ -448,8 +448,8 @@ Delete Pattern:  Use DeleteConfirmationModal from core/components/shared/core/De
 # ═══════════════════════════════════════════════════════════════════════════════
 # MODULE 19: COMMAND CENTER (Main Admin Dashboard)
 # ═══════════════════════════════════════════════════════════════════════════════
-# File: frontend/src/apps/dashboard/pages/CommandCenter.jsx
-# Service: frontend/src/apps/dashboard/api/dashboardService.js
+# File: frontend/src/apps/board/pages/CommandCenter.jsx
+# Service: frontend/src/apps/board/api/dashboardService.js
 
 ## ISSUE 19.1 — KPI cards use dynamic Tailwind classes that get purged
 - Lines 21-24: `hover:border-${color}-500/40`, `bg-${color}-500/10`

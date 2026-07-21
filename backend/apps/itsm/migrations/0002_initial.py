@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('contracts', '0003_initial'),
         ('itsm', '0001_initial'),
-        ('store', '0002_initial'),
+        ('ecommerce', '0002_initial'),
         ('support', '0001_initial'),
         ('tenants', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -107,7 +107,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='serviceitem',
             name='linked_product',
-            field=models.ForeignKey(blank=True, help_text='Link to Master Catalog for billable tickets', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='itsm_services', to='store.product'),
+            field=models.ForeignKey(blank=True, help_text='Link to Master Catalog for billable tickets', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='itsm_services', to='ecommerce.product'),
         ),
         migrations.AddField(
             model_name='serviceitem',

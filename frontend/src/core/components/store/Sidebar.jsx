@@ -16,18 +16,18 @@ import {
 } from '@heroicons/react/24/outline';
 
 const navigation = [
-  { name: 'Dashboard', href: '/admin/store/dashboard', icon: BuildingStorefrontIcon },
-  { name: 'Store Customization', href: '/admin/store/customization', icon: PaintBrushIcon },
-  { name: 'Categories', href: '/admin/store/categories', icon: TagIcon },
-  { name: 'Products', href: '/admin/store/products', icon: CubeIcon },
-  { name: 'Orders', href: '/admin/store/orders', icon: ShoppingCartIcon },
-  { name: 'Customer Management', href: '/admin/store/customers', icon: UsersIcon },
-  { name: 'Shipping Settings', href: '/admin/store/shipping', icon: TruckIcon },
-  { name: 'Landing Pages', href: '/admin/store/landing-pages', icon: DocumentArrowDownIcon },
-  { name: 'Pixel & Tracking', href: '/admin/store/tracking', icon: ChartPieIcon },
-  { name: 'Add-ons', href: '/admin/store/addons', icon: PuzzlePieceIcon },
-  { name: 'Subscriptions', href: '/admin/store/subscriptions', icon: ArrowPathIcon },
-  { name: 'Settings', href: '/admin/store/settings', icon: Cog6ToothIcon },
+  { name: 'Dashboard', href: '/admin/ecommerce/dashboard', icon: BuildingStorefrontIcon },
+  { name: 'Store Customization', href: '/admin/ecommerce/customization', icon: PaintBrushIcon },
+  { name: 'Categories', href: '/admin/ecommerce/categories', icon: TagIcon },
+  { name: 'Products', href: '/admin/ecommerce/products', icon: CubeIcon },
+  { name: 'Orders', href: '/admin/ecommerce/orders', icon: ShoppingCartIcon },
+  { name: 'Customer Management', href: '/admin/ecommerce/customers', icon: UsersIcon },
+  { name: 'Shipping Settings', href: '/admin/ecommerce/shipping', icon: TruckIcon },
+  { name: 'Landing Pages', href: '/admin/ecommerce/landing-pages', icon: DocumentArrowDownIcon },
+  { name: 'Pixel & Tracking', href: '/admin/ecommerce/tracking', icon: ChartPieIcon },
+  { name: 'Add-ons', href: '/admin/ecommerce/addons', icon: PuzzlePieceIcon },
+  { name: 'Subscriptions', href: '/admin/ecommerce/subscriptions', icon: ArrowPathIcon },
+  { name: 'Settings', href: '/admin/ecommerce/settings', icon: Cog6ToothIcon },
 ];
 
 function classNames(...classes) {

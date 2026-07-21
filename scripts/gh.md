@@ -137,7 +137,7 @@ RoleList.jsx — add Create/Edit/Delete modals (currently display-only)
 MfaManagement.jsx — wire actual TOTP setup (generate secret → QR → verify OTP)
 AuditLogPage.jsx — needs date-range filter + CSV export button
 ⚠️ Command Center Dashboard
-File: frontend/src/apps/dashboard/pages/CommandCenter.jsx
+File: frontend/src/apps/board/pages/CommandCenter.jsx
 
 Line 121: calls dashboardService.getMetrics() — but dashboardService.js exposes getStats() not getMetrics(). Rename getStats → getMetrics in core/api/dashboardService.js OR update the call in CommandCenter.
 Line 123: calls dashboardService.getSystemHealth() — service exposes getHealth(). Align names.
@@ -146,7 +146,7 @@ Module tile for Procurement (line 247): reads metrics.scm?.pending_pos but analy
 Module tile for Procurement (line 249): reads metrics.scm?.low_stock but service returns low_stock_items. Fix key name.
 Add global error boundary wrapping the entire component.
 Add React.Suspense fallback for lazy-loaded sub-components.
-File: backend/apps/dashboard/services/analytics.py
+File: backend/apps/board/services/analytics.py
 
 Already aggregates 14 modules with real DB queries — this is correct.
 Add billing metrics: active subscriptions count, MRR from Subscription.plan.price_monthly.
@@ -275,7 +275,7 @@ class TestQuoteAcceptedSignal(TestCase):
         # Assert invoice was created
         self.assertTrue(Invoice.objects.filter(client=quote.client).exists())
 Frontend — Vitest + React Testing Library
-src/apps/dashboard/pages/__tests__/CommandCenter.test.jsx
+src/apps/board/pages/__tests__/CommandCenter.test.jsx
 src/apps/auth/pages/__tests__/Login.test.jsx
 src/core/api/__tests__/client.test.js
 src/apps/crm/pages/__tests__/DealPipeline.test.jsx
@@ -377,7 +377,7 @@ bash
 cd backend
 python manage.py test                           # All tests pass
 python manage.py check                          # No system check errors
-python manage.py shell -c "from apps.dashboard.services.analytics import CommandCenterAnalyticsService; print(CommandCenterAnalyticsService.get_global_metrics())"
+python manage.py shell -c "from apps.board.services.analytics import CommandCenterAnalyticsService; print(CommandCenterAnalyticsService.get_global_metrics())"
 # Seed data
 python scripts/data.py
 # Frontend

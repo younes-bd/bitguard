@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, FileText, Plus, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import client from '../../../../core/api/client';
@@ -73,13 +73,13 @@ export default function TimeBilling() {
         <div className="max-w-5xl mx-auto space-y-6 pb-12 px-4 sm:px-6 animate-in fade-in duration-500">
             <div>
                 <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase flex items-center gap-3">
-                    <Clock className="text-emerald-400" size={28} /> Billable Time â†’ Invoice
+                    <Clock className="text-emerald-400" size={28} /> Billable Time → Invoice
                 </h1>
                 <p className="text-slate-400 text-sm mt-0.5">Convert unbilled time logs into client invoices</p>
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Step 1 â€” Select Project</p>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Step 1 — Select Project</p>
                 <select value={selectedProject} onChange={handleProjectChange}
                     className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
                     <option value="">-- Choose a project --</option>
@@ -90,7 +90,7 @@ export default function TimeBilling() {
             {selectedProject && (
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                     <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Step 2 â€” Select Time Logs</p>
+                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Step 2 — Select Time Logs</p>
                         {timeLogs.length > 0 && (
                             <button onClick={toggleAll} className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors font-bold">
                                 {timeLogs.every(l => selected[l.id]) ? 'Deselect All' : 'Select All'}
@@ -130,7 +130,7 @@ export default function TimeBilling() {
                                             </div>
                                         </td>
                                         <td className="p-4 text-white text-sm font-medium">{log.employee_name || 'Staff'}</td>
-                                        <td className="p-4 text-slate-400 text-sm">{log.description || 'â€”'}</td>
+                                        <td className="p-4 text-slate-400 text-sm">{log.description || '—'}</td>
                                         <td className="p-4 text-slate-400 text-sm">{log.date}</td>
                                         <td className="p-4 text-white font-bold text-sm">{log.hours}h</td>
                                         <td className="p-4 text-slate-400 text-sm">${log.hourly_rate || '0'}/h</td>
@@ -146,8 +146,8 @@ export default function TimeBilling() {
             {selectedLogs.length > 0 && (
                 <div className="bg-slate-900 border border-emerald-500/20 rounded-2xl p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Step 3 â€” Generate Invoice</p>
-                        <p className="text-slate-300">{selectedLogs.length} log(s) Â· <span className="text-emerald-400 font-bold text-lg">${totalAmount.toFixed(2)}</span></p>
+                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Step 3 — Generate Invoice</p>
+                        <p className="text-slate-300">{selectedLogs.length} log(s) · <span className="text-emerald-400 font-bold text-lg">${totalAmount.toFixed(2)}</span></p>
                     </div>
                     <button onClick={handleGenerate} disabled={generating}
                         className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50 active:scale-95">

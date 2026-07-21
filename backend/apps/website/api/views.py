@@ -5,8 +5,22 @@ from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from ..domain.models import Announcement, Signup, WebsiteInquiry
-from ..api.serializers import AnnouncementSerializer, SignupSerializer, WebsiteInquirySerializer
+from ..domain.models import (
+    Announcement, Signup, WebsiteInquiry, LandingPage, Page, ServicePage, MediaAsset,
+    Website, WebsiteMenu, WebsiteRedirect
+)
+from ..api.serializers import (
+    AnnouncementSerializer, 
+    SignupSerializer, 
+    WebsiteInquirySerializer, 
+    LandingPageSerializer,
+    PageSerializer,
+    ServicePageSerializer,
+    MediaAssetSerializer,
+    WebsiteSerializer,
+    WebsiteMenuSerializer,
+    WebsiteRedirectSerializer
+)
 
 # --- Content ViewSets ---
 
@@ -34,9 +48,61 @@ class WebsiteInquiryViewSet(viewsets.ModelViewSet):
     serializer_class = WebsiteInquirySerializer
     permission_classes = [permissions.AllowAny]
 
+class LandingPageViewSet(viewsets.ModelViewSet):
+    """
+    Landing Page Builder API.
+    """
+    queryset = LandingPage.objects.all()
+    serializer_class = LandingPageSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+class PageViewSet(viewsets.ModelViewSet):
+    """
+    Standard website pages API.
+    """
+    queryset = Page.objects.all()
+    serializer_class = PageSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+class ServicePageViewSet(viewsets.ModelViewSet):
+    """
+    Service specific marketing pages API.
+    """
+    queryset = ServicePage.objects.all()
+    serializer_class = ServicePageSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+class MediaAssetViewSet(viewsets.ModelViewSet):
+    """
+    Media Assets API.
+    """
+    queryset = MediaAsset.objects.all()
+    serializer_class = MediaAssetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class WebsiteViewSet(viewsets.ModelViewSet):
+    """
+    Multi-Website management API.
+    """
+    queryset = Website.objects.all()
+    serializer_class = WebsiteSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class WebsiteMenuViewSet(viewsets.ModelViewSet):
+    """
+    Website Menus API.
+    """
+    queryset = WebsiteMenu.objects.all()
+    serializer_class = WebsiteMenuSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class WebsiteRedirectViewSet(viewsets.ModelViewSet):
+    """
+    Website Redirects API.
+    """
+    queryset = WebsiteRedirect.objects.all()
+    serializer_class = WebsiteRedirectSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 # --- Interactive API Views ---
 
 class SupportTicketView(views.APIView):
@@ -95,7 +161,7 @@ class SupportTicketView(views.APIView):
             description=description,
             status='open',
             priority='medium',
-            ticket_type='support'
+            ticket_type='helpdesk'
         )
 
         return Response({
@@ -176,7 +242,7 @@ class GlobalSearchView(views.APIView):
         if not query or len(query) < 2:
             return Response({"results": []})
 
-        from apps.cms.domain.models import ServicePage, Page
+        from apps.website.domain.models import ServicePage, Page
 
         results = []
 

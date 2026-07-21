@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Megaphone, Search, Plus, Calendar, Users, TrendingUp, Pause, Play, Loader2, Edit2, Trash2, Target, BarChart2 } from 'lucide-react';
 import { marketingService } from '../../../../core/api/marketingService';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';

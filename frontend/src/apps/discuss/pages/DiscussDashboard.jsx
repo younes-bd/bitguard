@@ -1,18 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Users, Settings, Search, Plus, Send, Hash, Lock } from 'lucide-react';
+import discussService from '../../../core/api/discussService';
 
 const DiscussDashboard = () => {
-  const [activeChannel, setActiveChannel] = useState('general');
+  const [activeChannel, setActiveChannel] = useState(null);
+  const [channels, setChannels] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [inputText, setInputText] = useState('');
+  const messagesEndRef = useRef(null);
 
-  const channels = [
-    { id: 'general', name: 'General', type: 'public', unread: 0 },
-    { id: 'announcements', name: 'Announcements', type: 'public', unread: 2 },
-    { id: 'management', name: 'Management', type: 'private', unread: 0 },
-  ];
+  useEffect(() => {
+    discussService.getChannels().then(data => {
+      const chans = Array.isArray(data) ? data : data.results || [];
+      setChannels(chans);
+      if (chans.length > 0 && !activeChannel) {
+        setActiveChannel(chans[0].id);
+      }
+    });
+  }, []);
 
-  const messages = [
-    { id: 1, sender: 'System', time: '09:00 AM', content: 'Welcome to Discuss! Start chatting with your team.' },
-  ];
+  useEffect(() => {
+    if (activeChannel) {
+      discussService.getMessages(activeChannel).then(data => {
+        setMessages(Array.isArray(data) ? data : data.results || []);
+        scrollToBottom();
+      });
+    }
+  }, [activeChannel]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSendMessage = () => {
+    if (!inputText.trim() || !activeChannel) return;
+    
+    discussService.postMessage({ channel: activeChannel, body: inputText }).then(newMsg => {
+      setMessages([...messages, newMsg]);
+      setInputText('');
+      scrollToBottom();
+    });
+  };
+
+  const activeChannelData = channels.find(c => c.id === activeChannel) || {};
 
   return (
     <div className="flex h-full bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -40,13 +70,8 @@ const DiscussDashboard = () => {
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
-              {channel.type === 'private' ? <Lock className="w-4 h-4 mr-2 opacity-70" /> : <Hash className="w-4 h-4 mr-2 opacity-70" />}
+              {channel.channel_type === 'private' ? <Lock className="w-4 h-4 mr-2 opacity-70" /> : <Hash className="w-4 h-4 mr-2 opacity-70" />}
               {channel.name}
-              {channel.unread > 0 && (
-                <span className="ml-auto bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                  {channel.unread}
-                </span>
-              )}
             </button>
           ))}
         </div>
@@ -58,7 +83,7 @@ const DiscussDashboard = () => {
         <div className="h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 bg-white dark:bg-slate-900">
           <div className="flex items-center">
             <Hash className="w-5 h-5 text-slate-400 mr-2" />
-            <h3 className="font-semibold text-slate-800 dark:text-slate-200 capitalize">{activeChannel}</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 capitalize">{activeChannelData.name || 'Select a channel'}</h3>
           </div>
           <div className="flex items-center space-x-3 text-slate-400">
             <Search className="w-5 h-5 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
@@ -72,19 +97,24 @@ const DiscussDashboard = () => {
           {messages.map((msg) => (
             <div key={msg.id} className="flex space-x-3">
               <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center flex-shrink-0">
-                <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{msg.sender.charAt(0)}</span>
+                <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
+                  {typeof msg.author === 'object' ? msg.author.username?.charAt(0) : 'U'}
+                </span>
               </div>
               <div>
                 <div className="flex items-baseline space-x-2">
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{msg.sender}</span>
-                  <span className="text-xs text-slate-400">{msg.time}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    {typeof msg.author === 'object' ? msg.author.username : `User ${msg.author}`}
+                  </span>
+                  <span className="text-xs text-slate-400">{new Date(msg.created_at || Date.now()).toLocaleTimeString()}</span>
                 </div>
                 <div className="text-slate-600 dark:text-slate-300 mt-1 text-sm bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl rounded-tl-none inline-block">
-                  {msg.content}
+                  {msg.body}
                 </div>
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}
@@ -95,10 +125,16 @@ const DiscussDashboard = () => {
             </button>
             <input 
               type="text" 
-              placeholder={`Message #${activeChannel}...`} 
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+              placeholder={`Message #${activeChannelData.name || '...'}`} 
               className="flex-1 bg-transparent border-none focus:ring-0 text-slate-800 dark:text-slate-200 placeholder-slate-400 px-4 text-sm"
             />
-            <button className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center hover:bg-indigo-600 transition-colors shadow-sm">
+            <button 
+              onClick={handleSendMessage}
+              className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center hover:bg-indigo-600 transition-colors shadow-sm"
+            >
               <Send className="w-4 h-4 ml-0.5" />
             </button>
           </div>

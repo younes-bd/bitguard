@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard, Download, ShieldCheck, CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 import { erpService } from '../../../../core/api/erpService';
@@ -15,7 +15,7 @@ const ClientPortalInvoice = () => {
             try {
                 // Assuming erpService has a method to get invoice by token
                 // Or backend endpoint like /api/erp/invoices/by-token/:token/
-                const response = await fetch(`http://127.0.0.1:8000/api/erp/invoices/token/${token}/`);
+                const response = await fetch(`http://127.0.0.1:8000/api/v1/accounting/portal/invoice/${token}/`);
                 if (response.ok) {
                     const data = await response.json();
                     setInvoice(data.data || data);

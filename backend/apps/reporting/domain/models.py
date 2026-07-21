@@ -6,7 +6,7 @@ class ReportTemplate(TenantAwareModel):
     Odoo-style QWeb equivalent: Defines an HTML/CSS template to generate a PDF.
     """
     name = models.CharField(max_length=255)
-    model = models.CharField(max_length=100, help_text="e.g., 'accounting.Invoice' or 'store.Order'")
+    model = models.CharField(max_length=100, help_text="e.g., 'accounting.Invoice' or 'ecommerce.Order'")
     html_content = models.TextField(help_text="Jinja2 or Django template syntax for the report")
     css_content = models.TextField(blank=True, help_text="Custom styling for the report")
     is_active = models.BooleanField(default=True)

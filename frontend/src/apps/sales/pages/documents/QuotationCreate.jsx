@@ -44,7 +44,21 @@ const QuotationCreate = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await erpService.createInvoice({ ...formData, type: 'quotation' });
+      const payload = {
+        client: formData.client,
+        date_order: formData.issue_date,
+        validity_date: formData.expiry_date,
+        status: 'draft',
+        notes: formData.notes,
+        lines: formData.items.map(item => ({
+          name: item.description,
+          product_uom_qty: item.quantity,
+          price_unit: item.unit_price,
+          tax_rate: item.tax_rate,
+          price_subtotal: item.subtotal
+        }))
+      };
+      await erpService.createSaleOrder(payload);
       toast.success('Quotation created successfully!');
       navigate('/admin/sales/quotations');
     } catch (error) {

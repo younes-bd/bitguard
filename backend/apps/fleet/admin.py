@@ -1,17 +1,6 @@
 from django.contrib import admin
-from . import models
+from apps.fleet.domain.models import Vehicle, VehicleLog, VehicleContract
 
-# Auto-generated Admin for fleet
-
-@admin.register(models.Vehicle)
-class VehicleAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.VehicleLog)
-class VehicleLogAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.VehicleContract)
-class VehicleContractAdmin(admin.ModelAdmin):
-    pass
-
+admin.site.register(Vehicle)
+admin.site.register(VehicleLog)
+admin.site.register(VehicleContract)

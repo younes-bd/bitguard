@@ -1,0 +1,1 @@
+# Legacy Rental models removed.

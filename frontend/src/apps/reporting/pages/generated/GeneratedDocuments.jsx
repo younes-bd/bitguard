@@ -192,7 +192,7 @@ export default function GeneratedDocuments() {
                                                         <RefreshCw size={16} />
                                                     </button>
                                                     <Link 
-                                                        to={`/admin/edms/workspaces/generated-docs?source=${r.record_model}&id=${r.record_id}`}
+                                                        to={`/admin/documents/workspaces/generated-docs?source=${r.record_model}&id=${r.record_id}`}
                                                         className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-indigo-400/10 rounded transition-colors"
                                                         title="View in EDMS Vault"
                                                     >

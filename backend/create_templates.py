@@ -157,14 +157,14 @@ templates = [
     },
     {
         'name': 'Order Receipt',
-        'model': 'store.Order',
+        'model': 'ecommerce.Order',
         'is_default': True,
         'html': get_html("ORDER RECEIPT", "<p><strong>Order ID:</strong> {{ record.id }}</p><p><strong>Total Amount:</strong> {{ record.total_amount }}</p><p><strong>Status:</strong> {{ record.status }}</p>"),
         'css': ''
     },
     {
         'name': 'Support Ticket Summary',
-        'model': 'support.Ticket',
+        'model': 'helpdesk.Ticket',
         'is_default': True,
         'html': get_html("SUPPORT TICKET: {{ record.title }}", "<p><strong>Status:</strong> {{ record.status }}</p><p><strong>Priority:</strong> {{ record.priority }}</p><p><strong>Description:</strong> {{ record.description }}</p>"),
         'css': ''

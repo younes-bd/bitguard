@@ -9,14 +9,14 @@ import uuid
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 django.setup()
 
-from apps.tenants.models import Tenant
-from apps.users.models import User, TenantMembership
-from apps.crm.models import Client, Deal
+from apps.tenants.domain.models import Tenant
+from apps.users.domain.models import User, TenantMembership
+from apps.crm.domain.models import Client, Deal
 from apps.projects.domain.models import Project as InternalProject
-from apps.hrm.models import Employee, EmployeeContract, PayrollPeriod
-from apps.scm.models import Vendor, PurchaseOrder, GoodsReceipt
-from apps.accounting.models import Invoice, Payment, JournalEntry, VendorBill
-from apps.dashboard.services.analytics import CommandCenterAnalyticsService
+from apps.hr.domain.models import Employee, EmployeeContract, PayrollPeriod
+from apps.scm.domain.models import Vendor, PurchaseOrder, GoodsReceipt
+from apps.accounting.domain.models import Invoice, Payment, JournalEntry, VendorBill
+from apps.board.services.analytics import CommandCenterAnalyticsService
 
 def run_e2e_test():
     run_id = str(uuid.uuid4())[:8]

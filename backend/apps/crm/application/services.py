@@ -80,10 +80,10 @@ class ClientService(BaseService):
         Retrieves aggregated dashboard data for a client, 
         including Support, Projects, Contracts and Store financial data.
         """
-        from apps.support.models import Ticket
-        from apps.projects.models import Project
-        from apps.contracts.models import ServiceContract
-        from apps.store.models import Order
+        from apps.helpdesk.domain.models import Ticket
+        from apps.projects.domain.models import Project
+        from apps.contracts.domain.models import ServiceContract
+        from apps.ecommerce.domain.models import Order
         
         # Note: Serializers should be imported here or at top level if no circular dependency
         # For simplicity in this merge, we'll assume they are available via standard paths

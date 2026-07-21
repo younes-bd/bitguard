@@ -8,7 +8,7 @@ class Notification(models.Model):
         ('crm', 'CRM'),
         ('erp', 'ERP'),
         ('soc', 'SOC'),
-        ('store', 'Store'),
+        ('ecommerce', 'ecommerce'),
         ('billing', 'Billing'),
         ('hrm', 'HRM'),
         ('services', 'Services'),

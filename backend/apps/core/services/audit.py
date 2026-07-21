@@ -1,4 +1,4 @@
-from apps.audit.models import AuditLog
+from apps.base_setup.domain.models import AuditTrail
 from .base import BaseService
 
 class AuditService(BaseService):
@@ -10,7 +10,7 @@ class AuditService(BaseService):
     @staticmethod
     def log_action(request, action, *args, **kwargs):
         """
-        Logs an action to the AuditLog.
+        Logs an action to the AuditTrail.
         Charter Compliance: Creates immutable entry with user, IP, and payload.
         """
         user = None
@@ -57,7 +57,7 @@ class AuditService(BaseService):
         if not resource_type:
             resource_type = "System"
 
-        return AuditLog.objects.create(
+        return AuditTrail.objects.create(
             user=user,
             tenant=tenant,
             action=action,

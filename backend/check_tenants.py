@@ -4,7 +4,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 django.setup()
 
-from apps.tenants.models import Tenant
+from apps.tenants.domain.models import Tenant
 from apps.reporting.domain.models import ReportTemplate
 from apps.crm.domain.models import Client
 

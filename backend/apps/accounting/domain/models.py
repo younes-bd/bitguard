@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils import timezone
-from apps.core.models import BaseModel, TenantAwareModel
+from apps.core.domain.models import BaseModel, TenantAwareModel
 from django.conf import settings
 import datetime
 
@@ -161,7 +161,7 @@ class Invoice(TenantAwareModel):
 
 class InvoiceItem(TenantAwareModel):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey('store.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='erp_invoice_items')
+    product = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='erp_invoice_items')
     description = models.CharField(max_length=255)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
@@ -426,7 +426,7 @@ class TaxAuthority(TenantAwareModel):
     def __str__(self):
         return self.name
 
-class TaxGroup(TenantAwareModel):
+class OldTaxGroup(TenantAwareModel):
     name = models.CharField(max_length=100)
     taxes = models.ManyToManyField(TaxConfig, related_name='tax_groups')
     is_active = models.BooleanField(default=True)
@@ -434,7 +434,7 @@ class TaxGroup(TenantAwareModel):
     def __str__(self):
         return self.name
 
-class BankReconciliation(TenantAwareModel):
+class OldBankReconciliation(TenantAwareModel):
     bank_transaction = models.OneToOneField(BankTransaction, on_delete=models.CASCADE, related_name='reconciliation')
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True, related_name='reconciliations')
     expense = models.ForeignKey(Expense, on_delete=models.SET_NULL, null=True, blank=True, related_name='reconciliations')
@@ -556,7 +556,7 @@ class VendorBill(TenantAwareModel):
 
 class BillLine(TenantAwareModel):
     bill = models.ForeignKey(VendorBill, on_delete=models.CASCADE, related_name='lines')
-    product = models.ForeignKey('store.Product', on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField()
     account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
@@ -625,3 +625,34 @@ class PurchaseRequisition(TenantAwareModel):
 
     def __str__(self):
         return f"PR #{self.id} by {self.requester}"
+
+# ─── PHASE 6 NEW MODELS ───
+
+class AccountJournal(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=10)
+    journal_type = models.CharField(max_length=20, choices=[('sale','Sales'),('purchase','Purchase'),('cash','Cash'),('bank','Bank'),('general','Miscellaneous')], default='general')
+    currency = models.ForeignKey('Currency', on_delete=models.SET_NULL, null=True, blank=True)
+    default_account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name='default_journals')
+    is_active = models.BooleanField(default=True)
+
+class TaxGroup(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    sequence = models.IntegerField(default=10)
+
+class Tax(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    tax_type = models.CharField(max_length=10, choices=[('sale','Sales Tax'),('purchase','Purchase Tax')], default='sale')
+    computation = models.CharField(max_length=20, choices=[('percent','Percentage'),('fixed','Fixed Amount')], default='percent')
+    amount = models.DecimalField(max_digits=8, decimal_places=4, default=0)
+    group = models.ForeignKey(TaxGroup, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+
+class BankReconciliation(TenantAwareModel):
+    journal = models.ForeignKey(AccountJournal, on_delete=models.CASCADE, related_name='reconciliations', null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    statement_balance = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    system_balance = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    difference = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    is_reconciled = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)

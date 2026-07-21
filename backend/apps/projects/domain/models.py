@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from apps.core.models import BaseModel, TenantAwareModel
+from apps.core.domain.models import BaseModel, TenantAwareModel
 
 
 class Project(TenantAwareModel):
@@ -86,6 +86,7 @@ class Sprint(TenantAwareModel):
     start_date = models.DateField()
     end_date = models.DateField()
     goal = models.TextField(blank=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -105,6 +106,14 @@ class TaskStage(TenantAwareModel):
 class ProjectTag(TenantAwareModel):
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=7, default='#000000')
+
+    def __str__(self):
+        return self.name
+
+class TaskTag(TenantAwareModel):
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=7, default='#6b7280')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='task_tags', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -131,15 +140,20 @@ class Task(TenantAwareModel):
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks'
     )
     due_date = models.DateField(null=True, blank=True)
+    deadline = models.DateField(null=True, blank=True)
     estimated_hours = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
     order = models.PositiveIntegerField(default=0, help_text='Sort order within the column')
-    tags = models.ManyToManyField(ProjectTag, blank=True)
+    tags = models.ManyToManyField(TaskTag, blank=True)
 
     class Meta:
         ordering = ['order', 'created_at']
 
     def __str__(self):
         return self.title
+
+    @property
+    def actual_hours(self):
+        return sum(log.hours for log in self.time_logs.all())
 
 class TaskComment(TenantAwareModel):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
@@ -215,6 +229,7 @@ class TimeLog(TenantAwareModel):
     hours = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.CharField(max_length=500, blank=True)
     is_billable = models.BooleanField(default=True)
+    billed = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-date']
@@ -236,4 +251,16 @@ class Timesheet(TenantAwareModel):
 
     def __str__(self):
         return f'{self.employee} - {self.hours}h'
+
+
+
+
+# --- TIMESHEETS (Frontend Visual Matching) ---
+class TaskTimesheet(TenantAwareModel):
+    description = models.CharField(max_length=255)
+    hours_logged = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.description
 

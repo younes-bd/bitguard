@@ -18,7 +18,7 @@ import datetime
 import logging
 
 try:
-    from apps.inventory.domain.models import DeliveryNote
+    from apps.delivery.domain.models import DeliveryNote
 except ImportError:
     pass
 try:
@@ -35,7 +35,7 @@ try:
 except ImportError:
     class InternalProject: objects = None; pk = None
 try:
-    from apps.inventory.domain.models import DeliveryNote
+    from apps.delivery.domain.models import DeliveryNote
 except ImportError:
     class DeliveryNote: objects = None
 try:
@@ -79,7 +79,7 @@ class InvoiceService(BaseService):
     @classmethod
     def auto_number(cls, request, doc_type='standard'):
         """Generate next sequential invoice number per tenant and type."""
-        from apps.core.models import Tenant
+        from apps.core.domain.models import Tenant
         with transaction.atomic():
             tenant = cls.get_tenant_context(request)
             request.tenant = Tenant.objects.select_for_update().get(id=tenant.id)
@@ -257,7 +257,7 @@ class InvoiceService(BaseService):
     def get_profit_loss(cls, request, date_from, date_to):
         """Compute P&L for a date range."""
         tenant = cls.get_tenant_context(request)
-        from .models import Expense
+        from .domain.models import Expense
         revenue = Payment.objects.filter(
             invoice__tenant=tenant, payment_date__range=[date_from, date_to]
         ).aggregate(total=Sum('amount'))['total'] or 0
@@ -265,7 +265,7 @@ class InvoiceService(BaseService):
             tenant=tenant, incurred_date__range=[date_from, date_to]
         ).aggregate(total=Sum('amount'))['total'] or 0
 
-        from .models import Expense as E
+        from .domain.models import Expense as E
         exp_by_cat = {}
         for exp in E.objects.filter(tenant=tenant, incurred_date__range=[date_from, date_to]):
             exp_by_cat.setdefault(exp.category, 0)
@@ -282,7 +282,7 @@ class InvoiceService(BaseService):
     @classmethod
     @transaction.atomic
     def create_from_quote(cls, request, quote_id: str) -> Invoice:
-        from apps.contracts.models import Quote
+        from apps.contracts.domain.models import Quote
         tenant = cls.get_tenant_context(request)
         quote = Quote.objects.select_related('client', 'deal').get(id=quote_id)
         if quote.status != 'accepted':
@@ -455,7 +455,7 @@ class ExpenseService(BaseService):
     @classmethod
     @transaction.atomic
     def create_expense(cls, request, data: dict):
-        from .models import Expense
+        from .domain.models import Expense
         tenant = cls.get_tenant_context(request)
         expense = Expense(tenant=tenant, **data)
         expense.full_clean()
@@ -478,7 +478,7 @@ class ExpenseService(BaseService):
 class EnterpriseService(BaseService):
     @classmethod
     def get_dashboard_stats(cls, request):
-        from .models import Expense
+        from .domain.models import Expense
         from django.db.models import Sum
         tenant = cls.get_tenant_context(request)
         invoices = Invoice.objects.filter(tenant=tenant)
@@ -687,7 +687,7 @@ class FinancialReportingService(BaseService):
             return credits - debits
 
         report = {
-            'assets': [], 'liabilities': [], 'equity': [],
+            'maintenance': [], 'liabilities': [], 'equity': [],
             'total_assets': 0, 'total_liabilities': 0, 'total_equity': 0
         }
 
@@ -697,7 +697,7 @@ class FinancialReportingService(BaseService):
             
             entry = {'code': acct.code, 'name': acct.name, 'balance': float(bal)}
             if acct.account_type == 'asset':
-                report['assets'].append(entry)
+                report['maintenance'].append(entry)
                 report['total_assets'] += float(bal)
             elif acct.account_type == 'liability':
                 report['liabilities'].append(entry)

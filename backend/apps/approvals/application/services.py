@@ -32,6 +32,27 @@ class ApprovalService(BaseService):
         request_obj.comments = comments
         request_obj.save()
         AuditService.log_action(request, "APPROVAL_APPROVED", f"approvals.ApprovalRequest:{request_obj.id}", {"comments": comments})
+        
+        # Downstream Triggers
+        payload = request_obj.payload or {}
+        if request_obj.request_type == 'purchase' and 'po_id' in payload:
+            from apps.purchase.domain.models import PurchaseOrder
+            try:
+                po = PurchaseOrder.objects.get(id=payload['po_id'])
+                po.status = 'confirmed'
+                po.approved_by = user
+                po.save()
+            except PurchaseOrder.DoesNotExist:
+                pass
+        elif request_obj.request_type == 'expense' and 'expense_id' in payload:
+            from apps.accounting.domain.models import Expense
+            try:
+                exp = Expense.objects.get(id=payload['expense_id'])
+                exp.status = 'approved'
+                exp.save()
+            except Expense.DoesNotExist:
+                pass
+                
         return request_obj
 
     @staticmethod
@@ -46,4 +67,24 @@ class ApprovalService(BaseService):
         request_obj.comments = comments
         request_obj.save()
         AuditService.log_action(request, "APPROVAL_REJECTED", f"approvals.ApprovalRequest:{request_obj.id}", {"comments": comments})
+        
+        # Downstream Triggers
+        payload = request_obj.payload or {}
+        if request_obj.request_type == 'purchase' and 'po_id' in payload:
+            from apps.purchase.domain.models import PurchaseOrder
+            try:
+                po = PurchaseOrder.objects.get(id=payload['po_id'])
+                po.status = 'cancelled'
+                po.save()
+            except PurchaseOrder.DoesNotExist:
+                pass
+        elif request_obj.request_type == 'expense' and 'expense_id' in payload:
+            from apps.accounting.domain.models import Expense
+            try:
+                exp = Expense.objects.get(id=payload['expense_id'])
+                exp.status = 'rejected'
+                exp.save()
+            except Expense.DoesNotExist:
+                pass
+                
         return request_obj

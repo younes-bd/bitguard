@@ -34,6 +34,7 @@ python manage.py test apps.accounting.tests
 python manage.py test apps.projects.tests
 python manage.py test apps.scm.tests
 python manage.py test apps.hrm.tests
+python manage.py sync_modules
 
 Load and apply the BitGuard Platform Charter (CHARTER.md).
 git status
@@ -105,9 +106,9 @@ backend/ (or bitguard/)  # Django project root
 │  │  ├─ base.py
 │  │  ├─ dev.py
 │  │  ├─ prod.py
-├─ apps/                # Backend Business Modules
-│  ├─ auth/             # Authentication, permissions, roles
-│  ├─ users/            # Users, profiles
+├─ apps/                 # Backend Business Modules
+│  ├─ auth/              # Authentication, permissions, roles
+│  ├─ users/             # Users, profiles
 │  ├─ crm/               # Customers, tickets, alerts
 │  ├─ erp/               # Inventory, operations, reporting
 │  ├─ store/             # E-commerce, products, orders, payments

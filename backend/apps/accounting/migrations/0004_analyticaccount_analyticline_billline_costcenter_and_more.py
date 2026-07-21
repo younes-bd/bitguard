@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         ('accounting', '0003_alter_invoice_project'),
         ('core', '0002_initial'),
         ('projects', '0003_alter_task_status_remove_task_tags_projectrisk_and_more'),
-        ('store', '0003_initial'),
+        ('ecommerce', '0003_initial'),
         ('tenants', '0002_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                 ('analytic_account', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounting.analyticaccount')),
                 ('bill', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lines', to='accounting.vendorbill')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
-                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='store.product')),
+                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='ecommerce.product')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),
             ],
             options={

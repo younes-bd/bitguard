@@ -1,70 +1,44 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import ProductLayout from '../layouts/ProductLayout';
-import { crmRoutes } from '../../apps/crm/routes/crmRoutes';
-import { accountingRoutes } from '../../apps/accounting/routes/accountingRoutes';
-import { socRoutes } from '../../apps/soc/routes/socRoutes';
-import { hrmRoutes } from '../../apps/hrm/routes/hrmRoutes';
-import { purchaseRoutes } from '../../apps/purchase/routes/purchaseRoutes';
-import { inventoryRoutes } from '../../apps/inventory/routes/inventoryRoutes';
-import { supportRoutes } from '../../apps/support/routes/supportRoutes';
-import { marketingRoutes } from '../../apps/marketing/routes/marketingRoutes';
+import PortalLayout from '../layouts/PortalLayout';
 
-import CrmDashboard from '../../apps/crm/pages/dashboards/CrmDashboard';
-import AccountingDashboard from '../../apps/accounting/pages/dashboards/AccountingDashboard';
-import SocDashboard from '../../apps/soc/pages/dashboards/SocDashboard';
-import HrmDashboard from '../../apps/hrm/pages/dashboards/HrmDashboard';
-
-import SupportDashboard from '../../apps/support/pages/dashboards/SupportDashboard';
-import MarketingDashboard from '../../apps/marketing/pages/dashboards/MarketingDashboard';
 import ClientPortalDashboard from '../../apps/portal/pages/dashboards/ClientPortalDashboard';
-
-import SubscriptionGuard from '../api/auth/SubscriptionGuard';
-
-
+import PortalOrders from '../../apps/portal/pages/lists/PortalOrders';
+import PortalProjects from '../../apps/portal/pages/lists/PortalProjects';
+import PortalContracts from '../../apps/portal/pages/lists/PortalContracts';
+import PortalSubscriptions from '../../apps/portal/pages/lists/PortalSubscriptions';
+import PortalAssets from '../../apps/portal/pages/lists/PortalAssets';
+import PortalInvoices from '../../apps/portal/pages/lists/PortalInvoices';
+import PortalTickets from '../../apps/portal/pages/lists/PortalTickets';
+import PortalAccountDetails from '../../apps/portal/pages/details/PortalAccountDetails';
+import PortalQuotes from '../../apps/portal/pages/lists/PortalQuotes';
+import PortalTasks from '../../apps/portal/pages/lists/PortalTasks';
+import PortalTimesheets from '../../apps/portal/pages/lists/PortalTimesheets';
+import PortalPurchases from '../../apps/portal/pages/lists/PortalPurchases';
+import PortalLeads from '../../apps/portal/pages/lists/PortalLeads';
+import PortalAccountSecurity from '../../apps/portal/pages/details/PortalAccountSecurity';
 export const PortalRoutes = () => {
     return (
         <Routes>
             {/* Unified Portal (Main Entry) */}
-            <Route element={<ProductLayout />}>
+            <Route element={<PortalLayout />}>
                 <Route index element={<ClientPortalDashboard />} />
-                <Route path="support" element={<SupportDashboard />} />
-                {supportRoutes}
+                <Route path="orders" element={<PortalOrders />} />
+                <Route path="projects" element={<PortalProjects />} />
+                <Route path="contracts" element={<PortalContracts />} />
+                <Route path="subscriptions" element={<PortalSubscriptions />} />
+                <Route path="maintenance" element={<PortalAssets />} />
+                <Route path="invoices" element={<PortalInvoices />} />
+                <Route path="tickets" element={<PortalTickets />} />
+                <Route path="account" element={<PortalAccountDetails />} />
+                <Route path="security" element={<PortalAccountSecurity />} />
+                <Route path="quotes" element={<PortalQuotes />} />
+                <Route path="tasks" element={<PortalTasks />} />
+                <Route path="timesheets" element={<PortalTimesheets />} />
+                <Route path="purchase" element={<PortalPurchases />} />
+                <Route path="leads" element={<PortalLeads />} />
             </Route>
 
-            {/* SaaS Products - Protected by SubscriptionGuard */}
-            <Route path="crm" element={<SubscriptionGuard requiredProduct="crm"><ProductLayout /></SubscriptionGuard>}>
-                <Route index element={<CrmDashboard />} />
-                {crmRoutes}
-            </Route>
-
-            <Route path="accounting" element={<SubscriptionGuard requiredProduct="accounting"><ProductLayout /></SubscriptionGuard>}>
-                <Route index element={<AccountingDashboard />} />
-                {accountingRoutes}
-            </Route>
-
-            <Route path="soc" element={<SubscriptionGuard requiredProduct="soc"><ProductLayout /></SubscriptionGuard>}>
-                <Route index element={<SocDashboard />} />
-                {socRoutes}
-            </Route>
-
-            <Route path="hrm" element={<SubscriptionGuard requiredProduct="hrm"><ProductLayout /></SubscriptionGuard>}>
-                <Route index element={<HrmDashboard />} />
-                {hrmRoutes}
-            </Route>
-
-            <Route path="purchase" element={<SubscriptionGuard requiredProduct="purchase"><ProductLayout /></SubscriptionGuard>}>
-                {purchaseRoutes}
-            </Route>
-            
-            <Route path="inventory" element={<SubscriptionGuard requiredProduct="inventory"><ProductLayout /></SubscriptionGuard>}>
-                {inventoryRoutes}
-            </Route>
-
-            <Route path="marketing" element={<SubscriptionGuard requiredProduct="marketing"><ProductLayout /></SubscriptionGuard>}>
-                <Route index element={<MarketingDashboard />} />
-                {marketingRoutes}
-            </Route>
         </Routes>
     );
 };

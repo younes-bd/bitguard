@@ -3,22 +3,22 @@ import { X, ChevronRight, ChevronLeft, Play, Pause, RefreshCw } from 'lucide-rea
 
 const SLIDES = [
     {
-        image: '/assets/images/solutions/slide1.png',
+        image: '/maintenance/images/solutions/slide1.png',
         title: 'Global Mesh Infrastructure',
         description: 'Military-grade connectivity powered by edge-optimized routing and zero-trust protocol enforcement.'
     },
     {
-        image: '/assets/images/solutions/slide2.png',
+        image: '/maintenance/images/solutions/slide2.png',
         title: 'AI Sentinel Defense',
         description: 'Next-generation behavioral analysis identifying and neutralizing threats in milliseconds.'
     },
     {
-        image: '/assets/images/solutions/slide3.png',
+        image: '/maintenance/images/solutions/slide3.png',
         title: 'Quantum-Safe Cloud Vault',
         description: 'End-to-end encrypted storage architecture designed for absolute data sovereignty and resilience.'
     },
     {
-        image: '/assets/images/solutions/slide4.png',
+        image: '/maintenance/images/solutions/slide4.png',
         title: 'Automated Compliance',
         description: 'Real-time audit-ready posture for SOC2, HIPAA, and GDPR with autonomous reporting.'
     }
@@ -68,7 +68,7 @@ const SolutionReveal = ({ onClose }) => {
             {/* Header / Brand */}
             <div className="absolute top-8 left-8 flex items-center gap-3 z-20">
                 <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center overflow-hidden p-1 border border-white/10">
-                    <img src="/assets/logo/logo.png" alt="BitGuard" className="w-full h-full object-contain" />
+                    <img src="/maintenance/logo/logo.png" alt="BitGuard" className="w-full h-full object-contain" />
                 </div>
                 <div>
                     <h3 className="text-white font-bold tracking-tight">BitGuard Solutions</h3>

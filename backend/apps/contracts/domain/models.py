@@ -5,7 +5,7 @@ Manages customer service agreements, SLA tiers, quotes, and breach tracking.
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from apps.core.models import BaseModel, TenantAwareModel
+from apps.core.domain.models import BaseModel, TenantAwareModel
 
 
 class SLATier(BaseModel):
@@ -41,7 +41,7 @@ class ServiceContract(TenantAwareModel):
         ('msp', 'Managed Service (MSP)'),
         ('retainer', 'Retainer'),
         ('project', 'Project-based'),
-        ('support', 'Support Contract'),
+        ('helpdesk', 'Support Contract'),
         ('saas', 'SaaS License'),
     ]
     STATUS_CHOICES = [
@@ -148,7 +148,7 @@ class Quote(TenantAwareModel):
 class QuoteLine(BaseModel):
     """A line item in a Quote (service, product, license, hours)."""
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='lines')
-    product = models.ForeignKey('store.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='quote_lines')
+    product = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='quote_lines')
     description = models.CharField(max_length=500)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)

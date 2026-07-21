@@ -79,7 +79,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
             # Auto-save to EDMS Vault
             try:
-                from apps.edms.domain.models import DocumentWorkspace, Document
+                from apps.documents.domain.models import DocumentWorkspace, Document
                 # Find or create a 'Generated Documents' workspace
                 workspace_name = 'Generated Documents'
                 workspace = DocumentWorkspace.objects.filter(name=workspace_name).first()

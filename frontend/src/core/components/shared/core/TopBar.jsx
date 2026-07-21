@@ -28,7 +28,7 @@ const TopBar = ({ toggleSidebar, title }) => {
                 return;
             }
             try {
-                const res = await client.get(`/dashboard/search/?q=${encodeURIComponent(searchQuery)}`);
+                const res = await client.get(`/board/search/?q=${encodeURIComponent(searchQuery)}`);
                 if (res.data?.status === 'success' && res.data?.data) {
                     setSearchResults(res.data.data.slice(0, 8));
                     setShowResults(true);

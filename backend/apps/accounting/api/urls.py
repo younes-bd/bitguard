@@ -47,6 +47,10 @@ router.register(r'vendor-bills', VendorBillViewSet, basename='vendor-bill')
 router.register(r'recurring-invoices', RecurringInvoiceViewSet, basename='recurring-invoice')
 router.register(r'fiscal-positions', FiscalPositionViewSet, basename='fiscal-position')
 
+from .views import AccountJournalViewSet, TaxViewSet
+router.register(r'account-journals', AccountJournalViewSet, basename='account-journal')
+router.register(r'taxes-v2', TaxViewSet, basename='tax-v2')
+
 urlpatterns = [
     path('portal/invoice/<uuid:token>/', ClientPortalInvoiceView.as_view(), name='client-portal-invoice'),
     path('reports/balance-sheet/', BalanceSheetView.as_view(), name='balance-sheet'),

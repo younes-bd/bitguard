@@ -4,7 +4,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 django.setup()
 
 from django.test import Client
-from apps.users.models import User
+from apps.users.domain.models import User
 import json
 
 c = Client()

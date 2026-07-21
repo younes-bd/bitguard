@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../../core/api/crmService';
-import { Target, Search, Plus, TrendingUp, Clock, CheckCircle2, XCircle, Edit2, Trash2 } from 'lucide-react';
+import { Target, Search, Plus, TrendingUp, Clock, CheckCircle2, XCircle, Edit2, Trash2, DollarSign } from 'lucide-react';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';
 import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
 const STATUS_MAP = {
@@ -95,6 +95,28 @@ const LeadList = () => {
         } catch (error) {
             console.error(error);
             import('react-hot-toast').then(m => m.default.error('Failed to convert lead'));
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleConvertToSale = async (e, lead) => {
+        e.stopPropagation();
+        if (lead.status === 'converted') return;
+        
+        const confirmConvert = window.confirm(`Convert ${lead.first_name} ${lead.last_name} directly to a Sale Order?`);
+        if (!confirmConvert) return;
+        
+        setActionLoading(true);
+        try {
+            await crmService.convertLeadToSale(lead.id);
+            import('react-hot-toast').then(m => m.default.success('Lead converted to Sale Order!'));
+            const data = await crmService.getLeads();
+            setLeads(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            console.error(error);
+            const msg = error.response?.data?.error || 'Failed to convert lead to Sale Order';
+            import('react-hot-toast').then(m => m.default.error(msg));
         } finally {
             setActionLoading(false);
         }
@@ -234,13 +256,22 @@ const LeadList = () => {
                                     <td className="px-5 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             {lead.status !== 'converted' && (
-                                                <button
-                                                    onClick={(e) => handleConvert(e, lead)}
-                                                    className="p-1.5 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 rounded-lg transition-colors"
-                                                    title="Convert to Deal"
-                                                >
-                                                    <TrendingUp size={16} />
-                                                </button>
+                                                <>
+                                                    <button
+                                                        onClick={(e) => handleConvert(e, lead)}
+                                                        className="p-1.5 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 rounded-lg transition-colors"
+                                                        title="Convert to Deal"
+                                                    >
+                                                        <TrendingUp size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => handleConvertToSale(e, lead)}
+                                                        className="p-1.5 hover:bg-blue-500/20 text-slate-400 hover:text-blue-400 rounded-lg transition-colors"
+                                                        title="Convert to Sale Order"
+                                                    >
+                                                        <DollarSign size={16} />
+                                                    </button>
+                                                </>
                                             )}
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); setIsModalOpen(true); }}

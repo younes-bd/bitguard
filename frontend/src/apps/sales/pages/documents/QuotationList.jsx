@@ -18,14 +18,14 @@ const QuotationList = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    erpService.getInvoices({ type: 'quotation' }).then(data => {
+    erpService.getSaleOrders({ status__in: 'draft,sent' }).then(data => {
       const arr = Array.isArray(data) ? data : data?.results || [];
       setQuotations(arr);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const filtered = quotations.filter(q =>
-    q.invoice_number?.toLowerCase().includes(search.toLowerCase()) ||
+    q.order_number?.toLowerCase().includes(search.toLowerCase()) ||
     q.client_name?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -79,11 +79,11 @@ const QuotationList = () => {
                 <tr><td colSpan="7" className="p-12 text-center text-slate-500">No quotations yet. Create your first one!</td></tr>
               ) : filtered.map(q => (
                 <tr key={q.id} className="hover:bg-slate-800/30 transition-colors">
-                  <td className="p-4 font-mono font-bold text-purple-400 text-sm">{q.invoice_number}</td>
+                  <td className="p-4 font-mono font-bold text-purple-400 text-sm">{q.order_number}</td>
                   <td className="p-4 font-bold text-white">{q.client_name}</td>
-                  <td className="p-4 text-slate-400 text-sm">{q.issue_date}</td>
-                  <td className="p-4 text-slate-400 text-sm">{q.expiry_date || '—'}</td>
-                  <td className="p-4 text-right font-mono font-bold text-white">${(Number(q.total_amount) || 0).toLocaleString()}</td>
+                  <td className="p-4 text-slate-400 text-sm">{new Date(q.date_order).toLocaleDateString()}</td>
+                  <td className="p-4 text-slate-400 text-sm">{q.validity_date ? new Date(q.validity_date).toLocaleDateString() : '—'}</td>
+                  <td className="p-4 text-right font-mono font-bold text-white">${(Number(q.amount_total) || 0).toLocaleString()}</td>
                   <td className="p-4">
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest ${STATUS_STYLES[q.status] || STATUS_STYLES.draft}`}>
                       {q.status}

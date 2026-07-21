@@ -2,15 +2,15 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # Subscribe to critical ecosystem nodes
-@receiver(post_save, sender='store.Order')
-@receiver(post_save, sender='support.Ticket')
+@receiver(post_save, sender='ecommerce.Order')
+@receiver(post_save, sender='helpdesk.Ticket')
 @receiver(post_save, sender='approvals.ApprovalRequest')
 # @receiver(post_save, sender='itsm.ChangeRequest')
 def push_global_notification(sender, instance, created, **kwargs):
     if not created:
         return
         
-    from apps.notifications.models import Notification
+    from apps.notifications.domain.models import Notification
     
     sender_name = sender._meta.model_name
     title = ""

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { erpService } from '../../../../core/api/erpService';
 import {
     MoreHorizontal, ArrowUpRight, DollarSign, ShoppingBag,
@@ -114,7 +114,7 @@ const ProjectList = () => {
                                         <div className="w-2 h-2 rounded-full bg-slate-500"></div>
                                         {project.client_name || 'Internal'}
                                     </span>
-                                    <span>â€¢</span>
+                                    <span>•</span>
                                     <span>Due {project.due_date || 'No Date'}</span>
                                 </div>
                             </div>

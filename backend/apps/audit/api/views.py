@@ -1,3 +1,4 @@
+# DEPRECATED - NOT MOUNTED - Use base_setup instead.
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from apps.core.permissions import HasRole, IsSuperAdmin

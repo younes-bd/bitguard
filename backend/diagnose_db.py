@@ -33,7 +33,7 @@ def check_db(path, label):
             'itsm_serviceitem': 'ITSM Items',
             'crm_client': 'CRM Clients',
             'erp_internalproject': 'Projects',
-            'support_ticket': 'Support Tickets',
+            'helpdesk_ticket': 'Support Tickets',
             'billing_invoice': 'Invoices',
         }
         print("\nKey data counts:")

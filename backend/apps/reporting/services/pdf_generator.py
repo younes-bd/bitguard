@@ -58,7 +58,7 @@ class ReportingService:
         
         # --- EDMS INTEGRATION ---
         try:
-            from apps.edms.domain.models import Document, DocumentWorkspace
+            from apps.documents.domain.models import Document, DocumentWorkspace
             record_model_str = f"{record._meta.app_label}.{record._meta.model_name}"
             
             MODULE_WORKSPACE_MAP = {

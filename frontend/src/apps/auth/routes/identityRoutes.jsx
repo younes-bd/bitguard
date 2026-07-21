@@ -2,8 +2,8 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 
 // IAM Pages
-import SecurityDashboard from '../../users/pages/dashboards/SecurityDashboard';
-import AuditLogList from '../../sysadmin/pages/lists/AuditLogList';
+import SecurityDashboard from '../pages/identity/SecurityDashboard';
+import AuditLogList from '../../settings/pages/lists/AuditLogList';
 import UserList from '../pages/identity/UserList';
 import RoleList from '../pages/identity/RoleList';
 import PermissionsList from '../pages/identity/PermissionsList';

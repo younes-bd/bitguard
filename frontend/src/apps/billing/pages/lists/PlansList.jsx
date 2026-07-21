@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, Layers, Zap, Check, Plus, Edit2, Trash2, Globe } from 'lucide-react';
 import { billingService } from '../../../../core/api/billingService';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';

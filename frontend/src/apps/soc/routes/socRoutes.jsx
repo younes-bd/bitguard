@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import DashboardRouter from '../../dashboard/routes/DashboardRouter';
+import DashboardRouter from '../../board/routes/DashboardRouter';
 import SocDashboard from '../pages/dashboards/SocDashboard';
 import WorkspaceManager from '../pages/lists/WorkspaceManager';
 import AssetsPage from '../pages/lists/AssetsPage';
@@ -29,7 +29,7 @@ export const socRoutes = (
         <Route path="alerts" element={<AlertsPage />} />
         <Route path="incidents" element={<IncidentsPage />} />
         <Route path="logs" element={<LogAnalysisPage />} />
-        <Route path="assets" element={<AssetsPage />} />
+        <Route path="maintenance" element={<AssetsPage />} />
         <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
         <Route path="intel" element={<IntelPage />} />
         <Route path="remote" element={<RemoteSupport />} />

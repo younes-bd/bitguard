@@ -68,7 +68,7 @@ export const iamService = {
     },
 
     getAuditLogs: async (params = {}) => {
-        const response = await client.get('audit/logs/', { params });
+        const response = await client.get('base_setup/audit-logs/', { params });
         return response.data?.data?.results ?? response.data?.results ?? response.data ?? [];
     },
 
@@ -108,15 +108,42 @@ export const iamService = {
 
     // --- Security Policies ---
     getSecurityPolicy: async () => {
-        const response = await client.get('iam/policy/');
-        return response.data?.data ?? response.data;
+        const response = await client.get('iam/security-policy/');
+        // Assume single policy for now
+        return response.data?.data?.[0] ?? response.data?.results?.[0] ?? response.data?.[0] ?? response.data;
     },
-    updateSecurityPolicy: async (policyData) => {
-        const response = await client.post('iam/update_policy/', policyData);
+    updateSecurityPolicy: async (id, policyData) => {
+        const response = await client.put(`iam/security-policy/${id}/`, policyData);
         return response.data?.data ?? response.data;
     },
     getSessions: async () => {
         const response = await client.get('iam/sessions/');
+        return response.data?.data ?? response.data;
+    },
+    revokeSession: async (id) => {
+        const response = await client.delete(`iam/${id}/session_revoke/`);
+        return response.data?.data ?? response.data;
+    },
+
+    // --- Record Rules ---
+    getRecordRules: async (params = {}) => {
+        const response = await client.get('iam/record-rules/', { params });
+        return response.data?.data?.results ?? response.data?.results ?? response.data ?? [];
+    },
+    getRecordRule: async (id) => {
+        const response = await client.get(`iam/record-rules/${id}/`);
+        return response.data?.data ?? response.data;
+    },
+    createRecordRule: async (data) => {
+        const response = await client.post('iam/record-rules/', data);
+        return response.data?.data ?? response.data;
+    },
+    updateRecordRule: async (id, data) => {
+        const response = await client.put(`iam/record-rules/${id}/`, data);
+        return response.data?.data ?? response.data;
+    },
+    deleteRecordRule: async (id) => {
+        const response = await client.delete(`iam/record-rules/${id}/`);
         return response.data?.data ?? response.data;
     }
 };

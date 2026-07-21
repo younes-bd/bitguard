@@ -5,8 +5,10 @@ from django.utils.text import slugify
 from django.urls import reverse
 from tinymce.models import HTMLField
 from taggit.managers import TaggableManager
+from apps.core.domain.models import TenantAwareModel
 
-class Category(models.Model):
+class Category(TenantAwareModel):
+    website = models.ForeignKey('website.Website', null=True, blank=True, on_delete=models.CASCADE, related_name='blog_categories')
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
 
@@ -22,7 +24,7 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
-class Post(models.Model):
+class Post(TenantAwareModel):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('published', 'Published'),
@@ -34,6 +36,7 @@ class Post(models.Model):
     content = HTMLField()
     featured_image = models.ImageField(upload_to='blog/featured_images/', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
+    website = models.ForeignKey('website.Website', null=True, blank=True, on_delete=models.CASCADE, related_name='blog_posts')
     tags = TaggableManager(blank=True)
     
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
@@ -64,7 +67,7 @@ class Post(models.Model):
         return reverse('blog:post_detail', args=[self.slug])
 
 
-class Comment(models.Model):
+class Comment(TenantAwareModel):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()

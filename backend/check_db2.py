@@ -1,8 +1,11 @@
-import sqlite3
+from apps.base_setup.domain.models import ErpModule
+from apps.tenants.domain.models import Tenant
 
-conn = sqlite3.connect('db.sqlite3')
-c = conn.cursor()
-c.execute("SELECT id, app, name, applied FROM django_migrations WHERE app IN ('cms', 'services') ORDER BY id")
-for row in c.fetchall():
+print("Tenants:")
+for t in Tenant.objects.all():
+    print("-", t.id, t.name, t.domain_name)
+
+print("\nErpModules grouped by tenant:")
+from django.db.models import Count
+for row in ErpModule.objects.values('tenant__name', 'tenant__id').annotate(count=Count('id')):
     print(row)
-conn.close()

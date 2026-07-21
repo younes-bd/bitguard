@@ -1,1 +1,1 @@
-﻿from .domain.exceptions import *
+from .domain.exceptions import *

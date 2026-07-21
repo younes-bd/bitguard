@@ -22,7 +22,7 @@ const PaymentTerms = () => {
     const fetchTerms = async () => {
         try {
             setLoading(true);
-            const res = await api.get('/erp/payment-terms/');
+            const res = await api.get('/accounting/payment-terms/');
             setTerms(res.data.data || res.data);
         } catch (err) {
             toast.error("Failed to load payment terms");
@@ -34,10 +34,10 @@ const PaymentTerms = () => {
     const handleSave = async () => {
         try {
             if (formData.id) {
-                await api.put(`/erp/payment-terms/${formData.id}/`, formData);
+                await api.put(`/accounting/payment-terms/${formData.id}/`, formData);
                 toast.success("Payment term updated");
             } else {
-                await api.post('/erp/payment-terms/', formData);
+                await api.post('/accounting/payment-terms/', formData);
                 toast.success("Payment term created");
             }
             setIsEditing(false);
@@ -51,7 +51,7 @@ const PaymentTerms = () => {
     const handleDelete = async (id) => {
         if (confirm('Are you sure you want to delete this payment term?')) {
             try {
-                await api.delete(`/erp/payment-terms/${id}/`);
+                await api.delete(`/accounting/payment-terms/${id}/`);
                 toast.success("Deleted successfully");
                 fetchTerms();
             } catch (err) {

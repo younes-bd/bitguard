@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Package, CheckCircle, Clock, Truck } from 'lucide-react';
 import { purchaseService } from '../../../../core/api/purchaseService';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';
@@ -105,10 +105,10 @@ const PurchaseOrderList = () => {
                         ) : orders.map(po => (
                             <tr key={po.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors">
                                 <td className="px-5 py-4 text-slate-300 font-mono">#{po.id}</td>
-                                <td className="px-5 py-4 text-white font-medium">{po.vendor?.name ?? po.vendor ?? 'â€”'}</td>
-                                <td className="px-5 py-4 text-slate-400">{po.lines?.length ?? po.item_count ?? 'â€”'} items</td>
+                                <td className="px-5 py-4 text-white font-medium">{po.vendor?.name ?? po.vendor ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-400">{po.lines?.length ?? po.item_count ?? '—'} items</td>
                                 <td className="px-5 py-4 text-emerald-400 font-semibold">${Number(po.total_amount ?? 0).toFixed(2)}</td>
-                                <td className="px-5 py-4 text-slate-400">{po.created_at?.split('T')[0] ?? 'â€”'}</td>
+                                <td className="px-5 py-4 text-slate-400">{po.created_at?.split('T')[0] ?? '—'}</td>
                                 <td className="px-5 py-4">{statusBadge(po.status)}</td>
                                 <td className="px-5 py-4">
                                     {(po.status === 'confirmed' || po.status === 'sent') && (
@@ -129,7 +129,7 @@ const PurchaseOrderList = () => {
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-slate-800 flex justify-between items-center">
                             <h2 className="text-xl font-bold text-white">Create Purchase Order</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">âœ•</button>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
                         </div>
                         <form onSubmit={handleCreate} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                             <div className="grid grid-cols-2 gap-4">
@@ -183,7 +183,7 @@ const PurchaseOrderList = () => {
                                                 <div className="w-24 text-right text-emerald-400 font-semibold text-sm">
                                                     ${((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)).toFixed(2)}
                                                 </div>
-                                                <button type="button" onClick={() => removeLineItem(index)} className="text-slate-500 hover:text-red-400 transition-colors">âœ•</button>
+                                                <button type="button" onClick={() => removeLineItem(index)} className="text-slate-500 hover:text-red-400 transition-colors">✕</button>
                                             </div>
                                         ))}
                                     </div>

@@ -5,7 +5,7 @@ Monitors platform activity against the BitGuard Enterprise Charter.
 from django.utils import timezone
 from apps.core.services.base import BaseService
 from apps.core.services.audit import AuditService
-from apps.audit.models import AuditLog
+from apps.base_setup.domain.models import AuditTrail
 
 class SecurityAuditService(BaseService):
     """
@@ -22,11 +22,11 @@ class SecurityAuditService(BaseService):
         # Check 1: Multi-tenancy isolation (implicitly checked by BaseService)
         
         # Check 2: Audit coverage (every mutation should have a log)
-        total_actions = AuditLog.objects.filter(tenant=tenant).count()
-        recent_breaches = AuditLog.objects.filter(tenant=tenant, action="SOC_BREACH_DECLARED").count()
+        total_actions = AuditTrail.objects.filter(tenant=tenant).count()
+        recent_breaches = AuditTrail.objects.filter(tenant=tenant, action="SOC_BREACH_DECLARED").count()
         
         # Check 3: Remote session auditing
-        from apps.soc.models import RemoteSession
+        from apps.soc.domain.models import RemoteSession
         active_sessions = RemoteSession.objects.filter(tenant=tenant, status='active').count()
         
         compliance_score = 100

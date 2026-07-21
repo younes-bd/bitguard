@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Ticket, FileText, CreditCard, LogOut, Shield, User } from 'lucide-react';
+import { LayoutDashboard, Ticket, FileText, CreditCard, LogOut, Shield, User, ShoppingCart, Briefcase, Target, Cloud } from 'lucide-react';
 import { useAuth } from '../../../core/hooks/useAuth';
 
 const navItems = [
     { label: 'Overview', path: '/portal', icon: LayoutDashboard, end: true },
-    { label: 'My Tickets', path: '/portal/tickets', icon: Ticket },
+    { label: 'Sale Orders', path: '/portal/orders', icon: ShoppingCart },
     { label: 'Invoices', path: '/portal/invoices', icon: FileText },
+    { label: 'My Tickets', path: '/portal/tickets', icon: Ticket },
+    { label: 'Projects', path: '/portal/projects', icon: Briefcase },
     { label: 'Contracts', path: '/portal/contracts', icon: Shield },
-    { label: 'Billing', path: '/portal/billing', icon: CreditCard },
+    { label: 'Subscriptions', path: '/portal/subscriptions', icon: Cloud },
+    { label: 'Managed Assets', path: '/portal/assets', icon: Target },
 ];
 
 const PortalLayout = () => {

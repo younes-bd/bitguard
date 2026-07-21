@@ -1,21 +1,6 @@
 from django.contrib import admin
-from . import models
+from apps.mrp.domain.models import WorkCenter, BillOfMaterial, ManufacturingOrder
 
-# Auto-generated Admin for mrp
-
-@admin.register(models.WorkCenter)
-class WorkCenterAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.BillOfMaterial)
-class BillOfMaterialAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.BOMComponent)
-class BOMComponentAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.ManufacturingOrder)
-class ManufacturingOrderAdmin(admin.ModelAdmin):
-    pass
-
+admin.site.register(WorkCenter)
+admin.site.register(BillOfMaterial)
+admin.site.register(ManufacturingOrder)

@@ -18,6 +18,15 @@ class ApprovalRequestViewSet(viewsets.ModelViewSet):
             return qs
         return qs.none()
 
+    @action(detail=False, methods=['get'], url_path='pending')
+    def pending(self, request):
+        qs = self.get_queryset().filter(
+            status='pending',
+            steps__approver=request.user,
+            steps__status='pending'
+        ).distinct()
+        return Response(self.get_serializer(qs, many=True).data)
+
     def create(self, request, *args, **kwargs):
         # Override to ensure requester is attached cleanly via the service layer
         approval = ApprovalService.submit_request(request.data, request)

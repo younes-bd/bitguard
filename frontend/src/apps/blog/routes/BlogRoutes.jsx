@@ -1,14 +1,14 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import PublicLayout from '../../../core/layouts/PublicLayout';
+import WebsiteLayout from '../../../core/layouts/WebsiteLayout';
 
-import BlogList from '../pages/lists/BlogList';
-import BlogPost from '../pages/details/BlogPost';
+import BlogList from '../pages/public/BlogList';
+import BlogPost from '../pages/public/BlogPost';
 
 export const BlogRoutes = () => {
     return (
         <Routes>
-            <Route element={<PublicLayout />}>
+            <Route element={<WebsiteLayout />}>
                 <Route index element={<BlogList />} />
                 <Route path=":slug" element={<BlogPost />} />
             </Route>

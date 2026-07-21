@@ -20,7 +20,7 @@ export const adminMenu = [
     { label: 'Customer & Revenue', icon: null, path: null },
     { label: 'Sales & CRM', icon: Users, path: '/admin/crm', permissions: ['view_client'] },
     { label: 'Marketing Automation', icon: Megaphone, path: '/admin/marketing', permissions: ['view_campaign'] },
-    { label: 'Commerce & Storefront', icon: ShoppingBag, path: '/admin/store', permissions: ['view_product'] },
+    { label: 'Commerce & Storefront', icon: ShoppingBag, path: '/admin/ecommerce', permissions: ['view_product'] },
     { label: 'Subscription Billing', icon: CreditCard, path: '/admin/billing', permissions: ['view_plan'] },
 
     // 2. Finance & Resources
@@ -32,7 +32,7 @@ export const adminMenu = [
 
     // 3. IT Service Management (ITSM)
     { label: 'IT Service Management (ITSM)', icon: null, path: null },
-    { label: 'IT Service Desk', icon: LifeBuoy, path: '/admin/support', permissions: ['view_ticket'] },
+    { label: 'IT Service Desk', icon: LifeBuoy, path: '/admin/helpdesk', permissions: ['view_ticket'] },
     { label: 'Service Catalog', icon: Tag, path: '/admin/itsm/catalog', permissions: ['view_changerequest'] },
     { label: 'Change Management', icon: GitBranch, path: '/admin/itsm', permissions: ['view_changerequest'] },
     { label: 'IT Asset Management (ITAM)', icon: Monitor, path: '/admin/itam', permissions: ['view_managedendpoint'] },
@@ -205,17 +205,17 @@ export const productMenu = {
         {
             title: 'Store & Procurement',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/store/dashboard' },
-                { label: 'Categories', icon: Tags, path: '/admin/store/categories' },
-                { label: 'Products & Services', icon: Box, path: '/admin/store/products' },
-                { label: 'Procurement Orders', icon: ShoppingCart, path: '/admin/store/orders' },
-                { label: 'Client Accounts', icon: Users, path: '/admin/store/customers' },
-                { label: 'Client Subscriptions', icon: RefreshCw, path: '/admin/store/subscriptions' },
-                { label: 'Fulfillment & Logistics', icon: Truck, path: '/admin/store/shipping' },
-                { label: 'Integrations', icon: Puzzle, path: '/admin/store/addons' },
-                { label: 'Campaign Pages', icon: Megaphone, path: '/admin/store/landing-pages' },
-                { label: 'Analytics', icon: Activity, path: '/admin/store/tracking' },
-                { label: 'Settings', icon: Settings, path: '/admin/store/settings' },
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/ecommerce/dashboard' },
+                { label: 'Categories', icon: Tags, path: '/admin/ecommerce/categories' },
+                { label: 'Products & Services', icon: Box, path: '/admin/ecommerce/products' },
+                { label: 'Procurement Orders', icon: ShoppingCart, path: '/admin/ecommerce/orders' },
+                { label: 'Client Accounts', icon: Users, path: '/admin/ecommerce/customers' },
+                { label: 'Client Subscriptions', icon: RefreshCw, path: '/admin/ecommerce/subscriptions' },
+                { label: 'Fulfillment & Logistics', icon: Truck, path: '/admin/ecommerce/shipping' },
+                { label: 'Integrations', icon: Puzzle, path: '/admin/ecommerce/addons' },
+                { label: 'Campaign Pages', icon: Megaphone, path: '/admin/ecommerce/landing-pages' },
+                { label: 'Analytics', icon: Activity, path: '/admin/ecommerce/tracking' },
+                { label: 'Settings', icon: Settings, path: '/admin/ecommerce/settings' },
             ]
         }
     ],
@@ -284,13 +284,13 @@ export const productMenu = {
         {
             title: 'Service Desk',
             items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/support' },
-                { label: 'Tickets', icon: FileText, path: '/admin/support/tickets' },
-                { label: 'Escalations', icon: AlertCircle, path: '/admin/support/escalations' },
-                { label: 'SLA Breaches', icon: ShieldCheck, path: '/admin/support/sla-breaches' },
-                { label: 'Live SLA Board', icon: Activity, path: '/admin/support/sla-live' },
-                { label: 'Knowledge Base', icon: BookOpen, path: '/admin/support/knowledge-base' },
-                { label: 'Settings', icon: Settings, path: '/admin/support/settings' },
+                { label: 'Overview', icon: LayoutDashboard, path: '/admin/helpdesk' },
+                { label: 'Tickets', icon: FileText, path: '/admin/helpdesk/tickets' },
+                { label: 'Escalations', icon: AlertCircle, path: '/admin/helpdesk/escalations' },
+                { label: 'SLA Breaches', icon: ShieldCheck, path: '/admin/helpdesk/sla-breaches' },
+                { label: 'Live SLA Board', icon: Activity, path: '/admin/helpdesk/sla-live' },
+                { label: 'Knowledge Base', icon: BookOpen, path: '/admin/helpdesk/knowledge-base' },
+                { label: 'Settings', icon: Settings, path: '/admin/helpdesk/settings' },
             ]
         }
     ],

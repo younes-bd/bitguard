@@ -1,93 +1,101 @@
-from rest_framework import permissions, status, views
+from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
-class ClientDashboardView(views.APIView):
-    """
-    Aggregated data for the logged-in client (Workspaces, Tickets, Invoices, Projects, Contracts).
-    """
-    permission_classes = [permissions.IsAuthenticated]
+from ..domain.models import PortalAccess, PortalShare
+from .serializers import PortalAccessSerializer, PortalShareSerializer
 
+class PortalAccessViewSet(viewsets.ModelViewSet):
+    queryset = PortalAccess.objects.all()
+    serializer_class = PortalAccessSerializer
+    permission_classes = [IsAuthenticated]
+
+class PortalShareViewSet(viewsets.ModelViewSet):
+    queryset = PortalShare.objects.all()
+    serializer_class = PortalShareSerializer
+    permission_classes = [IsAuthenticated]
+
+class PortalDashboardView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        from apps.support.models import Ticket
-        from apps.accounting.models import Invoice
-        from apps.contracts.models import ServiceContract
-        from apps.projects.models import Project
-        from apps.users.models import TenantMembership
+        from apps.crm.domain.models import Client
+        from apps.accounting.domain.models import Invoice
+        from apps.helpdesk.domain.models import Ticket
+        from apps.sale.domain.models import SaleOrder
+        from apps.projects.domain.models import Project, Task
+        from apps.contracts.domain.models import ServiceContract
+        from apps.billing.domain.models import Subscription
+        from apps.maintenance.domain.models import Asset
         
-        # Identity linkage: Get all TenantMemberships for the current user
-        memberships = TenantMembership.objects.filter(user=request.user, is_active=True).select_related('tenant', 'tenant__partner')
-        
-        if not memberships.exists():
-            return Response({"error": "No tenant access found for this user."}, status=status.HTTP_404_NOT_FOUND)
+        client = Client.objects.filter(contacts__user=request.user).first()
+        if not client:
+            return Response({'error': 'No client profile found for your user.'}, status=404)
             
-        tenants = [m.tenant for m in memberships]
-        tenant_ids = [t.id for t in tenants]
+        # 1. Accounting
+        invoices = Invoice.objects.filter(client=client).order_by('-issue_date')
         
-        # Extract partners from the allowed tenants
-        partners = [t.partner for t in tenants if t.partner]
-        partner_ids = [p.id for p in partners]
+        # 2. Support Tickets
+        tickets = Ticket.objects.filter(created_by=request.user).order_by('-created_at')
         
-        # Resolve the crm.Client instances for these partners (since Invoices/Projects are linked to Client)
-        from apps.crm.models import Client
-        clients = Client.objects.filter(partner_id__in=partner_ids)
-        client_ids = [c.id for c in clients]
-
-        # Queries
-        tickets = Ticket.objects.filter(customer=request.user).order_by('-created_at').values(
-            'id', 'title', 'status', 'created_at', 'priority'
-        )
+        # 3. Sale Orders / Quotes
+        orders = SaleOrder.objects.filter(client=client).order_by('-date_order')
         
-        invoices = []
-        projects = []
-        contracts = []
+        # 4. Projects
+        projects = Project.objects.filter(client=client).order_by('-created_at')
         
-        if client_ids:
-            invoices = Invoice.objects.filter(client_id__in=client_ids).order_by('-issue_date').values(
-                'id', 'invoice_number', 'total_amount', 'status', 'issue_date', 'due_date'
-            )
-            projects = Project.objects.filter(client_id__in=client_ids).order_by('-created_at').values(
-                'id', 'name', 'status', 'progress_override', 'deadline'
-            )
-            contracts = ServiceContract.objects.filter(client_id__in=client_ids).order_by('-start_date').values(
-                'id', 'title', 'status', 'amount', 'start_date', 'end_date'
-            )
-            
-        tenant_data = [
-            {
-                "id": t.id, 
-                "name": t.name, 
-                "domain": t.domain, 
-                "subscription_plan": t.subscription_plan, 
-                "is_active": t.is_active, 
-                "allowed_modules": t.allowed_modules
-            } 
-            for t in tenants
-        ]
+        # 5. Contracts
+        contracts = ServiceContract.objects.filter(client=client).order_by('-start_date')
         
-        # Format the client profile details
-        primary_client = clients[0] if clients else None
+        # 6. SaaS Subscriptions (Billing)
+        # Note: Subscriptions might not have a direct client link but might be linked via tenant
+        # If subscription has no client, we can match by user
+        subscriptions = Subscription.objects.filter(user=request.user).order_by('-created_at')
         
-        if primary_client:
-            client_data = {
-                "name": primary_client.name,
-                "type": primary_client.client_type,
-            }
-        elif partners:
-            client_data = {
-                "name": partners[0].name,
-                "type": partners[0].partner_type,
-            }
-        else:
-            client_data = {
-                "name": request.user.first_name or request.user.email,
-                "type": "individual",
-            }
-
+        # 7. Assets / Endpoints
+        assets = Asset.objects.filter(client=client).order_by('-created_at')
+        
         return Response({
-            "client": client_data,
-            "tickets": list(tickets),
-            "invoices": list(invoices),
-            "projects": list(projects),
-            "contracts": list(contracts),
-            "tenants": tenant_data
+            'client': {'id': client.id, 'name': client.name},
+            
+            # Aggregated Counts for the grid
+            'counts': {
+                'invoices': invoices.count(),
+                'tickets': tickets.count(),
+                'orders': orders.count(),
+                'projects': projects.count(),
+                'contracts': contracts.count(),
+                'subscriptions': subscriptions.count(),
+                'maintenance': assets.count(),
+            },
+            
+            # Additional logic for specific statuses (like Odoo's "3 To Pay", "1 Open")
+            'open_invoices': invoices.filter(status='sent').count(),
+            'open_tickets': tickets.filter(status='open').count(),
+            'active_contracts': contracts.filter(status='active').count(),
+            
+            # Recent items for the quick lists
+            'recent_invoices': [{'id': i.id, 'number': str(i.invoice_number or i.id), 'amount': str(i.amount_total), 'status': i.status, 'date': str(i.issue_date)} for i in invoices[:5]],
+            'recent_tickets': [{'id': t.id, 'subject': t.subject, 'status': t.status, 'date': str(t.created_at.date())} for t in tickets[:5]],
+            'recent_orders': [{'id': o.id, 'number': str(o.order_number), 'amount': str(o.amount_total), 'status': o.status, 'date': str(o.date_order)} for o in orders[:5]],
+            'recent_projects': [{'id': p.id, 'name': p.name, 'status': p.status} for p in projects[:5]],
         })
+
+class PortalInvoiceListView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        from apps.crm.domain.models import Client
+        from apps.accounting.domain.models import Invoice
+        
+        client = Client.objects.filter(contacts__user=request.user).first()
+        if not client:
+            return Response([])
+            
+        invoices = Invoice.objects.filter(client=client).order_by('-issue_date')
+        return Response([{
+            'id': i.id, 
+            'number': str(i), 
+            'amount': str(i.amount_total), 
+            'status': i.status, 
+            'due_date': str(i.due_date)
+        } for i in invoices])

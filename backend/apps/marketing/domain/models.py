@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from apps.core.models import BaseModel, TenantAwareModel
+from apps.core.domain.models import BaseModel, TenantAwareModel
 
 class Campaign(BaseModel):
     STATUS_CHOICES = [
@@ -121,3 +121,27 @@ class MarketingWorkflow(BaseModel):
     
     def __str__(self):
         return self.name
+
+
+
+# --- MARKETING SUB-DOMAINS (Frontend Visual Matching) ---
+class MassMailing(TenantAwareModel):
+    subject = models.CharField(max_length=255)
+    sent_count = models.IntegerField(default=0)
+
+class SocialPost(TenantAwareModel):
+    platform = models.CharField(max_length=50)
+    content = models.TextField()
+
+class SMSCampaign(TenantAwareModel):
+    message = models.TextField()
+    recipients_count = models.IntegerField(default=0)
+
+class Event(TenantAwareModel):
+    title = models.CharField(max_length=255)
+    date = models.DateTimeField(null=True, blank=True)
+
+class Survey(TenantAwareModel):
+    title = models.CharField(max_length=255)
+    active = models.BooleanField(default=True)
+

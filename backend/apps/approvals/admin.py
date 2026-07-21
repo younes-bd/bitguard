@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ApprovalRequest, ApprovalStep
+from .domain.models import ApprovalRequest, ApprovalStep
 
 class ApprovalStepInline(admin.TabularInline):
     model = ApprovalStep

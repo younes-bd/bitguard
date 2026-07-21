@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from apps.core.models import BaseModel, TenantAwareModel
+from apps.core.domain.models import BaseModel, TenantAwareModel
 
 class ApprovalRequest(TenantAwareModel):
     STATUS_CHOICES = (

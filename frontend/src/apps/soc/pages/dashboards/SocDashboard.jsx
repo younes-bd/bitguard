@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import securityService from '../../../../core/api/securityService';
 import {
@@ -73,28 +73,28 @@ const SocDashboard = () => {
                 <KpiCard
                     icon={<BellAlertIcon className="w-8 h-8 text-rose-500" />}
                     label="Active Alerts"
-                    value={loading ? 'â€¦' : (stats?.open_alerts ?? 0)}
+                    value={loading ? '…' : (stats?.open_alerts ?? 0)}
                     sub="Unresolved detections"
                     color="rose"
                 />
                 <KpiCard
                     icon={<FireIcon className="w-8 h-8 text-orange-500" />}
                     label="Open Incidents"
-                    value={loading ? 'â€¦' : (stats?.open_incidents ?? 0)}
+                    value={loading ? '…' : (stats?.open_incidents ?? 0)}
                     sub="Requires attention"
                     color="orange"
                 />
                 <KpiCard
                     icon={<ComputerDesktopIcon className="w-8 h-8 text-blue-500" />}
                     label="Managed Endpoints"
-                    value={loading ? 'â€¦' : (stats?.managed_endpoints ?? 0)}
+                    value={loading ? '…' : (stats?.managed_endpoints ?? 0)}
                     sub="Registered devices"
                     color="blue"
                 />
                 <KpiCard
                     icon={<ShieldCheckIcon className="w-8 h-8 text-emerald-500" />}
                     label="Monitored Apps"
-                    value={loading ? 'â€¦' : (stats?.monitored_apps ?? 0)}
+                    value={loading ? '…' : (stats?.monitored_apps ?? 0)}
                     sub="Cloud app inventory"
                     color="emerald"
                 />
@@ -105,7 +105,7 @@ const SocDashboard = () => {
                 {[
                     { label: 'Alerts', path: 'alerts', color: 'rose' },
                     { label: 'Incidents', path: 'incidents', color: 'orange' },
-                    { label: 'Endpoints', path: 'assets', color: 'blue' },
+                    { label: 'Endpoints', path: 'maintenance', color: 'blue' },
                     { label: 'Workspaces', path: 'workspaces', color: 'indigo' },
                     { label: 'Cloud Apps', path: 'cloud', color: 'purple' },
                     { label: 'Network', path: 'network', color: 'cyan' },
@@ -129,13 +129,13 @@ const SocDashboard = () => {
                         <BellAlertIcon className="w-5 h-5 text-indigo-500" />
                         Recent Alerts
                     </h3>
-                    <Link to="alerts" className="text-xs text-indigo-400 hover:text-indigo-300">View All â†’</Link>
+                    <Link to="alerts" className="text-xs text-indigo-400 hover:text-indigo-300">View All →</Link>
                 </div>
                 <div className="divide-y divide-slate-700">
                     {alerts.length === 0 ? (
                         <div className="p-8 text-center text-slate-500 flex flex-col items-center gap-2">
                             <CheckCircleIcon className="w-10 h-10 text-emerald-600/40" />
-                            {loading ? 'Loadingâ€¦' : 'No active alerts â€” system is clear'}
+                            {loading ? 'Loading…' : 'No active alerts — system is clear'}
                         </div>
                     ) : (
                         alerts.map(alert => (
@@ -154,7 +154,7 @@ const SocDashboard = () => {
                                     <p className="text-sm text-slate-400 mt-1 line-clamp-1">{alert.description}</p>
                                     <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
                                         <span>{new Date(alert.created_at).toLocaleTimeString()}</span>
-                                        {alert.source && <><span>â€¢</span><span>{alert.source}</span></>}
+                                        {alert.source && <><span>•</span><span>{alert.source}</span></>}
                                     </div>
                                 </div>
                             </div>

@@ -1,1 +1,1 @@
-﻿from .api.permissions import *
+from .api.permissions import *

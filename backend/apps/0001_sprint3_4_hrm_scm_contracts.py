@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_deleted', models.BooleanField(default=False)),
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
-                ('contract_type', models.CharField(choices=[('msp', 'Managed Service (MSP)'), ('retainer', 'Retainer'), ('project', 'Project-based'), ('support', 'Support Contract'), ('saas', 'SaaS License')], max_length=20)),
+                ('contract_type', models.CharField(choices=[('msp', 'Managed Service (MSP)'), ('retainer', 'Retainer'), ('project', 'Project-based'), ('helpdesk', 'Support Contract'), ('saas', 'SaaS License')], max_length=20)),
                 ('status', models.CharField(choices=[('draft', 'Draft'), ('active', 'Active'), ('pending_renewal', 'Pending Renewal'), ('expired', 'Expired'), ('terminated', 'Terminated')], default='draft', max_length=20)),
                 ('start_date', models.DateField()),
                 ('end_date', models.DateField()),

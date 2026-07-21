@@ -17,7 +17,7 @@ const SaleOrderList = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    erpService.getSaleOrders().then(data => {
+    erpService.getSaleOrders({ status: 'sale' }).then(data => {
       const arr = Array.isArray(data) ? data : data?.results || [];
       setOrders(arr);
     }).catch(() => {}).finally(() => setLoading(false));
@@ -25,7 +25,7 @@ const SaleOrderList = () => {
 
   const filtered = orders.filter(q =>
     q.order_number?.toLowerCase().includes(search.toLowerCase()) ||
-    q.customer_name?.toLowerCase().includes(search.toLowerCase())
+    q.client_name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -78,7 +78,7 @@ const SaleOrderList = () => {
               ) : filtered.map(q => (
                 <tr key={q.id} className="hover:bg-slate-800/30 transition-colors">
                   <td className="p-4 font-mono font-bold text-purple-400 text-sm">{q.order_number}</td>
-                  <td className="p-4 font-bold text-white">{q.customer_name}</td>
+                  <td className="p-4 font-bold text-white">{q.client_name || `Client #${q.client}`}</td>
                   <td className="p-4 text-slate-400 text-sm">{new Date(q.date_order).toLocaleDateString()}</td>
                   <td className="p-4 text-right font-mono font-bold text-white">${(Number(q.amount_total) || 0).toLocaleString()}</td>
                   <td className="p-4">

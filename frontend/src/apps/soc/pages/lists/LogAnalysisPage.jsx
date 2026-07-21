@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Database, Search, Filter, Download, RefreshCw, AlertTriangle, Info, AlertCircle, Loader2 } from 'lucide-react';
 import { platformService } from '../../../../core/api/platformService';
 

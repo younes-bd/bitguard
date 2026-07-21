@@ -144,6 +144,16 @@ export const crmService = {
         }
     },
 
+    convertLeadToSale: async (id) => {
+        try {
+            const response = await client.post(`crm/leads/${id}/convert-to-sale/`);
+            return response.data?.data ?? response.data?.results ?? response.data;
+        } catch (error) {
+            console.error(`Convert Lead to Sale ${id} Error:`, error);
+            throw error;
+        }
+    },
+
     // --- DEALS ---
     getDeals: async (params = {}) => {
         try {
@@ -181,6 +191,16 @@ export const crmService = {
             return response.data?.data ?? response.data?.results ?? response.data;
         } catch (error) {
             console.error(`Delete Deal ${id} Error:`, error);
+            throw error;
+        }
+    },
+
+    convertDealToSale: async (id) => {
+        try {
+            const response = await client.post(`crm/deals/${id}/convert-to-sale/`);
+            return response.data?.data ?? response.data?.results ?? response.data;
+        } catch (error) {
+            console.error(`Convert Deal to Sale ${id} Error:`, error);
             throw error;
         }
     },

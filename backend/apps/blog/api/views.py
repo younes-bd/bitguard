@@ -57,10 +57,10 @@ class PostViewSet(viewsets.ModelViewSet):
             self.get_queryset().filter(category__slug=cat_slug), many=True
         ).data)
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'slug'
 
 class CommentViewSet(viewsets.ModelViewSet):

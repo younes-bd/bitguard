@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import client from '../../../../core/api/client';
-import { storeService } from '../../../../core/api/storeService';
+import { ecommerceService } from '../../../../core/api/ecommerceService';
 import { FileText, ArrowLeft, Check, X, Calendar, User, DollarSign, Download, Plus } from 'lucide-react';
 
 const AddQuoteLine = ({ quoteId, onAdd }) => {
@@ -12,7 +12,7 @@ const AddQuoteLine = ({ quoteId, onAdd }) => {
 
     useEffect(() => {
         if (isAdding && products.length === 0) {
-            storeService.getProducts().then(res => setProducts(res || []));
+            ecommerceService.getProducts().then(res => setProducts(res || []));
         }
     }, [isAdding]);
 

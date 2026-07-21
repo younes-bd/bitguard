@@ -1,5 +1,5 @@
 from django.db import models
-from apps.core.models import UUIDModel
+from apps.core.domain.models import UUIDModel
 
 def default_modules():
     return ["core"]
@@ -11,6 +11,7 @@ class Tenant(UUIDModel):
     subscription_plan = models.CharField(max_length=100, default='free')
     is_active = models.BooleanField(default=True)
     allowed_modules = models.JSONField(default=default_modules, help_text="List of enabled modules (e.g. ['crm', 'soc'])")
+    logo = models.ImageField(upload_to='tenant_logos/', null=True, blank=True, help_text="Company Logo")
 
     class Meta:
         verbose_name = 'Tenant'

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plus, Globe, Phone, Mail, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 import { purchaseService } from '../../../../core/api/purchaseService';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';

@@ -11,7 +11,7 @@ const DeferredRevenue = () => {
         const fetchDeferred = async () => {
             try {
                 // Fetch real data from the Deferred Revenue API endpoint
-                const res = await client.get('/erp/deferred-revenue/');
+                const res = await client.get('/accounting/deferred-revenue/');
                 const data = res.data?.data || res.data || [];
                 setSchedules(data);
                 

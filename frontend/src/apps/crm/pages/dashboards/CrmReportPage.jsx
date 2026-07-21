@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieChart, Users, TrendingUp, Activity, Loader2 } from 'lucide-react';
 import { crmService } from '../../../../core/api/crmService';
 

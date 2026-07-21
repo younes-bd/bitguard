@@ -1,7 +1,7 @@
 import datetime
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.projects.models import Milestone
+from apps.projects.domain.models import Milestone
 
 @receiver(post_save, sender=Milestone)
 def generate_invoice_from_milestone(sender, instance, created, **kwargs):
@@ -9,7 +9,7 @@ def generate_invoice_from_milestone(sender, instance, created, **kwargs):
     Generates an ERP invoice when a billable milestone is completed.
     """
     if instance.is_completed and instance.invoice_on_completion and instance.invoice_amount:
-        from apps.accounting.models import Invoice, InvoiceItem
+        from apps.accounting.domain.models import Invoice, InvoiceItem
         from django.utils import timezone
         
         if Invoice.objects.filter(reference=f"Milestone #{instance.id}").exists():

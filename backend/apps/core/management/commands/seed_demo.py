@@ -67,7 +67,7 @@ class Command(BaseCommand):
         self.stdout.write(f"   {self.style.SUCCESS('✔')}  {label}")
 
     def _ensure_tenant(self):
-        from apps.tenants.models import Tenant
+        from apps.tenants.domain.models import Tenant
         tenant, created = Tenant.objects.get_or_create(
             domain="bitguard.tech",
             defaults={"name": "BitGuard", "is_active": True},
@@ -94,21 +94,21 @@ class Command(BaseCommand):
         else:
             self._ok("Admin user already exists")
             
-        from apps.users.models import TenantMembership
+        from apps.users.domain.models import TenantMembership
         TenantMembership.objects.get_or_create(user=user, tenant=tenant)
         return user
 
     def _flush(self):
         self.stdout.write(self.style.WARNING("  ⚠️  Flushing demo data…"))
-        from apps.crm.models import Client, Deal, Contact, Lead, Activity
-        from apps.support.models import Ticket, KnowledgeArticle
-        from apps.billing.models import Plan, Subscription
-        from apps.accounting.models import Invoice
-        from apps.soc.models import Alert, Incident
-        from apps.hrm.models import Employee, LeaveRequest
-        from apps.purchase.models import PurchaseOrder, InventoryItem
-        from apps.projects.models import Project, Task
-        from apps.notifications.models import Notification
+        from apps.crm.domain.models import Client, Deal, Contact, Lead, Activity
+        from apps.helpdesk.domain.models import Ticket, KnowledgeArticle
+        from apps.billing.domain.models import Plan, Subscription
+        from apps.accounting.domain.models import Invoice
+        from apps.soc.domain.models import Alert, Incident
+        from apps.hr.domain.models import Employee, LeaveRequest
+        from apps.purchase.domain.models import PurchaseOrder, InventoryItem
+        from apps.projects.domain.models import Project, Task
+        from apps.notifications.domain.models import Notification
 
         for Model in [Activity, Deal, Lead, Contact, Client,
                       Ticket, KnowledgeArticle,
@@ -129,7 +129,7 @@ class Command(BaseCommand):
 
     def _seed_crm(self, tenant, admin):
         self.stdout.write("\n  ── CRM")
-        from apps.crm.models import Client, Contact, Deal, Lead, Activity
+        from apps.crm.domain.models import Client, Contact, Deal, Lead, Activity
 
         now = timezone.now()
 
@@ -209,7 +209,7 @@ class Command(BaseCommand):
 
     def _seed_support(self, tenant, admin):
         self.stdout.write("\n  ── Support")
-        from apps.support.models import Ticket, KnowledgeArticle
+        from apps.helpdesk.domain.models import Ticket, KnowledgeArticle
 
         now = timezone.now()
 
@@ -261,8 +261,8 @@ class Command(BaseCommand):
 
     def _seed_billing(self, tenant, admin):
         self.stdout.write("\n  ── Billing")
-        from apps.billing.models import Plan, Subscription
-        from apps.accounting.models import Invoice
+        from apps.billing.domain.models import Plan, Subscription
+        from apps.accounting.domain.models import Invoice
 
         now = timezone.now()
 
@@ -327,7 +327,7 @@ class Command(BaseCommand):
 
     def _seed_soc(self, tenant, admin):
         self.stdout.write("\n  ── Security (SOC)")
-        from apps.soc.models import Alert, Incident
+        from apps.soc.domain.models import Alert, Incident
 
         alerts_data = [
             ("Brute force attack detected", "critical", "External Firewall"),
@@ -370,7 +370,7 @@ class Command(BaseCommand):
 
     def _seed_hrm(self, tenant, admin):
         self.stdout.write("\n  ── HRM")
-        from apps.hrm.models import Employee, LeaveRequest, Department
+        from apps.hr.domain.models import Employee, LeaveRequest, Department
 
         departments = ["Engineering", "Security", "Sales", "Operations", "Finance"]
         employee_names = [
@@ -393,7 +393,7 @@ class Command(BaseCommand):
                 }
             )
             # Create employee
-            from apps.users.models import TenantMembership
+            from apps.users.domain.models import TenantMembership
             TenantMembership.objects.get_or_create(user=emp_user, tenant=tenant)
             dept, _ = Department.objects.get_or_create(
                 name=departments[i % len(departments)],
@@ -430,8 +430,8 @@ class Command(BaseCommand):
 
     def _seed_scm(self, tenant, admin):
         self.stdout.write("\n  ── SCM / Procurement")
-        from apps.purchase.models import PurchaseOrder, InventoryItem
-        from apps.core.models import Partner
+        from apps.purchase.domain.models import PurchaseOrder, InventoryItem
+        from apps.core.domain.models import Partner
 
         vendors = ["Dell Technologies", "Palo Alto Networks", "CrowdStrike", "Cisco Systems"]
         for i, vendor_name in enumerate(vendors):
@@ -471,7 +471,7 @@ class Command(BaseCommand):
 
     def _seed_projects(self, tenant, admin):
         self.stdout.write("\n  ── Projects")
-        from apps.projects.models import Project, Task
+        from apps.projects.domain.models import Project, Task
 
         projects_data = [
             ("Zero-Trust Architecture Rollout", "active"),
@@ -521,9 +521,9 @@ class Command(BaseCommand):
 
     def _seed_contracts(self, tenant, admin):
         self.stdout.write("\n  ── Contracts")
-        from apps.contracts.models import ServiceContract, SLATier
+        from apps.contracts.domain.models import ServiceContract, SLATier
 
-        from apps.crm.models import Client
+        from apps.crm.domain.models import Client
         clients = list(Client.objects.filter(tenant=tenant)[:5])
 
         sla, _ = SLATier.objects.get_or_create(
@@ -539,7 +539,7 @@ class Command(BaseCommand):
         contracts_data = [
             ("msp", "Managed Security Services Agreement"),
             ("retainer", "Incident Response Retainer"),
-            ("support", "Compliance Monitoring SLA"),
+            ("helpdesk", "Compliance Monitoring SLA"),
             ("project", "Annual Security Audit"),
             ("saas", "Cloud Security Monitoring"),
         ]
@@ -563,7 +563,7 @@ class Command(BaseCommand):
 
     def _seed_itam(self, tenant, admin):
         self.stdout.write("\n  ── IT Assets (ITAM)")
-        from apps.itam.models import Asset
+        from apps.itam.domain.models import Asset
 
         assets_data = [
             ("FW-CORE-01", "Palo Alto PA-3260", "network"),
@@ -590,7 +590,7 @@ class Command(BaseCommand):
 
     def _seed_notifications(self, tenant, admin):
         self.stdout.write("\n  ── Notifications (Activity Feed)")
-        from apps.notifications.models import Notification
+        from apps.notifications.domain.models import Notification
 
         now = timezone.now()
 

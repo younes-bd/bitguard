@@ -74,6 +74,26 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         po.save()
         return Response({'status': po.status})
 
+    @action(detail=True, methods=['post'])
+    def receive(self, request, pk=None):
+        order = self.get_object()
+        if order.status not in ['confirmed', 'purchase']:
+            return Response({'error': 'Only confirmed purchase orders can be received.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from apps.stock.domain.models import GoodsReceipt
+        from django.utils import timezone
+        
+        receipt = GoodsReceipt.objects.create(
+            tenant=order.tenant,
+            purchase_order=order,
+            status='draft',
+            created_by=request.user,
+            receipt_date=timezone.now().date()
+        )
+        order.status = 'done'
+        order.save()
+        return Response({'receipt_id': receipt.id, 'status': order.status}, status=status.HTTP_201_CREATED)
+
 class PurchaseOrderLineViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PurchaseOrderLineSerializer

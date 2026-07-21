@@ -6,8 +6,8 @@ django.setup()
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-from apps.dashboard.services.analytics import CommandCenterAnalyticsService
-from apps.tenants.models import Tenant
+from apps.board.services.analytics import CommandCenterAnalyticsService
+from apps.tenants.domain.models import Tenant
 
 tenant_id = 'cfc72aac-52e3-44fb-847c-5041cbd1bda2'
 try:

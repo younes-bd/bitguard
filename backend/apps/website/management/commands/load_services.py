@@ -1,4 +1,4 @@
-﻿from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand
 from apps.website.models import Service
 from apps.website.services_data import SERVICES
 

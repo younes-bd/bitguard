@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Image, Search, Plus, Trash2, FileText, Video, Link } from 'lucide-react';
 import { marketingService } from '../../../../core/api/marketingService';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';

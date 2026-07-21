@@ -1,13 +1,13 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-@receiver(post_save, sender='store.Order')
+@receiver(post_save, sender='ecommerce.Order')
 def sync_store_order_to_crm(sender, instance, created, **kwargs):
     """
     Auto-creates or updates a CRM Client profile when a new Store Order is placed.
     """
     if created and instance.user:
-        from apps.crm.models import Client, Contact
+        from apps.crm.domain.models import Client, Contact
         
         user = instance.user
         client, _ = Client.objects.get_or_create(
@@ -31,26 +31,26 @@ def sync_store_order_to_crm(sender, instance, created, **kwargs):
             }
         )
 
-@receiver(post_save, sender='support.Ticket')
+@receiver(post_save, sender='helpdesk.Ticket')
 def link_support_to_crm(sender, instance, created, **kwargs):
     """
     Links Support Tickets dynamically to CRM scopes if an email address dictates a match.
     """
     if created and instance.customer:
-        from apps.crm.models import Contact
+        from apps.crm.domain.models import Contact
         contact = Contact.objects.filter(email=instance.customer.email, tenant=instance.tenant).first()
         if contact:
             # Sync to CRM - Ticket model not found in crm.models, skipping for now.
             # TODO: Define a CRMTicket or Activity if sales visibility is required.
             pass
 
-@receiver(post_save, sender='store.PartnerRequest')
+@receiver(post_save, sender='ecommerce.PartnerRequest')
 def sync_partner_request_to_crm(sender, instance, created, **kwargs):
     """
     Converts new Partnership inquiries into CRM Leads for the sales team.
     """
     if created:
-        from apps.crm.models import Lead, Client, Contact
+        from apps.crm.domain.models import Lead, Client, Contact
         
         # Create a prospect client
         client, _ = Client.objects.get_or_create(
@@ -95,7 +95,7 @@ def trigger_contract_on_deal_won(sender, instance, created, **kwargs):
     """
     # Check if the deal was just moved to 'won'
     if instance.stage == 'won':
-        from apps.contracts.models import ServiceContract
+        from apps.contracts.domain.models import ServiceContract
         from apps.accounting.domain.models import Invoice
         import datetime
         from django.utils import timezone
@@ -104,7 +104,7 @@ def trigger_contract_on_deal_won(sender, instance, created, **kwargs):
         contract_exists = ServiceContract.objects.filter(client=instance.client, start_date=timezone.now().date()).exists()
         if not contract_exists:
             # Find a default SLA tier (or create one)
-            from apps.contracts.models import SLATier
+            from apps.contracts.domain.models import SLATier
             sla_tier = SLATier.objects.filter(name='Standard').first()
             if not sla_tier:
                 sla_tier = SLATier.objects.create(

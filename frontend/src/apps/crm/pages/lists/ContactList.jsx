@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../../core/api/crmService';
 import { UserCircle, Search, Phone, Mail, Building2, Plus, Edit2, Trash2 } from 'lucide-react';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';
@@ -159,23 +159,23 @@ const ContactList = () => {
                                         <span className="flex items-center gap-1.5 text-slate-400">
                                             <Mail size={13} className="text-slate-600" /> {c.email}
                                         </span>
-                                    ) : <span className="text-slate-600">â€”</span>}
+                                    ) : <span className="text-slate-600">—</span>}
                                 </td>
                                 <td className="px-5 py-4">
                                     {c.phone ? (
                                         <span className="flex items-center gap-1.5 text-slate-400">
                                             <Phone size={13} className="text-slate-600" /> {c.phone}
                                         </span>
-                                    ) : <span className="text-slate-600">â€”</span>}
+                                    ) : <span className="text-slate-600">—</span>}
                                 </td>
                                 <td className="px-5 py-4">
                                     {c.client_name ? (
                                         <span className="flex items-center gap-1.5 text-slate-400">
                                             <Building2 size={13} className="text-slate-600" /> {c.client_name}
                                         </span>
-                                    ) : <span className="text-slate-600">â€”</span>}
+                                    ) : <span className="text-slate-600">—</span>}
                                 </td>
-                                <td className="px-5 py-4 text-slate-400">{c.role || c.title || 'â€”'}</td>
+                                <td className="px-5 py-4 text-slate-400">{c.role || c.title || '—'}</td>
                                 <td className="px-5 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button

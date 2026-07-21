@@ -21,8 +21,8 @@ import JournalEntries from '../pages/core/JournalEntries';
 import BankingDashboard from '../pages/core/BankingDashboard';
 import FixedAssets from '../pages/core/FixedAssets';
 import DeferredRevenue from '../pages/core/DeferredRevenue';
-import BankReconciliation from '../pages/core/BankReconciliation';
-import TaxGroups from '../pages/core/TaxGroups';
+import BankReconciliationList from '../pages/lists/BankReconciliationList';
+import TaxList from '../pages/lists/TaxList';
 import BudgetManagement from '../pages/core/BudgetManagement';
 
 import BalanceSheet from '../pages/reports/BalanceSheet';
@@ -32,7 +32,13 @@ import BudgetReport from '../pages/reports/BudgetReport';
 import VendorBillsList from '../pages/lists/VendorBillsList';
 import AgedReceivables from '../pages/reports/AgedReceivables';
 import AgedPayables from '../pages/reports/AgedPayables';
-
+import Ledgers from '../pages/core/Ledgers';
+import CustomerCreditNotes from '../pages/reports/CustomerCreditNotes';
+import VendorRefunds from '../pages/reports/VendorRefunds';
+import JournalList from '../pages/lists/JournalList';
+import CustomerPayments from '../pages/core/CustomerPayments';
+import VendorPayments from '../pages/core/VendorPayments';
+import AccountingReportPage from '../pages/AccountingReportPage';
 export const accountingRoutes = (
     <>
         <Route path="financials" element={<FinancialsDashboard />} />
@@ -58,8 +64,8 @@ export const accountingRoutes = (
         <Route path="banking" element={<BankingDashboard />} />
         <Route path="fixed-assets" element={<FixedAssets />} />
         <Route path="deferred-revenue" element={<DeferredRevenue />} />
-        <Route path="bank-reconciliation" element={<BankReconciliation />} />
-        <Route path="tax-management" element={<TaxGroups />} />
+        <Route path="bank-reconciliation" element={<BankReconciliationList />} />
+        <Route path="tax-management" element={<TaxList />} />
         <Route path="budget" element={<BudgetManagement />} />
 
         {/* Added Routes */}
@@ -67,5 +73,14 @@ export const accountingRoutes = (
         <Route path="recurring-invoices" element={<RecurringInvoices />} />
         <Route path="reports/aged-receivables" element={<AgedReceivables />} />
         <Route path="reports/aged-payables" element={<AgedPayables />} />
+        
+        {/* Missing Phase 3 Routes */}
+        <Route path="ledgers" element={<Ledgers />} />
+        <Route path="customer-credit-notes" element={<CustomerCreditNotes />} />
+        <Route path="vendor-refunds" element={<VendorRefunds />} />
+        <Route path="journals" element={<JournalList />} />
+        <Route path="reports-overview" element={<AccountingReportPage />} />
+        <Route path="customer-payments" element={<CustomerPayments />} />
+        <Route path="vendor-payments" element={<VendorPayments />} />
     </>
 );

@@ -1,7 +1,7 @@
 from django.test import TestCase
 from decimal import Decimal
-from apps.tenants.models import Tenant
-from apps.users.models import User
+from apps.tenants.domain.models import Tenant
+from apps.users.domain.models import User
 from apps.users.domain.models import TenantMembership
 from apps.crm.domain.models import Client
 from apps.accounting.domain.models import Invoice, InvoiceItem, Payment, GeneralLedger, Account

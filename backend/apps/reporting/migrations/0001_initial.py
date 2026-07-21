@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
                 ('name', models.CharField(max_length=255)),
-                ('model', models.CharField(help_text="e.g., 'accounting.Invoice' or 'store.Order'", max_length=100)),
+                ('model', models.CharField(help_text="e.g., 'accounting.Invoice' or 'ecommerce.Order'", max_length=100)),
                 ('html_content', models.TextField(help_text='Jinja2 or Django template syntax for the report')),
                 ('css_content', models.TextField(blank=True, help_text='Custom styling for the report')),
                 ('is_active', models.BooleanField(default=True)),

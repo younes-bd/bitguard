@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('contracts', '0002_initial'),
         ('crm', '0001_initial'),
-        ('store', '0002_initial'),
+        ('ecommerce', '0002_initial'),
         ('tenants', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='quoteline',
             name='product',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='quote_lines', to='store.product'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='quote_lines', to='ecommerce.product'),
         ),
         migrations.AddField(
             model_name='quoteline',

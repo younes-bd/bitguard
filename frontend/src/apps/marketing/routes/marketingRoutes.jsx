@@ -78,7 +78,7 @@ export const marketingRoutes = (
         <Route path="video/shorts" element={<ShortsReels />} />
 
         {/* Intelligence */}
-        <Route path="analytics" element={<AnalyticsDashboard />} />
+        <Route path="dashboards" element={<AnalyticsDashboard />} />
         <Route path="analytics/audience" element={<AudienceGrowth />} />
 
         {/* Configuration */}

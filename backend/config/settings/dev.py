@@ -16,11 +16,7 @@ DEBUG = True
 import os
 
 # Use a robust path resolution that works across WSL and Windows
-import sys
-if sys.platform == 'win32':
-    _NATIVE_DB = BASE_DIR / 'db.sqlite3'
-else:
-    _NATIVE_DB = '/home/youness/website13/backend/db.sqlite3'
+_NATIVE_DB = BASE_DIR / 'db.sqlite3'
 
 _CUSTOM_DB = os.environ.get('CUSTOM_DB_PATH')
 NAME = _CUSTOM_DB if _CUSTOM_DB else _NATIVE_DB

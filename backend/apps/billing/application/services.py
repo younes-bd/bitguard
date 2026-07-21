@@ -123,7 +123,7 @@ class BillingService(BaseService):
         """
         Cross-module integration: Generates a billing Invoice when a CRM/Contract Quote is accepted.
         """
-        from apps.contracts.models import Quote
+        from apps.contracts.domain.models import Quote
         tenant = cls.get_tenant_context(request)
         
         quote = Quote.objects.get(id=quote_id)

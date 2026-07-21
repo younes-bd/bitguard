@@ -1,5 +1,5 @@
 from django.utils import timezone
-from .models import Asset, EmailThreat, RemediationAction, SecurityIncident
+from .domain.models import Asset, EmailThreat, RemediationAction, SecurityIncident
 
 # Synchronous Tasks (Mocking Celery behavior)
 

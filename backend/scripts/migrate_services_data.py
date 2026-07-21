@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 django.setup()
 
-from apps.cms.domain.models import ServicePage
+from apps.website.domain.models import ServicePage
 from apps.itsm.domain.models import ServiceItem
 
 def run():

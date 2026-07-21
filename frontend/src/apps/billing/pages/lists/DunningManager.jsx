@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertCircle, FileText, Send, XCircle, Clock } from 'lucide-react';
 import client from '../../../../core/api/client';
 import toast from 'react-hot-toast';

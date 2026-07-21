@@ -7,7 +7,11 @@ import VendorList from '../pages/lists/VendorList';
 import VendorCreate from '../pages/vendors/VendorCreate';
 import VendorDetail from '../pages/vendors/VendorDetail';
 import RfqList from '../pages/lists/RfqList';
-
+import PurchaseAnalysis from '../pages/reports/PurchaseAnalysis';
+import VendorPricelists from '../pages/settings/VendorPricelists';
+import PurchaseSettings from '../pages/settings/PurchaseSettings';
+import ProductVariants from '../pages/lists/ProductVariants';
+import InventoryList from '../../stock/pages/lists/InventoryList';
 export const purchaseRoutes = (
     <>
         <Route index element={<PurchaseOrderList />} />
@@ -18,5 +22,12 @@ export const purchaseRoutes = (
         <Route path="vendors" element={<VendorList />} />
         <Route path="vendors/create" element={<VendorCreate />} />
         <Route path="vendors/:id" element={<VendorDetail />} />
+        
+        {/* Phase 3 Placeholders */}
+        <Route path="reports" element={<PurchaseAnalysis />} />
+        <Route path="pricelists" element={<VendorPricelists />} />
+        <Route path="settings" element={<PurchaseSettings />} />
+        <Route path="product-variants" element={<ProductVariants />} />
+        <Route path="products" element={<InventoryList />} />
     </>
 );

@@ -1,10 +1,36 @@
 from rest_framework import serializers
-from ..domain.models import User, Role, UserProfile, SecurityPolicy
+from ..domain.models import User, Role, UserProfile, SecurityPolicy, RolePermission, RecordRule
+from django.contrib.contenttypes.models import ContentType
 
 class RoleSerializer(serializers.ModelSerializer):
+    user_count = serializers.IntegerField(read_only=True, required=False)
+    permissions_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Role
-        fields = ['id', 'name', 'description', 'parent', 'permissions']
+        fields = ['id', 'name', 'description', 'parent', 'permissions', 'user_count', 'permissions_count']
+
+    def get_permissions_count(self, obj):
+        return len(obj.permissions) if isinstance(obj.permissions, list) else 0
+
+class RolePermissionSerializer(serializers.ModelSerializer):
+    model_name = serializers.CharField(source='content_type.model', read_only=True)
+    app_label = serializers.CharField(source='content_type.app_label', read_only=True)
+    
+    class Meta:
+        model = RolePermission
+        fields = ['id', 'role', 'content_type', 'model_name', 'app_label', 'can_read', 'can_write', 'can_create', 'can_delete']
+
+class ContentTypeSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ContentType
+        fields = ['id', 'app_label', 'model', 'label']
+        
+    def get_label(self, obj):
+        return obj.model.replace('_', ' ').title()
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,7 +59,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_memberships(self, obj):
         from apps.users.models import TenantMembership
         from apps.tenants.models import Tenant
-        
+        request = self.context.get('request')
         if getattr(obj, 'is_superuser', False):
             tenants = Tenant.objects.all()
             return [
@@ -42,7 +68,8 @@ class UserSerializer(serializers.ModelSerializer):
                     'name': t.name,
                     'domain': getattr(t, 'domain', None),
                     'role': 'SUPER_ADMIN',
-                    'bundle': getattr(t, 'bundle', None)
+                    'bundle': getattr(t, 'bundle', None),
+                    'logo': request.build_absolute_uri(t.logo.url) if t.logo and hasattr(request, 'build_absolute_uri') else (t.logo.url if t.logo else None)
                 }
                 for t in tenants
             ]
@@ -54,17 +81,20 @@ class UserSerializer(serializers.ModelSerializer):
                 'name': m.tenant.name,
                 'domain': m.tenant.domain,
                 'role': None,
-                'bundle': getattr(m.tenant, 'bundle', None)
+                'bundle': getattr(m.tenant, 'bundle', None),
+                'logo': request.build_absolute_uri(m.tenant.logo.url) if m.tenant.logo and hasattr(request, 'build_absolute_uri') else (m.tenant.logo.url if m.tenant.logo else None)
             }
             for m in memberships
         ]
 
     def get_tenant(self, obj):
+        request = self.context.get('request')
         if hasattr(obj, 'tenant') and obj.tenant:
             return {
                 'id': obj.tenant.id,
                 'name': obj.tenant.name,
-                'domain': getattr(obj.tenant, 'domain', None)
+                'domain': getattr(obj.tenant, 'domain', None),
+                'logo': request.build_absolute_uri(obj.tenant.logo.url) if obj.tenant.logo and hasattr(request, 'build_absolute_uri') else (obj.tenant.logo.url if obj.tenant.logo else None)
             }
         return None
 
@@ -118,3 +148,15 @@ class SecurityPolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = SecurityPolicy
         fields = '__all__'
+
+class RecordRuleSerializer(serializers.ModelSerializer):
+    role_name = serializers.CharField(source='role.name', read_only=True)
+    model_label = serializers.SerializerMethodField()
+    
+    def get_model_label(self, obj):
+        return f"{obj.content_type.app_label}.{obj.content_type.model}"
+    
+    class Meta:
+        model = RecordRule
+        fields = ['id', 'name', 'role', 'role_name', 'content_type', 'model_label', 
+                  'domain_filter', 'is_global', 'created_at']

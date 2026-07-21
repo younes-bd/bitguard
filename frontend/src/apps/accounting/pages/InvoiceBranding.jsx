@@ -16,7 +16,7 @@ const InvoiceBranding = () => {
     useEffect(() => {
         const fetchBranding = async () => {
             try {
-                const res = await api.get('/erp/invoice-branding/');
+                const res = await api.get('/accounting/invoice-branding/');
                 const data = res.data.data || res.data;
                 if (data && data.length > 0) {
                     setBranding(data[0]);
@@ -34,9 +34,9 @@ const InvoiceBranding = () => {
         setSaving(true);
         try {
             if (branding.id) {
-                await api.put(`/erp/invoice-branding/${branding.id}/`, branding);
+                await api.put(`/accounting/invoice-branding/${branding.id}/`, branding);
             } else {
-                const res = await api.post('/erp/invoice-branding/', branding);
+                const res = await api.post('/accounting/invoice-branding/', branding);
                 setBranding(res.data.data || res.data);
             }
             toast.success("Branding settings saved successfully");

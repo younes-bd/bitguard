@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         ('contracts', '0002_initial'),
         ('crm', '0001_initial'),
         ('hrm', '0001_initial'),
-        ('store', '0002_initial'),
+        ('ecommerce', '0002_initial'),
         ('tenants', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -318,7 +318,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='invoiceitem',
             name='product',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='erp_invoice_items', to='store.product'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='erp_invoice_items', to='ecommerce.product'),
         ),
         migrations.AddField(
             model_name='invoiceitem',

@@ -2,33 +2,72 @@ import uuid
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from apps.core.models import BaseModel, TenantAwareModel, UUIDModel
+from apps.core.domain.models import BaseModel, TenantAwareModel, UUIDModel
+from django.contrib.contenttypes.models import ContentType
 
 class Role(UUIDModel):
     """
     RBAC Roles with support for inheritance.
     """
-    ROLE_CHOICES = [
-        ('SUPER_ADMIN', 'Super Admin'),
-        ('TENANT_ADMIN', 'Tenant Admin'),
-        ('MANAGER', 'Manager'),
-        ('EMPLOYEE', 'Employee'),
-        ('CUSTOMER', 'Customer'),
-    ]
-    name = models.CharField(max_length=50, unique=True, choices=ROLE_CHOICES)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children')
     permissions = models.JSONField(default=list, help_text="List of permission codes")
 
+    # Odoo-compatible: category grouping
+    category = models.CharField(max_length=100, blank=True, default='', 
+                                help_text="e.g., Sales, Accounting, Human Resources")
+    # Implied access level
+    implied_ids = models.ManyToManyField('self', blank=True, symmetrical=False,
+                                          related_name='implied_by',
+                                          help_text="Roles automatically granted with this role")
+
+    class Meta:
+        ordering = ['category', 'name']
+
     def __str__(self):
         return self.name
+
+class RolePermission(BaseModel):
+    """
+    RBAC Permission Matrix: Role × Django ContentType × CRUD flags.
+    This is the Odoo-equivalent of ir.rule / access_rights.
+    """
+    role = models.ForeignKey('Role', on_delete=models.CASCADE, related_name='role_permissions')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='role_permissions')
+    can_read   = models.BooleanField(default=False)
+    can_write  = models.BooleanField(default=False)
+    can_create = models.BooleanField(default=False)
+    can_delete = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('role', 'content_type')
+        verbose_name = 'Role Permission'
+
+class RecordRule(BaseModel):
+    """
+    Row-level security. Odoo-equivalent of ir.rule.
+    Allows filtering which records a role can access.
+    """
+    name = models.CharField(max_length=255)
+    role = models.ForeignKey('Role', on_delete=models.CASCADE, related_name='record_rules')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    domain_filter = models.JSONField(default=list, help_text="ORM-style filter list, e.g. [['user', '=', 'current_user']]")
+    is_global = models.BooleanField(default=True, help_text="If False, only applies to this role")
+    
+    class Meta:
+        verbose_name = 'Record Rule'
 
 class User(AbstractUser, UUIDModel):
     """
     Custom User model for BitGuard with enhanced security.
     """
     # Standard PK and audit fields are inherited from UUIDModel
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, default='')
+    password = models.CharField(max_length=128, default='')
+    username = models.CharField(max_length=150, unique=True, default='')
+    first_name = models.CharField(max_length=150, blank=True, default='')
+    last_name = models.CharField(max_length=150, blank=True, default='')
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username'] 
@@ -218,3 +257,15 @@ class TenantMembership(UUIDModel):
 
     def __str__(self):
         return f"{self.user.email} -> {self.tenant.name}"
+
+class ActiveSession(UUIDModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='active_sessions')
+    refresh_token_jti = models.CharField(max_length=255, unique=True)
+    device_name = models.CharField(max_length=255, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=500, blank=True)
+    last_active = models.DateTimeField(auto_now=True)
+    is_current = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-last_active']

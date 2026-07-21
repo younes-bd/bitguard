@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Search, Filter, TrendingUp, AlertCircle, Clock, CheckCircle2, MoreVertical, LayoutGrid, Calendar, ChevronRight } from 'lucide-react';
 import projectsService from '../../../../core/api/projectsService';
 import { iamService } from '../../../../core/api/iamService';

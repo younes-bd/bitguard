@@ -110,11 +110,11 @@ check("GET /api/crm/deals/", r, s)
 
 # 4 — Support
 print("\n── Support ───────────────────────────────────────────────")
-r, s = get("/support/tickets/", token=token)
-check("GET /api/support/tickets/", r, s)
+r, s = get("/helpdesk/tickets/", token=token)
+check("GET /api/helpdesk/tickets/", r, s)
 
-r, s = get("/support/articles/", token=token)
-check("GET /api/support/articles/", r, s)
+r, s = get("/helpdesk/articles/", token=token)
+check("GET /api/helpdesk/articles/", r, s)
 
 # 5 — Notifications
 print("\n── Notifications ─────────────────────────────────────────")

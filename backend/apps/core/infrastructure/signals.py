@@ -76,7 +76,7 @@ def handle_quote_accepted(sender, instance, created, **kwargs):
     """
     pass
 
-@receiver(post_save, sender='inventory.InventoryItem')
+@receiver(post_save, sender='stock.InventoryItem')
 def handle_low_stock(sender, instance, created, **kwargs):
     """
     scm.InventoryItem.quantity_on_hand <= reorder_level → create notifications.Notification with type='low_stock'

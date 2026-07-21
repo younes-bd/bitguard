@@ -7,11 +7,12 @@ from channels.auth import AuthMiddlewareStack
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.prod')
 django.setup()
 
-from apps.notifications.routing import websocket_urlpatterns
+from apps.notifications.routing import websocket_urlpatterns as notif_urls
+from apps.discuss.routing import websocket_urlpatterns as discuss_urls
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
     'websocket': AuthMiddlewareStack(
-        URLRouter(websocket_urlpatterns)
+        URLRouter(notif_urls + discuss_urls)
     ),
 })

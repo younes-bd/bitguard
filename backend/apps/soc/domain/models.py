@@ -1,5 +1,5 @@
 from django.db import models
-from apps.core.models import BaseModel, TenantAwareModel
+from apps.core.domain.models import BaseModel, TenantAwareModel
 from django.conf import settings
 
 class Alert(TenantAwareModel):

@@ -10,6 +10,11 @@ class ApprovalsService {
         return response.data?.data ?? response.data?.results ?? response.data ?? [];
     }
 
+    async getPendingApprovals() {
+        const response = await client.get('approvals/requests/pending/');
+        return response.data?.data ?? response.data?.results ?? response.data ?? [];
+    }
+
     async getApproval(id) {
         const response = await client.get(`approvals/requests/${id}/`);
         return response.data?.data ?? response.data;
@@ -21,16 +26,14 @@ class ApprovalsService {
     }
 
     async approve(id, comments = '') {
-        const response = await client.patch(`approvals/requests/${id}/`, {
-            status: 'approved',
+        const response = await client.post(`approvals/requests/${id}/approve/`, {
             comments,
         });
         return response.data?.data ?? response.data;
     }
 
     async reject(id, comments = '') {
-        const response = await client.patch(`approvals/requests/${id}/`, {
-            status: 'rejected',
+        const response = await client.post(`approvals/requests/${id}/reject/`, {
             comments,
         });
         return response.data?.data ?? response.data;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Loader2, FolderOpen, Image as ImageIcon, Video, File, Search, Presentation } from 'lucide-react';
-import edmsService from '../../../../core/api/edmsService';
-import DocumentUploadModal from '../../../edms/components/DocumentUploadModal';
+import documentsService from '../../../../core/api/documentsService';
+import DocumentUploadModal from '../../../documents/components/DocumentUploadModal';
 
 export default function SalesCollateral() {
     const [docs, setDocs] = useState([]);
@@ -13,7 +13,7 @@ export default function SalesCollateral() {
         setLoading(true);
         try {
             // We fetch all documents. In a real system, we'd filter by workspace_id = "Sales" or tags.
-            const res = await edmsService.getDocuments();
+            const res = await documentsService.getDocuments();
             let allDocs = res?.results || res || [];
             
             // Filter to show only files that look like collateral, or just show all for now

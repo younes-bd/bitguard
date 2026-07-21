@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name='Notification',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('system', 'System'), ('crm', 'CRM'), ('erp', 'ERP'), ('soc', 'SOC'), ('store', 'Store'), ('billing', 'Billing'), ('hrm', 'HRM'), ('services', 'Services'), ('approvals', 'Approvals'), ('projects', 'Projects')], default='system', max_length=20)),
+                ('type', models.CharField(choices=[('system', 'System'), ('crm', 'CRM'), ('erp', 'ERP'), ('soc', 'SOC'), ('ecommerce', 'Store'), ('billing', 'Billing'), ('hrm', 'HRM'), ('services', 'Services'), ('approvals', 'Approvals'), ('projects', 'Projects')], default='system', max_length=20)),
                 ('title', models.CharField(max_length=255)),
                 ('message', models.TextField()),
                 ('payload', models.JSONField(blank=True, default=dict)),
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
             name='NotificationPreference',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('system', 'System'), ('crm', 'CRM'), ('erp', 'ERP'), ('soc', 'SOC'), ('store', 'Store'), ('billing', 'Billing'), ('hrm', 'HRM'), ('services', 'Services'), ('approvals', 'Approvals'), ('projects', 'Projects')], max_length=20)),
+                ('type', models.CharField(choices=[('system', 'System'), ('crm', 'CRM'), ('erp', 'ERP'), ('soc', 'SOC'), ('ecommerce', 'Store'), ('billing', 'Billing'), ('hrm', 'HRM'), ('services', 'Services'), ('approvals', 'Approvals'), ('projects', 'Projects')], max_length=20)),
                 ('in_app_enabled', models.BooleanField(default=True)),
                 ('email_enabled', models.BooleanField(default=True)),
                 ('sms_enabled', models.BooleanField(default=False)),

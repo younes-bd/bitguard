@@ -3,7 +3,7 @@ Purchase Models — Supplier and Procurement Management.
 """
 from django.db import models
 from django.conf import settings
-from apps.core.models import BaseModel, TenantAwareModel
+from apps.core.domain.models import BaseModel, TenantAwareModel
 from django.utils import timezone
 
 
@@ -67,7 +67,7 @@ class PurchaseOrderLine(BaseModel):
     """Individual line item within a PurchaseOrder. Supports both inventory and ad-hoc items."""
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name='lines')
     inventory_item = models.ForeignKey(
-        'inventory.InventoryItem', on_delete=models.PROTECT, related_name='purchase_lines', null=True, blank=True
+        'stock.InventoryItem', on_delete=models.PROTECT, related_name='purchase_lines', null=True, blank=True
     )
     description = models.CharField(max_length=255, blank=True)
     quantity_ordered = models.DecimalField(max_digits=10, decimal_places=2, default=1)
@@ -108,7 +108,7 @@ class RFQ(TenantAwareModel):
 
 class VendorPricelist(TenantAwareModel):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='pricelists')
-    inventory_item = models.ForeignKey('inventory.InventoryItem', on_delete=models.CASCADE, related_name='vendor_prices')
+    inventory_item = models.ForeignKey('stock.InventoryItem', on_delete=models.CASCADE, related_name='vendor_prices')
     price = models.DecimalField(max_digits=12, decimal_places=2)
     min_quantity = models.IntegerField(default=1)
     valid_from = models.DateField(null=True, blank=True)

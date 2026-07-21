@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldAlert, Plus, Search, Trash2, Edit2 } from 'lucide-react';
 import client from '../../../../core/api/client';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';
@@ -13,8 +13,8 @@ const RISK_FIELDS = [
         { value: 'technical', label: 'Technical' }, { value: 'operational', label: 'Operational' },
         { value: 'legal', label: 'Legal' }, { value: 'financial', label: 'Financial' }
     ], default: 'technical' },
-    { name: 'likelihood', label: 'Likelihood (1â€“5)', type: 'number', min: '1', max: '5', default: '3' },
-    { name: 'impact', label: 'Impact (1â€“5)', type: 'number', min: '1', max: '5', default: '3' },
+    { name: 'likelihood', label: 'Likelihood (1–5)', type: 'number', min: '1', max: '5', default: '3' },
+    { name: 'impact', label: 'Impact (1–5)', type: 'number', min: '1', max: '5', default: '3' },
     { name: 'owner', label: 'Risk Owner', required: true },
     { name: 'mitigation_plan', label: 'Mitigation Plan', type: 'textarea', rows: 3 },
     { name: 'status', label: 'Status', type: 'select', options: [
@@ -103,7 +103,7 @@ export default function RiskRegister() {
                             <tr>
                                 <th className="p-4">Risk</th>
                                 <th className="p-4">Category</th>
-                                <th className="p-4">Score (LÃ—I)</th>
+                                <th className="p-4">Score (L×I)</th>
                                 <th className="p-4">Owner</th>
                                 <th className="p-4">Status</th>
                                 <th className="p-4"></th>

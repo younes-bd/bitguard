@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { authService } from '../api/authService';
-import { storeService } from '../api/storeService';
+import { ecommerceService } from '../api/ecommerceService';
 import client from '../api/client';
 
 // Dictionary export for useContext(AuthContext)
@@ -120,7 +120,7 @@ export const AuthProvider = ({ children }) => {
 
     const startTrial = async (planId) => {
         try {
-            await storeService.startTrial(planId);
+            await ecommerceService.startTrial(planId);
             await fetchUser(); // Refresh user data to get new subscription
             return { success: true };
         } catch (error) {

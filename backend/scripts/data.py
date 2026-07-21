@@ -21,7 +21,7 @@ from apps.users.models import Role, UserRole, UserProfile
 from apps.crm.models import Client, Contact, Lead, Deal, Activity
 from apps.erp.models import Invoice, Payment, Expense
 from apps.soc.models import Alert, Incident, ThreatIntelligence, LogAnalysis
-from apps.store.models import Product, Order, LicenseKey
+from apps.ecommerce.models import Product, Order, LicenseKey
 
 User = get_user_model()
 

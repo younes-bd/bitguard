@@ -122,12 +122,13 @@ const ModuleTopBar = ({ title, onToggleSidebar, onMobileToggle }) => {
                 <div className="h-5 w-px bg-slate-800" />
 
                 <div className="flex items-center gap-2">
-                    <div
+                    <Link
+                        to="/settings/profile"
                         className="w-8 h-8 rounded-full bg-blue-600 border border-blue-500/30 flex items-center justify-center text-xs font-bold text-white cursor-pointer"
                         title={user?.email || 'User'}
                     >
                         {(user?.first_name?.[0] || user?.email?.[0] || 'U').toUpperCase()}
-                    </div>
+                    </Link>
                     <div className="hidden md:block">
                         <p className="text-xs font-medium text-white leading-tight">{user?.first_name || 'User'}</p>
                         <p className="text-[10px] text-slate-500 leading-tight">

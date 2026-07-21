@@ -26,6 +26,18 @@ export default function TimesheetList() {
         fetchTimesheets();
     }, []);
 
+    const handleBillTime = async (id) => {
+        try {
+            const res = await projectsService.billTimeLog(id);
+            if (res.invoice_id) {
+                toast.success("Time billed successfully. Invoice created.");
+                setTimesheets(prev => prev.map(t => t.id === id ? { ...t, billed: true } : t));
+            }
+        } catch (error) {
+            toast.error("Failed to bill time log");
+        }
+    };
+
     const totalHours = timesheets.reduce((sum, t) => sum + parseFloat(t.hours || 0), 0);
     const billableHours = timesheets.filter(t => t.billable !== false).reduce((sum, t) => sum + parseFloat(t.hours || 0), 0); // Assuming all are billable unless explicitly false or missing
 
@@ -144,6 +156,14 @@ export default function TimesheetList() {
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
+                                        {row.is_billable !== false && !row.billed && (
+                                            <button 
+                                                onClick={() => handleBillTime(row.id)}
+                                                className="mr-3 px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-medium transition-colors"
+                                            >
+                                                Bill Time
+                                            </button>
+                                        )}
                                         <button className="text-slate-400 hover:text-white text-xs font-medium">Edit</button>
                                     </td>
                                 </tr>

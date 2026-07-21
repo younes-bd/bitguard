@@ -58,7 +58,7 @@ class TenantMiddleware:
 
         # 3. Check User Memberships Default (Fallback for Internal Org)
         if not tenant_domain and request.user.is_authenticated:
-            from apps.users.models import TenantMembership
+            from apps.users.domain.models import TenantMembership
             membership = TenantMembership.objects.filter(user=request.user, is_active=True).first()
             if membership:
                 request.tenant = membership.tenant
@@ -66,7 +66,7 @@ class TenantMiddleware:
                 print("TENANT RESOLVED FROM MEMBERSHIP:", request.tenant)
                 return self.get_response(request)
 
-        from apps.tenants.models import Tenant
+        from apps.tenants.domain.models import Tenant
         import uuid
 
         if tenant_domain:
@@ -88,7 +88,7 @@ class TenantMiddleware:
                 
                 # Check User Access for requested Tenant
                 if request.user.is_authenticated and not request.user.is_superuser:
-                    from apps.users.models import TenantMembership
+                    from apps.users.domain.models import TenantMembership
                     has_access = TenantMembership.objects.filter(user=request.user, tenant=request.tenant, is_active=True).exists()
                     
                     if not has_access and hasattr(request.user, 'employee_profile'):

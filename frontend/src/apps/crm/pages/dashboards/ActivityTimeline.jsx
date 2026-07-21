@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { crmService } from '../../../../core/api/crmService';
 import { Phone, Mail, Users, FileText, Send, Plus } from 'lucide-react';
 
@@ -94,7 +94,7 @@ const ActivityTimeline = ({ clientId, interactions, onActivityAdded }) => {
                                     {item.interaction_type === 'note' ? 'Internal Note' : `${item.interaction_type} Logged`}
                                 </span>
                                 <span className="text-xs text-slate-500">
-                                    {new Date(item.date).toLocaleDateString()} â€¢ {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(item.date).toLocaleDateString()} • {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
                             <p className="text-slate-400 text-sm leading-relaxed whitespace-pre-wrap">

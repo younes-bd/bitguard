@@ -1,7 +1,15 @@
 from rest_framework import serializers
-from ..domain.models import Project, Task, Milestone, TimeLog
+from ..domain.models import Project, Task, Milestone, TimeLog, Sprint, TaskTag
 
+class SprintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sprint
+        fields = '__all__'
 
+class TaskTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskTag
+        fields = '__all__'
 class TimeLogSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
 
@@ -85,3 +93,10 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
 
     def get_client_name(self, obj):
         return obj.client.name if obj.client else 'Internal'
+
+from ..domain.models import TaskTimesheet
+
+class TaskTimesheetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskTimesheet
+        fields = '__all__'

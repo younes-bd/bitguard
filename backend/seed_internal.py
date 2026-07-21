@@ -7,7 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 django.setup()
 
 from django.utils import timezone
-from apps.tenants.models import Tenant
+from apps.tenants.domain.models import Tenant
 from apps.reporting.domain.models import ReportTemplate, ReportEngineSettings
 from apps.crm.domain.models import Client
 from apps.core.domain.models import Partner

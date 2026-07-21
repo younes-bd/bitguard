@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../../core/api/crmService';
 import client from '../../../../core/api/client';
 import { MessageSquare, Calendar, User, Phone, Mail, Clock, ArrowRight, Plus, Edit2, Trash2 } from 'lucide-react';

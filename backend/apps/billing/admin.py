@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Plan, Subscription, BillingSettings
+from .domain.models import Plan, Subscription, BillingSettings
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):

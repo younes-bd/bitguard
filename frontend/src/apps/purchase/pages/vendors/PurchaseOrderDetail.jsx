@@ -56,8 +56,9 @@ const PurchaseOrderDetail = () => {
     const getStatusBadge = (status) => {
         const styles = {
             draft: "bg-slate-500/20 text-slate-400 border-slate-500/50",
-            issued: "bg-blue-500/20 text-blue-400 border-blue-500/50",
-            approved: "bg-purple-500/20 text-purple-400 border-purple-500/50",
+            sent: "bg-blue-500/20 text-blue-400 border-blue-500/50",
+            confirmed: "bg-purple-500/20 text-purple-400 border-purple-500/50",
+            in_transit: "bg-orange-500/20 text-orange-400 border-orange-500/50",
             received: "bg-emerald-500/20 text-emerald-400 border-emerald-500/50",
             cancelled: "bg-red-500/20 text-red-400 border-red-500/50"
         };
@@ -80,7 +81,24 @@ const PurchaseOrderDetail = () => {
                     <span>Back to Registry</span>
                 </button>
                 <div className="flex flex-wrap gap-2">
-                    {po.status === 'issued' && (
+                    {(po.status === 'draft' || po.status === 'sent') && (
+                        <button 
+                            onClick={async () => {
+                                setActionLoading(true);
+                                try {
+                                    await erpService.approvePurchaseOrder(id);
+                                    await fetchPO();
+                                } catch (e) { alert("Failed to approve"); }
+                                finally { setActionLoading(false); }
+                            }}
+                            disabled={actionLoading}
+                            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition-all shadow-lg font-medium"
+                        >
+                            <CheckCircle size={18} />
+                            <span>Confirm Order</span>
+                        </button>
+                    )}
+                    {(po.status === 'confirmed' || po.status === 'in_transit') && (
                         <button 
                             onClick={handleReceive}
                             disabled={actionLoading}
@@ -88,6 +106,23 @@ const PurchaseOrderDetail = () => {
                         >
                             {actionLoading ? <RefreshCcw size={18} className="animate-spin" /> : <Truck size={18} />}
                             <span>Mark as Received</span>
+                        </button>
+                    )}
+                    {po.status !== 'received' && po.status !== 'cancelled' && (
+                        <button 
+                            onClick={async () => {
+                                setActionLoading(true);
+                                try {
+                                    await erpService.cancelPurchaseOrder(id);
+                                    await fetchPO();
+                                } catch (e) { alert("Failed to cancel"); }
+                                finally { setActionLoading(false); }
+                            }}
+                            disabled={actionLoading}
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-red-900/50 text-slate-300 hover:text-red-400 rounded-xl transition-colors border border-slate-700"
+                        >
+                            <AlertCircle size={18} />
+                            <span>Cancel</span>
                         </button>
                     )}
                     <button className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors border border-slate-700/50">

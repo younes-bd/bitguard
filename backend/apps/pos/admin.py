@@ -1,25 +1,7 @@
 from django.contrib import admin
-from . import models
+from apps.pos.domain.models import PosConfig, PosSession, PosOrder, PosPayment
 
-# Auto-generated Admin for pos
-
-@admin.register(models.POSConfig)
-class POSConfigAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.POSSession)
-class POSSessionAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.POSOrder)
-class POSOrderAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.POSOrderLine)
-class POSOrderLineAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(models.POSPayment)
-class POSPaymentAdmin(admin.ModelAdmin):
-    pass
-
+admin.site.register(PosConfig)
+admin.site.register(PosSession)
+admin.site.register(PosOrder)
+admin.site.register(PosPayment)

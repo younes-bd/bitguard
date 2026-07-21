@@ -1,0 +1,6 @@
+- `[x]` Scaffold `apps.elearning`.
+- `[x]` Move models from `apps.cms` to `apps.website` and `apps.elearning`.
+- `[x]` Perform SQL renaming of tables to preserve data.
+- `[x]` Delete `apps.cms`.
+- `[x]` Update `settings.py` and `urls.py`.
+- `[x]` Run `makemigrations` and `migrate --fake`.

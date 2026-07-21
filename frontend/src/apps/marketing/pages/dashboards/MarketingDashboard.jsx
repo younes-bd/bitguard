@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Megaphone, Target, BarChart, Users, TrendingUp, MousePointer2, Share2, Eye } from 'lucide-react';
 import { marketingService } from '../../../../core/api/marketingService';
@@ -126,7 +126,7 @@ const MarketingDashboard = () => {
                     </h3>
                     <div className="space-y-6">
                         {[
-                            { name: 'Email Marketing', val: 75, color: 'bg-blue-500' },
+                            { name: 'Mass Mailing', val: 75, color: 'bg-blue-500' },
                             { name: 'Social Ads', val: 42, color: 'bg-emerald-500' },
                             { name: 'Direct Sales', val: 28, color: 'bg-yellow-500' },
                             { name: 'Webinars', val: 15, color: 'bg-purple-500' }

@@ -8,7 +8,7 @@ const AVAILABLE_MODULES = [
     { id: 'hrm', name: 'HRM', description: 'Employee management and leave requests' },
     { id: 'services', name: 'ITSM', description: 'Service catalog and support tickets' },
     { id: 'soc', name: 'SOC', description: 'Security operations and incident response' },
-    { id: 'assets', name: 'ITAM', description: 'IT asset management and procurement' },
+    { id: 'maintenance', name: 'ITAM', description: 'IT asset management and procurement' },
     { id: 'projects', name: 'Projects', description: 'Project tracking and milestones' },
     { id: 'contracts', name: 'Contracts', description: 'SLA and service contract management' },
     { id: 'billing', name: 'Billing', description: 'Invoicing and subscription management' },

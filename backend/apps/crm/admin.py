@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Client, Contact, Lead, Deal, Activity
+from .domain.models import Client, Contact, Lead, Deal, Activity
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):

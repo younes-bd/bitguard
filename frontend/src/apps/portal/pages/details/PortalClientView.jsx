@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShieldCheck, FileText, Monitor, Ticket, Clock, CheckCircle, Search, CreditCard } from 'lucide-react';
 import client from '../../../../core/api/client';
@@ -31,7 +31,7 @@ export default function PortalClientView() {
             client.get('support/tickets/', { params: { client: clientId, limit: 10 } }).catch(() => ({ data: [] })),
             client.get('erp/invoices/', { params: { client: clientId, limit: 10 } }).catch(() => ({ data: [] })),
             client.get('contracts/', { params: { client: clientId } }).catch(() => ({ data: [] })),
-            client.get('assets/assets/', { params: { assigned_to: clientId } }).catch(() => ({ data: [] }))
+            client.get('assets/maintenance/', { params: { assigned_to: clientId } }).catch(() => ({ data: [] }))
         ]).then(([tickets, invoices, contracts, assets]) => {
             setData({
                 tickets: tickets.data?.results || tickets.data || [],
@@ -82,7 +82,7 @@ export default function PortalClientView() {
                         { id: 'tickets', label: 'Support Tickets', icon: Ticket, count: data.tickets.length },
                         { id: 'invoices', label: 'Billing & Invoices', icon: FileText, count: data.invoices.filter(i => i.status !== 'paid').length },
                         { id: 'contracts', label: 'Service Contracts', icon: ShieldCheck, count: data.contracts.length },
-                        { id: 'assets', label: 'My Devices', icon: Monitor, count: data.assets.length }
+                        { id: 'maintenance', label: 'My Devices', icon: Monitor, count: data.assets.length }
                     ].map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${activeTab === tab.id ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-300'}`}>
@@ -110,7 +110,7 @@ export default function PortalClientView() {
                                     <div key={t.id} className="p-5 hover:bg-slate-800/30 transition-colors flex items-center justify-between">
                                         <div>
                                             <p className="text-white font-medium text-sm">{t.subject || t.title}</p>
-                                            <p className="text-slate-500 text-xs mt-1">#{t.id} Â· Created {new Date(t.created_at).toLocaleDateString()}</p>
+                                            <p className="text-slate-500 text-xs mt-1">#{t.id} · Created {new Date(t.created_at).toLocaleDateString()}</p>
                                         </div>
                                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase border ${t.status === 'open' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
                                             {t.status}
@@ -196,7 +196,7 @@ export default function PortalClientView() {
                     </div>
                 )}
 
-                {activeTab === 'assets' && (
+                {activeTab === 'maintenance' && (
                     <div>
                         <div className="p-5 border-b border-slate-800 bg-slate-950/40">
                             <h2 className="text-sm font-bold text-white">Assigned Devices & Assets</h2>
@@ -212,7 +212,7 @@ export default function PortalClientView() {
                                         </div>
                                         <div>
                                             <h3 className="text-white text-sm font-bold">{a.name}</h3>
-                                            <p className="text-slate-400 text-xs mt-0.5">{a.asset_type} Â· {a.manufacturer}</p>
+                                            <p className="text-slate-400 text-xs mt-0.5">{a.asset_type} · {a.manufacturer}</p>
                                             <p className="text-slate-500 text-xs mt-2 font-mono">SN: {a.serial_number}</p>
                                         </div>
                                     </div>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Search, Clock, AlertCircle, Plus, Edit2, Trash2 } from 'lucide-react';
 import contractsService from '../../../../core/api/contractsService';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';

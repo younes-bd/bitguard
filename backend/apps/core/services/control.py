@@ -27,7 +27,7 @@ class ControlService(BaseService):
                 "pending_orders": Order.objects.filter(status='pending').count(),
                 "recent_revenue": Order.objects.filter(status='paid', created_at__gte=BaseService.get_today()).count()
             },
-            "support": {
+            "helpdesk": {
                 "critical_tickets": Ticket.objects.filter(priority='critical', status='open').count()
             },
             "status": "Healthy"
@@ -72,7 +72,7 @@ class ControlService(BaseService):
 
         # Finance: Can mutate billing/invoice resources
         if is_finance:
-            if 'billing.' in resource or 'store.' in resource or 'crm.Contract' in resource:
+            if 'billing.' in resource or 'ecommerce.' in resource or 'crm.Contract' in resource:
                 return True
             return action == 'VIEW'
 

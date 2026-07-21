@@ -1,36 +1,36 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import PublicLayout from '../../../core/layouts/PublicLayout';
+import WebsiteLayout from '../../../core/layouts/WebsiteLayout';
 
-import LandingPage from '../pages/landing/LandingPage';
-import About from '../pages/company/About';
-import Contact from '../pages/company/Contact';
-import Support from '../pages/services/Support';
-import RemoteJoin from '../pages/services/RemoteJoin';
-import ServiceDetail from '../pages/services/ServiceDetail';
-import Team from '../pages/company/Team';
-import Careers from '../pages/company/Careers';
-import Brochure from '../pages/resources/Brochure';
-import Events from '../pages/resources/Events';
-import FreeTools from '../pages/resources/FreeTools';
-import Podcasts from '../pages/resources/Podcasts';
-import Reports from '../pages/resources/Reports';
-import Compliance from '../pages/legal/Compliance';
-import PrivacyPolicy from '../pages/legal/PrivacyPolicy';
-import TermsOfService from '../pages/legal/TermsOfService';
-import PartnerProgram from '../../store/pages/features/PartnerProgram';
-import PricingPage from '../pages/pricing/PricingPage';
-import StatusPage from '../pages/company/StatusPage';
-import CaseStudies from '../pages/resources/CaseStudies';
-import SecurityTrustCenter from '../pages/company/SecurityTrustCenter';
-import Integrations from '../pages/platform/Integrations';
-import SLADocument from '../pages/legal/SLADocument';
-import Accessibility from '../pages/legal/Accessibility';
+import LandingPage from '../pages/public/landing/LandingPage';
+import About from '../pages/public/company/About';
+import Contact from '../pages/public/company/Contact';
+import Support from '../pages/public/services/Support';
+import RemoteJoin from '../pages/public/services/RemoteJoin';
+import ServiceDetail from '../pages/public/services/ServiceDetail';
+import Team from '../pages/public/company/Team';
+import Careers from '../pages/public/company/Careers';
+import Brochure from '../pages/public/resources/Brochure';
+import Events from '../pages/public/resources/Events';
+import FreeTools from '../pages/public/resources/FreeTools';
+import Podcasts from '../pages/public/resources/Podcasts';
+import Reports from '../pages/public/resources/Reports';
+import Compliance from '../pages/public/legal/Compliance';
+import PrivacyPolicy from '../pages/public/legal/PrivacyPolicy';
+import TermsOfService from '../pages/public/legal/TermsOfService';
+import PartnerProgram from '../../ecommerce/pages/features/PartnerProgram';
+import PricingPage from '../pages/public/pricing/PricingPage';
+import StatusPage from '../pages/public/company/StatusPage';
+import CaseStudies from '../pages/public/resources/CaseStudies';
+import SecurityTrustCenter from '../pages/public/company/SecurityTrustCenter';
+import Integrations from '../pages/public/platform/Integrations';
+import SLADocument from '../pages/public/legal/SLADocument';
+import Accessibility from '../pages/public/legal/Accessibility';
 
 export const WebsiteRoutes = () => {
     return (
         <Routes>
-            <Route element={<PublicLayout />}>
+            <Route element={<WebsiteLayout />}>
                 <Route index element={<LandingPage />} />
                 <Route path="about" element={<About />} />
                 <Route path="pricing" element={<PricingPage />} />

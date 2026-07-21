@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import securityService from '../../../../core/api/securityService';
 import {
@@ -121,7 +121,7 @@ const AlertsPage = () => {
                                             </span>
                                         </td>
                                         <td className="p-4 text-slate-400 text-sm">
-                                            {alert.created_at ? new Date(alert.created_at).toLocaleString() : 'â€”'}
+                                            {alert.created_at ? new Date(alert.created_at).toLocaleString() : '—'}
                                         </td>
                                         <td className="p-4 text-right">
                                             <button

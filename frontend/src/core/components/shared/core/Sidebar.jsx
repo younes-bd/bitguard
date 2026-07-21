@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LogOut, ChevronLeft, ChevronDown, X, LayoutDashboard } from 'lucide-react';
+import { LogOut, ChevronLeft, ChevronDown, X, LayoutDashboard, Home } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
+import { useTenant } from '../../../context/TenantContext';
 
 // ─── Sidebar Item ────────────────────────────────────────────────────────────
 const SidebarItem = ({ icon: Icon, label, path, active, collapsed, count }) => (
@@ -68,6 +69,7 @@ const Sidebar = ({
 }) => {
     const location = useLocation();
     const { user, logout } = useAuth();
+    const { tenant } = useTenant();
 
     const isAdmin = !!user?.is_staff || !!user?.is_superuser;
 
@@ -105,35 +107,72 @@ const Sidebar = ({
     const handleLogout = () => logout();
 
     // ── Sidebar content (shared between desktop + mobile) ────────────────────
+    const moduleRoot = '/' + location.pathname.split('/').filter(Boolean).slice(0, 2).join('/');
+
     const SidebarContent = () => (
         <>
-            {/* Header / Logo */}
-            <div className={`h-16 flex items-center border-b border-slate-800/80 flex-shrink-0 overflow-hidden
+            {/* Header / Module Title */}
+            <div className={`h-14 flex items-center border-b border-slate-800/80 flex-shrink-0 overflow-hidden
                 ${collapsed ? 'justify-center px-2' : 'justify-between px-5'}`}>
                 {!collapsed ? (
-                    <Link to="/admin" className="flex items-center gap-3 group">
-                        <div className="relative flex-shrink-0">
-                            <div className="absolute inset-0 bg-blue-500 blur-md opacity-20 group-hover:opacity-40 transition-opacity rounded-full" />
-                            <img
-                                src="/assets/logo/logo.png"
-                                alt="BitGuard"
-                                className="relative h-7 w-auto brightness-0 invert drop-shadow-[0_0_6px_rgba(56,189,248,0.4)]"
-                                onError={(e) => e.target.style.display = 'none'}
-                            />
+                    moduleKey === 'global' ? (
+                        <Link to="/admin" className="flex items-center gap-3 w-full group overflow-hidden px-1">
+                            <div className="relative flex-shrink-0">
+                                <div className="absolute inset-0 bg-blue-500 blur-md opacity-20 group-hover:opacity-40 transition-opacity rounded-full" />
+                                {tenant?.logo ? (
+                                    <img
+                                        src={tenant.logo}
+                                        alt={tenant?.name || "Company Logo"}
+                                        className="relative h-6 w-auto object-contain brightness-0 invert drop-shadow-[0_0_6px_rgba(56,189,248,0.4)]"
+                                        onError={(e) => e.target.src = '/assets/logo/logo.png'}
+                                    />
+                                ) : (
+                                    <img
+                                        src="/assets/logo/logo.png"
+                                        alt="BitGuard"
+                                        className="relative h-6 w-auto brightness-0 invert drop-shadow-[0_0_6px_rgba(56,189,248,0.4)]"
+                                        onError={(e) => e.target.style.display = 'none'}
+                                    />
+                                )}
+                            </div>
+                            <span className="text-white text-[17px] font-bold font-[Oswald] tracking-[1.5px] leading-none uppercase drop-shadow-[0_0_5px_rgba(56,189,248,0.3)] truncate flex-1">
+                                {tenant?.name || 'BITGUARD'}
+                            </span>
+                        </Link>
+                    ) : (
+                        <div className="flex items-center gap-3 w-full">
+                            <Link to="/admin" title="Back to Dashboard" className="relative flex-shrink-0 flex items-center justify-center w-7 h-7 bg-slate-800 rounded-lg hover:bg-blue-600 transition-colors">
+                                <Home size={16} className="text-slate-400 hover:text-white transition-colors" />
+                            </Link>
+                            <Link to={moduleRoot} className="text-white text-[15px] font-bold font-[Oswald] tracking-[1.5px] uppercase truncate hover:text-blue-400 transition-colors block flex-1">
+                                {title}
+                            </Link>
                         </div>
-                        <span className="text-white text-xl font-bold font-[Oswald] tracking-[2.5px] leading-none uppercase drop-shadow-[0_0_5px_rgba(56,189,248,0.3)]">
-                            BITGUARD
-                        </span>
-                    </Link>
+                    )
                 ) : (
-                    <Link to="/admin" title="BitGuard Home">
-                        <img
-                            src="/assets/logo/logo.png"
-                            alt="Logo"
-                            className="h-7 w-auto brightness-0 invert"
-                            onError={(e) => e.target.style.display = 'none'}
-                        />
-                    </Link>
+                    moduleKey === 'global' ? (
+                        <Link to="/admin" title={tenant?.name || "BitGuard Home"}>
+                            {tenant?.logo ? (
+                                <img
+                                    src={tenant.logo}
+                                    alt="Logo"
+                                    className="h-6 w-auto rounded object-contain"
+                                    onError={(e) => e.target.src = '/assets/logo/logo.png'}
+                                />
+                            ) : (
+                                <img
+                                    src="/assets/logo/logo.png"
+                                    alt="Logo"
+                                    className="h-6 w-auto brightness-0 invert"
+                                    onError={(e) => e.target.style.display = 'none'}
+                                />
+                            )}
+                        </Link>
+                    ) : (
+                        <Link to="/admin" title="Back to Dashboard" className="flex items-center justify-center w-8 h-8 hover:bg-slate-800 rounded-lg transition-colors">
+                            <Home size={18} className="text-slate-400 hover:text-white" />
+                        </Link>
+                    )
                 )}
 
                 {/* Mobile close button */}

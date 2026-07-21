@@ -45,3 +45,17 @@ class IsTenantUser(BasePermission):
         if request_tenant and user_tenant:
             return request_tenant == user_tenant
         return False
+
+class IsPlatformAdmin(BasePermission):
+    """
+    Allow platform superusers, staff, or users with admin roles.
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+        try:
+            return request.user.roles.filter(name__in=['SUPER_ADMIN', 'TENANT_ADMIN']).exists()
+        except Exception:
+            return False

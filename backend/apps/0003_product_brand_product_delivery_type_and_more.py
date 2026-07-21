@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('store', '0002_initial'),
+        ('ecommerce', '0002_initial'),
     ]
 
     operations = [
@@ -84,8 +84,8 @@ class Migration(migrations.Migration):
                 ('unit_price', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('total_price', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('options', models.JSONField(blank=True, default=dict)),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='store.order')),
-                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='store.product')),
+                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='ecommerce.order')),
+                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='ecommerce.product')),
             ],
         ),
     ]

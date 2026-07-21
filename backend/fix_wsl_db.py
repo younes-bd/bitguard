@@ -27,7 +27,7 @@ except Exception as e:
 c.execute("DELETE FROM django_migrations WHERE app IN ('itsm', 'itam')")
 
 # For cms, support, notifications: they are already in the DB, so we should delete them from django_migrations so they get faked too!
-c.execute("DELETE FROM django_migrations WHERE app IN ('cms', 'notifications', 'support', 'services', 'assets')")
+c.execute("DELETE FROM django_migrations WHERE app IN ('cms', 'notifications', 'helpdesk', 'services', 'maintenance')")
 
 conn.commit()
 conn.close()

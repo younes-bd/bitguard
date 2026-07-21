@@ -12,7 +12,28 @@ from ..domain.models import (
     Account, JournalEntry, JournalEntryLine, BankAccount,
     BankTransaction, CreditNote, FixedAsset,
     PaymentTerms, InvoiceBranding, DeferredRevenue,
+    AccountJournal, TaxGroup, Tax, BankReconciliation,
 )
+
+class AccountJournalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccountJournal
+        fields = '__all__'
+
+class TaxGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaxGroup
+        fields = '__all__'
+
+class TaxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tax
+        fields = '__all__'
+
+class BankReconciliationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BankReconciliation
+        fields = '__all__'
 
 class PaymentTermsSerializer(serializers.ModelSerializer):
     class Meta:

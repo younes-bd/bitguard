@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import securityService from '../../../../core/api/securityService';
 import {
     ComputerDesktopIcon,
@@ -46,7 +46,7 @@ const AssetsPage = () => {
         }
     };
 
-    // Maps ManagedEndpoint.status â†’ color classes
+    // Maps ManagedEndpoint.status → color classes
     const getStatusColor = (status) => {
         switch (status) {
             case 'online': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
@@ -58,7 +58,7 @@ const AssetsPage = () => {
         }
     };
 
-    // Maps risk_score (0-100) â†’ severity badge
+    // Maps risk_score (0-100) → severity badge
     const getRiskBadge = (score) => {
         if (score >= 80) return <span className="px-2 py-0.5 rounded text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Critical ({score})</span>;
         if (score >= 50) return <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Medium ({score})</span>;
@@ -70,7 +70,7 @@ const AssetsPage = () => {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-white">Endpoint Inventory</h1>
-                    <p className="text-slate-400 mt-1">Managed devices â€” workstations, servers, firewalls.</p>
+                    <p className="text-slate-400 mt-1">Managed devices — workstations, servers, firewalls.</p>
                 </div>
                 <button
                     onClick={fetchAssets}
@@ -108,7 +108,7 @@ const AssetsPage = () => {
                             {assets.length === 0 ? (
                                 <tr>
                                     <td colSpan="7" className="p-8 text-center text-slate-500">
-                                        {loading ? 'Loading endpointsâ€¦' : 'No endpoints registered yet.'}
+                                        {loading ? 'Loading endpoints…' : 'No endpoints registered yet.'}
                                     </td>
                                 </tr>
                             ) : (
@@ -116,7 +116,7 @@ const AssetsPage = () => {
                                     <tr key={asset.id} className="hover:bg-slate-700/30 transition-colors">
                                         <td className="p-4">
                                             <div className="font-medium text-white">{asset.hostname}</div>
-                                            <div className="text-xs text-slate-500 font-mono">{asset.mac_address || 'â€”'}</div>
+                                            <div className="text-xs text-slate-500 font-mono">{asset.mac_address || '—'}</div>
                                         </td>
                                         <td className="p-4 text-slate-300 capitalize">{(asset.device_type || '').replace('_', ' ')}</td>
                                         <td className="p-4 text-slate-300 font-mono text-sm">{asset.ip_address || 'N/A'}</td>

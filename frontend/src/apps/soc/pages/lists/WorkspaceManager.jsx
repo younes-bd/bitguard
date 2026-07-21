@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { platformService } from '../../../../core/api/platformService';
 import {
     Squares2X2Icon,
@@ -91,7 +91,7 @@ const WorkspaceManager = () => {
                         <h3 className="text-xl font-semibold text-white mb-2">{workspace.name}</h3>
                         <div className="flex items-center gap-4 text-sm text-slate-400">
                             <span>{workspace.users?.length || 0} Users</span>
-                            <span>â€¢</span>
+                            <span>•</span>
                             <span>{workspace.client ? 'Client Linked' : 'Internal'}</span>
                         </div>
                     </div>

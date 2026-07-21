@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
 
     # Third-Party
+    'django_filters',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -41,31 +42,40 @@ INSTALLED_APPS = [
     'apps.auth',
     'apps.website',
     'apps.portal',
-    'apps.cms',
+    'apps.elearning',
     'apps.blog',
-    'apps.store',
+    'apps.ecommerce',
     'apps.billing',
     'apps.crm',
     'apps.notifications',
     'integrations.ai_engine',
     'integrations.automation',
     'api',
-    'apps.audit',
 
-    'apps.dashboard',
-    'apps.support',
+
+    'apps.board',
+    'apps.helpdesk',
     'apps.marketing',
     # New business modules (Sprint 3 & 4)
     'apps.accounting',
-    'apps.hrm',
+    'apps.hr',
+    'apps.hr_attendance',
+    'apps.hr_holidays',
+    'apps.hr_recruitment',
+    'apps.hr_payroll',
+    'apps.hr_appraisal',
+    'apps.hr_expense',
     'apps.purchase',
-    'apps.inventory',
+    'apps.stock',
+    'apps.delivery',
     'apps.contracts',
     'apps.projects',    # Dedicated Project Management (PSA)
-    'apps.assets',        # Generic Asset Management
-    'apps.sysadmin',    # System Administration
-    'apps.services',        # Generic Service Management
-    'apps.edms',        # Electronic Document Management System
+    'apps.maintenance',        # Generic Asset Management
+    'apps.base_setup',    # System Administration
+    'apps.appointments',
+    'apps.planning',
+    'apps.field_service',
+    'apps.documents',        # Electronic Document Management System
     'apps.reporting',   # PDF Reporting Engine
     'apps.sale',
     'apps.approvals',   # Next-Gen Enterprise Approvals
@@ -73,7 +83,12 @@ INSTALLED_APPS = [
     'apps.pos',         # Point of Sale
     'apps.fleet',       # Fleet Management
     'apps.discuss',     # Internal Communication / Team Chat
-    'django_celery_beat',
+    'apps.rental',      # Rental Management
+    'apps.mrp_plm',         # Product Lifecycle Management
+    'apps.quality_control',     # Quality Management
+    'apps.esg',         # ESG & Sustainability
+    'apps.equity',      # Equity Management
+    # 'django_celery_beat',
 ]
 
 # Django Channels — WebSocket layer (install: pip install channels daphne)
@@ -131,6 +146,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'EXCEPTION_HANDLER': 'apps.core.exceptions.custom_exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 25,
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ),
 }
 from datetime import timedelta
 SIMPLE_JWT = {

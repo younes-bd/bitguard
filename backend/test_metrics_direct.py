@@ -3,8 +3,8 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 django.setup()
 
-from apps.dashboard.services.analytics import CommandCenterAnalyticsService
-from apps.tenants.models import Tenant
+from apps.board.services.analytics import CommandCenterAnalyticsService
+from apps.tenants.domain.models import Tenant
 
 try:
     demo_tenant = Tenant.objects.get(id='0aff5946-c015-4cc6-9d06-416cdf204651')

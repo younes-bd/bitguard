@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     BarChart3, TrendingUp, Clock, CheckCircle2, 
     AlertCircle, PieChart, Activity, Download, 

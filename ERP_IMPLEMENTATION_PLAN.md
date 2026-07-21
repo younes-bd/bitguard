@@ -522,7 +522,7 @@ getMRR: () => client.get('contracts/mrr/')
 
 ## Phase 8 — CommandCenter Dashboard Improvements
 
-**File**: `frontend/src/apps/dashboard/pages/dashboards/CommandCenter.jsx`
+**File**: `frontend/src/apps/board/pages/dashboards/CommandCenter.jsx`
 
 - Fix Finance & Accounting KPI source from `metrics.erp.overdue_invoices` → `metrics.accounting.overdue_invoices`
 - Add MRR as a live KPI card metric for the Contracts tile

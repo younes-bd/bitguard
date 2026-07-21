@@ -69,6 +69,18 @@ export const hrmService = {
         const response = await client.get('hrm/payroll-periods/', { params });
         return response.data?.data ?? response.data;
     },
+    getPayslipBatches: async (params = {}) => {
+        const response = await client.get('hrm/payslip-batches/', { params });
+        return response.data?.data ?? response.data;
+    },
+    getPerformanceReviews: async (params = {}) => {
+        const response = await client.get('hrm/performance-reviews/', { params });
+        return response.data?.data ?? response.data;
+    },
+    getEmployeeSkills: async (params = {}) => {
+        const response = await client.get('hrm/employee-skills/', { params });
+        return response.data?.data ?? response.data;
+    },
     // ─── DOCUMENT GENERATION ──────────────────────────────────────────────────
     downloadDocument: async (model, id) => {
         const response = await client.post('reporting/generated/generate/', {

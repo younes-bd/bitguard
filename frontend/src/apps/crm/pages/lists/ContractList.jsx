@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, FileText, Edit2, Trash2 } from 'lucide-react';
 import contractsService from '../../../../core/api/contractsService';
 import { crmService } from '../../../../core/api/crmService';
@@ -130,10 +130,10 @@ const ContractListPage = () => {
                                         <span className="text-white font-medium">{c.title ?? c.name ?? `Contract #${c.id}`}</span>
                                     </div>
                                 </td>
-                                <td className="px-5 py-4 text-slate-300">{c.client?.name ?? c.client ?? 'â€”'}</td>
-                                <td className="px-5 py-4 text-slate-400">{c.sla_tier?.name ?? 'â€”'}</td>
-                                <td className="px-5 py-4 text-slate-400">{c.start_date ?? 'â€”'}</td>
-                                <td className="px-5 py-4 text-slate-400">{c.end_date ?? 'â€”'}</td>
+                                <td className="px-5 py-4 text-slate-300">{c.client?.name ?? c.client ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-400">{c.sla_tier?.name ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-400">{c.start_date ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-400">{c.end_date ?? '—'}</td>
                                 <td className="px-5 py-4 text-emerald-400 font-semibold">${Number(c.value ?? c.monthly_fee ?? 0).toLocaleString()}</td>
                                 <td className="px-5 py-4">{statusBadge(c.status)}</td>
                                 <td className="px-5 py-4 text-right">

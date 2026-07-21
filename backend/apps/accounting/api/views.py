@@ -8,7 +8,8 @@ from ..domain.models import (
     Invoice, Payment, Expense, TaxConfig, GeneralLedger,
     Account, JournalEntry, BankAccount, BankTransaction, FixedAsset, CreditNote,
     PaymentTerms, InvoiceBranding, DeferredRevenue,
-    Currency, ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation, DunningWorkflow
+    Currency, ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation, DunningWorkflow,
+    AccountJournal, Tax
 )
 
 from .serializers import (
@@ -17,8 +18,21 @@ from .serializers import (
     BankTransactionSerializer, FixedAssetSerializer, CreditNoteSerializer,
     PaymentTermsSerializer, InvoiceBrandingSerializer, DeferredRevenueSerializer,
     CurrencySerializer, ExchangeRateSerializer, TaxAuthoritySerializer,
-    TaxGroupSerializer, BankReconciliationSerializer, DunningWorkflowSerializer
+    TaxGroupSerializer, BankReconciliationSerializer, DunningWorkflowSerializer,
+    AccountJournalSerializer, TaxSerializer
 )
+
+class AccountJournalViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = AccountJournalSerializer
+    def get_queryset(self):
+        return AccountJournal.objects.filter(tenant=self.request.user.tenant)
+
+class TaxViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TaxSerializer
+    def get_queryset(self):
+        return Tax.objects.filter(tenant=self.request.user.tenant)
 
 class InvoiceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -52,6 +66,9 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def void(self, request, pk=None):
+        if not request.user.is_staff and not request.user.is_superuser:
+            if not request.user.roles.filter(name__in=['SUPER_ADMIN', 'TENANT_ADMIN', 'MANAGER']).exists():
+                return Response({'error': 'Forbidden: Requires accountant/manager role'}, status=403)
         invoice = self.get_object()
         invoice.status = 'void'
         invoice.save()

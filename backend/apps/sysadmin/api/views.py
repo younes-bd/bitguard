@@ -1,3 +1,4 @@
+# DEPRECATED - NOT MOUNTED - Use base_setup instead.
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action

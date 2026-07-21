@@ -10,7 +10,7 @@ django.setup()
 from django.apps import apps
 from django.db import models
 
-apps_to_update = ['accounting', 'services', 'assets', 'projects', 'purchase', 'inventory']
+apps_to_update = ['accounting', 'services', 'maintenance', 'projects', 'purchase', 'inventory']
 
 for app_name in apps_to_update:
     try:

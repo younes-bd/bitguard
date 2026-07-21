@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, DollarSign, Clock, CheckCircle2, Download, ExternalLink } from 'lucide-react';
 import { billingService } from '../../../../core/api/billingService';
 

@@ -25,15 +25,15 @@ export const marketingService = {
 
     // Assets
     getAssets: async (params = {}) => {
-        const response = await client.get('marketing/assets/', { params });
+        const response = await client.get('marketing/maintenance/', { params });
         return response.data?.results || response.data || [];
     },
     createAsset: async (data) => {
-        const response = await client.post('marketing/assets/', data);
+        const response = await client.post('marketing/maintenance/', data);
         return response.data;
     },
     deleteAsset: async (id) => {
-        const response = await client.delete(`marketing/assets/${id}/`);
+        const response = await client.delete(`marketing/maintenance/${id}/`);
         return response.data;
     },
 

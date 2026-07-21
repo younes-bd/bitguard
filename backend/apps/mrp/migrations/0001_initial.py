@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('store', '0003_initial'),
+        ('ecommerce', '0003_initial'),
         ('tenants', '0002_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('quantity', models.DecimalField(decimal_places=2, default=1.0, max_digits=10)),
                 ('is_active', models.BooleanField(default=True)),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='boms', to='store.product')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='boms', to='ecommerce.product')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),
             ],
             options={
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('quantity', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('bom', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='components', to='mrp.billofmaterial')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='store.product')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='ecommerce.product')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),
             ],
             options={
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 ('date_planned_finished', models.DateTimeField()),
                 ('bom', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='mrp.billofmaterial')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='manufacturing_orders', to='store.product')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='manufacturing_orders', to='ecommerce.product')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),
             ],
             options={

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..domain.models import Client, Contact, Lead, Deal, Activity
+from ..domain.models import Client, Contact, Lead, Deal, Activity, CrmStage, CrmSalesTeam, LostReason, CrmTag
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,4 +24,24 @@ class DealSerializer(serializers.ModelSerializer):
 class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
+        fields = '__all__'
+
+class CrmStageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CrmStage
+        fields = '__all__'
+
+class CrmSalesTeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CrmSalesTeam
+        fields = '__all__'
+
+class LostReasonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LostReason
+        fields = '__all__'
+
+class CrmTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CrmTag
         fields = '__all__'

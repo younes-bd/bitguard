@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('accounting', '0004_analyticaccount_analyticline_billline_costcenter_and_more'),
-        ('inventory', '0001_initial'),
+        ('stock', '0001_initial'),
         ('tenants', '0002_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('total', models.DecimalField(decimal_places=2, default=0, max_digits=12)),
                 ('analytic_account', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounting.analyticaccount')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
-                ('inventory_item', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='purchase_lines', to='inventory.inventoryitem')),
+                ('inventory_item', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='purchase_lines', to='stock.inventoryitem')),
                 ('purchase_order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lines', to='purchase.purchaseorder')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),
             ],
@@ -126,7 +126,7 @@ class Migration(migrations.Migration):
                 ('valid_from', models.DateField(blank=True, null=True)),
                 ('valid_to', models.DateField(blank=True, null=True)),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL)),
-                ('inventory_item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vendor_prices', to='inventory.inventoryitem')),
+                ('inventory_item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vendor_prices', to='stock.inventoryitem')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(class)s_set', to='tenants.tenant')),
                 ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pricelists', to='purchase.vendor')),
             ],

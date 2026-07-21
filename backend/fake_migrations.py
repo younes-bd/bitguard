@@ -21,14 +21,14 @@ except sqlite3.IntegrityError:
 
 try:
     cursor.execute("INSERT INTO django_migrations (app, name, applied) VALUES (?, ?, ?)", 
-                   ('edms', '0002_initial', datetime.now()))
+                   ('documents', '0002_initial', datetime.now()))
     print("Inserted edms.0002_initial")
 except sqlite3.IntegrityError:
     pass
 
 try:
     cursor.execute("INSERT INTO django_migrations (app, name, applied) VALUES (?, ?, ?)", 
-                   ('edms', '0003_edms_update', datetime.now()))
+                   ('documents', '0003_edms_update', datetime.now()))
     print("Inserted edms.0003_edms_update")
 except sqlite3.IntegrityError:
     pass

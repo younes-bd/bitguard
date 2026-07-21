@@ -12,8 +12,8 @@ SERVICES = {
         'description': 'The all-in-one platform to assess, defend, and control your digital infrastructure.',
         'icon': 'fas fa-layer-group',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)',
-        'hero_image': 'base/assets/images/home/unified.jpg', 
-        'content_image': 'base/assets/images/home/ai-models.png',
+        'hero_image': 'base/maintenance/images/home/unified.jpg', 
+        'content_image': 'base/maintenance/images/home/ai-models.png',
         'features': [
             {'title': 'Centralized Dashboard', 'desc': 'View your entire security posture in one glance.'},
             {'title': 'Real-time Alerts', 'desc': 'Instant notifications for critical security events.'},
@@ -36,7 +36,7 @@ SERVICES = {
         'description': 'Comprehensive vulnerability assessment and risk analysis for your organization.',
         'icon': 'fas fa-search-dollar',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #0891b2 100%)',
-        'hero_image': 'base/assets/images/home/search.png',
+        'hero_image': 'base/maintenance/images/home/search.png',
         'features': [
             {'title': 'Deep Scanning', 'desc': 'Identify hidden vulnerabilities across your network.'},
             {'title': 'Risk Scoring', 'desc': 'Prioritize fixes based on potential business impact.'},
@@ -53,7 +53,7 @@ SERVICES = {
         'description': 'Proactive defense mechanisms to stop attacks in real-time.',
         'icon': 'fas fa-shield-virus',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #be123c 100%)',
-        'hero_image': 'base/assets/images/home/article3.png', 
+        'hero_image': 'base/maintenance/images/home/article3.png', 
         'features': [
             {'title': 'Next-Gen Firewall', 'desc': 'Advanced packet filtering and intrusion prevention.'},
             {'title': 'Endpoint Protection', 'desc': 'Secure every device connecting to your network.'},
@@ -70,7 +70,7 @@ SERVICES = {
         'description': 'Manage access, enforce policies, and maintain control over your data.',
         'icon': 'fas fa-sliders-h',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #059669 100%)',
-        'hero_image': 'base/assets/images/home/api.png',
+        'hero_image': 'base/maintenance/images/home/api.png',
         'features': [
             {'title': 'Access Control', 'desc': 'Zero-trust architecture for user permissions.'},
             {'title': 'Device Management', 'desc': 'Remote wipe and lock for lost devices.'},
@@ -87,7 +87,7 @@ SERVICES = {
         'description': 'Direct access to security experts and strategic planning.',
         'icon': 'fas fa-user-shield',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #7c3aed 100%)',
-        'hero_image': 'base/assets/images/people/man2.jpg',
+        'hero_image': 'base/maintenance/images/people/man2.jpg',
         'features': [
             {'title': 'Virtual CISO', 'desc': 'Strategic leadership without the full-time cost.'},
             {'title': 'Roadmap Planning', 'desc': 'Align security investments with business goals.'},
@@ -106,7 +106,7 @@ SERVICES = {
         'description': 'Ensure your business survives any disaster with robust backup solutions.',
         'icon': 'fas fa-database',
         'hero_bg': 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
-        'hero_image': 'base/assets/images/home/import.png',
+        'hero_image': 'base/maintenance/images/home/import.png',
         'features': [
             {'title': 'Cloud Backup', 'desc': 'Secure, off-site storage for your critical data.'},
             {'title': 'Instant Restore', 'desc': 'Get back online in minutes, not days.'},
@@ -123,8 +123,8 @@ SERVICES = {
         'description': 'Continuous monitoring and rapid response to security incidents.',
         'icon': 'fas fa-radar',
         'hero_bg': 'linear-gradient(135deg, #1e293b 0%, #ef4444 100%)',
-        'hero_image': 'base/assets/images/home/ai-models.png',
-        'content_image': 'base/assets/images/home/article3.png',
+        'hero_image': 'base/maintenance/images/home/ai-models.png',
+        'content_image': 'base/maintenance/images/home/article3.png',
         'features': [
             {'title': '24/7 SOC Monitoring', 'desc': 'Eyes on glass around the clock.'},
             {'title': 'Threat Hunting', 'desc': 'Proactively searching for hidden threats.'},
@@ -141,7 +141,7 @@ SERVICES = {
         'description': 'Add an essential layer of security to user logins.',
         'icon': 'fas fa-key',
         'hero_bg': 'linear-gradient(135deg, #1e293b 0%, #10b981 100%)',
-        'hero_image': 'base/assets/images/home/integrations1.png',
+        'hero_image': 'base/maintenance/images/home/integrations1.png',
         'features': [
             {'title': 'Biometric Support', 'desc': 'Face ID and Fingerprint compatible.'},
             {'title': 'Push Notifications', 'desc': 'One-tap approval for easy login.'},
@@ -158,7 +158,7 @@ SERVICES = {
         'description': 'Cloud-based phone systems for the modern workforce.',
         'icon': 'fas fa-phone-alt',
         'hero_bg': 'linear-gradient(135deg, #1e293b 0%, #6366f1 100%)',
-        'hero_image': 'base/assets/images/home/multilingual.png',
+        'hero_image': 'base/maintenance/images/home/multilingual.png',
         'features': [
             {'title': 'Anywhere Access', 'desc': 'Take calls on your desk phone, computer, or mobile.'},
             {'title': 'Video Conferencing', 'desc': 'Integrated HD video meetings.'},
@@ -175,7 +175,7 @@ SERVICES = {
         'description': 'Proactive monitoring and maintenance of your IT infrastructure.',
         'icon': 'fas fa-server',
         'hero_bg': 'linear-gradient(135deg, #1e293b 0%, #8b5cf6 100%)',
-        'hero_image': 'base/assets/images/home/unified.jpg',
+        'hero_image': 'base/maintenance/images/home/unified.jpg',
         'features': [
             {'title': 'Uptime Monitoring', 'desc': 'Immediate alerts for outages.'},
             {'title': 'Patch Management', 'desc': 'Keep servers and workstations up to date.'},
@@ -194,7 +194,7 @@ SERVICES = {
         'description': 'Our all-inclusive package for comprehensive business security.',
         'icon': 'fas fa-cubes',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #fbbf24 100%)',
-        'hero_image': 'base/assets/images/home/multi-sub.png',
+        'hero_image': 'base/maintenance/images/home/multi-sub.png',
         'features': [
             {'title': 'Endpoint Protection', 'desc': 'Antivirus and EDR included.'},
             {'title': 'Email Security', 'desc': 'Anti-phishing and spam filtering.'},
@@ -211,7 +211,7 @@ SERVICES = {
          'description': 'Advanced analytics to identify malicious behavior.',
          'icon': 'fas fa-eye',
          'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #f43f5e 100%)',
-         'hero_image': 'base/assets/images/home/prompts2.png',
+         'hero_image': 'base/maintenance/images/home/prompts2.png',
          'features': [
              {'title': 'Behavioral Analysis', 'desc': 'Detect anomalies in user behavior.'},
              {'title': 'Log Management', 'desc': 'Centralized logging for compliance.'},
@@ -225,7 +225,7 @@ SERVICES = {
         'description': 'Next-generation protection for laptops, desktops, and servers.',
         'icon': 'fas fa-laptop-medical',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #14b8a6 100%)',
-        'hero_image': 'base/assets/images/home/article1.png',
+        'hero_image': 'base/maintenance/images/home/article1.png',
         'features': [
             {'title': 'Ransomware Rollback', 'desc': 'Reverse changes made by malware.'},
             {'title': 'Offline Protection', 'desc': 'AI works even without internet.'},
@@ -239,7 +239,7 @@ SERVICES = {
         'description': 'Expert help to recover from cyberattacks.',
         'icon': 'fas fa-ambulance',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #ef4444 100%)',
-        'hero_image': 'base/assets/images/home/article3.png',
+        'hero_image': 'base/maintenance/images/home/article3.png',
         'features': [
             {'title': 'Forensic Investigation', 'desc': 'Determine the root cause.'},
             {'title': 'Legal Support', 'desc': 'Guidance on breach notification.'},
@@ -253,7 +253,7 @@ SERVICES = {
         'description': 'Regular automated scans to find unpatched software.',
         'icon': 'fas fa-microscope',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #8b5cf6 100%)',
-        'hero_image': 'base/assets/images/home/search.png',
+        'hero_image': 'base/maintenance/images/home/search.png',
         'features': [
             {'title': 'External Scanning', 'desc': 'Test your internet-facing assets.'},
             {'title': 'Internal Scanning', 'desc': 'Find risks inside your firewall.'},
@@ -267,7 +267,7 @@ SERVICES = {
         'description': 'Consulting and tools to achieve compliance.',
         'icon': 'fas fa-file-contract',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #64748b 100%)',
-        'hero_image': 'base/assets/images/home/history.png',
+        'hero_image': 'base/maintenance/images/home/history.png',
         'features': [
             {'title': 'HIPAA / GDPR', 'desc': 'Healthcare and privacy compliance.'},
             {'title': 'CMMC / NIST', 'desc': 'Government contractor standards.'},
@@ -283,7 +283,7 @@ SERVICES = {
         'description': 'Expert management and migration for Office 365.',
         'icon': 'fab fa-microsoft',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #0078d4 100%)',
-        'hero_image': 'base/assets/images/home/unified.jpg',
+        'hero_image': 'base/maintenance/images/home/unified.jpg',
         'features': [{'title': 'Migration', 'desc': 'Move email and files without downtime.'}],
         'content': '<p>Maximize your investment in M365 with our expert setup and security hardening.</p>'
     },
@@ -293,7 +293,7 @@ SERVICES = {
         'description': 'Architecting and managing cloud infrastructure.',
         'icon': 'fas fa-cloud',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #f97316 100%)',
-        'hero_image': 'base/assets/images/home/api.png',
+        'hero_image': 'base/maintenance/images/home/api.png',
         'features': [{'title': 'Cost Optimization', 'desc': 'Stop overpaying for unused resources.'}],
         'content': '<p>Scale infinitely with properly architected cloud environments on AWS or Azure.</p>'
     },
@@ -303,7 +303,7 @@ SERVICES = {
         'description': 'Enterprise-grade file storage and syncing.',
         'icon': 'fas fa-hdd',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #22c55e 100%)',
-        'hero_image': 'base/assets/images/home/import.png',
+        'hero_image': 'base/maintenance/images/home/import.png',
         'features': [{'title': 'Encryption', 'desc': 'Data is encrypted at rest and in transit.'}],
         'content': '<p>Replace your old file server with modern, accessible cloud storage.</p>'
     },
@@ -315,7 +315,7 @@ SERVICES = {
         'description': 'Stunning websites that convert visitors into customers.',
         'icon': 'fas fa-laptop-code',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #d946ef 100%)',
-        'hero_image': 'base/assets/images/home/websearch.png',
+        'hero_image': 'base/maintenance/images/home/websearch.png',
         'features': [{'title': 'Responsive Design', 'desc': 'Looks great on any device.'}],
         'content': '<p>Your website is your digital storefront. Make a lasting impression.</p>'
     },
@@ -325,7 +325,7 @@ SERVICES = {
         'description': 'Logo design, branding, and marketing assets.',
         'icon': 'fas fa-pen-nib',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #ec4899 100%)',
-        'hero_image': 'base/assets/images/home/prompts2.png',
+        'hero_image': 'base/maintenance/images/home/prompts2.png',
         'features': [{'title': 'UI/UX', 'desc': 'User-centric interface design.'}],
         'content': '<p>Consistent, professional branding builds trust.</p>'
     },
@@ -335,7 +335,7 @@ SERVICES = {
         'description': 'End-to-end development of complex web applications.',
         'icon': 'fas fa-code',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #8b5cf6 100%)',
-        'hero_image': 'base/assets/images/home/api.png',
+        'hero_image': 'base/maintenance/images/home/api.png',
         'features': [{'title': 'Modern Stack', 'desc': 'React, Django, Node.js expertize.'}],
         'content': '<p>We build robust, scalable applications tailored to your business needs.</p>'
     },
@@ -345,7 +345,7 @@ SERVICES = {
         'description': 'Native and cross-platform mobile apps.',
         'icon': 'fas fa-mobile-alt',
         'hero_bg': 'linear-gradient(135deg, #0f172a 0%, #3b82f6 100%)',
-        'hero_image': 'base/assets/images/home/text-to-image.png',
+        'hero_image': 'base/maintenance/images/home/text-to-image.png',
         'features': [{'title': 'iOS & Android', 'desc': 'Reach customers on every device.'}],
         'content': '<p>Turn your idea into a feature-rich mobile application.</p>'
     },

@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { iamService } from '../api/iamService';
 import { crmService } from '../api/crmService';
-import { supportService } from '../api/supportService';
+import { helpdeskService } from '../api/helpdeskService';
 
 const GlobalSearch = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
@@ -27,13 +27,13 @@ const GlobalSearch = ({ isOpen, onClose }) => {
             const [users, clients, tickets] = await Promise.all([
                 iamService.getUsers({ search: q }).catch(() => []),
                 crmService.getClients({ search: q }).catch(() => []),
-                supportService.getTickets({ search: q }).catch(() => []),
+                helpdeskService.getTickets({ search: q }).catch(() => []),
             ]);
 
             const combinedResults = [
                 ...users.slice(0, 3).map(u => ({ id: u.id, title: u.email, type: 'User', icon: Users, path: `/admin/iam/users/${u.id}` })),
                 ...clients.slice(0, 3).map(c => ({ id: c.id, title: c.name, type: 'Client', icon: FileText, path: `/admin/crm/clients/${c.id}` })),
-                ...tickets.slice(0, 3).map(t => ({ id: t.id, title: t.subject, type: 'Ticket', icon: Ticket, path: `/admin/support/tickets/${t.id}` })),
+                ...tickets.slice(0, 3).map(t => ({ id: t.id, title: t.subject, type: 'Ticket', icon: Ticket, path: `/admin/helpdesk/tickets/${t.id}` })),
             ];
 
             setResults(combinedResults);

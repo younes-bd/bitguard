@@ -209,6 +209,38 @@ export default function DealModal({ isOpen, onClose, deal, onSave }) {
                             </button>
                         </div>
                     )}
+
+                    {deal && formData.stage === 'won' && (
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6 mt-6">
+                            <h3 className="text-lg font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                                <DollarSign size={20} />
+                                Convert to Sale Order
+                            </h3>
+                            <p className="text-slate-300 text-sm mb-4">
+                                This deal is marked as Won! Convert it to a Sale Order to start fulfillment and billing.
+                            </p>
+                            <button 
+                                type="button"
+                                onClick={async () => {
+                                    setGenerating(true);
+                                    try {
+                                        await crmService.convertDealToSale(deal.id);
+                                        toast.success('Converted to Sale Order!');
+                                        navigate(`/admin/sales/orders`);
+                                        onClose();
+                                    } catch(e) {
+                                        toast.error('Failed to convert to sale order.');
+                                    } finally {
+                                        setGenerating(false);
+                                    }
+                                }}
+                                disabled={generating || !formData.client}
+                                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-colors flex justify-center items-center gap-2 disabled:opacity-50"
+                            >
+                                {generating ? 'Processing...' : 'Convert to Sale Order'} <ChevronRight size={18} />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="p-6 border-t border-slate-800 bg-slate-900/50 flex justify-end gap-3">

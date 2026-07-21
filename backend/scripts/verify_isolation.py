@@ -4,7 +4,7 @@ import django
 from django.contrib.auth import get_user_model
 from apps.tenants.models import Tenant
 from apps.crm.models import Client
-from apps.support.models import Ticket
+from apps.helpdesk.models import Ticket
 from apps.erp.models import Invoice
 from django.test import RequestFactory
 

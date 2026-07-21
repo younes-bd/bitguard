@@ -1,7 +1,7 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { crmService } from '../../../../core/api/crmService';
 import { contractsService } from '../../../../core/api/contractsService';
-import supportService from '../../../../core/api/supportService';
+import helpdeskService from '../../../../core/api/helpdeskService';
 import { Users, Search, Filter, Briefcase, MapPin, ExternalLink, Edit2, Trash2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GenericModal from '../../../../core/components/shared/forms/GenericModal';
@@ -24,7 +24,7 @@ const ClientList = () => {
                 const [clientsData, contractsData, ticketsData] = await Promise.all([
                     crmService.getClients(),
                     contractsService.getContracts(),
-                    supportService.getTickets()
+                    helpdeskService.getTickets()
                 ]);
                 setClients(Array.isArray(clientsData) ? clientsData : clientsData.results || []);
                 setStats({

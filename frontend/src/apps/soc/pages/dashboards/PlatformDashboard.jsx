@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { platformService } from '../../../../core/api/platformService';
 import {
     ServerStackIcon,

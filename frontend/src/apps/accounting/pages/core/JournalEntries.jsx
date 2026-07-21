@@ -29,8 +29,8 @@ const JournalEntries = () => {
                     erpService.getJournalEntries(),
                     erpService.getAccounts()
                 ]);
-                setEntries(entriesData || []);
-                setAccounts(accountsData || []);
+                setEntries(Array.isArray(entriesData) ? entriesData : (entriesData?.results || entriesData?.data || []));
+                setAccounts(Array.isArray(accountsData) ? accountsData : (accountsData?.results || accountsData?.data || []));
             } catch (err) {
                 console.error("Failed to fetch data", err);
                 toast.error("Failed to load Journal Entries");

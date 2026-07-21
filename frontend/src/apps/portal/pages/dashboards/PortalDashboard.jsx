@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink, Users, Settings, Activity, ShieldAlert, Globe, Edit2 } from 'lucide-react';
 import client from '../../../../core/api/client';
 import toast from 'react-hot-toast';
@@ -76,7 +76,7 @@ export default function PortalDashboard() {
                                 {clients.map(client => (
                                     <tr key={client.id} className="hover:bg-slate-800/30 transition-colors">
                                         <td className="p-4 text-sm font-medium text-white">{client.company_name}</td>
-                                        <td className="p-4 text-sm text-slate-400">{client.email || 'â€”'}</td>
+                                        <td className="p-4 text-sm text-slate-400">{client.email || '—'}</td>
                                         <td className="p-4">
                                             {client.portal_access ? (
                                                 <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">Active</span>

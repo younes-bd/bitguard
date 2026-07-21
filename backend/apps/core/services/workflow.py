@@ -1,4 +1,4 @@
-﻿from django.db import transaction
+from django.db import transaction
 from apps.core.services.audit import AuditService
 from django.utils import timezone
 
@@ -70,8 +70,8 @@ class WorkflowEngine:
 
     @staticmethod
     def _get_entity_type(obj):
-        from apps.billing.models import Order
-        from apps.soc.models import Incident  # Correct model name (not SecurityIncident)
+        from apps.billing.domain.models import Order
+        from apps.soc.domain.models import Incident  # Correct model name (not SecurityIncident)
         from apps.projects.domain.models import Project as InternalProject
 
         if isinstance(obj, Order): return 'ORDER'

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Download, FileText } from 'lucide-react';
 import { erpService } from '../../../../core/api/erpService';
 
@@ -34,7 +34,7 @@ const PortalInvoices = () => {
                                     <tr key={inv.id} className="border-b border-slate-800/50 hover:bg-slate-800/20">
                                         <td className="px-5 py-3 text-slate-300 font-mono">#{inv.invoice_number ?? inv.id}</td>
                                         <td className="px-5 py-3 text-slate-400">{inv.issue_date ?? inv.created_at?.split('T')[0]}</td>
-                                        <td className="px-5 py-3 text-slate-400">{inv.due_date ?? 'â€”'}</td>
+                                        <td className="px-5 py-3 text-slate-400">{inv.due_date ?? '—'}</td>
                                         <td className="px-5 py-3 text-white font-semibold">${Number(inv.total ?? inv.amount ?? 0).toFixed(2)}</td>
                                         <td className="px-5 py-3">{statusBadge(inv.status)}</td>
                                         <td className="px-5 py-3">

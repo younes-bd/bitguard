@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, Plus, Edit2, Trash2 } from 'lucide-react';
 import api from '../../../../core/api/client';
 import toast from 'react-hot-toast';
@@ -22,7 +22,7 @@ const ProductCatalog = () => {
             setLoading(true);
             const [prodRes, taxRes] = await Promise.all([
                 api.get('/store/products/'),
-                api.get('/erp/taxes/') // assuming this exists, fallback if not
+                api.get('/accounting/taxes/')
             ]);
             setProducts(prodRes.data.data || prodRes.data);
             setTaxes(taxRes.data.data || taxRes.data || []);

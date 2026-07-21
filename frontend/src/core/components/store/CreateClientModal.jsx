@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
-import { storeService } from '../../api/storeService';
+import { ecommerceService } from '../../api/ecommerceService';
 
 const CreateClientModal = ({ onClose, onSave, loading, initialData = null }) => {
     const defaultState = {
@@ -28,7 +28,7 @@ const CreateClientModal = ({ onClose, onSave, loading, initialData = null }) => 
 
     const loadPlans = async () => {
         try {
-            const data = await storeService.getPlans();
+            const data = await ecommerceService.getPlans();
             setPlans(data || []);
         } catch (err) {
             console.error("Failed to load plans", err);
