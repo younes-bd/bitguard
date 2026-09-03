@@ -103,18 +103,21 @@ class PasswordResetRequestView(APIView):
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-            reset_url = f"{getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')}/reset-password/{uid}/{token}/"
+            reset_url = f"{getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')}/auth/set-password/{uid}/{token}/"
+
+            tenant_name = request.user.tenant.name if hasattr(request.user, 'tenant') and request.user.tenant else 'BitGuard'
+            from_email = request.user.tenant.from_email if hasattr(request.user, 'tenant') and request.user.tenant and hasattr(request.user.tenant, 'from_email') else getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
 
             send_mail(
-                subject="BitGuard — Password Reset Request",
+                subject=f"{tenant_name} — Password Reset Request",
                 message=(
                     f"Hi {user.first_name or user.username},\n\n"
                     f"You requested a password reset. Click the link below:\n\n"
                     f"{reset_url}\n\n"
                     f"This link expires in 24 hours. If you did not request this, ignore this email.\n\n"
-                    f"— BitGuard Security Team"
+                    f"— {tenant_name} Security Team"
                 ),
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@bitguard.tech'),
+                from_email=from_email,
                 recipient_list=[email],
                 fail_silently=True,  # Don't expose whether email exists via errors
             )

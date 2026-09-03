@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 """Inventory Views"""
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -18,31 +19,49 @@ from .serializers import (
     StockLotSerializer, StorageLocationSerializer, StockPickingSerializer
 )
 
-class StockLotViewSet(viewsets.ModelViewSet):
+class StockLotViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = StockLotSerializer
     def get_queryset(self):
         return BaseService.filter_by_context(StockLot.objects.all(), self.request)
 
-class StorageLocationViewSet(viewsets.ModelViewSet):
+class StorageLocationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = StorageLocationSerializer
     def get_queryset(self):
         return BaseService.filter_by_context(StorageLocation.objects.all(), self.request)
 
-class StockPickingViewSet(viewsets.ModelViewSet):
+class StockPickingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = StockPickingSerializer
     def get_queryset(self):
         return BaseService.filter_by_context(StockPicking.objects.all(), self.request)
 
-class WarehouseViewSet(viewsets.ModelViewSet):
+    @action(detail=True, methods=['post'], url_path='generate-report')
+    def generate_report(self, request, pk=None):
+        from apps.reporting.domain.models import ReportTemplate
+        from apps.reporting.services.pdf_generator import ReportingService
+        record = self.get_object()
+        template = ReportTemplate.objects.filter(
+            tenant=request.user.tenant,
+            model=f"{record._meta.app_label}.{record._meta.model_name}",
+            is_default=True,
+            is_active=True,
+        ).first()
+        if not template:
+            return Response({'error': 'No default template configured.'}, status=404)
+        attachment = ReportingService.generate_pdf(template, record)
+        if not attachment:
+            return Response({'error': 'PDF generation failed.'}, status=500)
+        return Response({'url': attachment.file.url, 'filename': attachment.name})
+
+class WarehouseViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = WarehouseSerializer
     def get_queryset(self):
         return BaseService.filter_by_context(Warehouse.objects.all(), self.request)
 
-class InventoryItemViewSet(viewsets.ModelViewSet):
+class InventoryItemViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = InventoryItemSerializer
 
@@ -81,7 +100,7 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-class GoodsReceiptViewSet(viewsets.ModelViewSet):
+class GoodsReceiptViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GoodsReceiptSerializer
     def get_queryset(self): return BaseService.filter_by_context(GoodsReceipt.objects.all(), self.request)
@@ -98,22 +117,58 @@ class GoodsReceiptViewSet(viewsets.ModelViewSet):
                 f.write(traceback.format_exc())
             raise
 
-class GoodsReceiptLineViewSet(viewsets.ModelViewSet):
+    @action(detail=True, methods=['post'], url_path='generate-report')
+    def generate_report(self, request, pk=None):
+        from apps.reporting.domain.models import ReportTemplate
+        from apps.reporting.services.pdf_generator import ReportingService
+        record = self.get_object()
+        template = ReportTemplate.objects.filter(
+            tenant=request.user.tenant,
+            model=f"{record._meta.app_label}.{record._meta.model_name}",
+            is_default=True,
+            is_active=True,
+        ).first()
+        if not template:
+            return Response({'error': 'No default template configured.'}, status=404)
+        attachment = ReportingService.generate_pdf(template, record)
+        if not attachment:
+            return Response({'error': 'PDF generation failed.'}, status=500)
+        return Response({'url': attachment.file.url, 'filename': attachment.name})
+
+class GoodsReceiptLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GoodsReceiptLineSerializer
     def get_queryset(self): return BaseService.filter_by_context(GoodsReceiptLine.objects.all(), self.request)
 
-class StockMoveViewSet(viewsets.ModelViewSet):
+class StockMoveViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = StockMoveSerializer
     def get_queryset(self): return BaseService.filter_by_context(StockMove.objects.all(), self.request)
 
-class StockAdjustmentViewSet(viewsets.ModelViewSet):
+class StockAdjustmentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = StockAdjustmentSerializer
     def get_queryset(self): return BaseService.filter_by_context(StockAdjustment.objects.all(), self.request)
 
-class ReorderRuleViewSet(viewsets.ModelViewSet):
+    @action(detail=True, methods=['post'], url_path='generate-report')
+    def generate_report(self, request, pk=None):
+        from apps.reporting.domain.models import ReportTemplate
+        from apps.reporting.services.pdf_generator import ReportingService
+        record = self.get_object()
+        template = ReportTemplate.objects.filter(
+            tenant=request.user.tenant,
+            model=f"{record._meta.app_label}.{record._meta.model_name}",
+            is_default=True,
+            is_active=True,
+        ).first()
+        if not template:
+            return Response({'error': 'No default template configured.'}, status=404)
+        attachment = ReportingService.generate_pdf(template, record)
+        if not attachment:
+            return Response({'error': 'PDF generation failed.'}, status=500)
+        return Response({'url': attachment.file.url, 'filename': attachment.name})
+
+class ReorderRuleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ReorderRuleSerializer
     def get_queryset(self): return BaseService.filter_by_context(ReorderRule.objects.all(), self.request)

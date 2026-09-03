@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Users, Settings, Search, Plus, Send, Hash, Lock } from 'lucide-react';
-import discussService from '../../../core/api/discussService';
+import discussService from '../api/discussService';
 
 const DiscussDashboard = () => {
   const [activeChannel, setActiveChannel] = useState(null);

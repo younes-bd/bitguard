@@ -5,9 +5,9 @@ import {
     CalendarDays, Layers, ArrowLeft, MoreHorizontal,
     Flag, CheckCircle2, MessageSquare, Paperclip
 } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
+import projectsService from '../../api/projectsService';
 import { toast } from 'react-hot-toast';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 
 const COLUMNS = [
     { id: 'backlog', label: 'Backlog', color: 'slate' },
@@ -106,8 +106,8 @@ const KanbanBoard = () => {
         if (projectId) {
             projectsService.getMembers(projectId).then(m => setMembers(m || []));
         } else {
-            import('../../../../core/api/hrmService').then(({ hrmService }) => {
-                hrmService.getEmployees().then(e => setMembers(e?.results ?? e ?? []));
+            import('../../../hr/api/hrService').then(({ hrService }) => {
+                hrService.getEmployees().then(e => setMembers(e?.results ?? e ?? []));
             });
         }
     }, [projectId]);

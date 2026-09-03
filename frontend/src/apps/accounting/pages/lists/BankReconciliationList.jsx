@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from '../../../../core/components/shared/views/DataTable';
-import { erpService } from '../../../../core/api/erpService';
+import DataTable from '@/core/components/shared/views/DataTable';
+import { accountingService } from '../../api/accountingService';
 import { Link2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -15,7 +15,7 @@ export default function BankReconciliationList() {
   const fetchReconciliations = async () => {
     try {
       setLoading(true);
-      const res = await erpService.getBankReconciliations();
+      const res = await accountingService.getBankReconciliations();
       setReconciliations(res.results || res || []);
     } catch (err) {
       toast.error('Failed to fetch reconciliations');

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Ticket, FileText, CreditCard, LogOut, Shield, User, ShoppingCart, Briefcase, Target, Cloud } from 'lucide-react';
-import { useAuth } from '../../../core/hooks/useAuth';
+import { LayoutDashboard, Ticket, FileText, CreditCard, LogOut, Shield, User, ShoppingCart, Briefcase, Target, Cloud, Home } from 'lucide-react';
+import { useAuth } from '@/core/hooks/useAuth';
+import { useTenant } from '@/core/context/TenantContext';
+import UserAvatarDropdown from '@/core/components/shared/core/UserAvatarDropdown';
 
 const navItems = [
     { label: 'Overview', path: '/portal', icon: LayoutDashboard, end: true },
@@ -16,49 +18,53 @@ const navItems = [
 
 const PortalLayout = () => {
     const { user, logout } = useAuth();
+    const { tenant } = useTenant();
     const navigate = useNavigate();
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
     return (
-        <div className="min-h-screen bg-slate-950 flex flex-col">
-            {/* Top Nav */}
-            <header className="border-b border-slate-800 bg-slate-950/90 sticky top-0 z-50 backdrop-blur-sm">
-                <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <Shield size={16} className="text-white" />
+        <div className="min-h-screen bg-slate-950 flex flex-col font-sans">
+            {/* Premium Top Nav */}
+            <header className="border-b border-slate-800/80 bg-slate-950/80 sticky top-0 z-50 backdrop-blur-md">
+                <div className="w-full px-4 md:px-8 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        {tenant?.logo ? (
+                            <img src={tenant.logo} alt={tenant.name || "Company Logo"} className="w-10 h-10 rounded-xl object-contain bg-white p-1 shadow-sm ring-1 ring-slate-800/50" />
+                        ) : (
+                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/50">
+                                <Shield size={20} className="text-white" />
+                            </div>
+                        )}
+                        <div className="flex flex-col">
+                            <span className="text-white font-black tracking-tight text-lg leading-tight">{tenant?.name || 'BitGuard'}</span>
+                            <span className="text-blue-400 text-[10px] font-bold uppercase tracking-widest leading-tight">Client Portal</span>
                         </div>
-                        <span className="text-white font-bold">BitGuard</span>
-                        <span className="text-slate-500 text-sm">Client Portal</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 text-sm text-slate-300">
-                            <div className="w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xs">
-                                {(user?.first_name?.[0] ?? user?.email?.[0] ?? 'U').toUpperCase()}
-                            </div>
-                            <span>{user?.first_name ?? user?.email ?? 'Client'}</span>
-                        </div>
-                        <button onClick={handleLogout}
-                            className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
-                            <LogOut size={15} /> Sign out
-                        </button>
+                        <UserAvatarDropdown user={user} onLogout={logout} variant="portal" />
                     </div>
                 </div>
             </header>
 
-            <div className="max-w-6xl mx-auto w-full px-6 py-8 flex gap-8 flex-1">
-                {/* Sidebar */}
-                <aside className="w-52 flex-shrink-0 space-y-1">
-                    {navItems.map(item => (
-                        <NavLink key={item.path} to={item.path} end={item.end}
-                            className={({ isActive }) =>
-                                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors no-underline
-                                ${isActive ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`
-                            }>
-                            <item.icon size={16} /> {item.label}
-                        </NavLink>
-                    ))}
+            <div className="w-full px-4 md:px-8 py-8 flex flex-col md:flex-row gap-8 flex-1">
+                {/* Modern Sidebar Navigation */}
+                <aside className="w-full md:w-64 flex-shrink-0">
+                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl sticky top-24">
+                        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-2">My Account</div>
+                        <nav className="space-y-1.5">
+                            {navItems.map(item => (
+                                <NavLink key={item.path} to={item.path} end={item.end}
+                                    className={({ isActive }) =>
+                                        `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all no-underline
+                                        ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'}`
+                                    }>
+                                    <item.icon size={18} className={({ isActive }) => isActive ? 'text-white' : 'text-slate-500'} /> 
+                                    {item.label}
+                                </NavLink>
+                            ))}
+                        </nav>
+                    </div>
                 </aside>
 
                 {/* Content */}

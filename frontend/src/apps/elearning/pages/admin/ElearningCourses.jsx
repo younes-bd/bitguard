@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Book, Plus, Edit2, Trash2, Loader2, X, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
-import elearningService from '../../../../core/api/elearningService';
+import elearningService from '../../api/elearningService';
 
 export default function ElearningCourses() {
     const [courses, setCourses] = useState([]);

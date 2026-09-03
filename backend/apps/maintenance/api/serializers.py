@@ -15,6 +15,7 @@ class AssetListSerializer(serializers.ModelSerializer):
             'purchase_date', 'warranty_expires', 'is_warranty_active',
             'location', 'created_at',
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class AssetDetailSerializer(serializers.ModelSerializer):
@@ -24,6 +25,8 @@ class AssetDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asset
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class AssetAssignmentSerializer(serializers.ModelSerializer):
@@ -33,6 +36,7 @@ class AssetAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssetAssignment
         fields = ['id', 'asset', 'asset_name', 'assigned_to', 'user_name', 'assigned_at', 'returned_at', 'notes']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class MaintenanceRecordSerializer(serializers.ModelSerializer):
@@ -40,7 +44,8 @@ class MaintenanceRecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MaintenanceRecord
-        fields = ['id', 'asset', 'asset_name', 'maintenance_type', 'performed_by', 'performed_at', 'cost', 'notes']
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class SoftwareLicenseSerializer(serializers.ModelSerializer):
     class Meta:

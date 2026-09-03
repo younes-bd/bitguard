@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
+    ExportInvoicesCSV,
+    FinanceReportView,
     InvoiceViewSet, PaymentViewSet, ExpenseViewSet, TaxConfigViewSet, GeneralLedgerViewSet,
     AccountViewSet, JournalEntryViewSet, BankAccountViewSet,
     BankTransactionViewSet, FixedAssetViewSet, CreditNoteViewSet,
@@ -9,7 +11,8 @@ from .views import (
     DeferredRevenueViewSet, ClientPortalInvoiceView,
     CurrencyViewSet, ExchangeRateViewSet, TaxAuthorityViewSet,
     TaxGroupViewSet, BankReconciliationViewSet, DunningWorkflowViewSet,
-    AgedReceivablesView, AgedPayablesView, DashboardStatsView, MonthlyFinancialsView
+    AgedReceivablesView, AgedPayablesView, DashboardStatsView, MonthlyFinancialsView,
+    VATReportView
 )
 
 router = DefaultRouter()
@@ -37,6 +40,8 @@ router.register(r'bank-reconciliations', BankReconciliationViewSet, basename='ba
 router.register(r'dunning-workflows', DunningWorkflowViewSet, basename='dunning-workflow')
 
 from .views import (
+    ExportInvoicesCSV,
+    FinanceReportView,
     FiscalYearViewSet, FiscalPeriodViewSet, AccountingJournalViewSet, VendorBillViewSet,
     RecurringInvoiceViewSet, FiscalPositionViewSet
 )
@@ -47,17 +52,23 @@ router.register(r'vendor-bills', VendorBillViewSet, basename='vendor-bill')
 router.register(r'recurring-invoices', RecurringInvoiceViewSet, basename='recurring-invoice')
 router.register(r'fiscal-positions', FiscalPositionViewSet, basename='fiscal-position')
 
-from .views import AccountJournalViewSet, TaxViewSet
+from .views import AccountJournalViewSet, TaxViewSet, AnalyticAccountViewSet, CostCenterViewSet, BudgetLineViewSet
 router.register(r'account-journals', AccountJournalViewSet, basename='account-journal')
 router.register(r'taxes-v2', TaxViewSet, basename='tax-v2')
+router.register(r'analytic-accounts', AnalyticAccountViewSet, basename='analytic-account')
+router.register(r'cost-centers', CostCenterViewSet, basename='cost-center')
+router.register(r'budget-lines', BudgetLineViewSet, basename='budget-line')
 
 urlpatterns = [
+    path('report/export/', ExportInvoicesCSV.as_view(), name='accounting-export-csv'),
+    path('report/metrics/', FinanceReportView.as_view(), name='accounting-metrics-report'),
     path('portal/invoice/<uuid:token>/', ClientPortalInvoiceView.as_view(), name='client-portal-invoice'),
     path('reports/balance-sheet/', BalanceSheetView.as_view(), name='balance-sheet'),
     path('reports/cash-flow/', CashFlowView.as_view(), name='cash-flow'),
     path('reports/profit-loss/', ProfitLossView.as_view(), name='profit-loss'),
     path('reports/aged-receivables/', AgedReceivablesView.as_view(), name='aged-receivables'),
     path('reports/aged-payables/', AgedPayablesView.as_view(), name='aged-payables'),
+    path('reports/vat-report/', VATReportView.as_view(), name='vat-report'),
     path('dashboard/stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('dashboard/financials/', MonthlyFinancialsView.as_view(), name='monthly-financials'),
     path('', include(router.urls)),

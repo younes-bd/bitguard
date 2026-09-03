@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import { ecommerceService } from '../../api/ecommerceService';
 import { Search, Filter, Eye, DollarSign, Clock, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 

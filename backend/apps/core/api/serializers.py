@@ -8,9 +8,13 @@ class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
         fields = ['id', 'name', 'mimetype', 'file_size', 'file_url', 'created_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
     def get_file_url(self, obj):
         if obj.file:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.file.url)
             return obj.file.url
         return None
 
@@ -22,18 +26,21 @@ class UoMCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = UoMCategory
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class UoMSerializer(serializers.ModelSerializer):
     class Meta:
         model = UoM
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class SequenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sequence
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -42,8 +49,9 @@ class SequenceSerializer(serializers.ModelSerializer):
 
 from ..domain.models import (
     RecordMessage, RecordActivity, RecordFollower,
-    FieldChangeLog, AutomatedAction, ScheduledAction,
+    FieldChangeLog, ScheduledAction,
 )
+from apps.automation.domain.models import AutomatedAction
 
 
 class AuthorNestedSerializer(serializers.Serializer):

@@ -1,0 +1,251 @@
+from django.db import models
+from apps.core.domain.models import BaseModel, TenantAwareModel
+
+class SystemSetting(TenantAwareModel):
+    SETTING_TYPES = (
+        ('string', 'String'),
+        ('boolean', 'Boolean'),
+        ('integer', 'Integer'),
+        ('json', 'JSON'),
+    )
+
+    key = models.CharField(max_length=255, help_text="Unique identifier for the setting")
+    value = models.TextField(blank=True, help_text="Value of the setting")
+    setting_type = models.CharField(max_length=20, choices=SETTING_TYPES, default='string')
+    description = models.TextField(blank=True)
+    is_public = models.BooleanField(default=False, help_text="Can be exposed to unauthenticated users")
+
+    class Meta:
+        db_table = 'base_setup_systemsetting'
+        verbose_name = "System Setting"
+        verbose_name_plural = "System Settings"
+        ordering = ['key']
+        unique_together = ('tenant', 'key')
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
+
+class ApiKey(TenantAwareModel):
+    name = models.CharField(max_length=255)
+    key_prefix = models.CharField(max_length=10, help_text="First few characters of the key for display")
+    hashed_key = models.CharField(max_length=128, help_text="Hashed version of the secret key")
+    is_active = models.BooleanField(default=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, related_name='created_platform_api_keys')
+
+    class Meta:
+        db_table = 'base_setup_apikey'
+        verbose_name = "Platform API Key"
+        verbose_name_plural = "Platform API Keys"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} ({self.key_prefix}***)"
+
+class WebhookEndpoint(TenantAwareModel):
+    name = models.CharField(max_length=255)
+    url = models.URLField(max_length=1024)
+    secret = models.CharField(max_length=255, blank=True, help_text="Secret for signing payload")
+    is_active = models.BooleanField(default=True)
+    events = models.JSONField(default=list, help_text="List of events to trigger this webhook")
+    
+    class Meta:
+        db_table = 'base_setup_webhookendpoint'
+        verbose_name = "Webhook Endpoint"
+        verbose_name_plural = "Webhook Endpoints"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+class DatabaseBackup(TenantAwareModel):
+    filename = models.CharField(max_length=255)
+    size_bytes = models.BigIntegerField()
+    status = models.CharField(max_length=50, default='completed')
+    triggered_by = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        db_table = 'base_setup_databasebackup'
+        verbose_name = "Database Backup"
+        verbose_name_plural = "Database Backups"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.filename
+
+class CommandCenterSection(TenantAwareModel):
+    """
+    Tier-1 ERP equivalent of ir.module.category or ir.ui.menu.
+    Manages the master sequence weights for the Command Center pillars.
+    """
+    name = models.CharField(max_length=100, help_text="e.g. Finance, Sales, HR")
+    sequence = models.IntegerField(default=99, help_text="Master ordering weight (lower appears first)")
+
+    class Meta:
+        db_table = 'base_setup_commandcentersection'
+        verbose_name = "Command Center Section"
+        verbose_name_plural = "Command Center Sections"
+        ordering = ['sequence', 'name']
+        unique_together = ('tenant', 'name')
+
+    def __str__(self):
+        return f"{self.name} (Seq: {self.sequence})"
+
+class InstalledModule(TenantAwareModel):
+    """
+    Registry of installed ERP modules for a tenant.
+    Mimics Odoo's ir.module.module.
+    """
+    technical_name = models.CharField(max_length=100, help_text="e.g. 'crm', 'accounting'")
+    name = models.CharField(max_length=100, help_text="Human readable name")
+    display_name = models.CharField(max_length=100, blank=True, help_text="Name shown in Command Center tile")
+    author = models.CharField(max_length=100, blank=True)
+    version = models.CharField(max_length=20, blank=True)
+    category = models.CharField(max_length=100, blank=True)
+    command_center_section = models.CharField(max_length=100, blank=True, help_text="Pillar grouping in Command Center (e.g. Finance, Sales, HR)")
+    sequence = models.IntegerField(default=99, help_text="Order within the section")
+    summary = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+    icon = models.CharField(max_length=255, blank=True, help_text="Lucide icon name or URL")
+    is_installed = models.BooleanField(default=False)
+    depends = models.JSONField(default=list, blank=True, help_text="List of technical names this module depends on")
+    installable = models.BooleanField(default=True)
+    application = models.BooleanField(default=False)
+    url = models.CharField(max_length=255, blank=True, help_text="URL path to the live app")
+    website = models.URLField(max_length=255, blank=True, help_text="App creator website")
+    license = models.CharField(max_length=100, blank=True, default="LGPL-3")
+    rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0, help_text='App rating out of 5.0')
+    featured = models.BooleanField(default=False, help_text="Highlight as a featured app")
+    screenshots = models.JSONField(default=list, blank=True, help_text="List of screenshot URLs")
+    
+    class Meta:
+        db_table = 'base_setup_installedmodule'
+        verbose_name = "ERP Module"
+        verbose_name_plural = "ERP Modules"
+        ordering = ['name']
+        unique_together = ('tenant', 'technical_name')
+
+    def __str__(self):
+        return f"{self.name} ({self.technical_name})"
+
+class Language(TenantAwareModel):
+    name = models.CharField(max_length=100, help_text="Language name (e.g., English, French)")
+    code = models.CharField(max_length=10, help_text="Language code (e.g., en_US, fr_FR)")
+    is_active = models.BooleanField(default=True)
+    is_default = models.BooleanField(default=False)
+    direction = models.CharField(max_length=3, choices=[('ltr', 'LTR'), ('rtl', 'RTL')], default='ltr')
+
+    class Meta:
+        db_table = 'base_setup_language'
+        verbose_name = "Language"
+        verbose_name_plural = "Languages"
+        ordering = ['name']
+        unique_together = ('tenant', 'code')
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+
+class OutgoingMailServer(TenantAwareModel):
+    """SMTP server configuration (Odoo: ir.mail_server)"""
+    ENCRYPTION_CHOICES = [
+        ('none', 'None'),
+        ('starttls', 'TLS (STARTTLS)'),
+        ('ssl', 'SSL/TLS'),
+    ]
+    name = models.CharField(max_length=255, help_text="Description / label")
+    smtp_host = models.CharField(max_length=255)
+    smtp_port = models.PositiveIntegerField(default=587)
+    smtp_user = models.CharField(max_length=255, blank=True)
+    smtp_password = models.CharField(max_length=255, blank=True)
+    smtp_encryption = models.CharField(max_length=20, choices=ENCRYPTION_CHOICES, default='starttls')
+    is_active = models.BooleanField(default=True)
+    sequence = models.PositiveIntegerField(default=10, help_text="Priority order â€” lower = higher priority")
+
+    class Meta:
+        db_table = 'base_setup_outgoingmailserver'
+        verbose_name = "Outgoing Mail Server"
+        verbose_name_plural = "Outgoing Mail Servers"
+        ordering = ['sequence', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.smtp_host}:{self.smtp_port})"
+
+
+class IncomingMailServer(TenantAwareModel):
+    """IMAP / POP3 server configuration (Odoo: fetchmail.server)"""
+    SERVER_TYPE_CHOICES = [
+        ('imap', 'IMAP'),
+        ('pop3', 'POP3'),
+    ]
+    name = models.CharField(max_length=255, help_text="Account label")
+    server_type = models.CharField(max_length=10, choices=SERVER_TYPE_CHOICES, default='imap')
+    server = models.CharField(max_length=255)
+    port = models.PositiveIntegerField(default=993)
+    is_ssl = models.BooleanField(default=True)
+    user = models.CharField(max_length=255, blank=True)
+    password = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
+    last_fetch = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'base_setup_incomingmailserver'
+        verbose_name = "Incoming Mail Server"
+        verbose_name_plural = "Incoming Mail Servers"
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name} ({self.server_type.upper()} {self.server})"
+
+class EmailTemplate(TenantAwareModel):
+    """Odoo equivalent: mail.template"""
+    name = models.CharField(max_length=255)
+    subject = models.CharField(max_length=500)
+    body_html = models.TextField(blank=True)
+    body_text = models.TextField(blank=True)
+    model = models.CharField(max_length=100, blank=True, 
+                              help_text="e.g. sale.order â€” applies to this model")
+    reply_to = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
+    lang = models.CharField(max_length=10, blank=True, help_text="e.g. en_US")
+    
+    # Dynamic fields (Jinja2-style placeholders)
+    use_default_to = models.BooleanField(default=True)
+    partner_to = models.CharField(max_length=255, blank=True)
+    
+    class Meta:
+        db_table = 'base_setup_emailtemplate'
+        verbose_name = "Email Template"
+        ordering = ['name']
+    
+    def __str__(self):
+        return f"{self.name} ({self.model})"
+
+
+class MailAlias(TenantAwareModel):
+    alias_name = models.CharField(max_length=100)
+    alias_domain = models.CharField(max_length=255)
+    alias_model = models.CharField(max_length=255, blank=True, help_text="e.g. helpdesk.ticket")
+    alias_user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.SET_NULL)
+    alias_defaults = models.JSONField(default=dict, blank=True)
+
+    def __str__(self):
+        return f"{self.alias_name}@{self.alias_domain}"
+
+
+
+
+
+class RecordRule(TenantAwareModel):
+    name = models.CharField(max_length=255)
+    model_name = models.CharField(max_length=100)
+    domain_force = models.TextField(blank=True, help_text='Domain expression')
+    is_global = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'base_setup_recordrule'
+        app_label = 'system'
+        verbose_name = 'Record Rule'
+        verbose_name_plural = 'Record Rules'

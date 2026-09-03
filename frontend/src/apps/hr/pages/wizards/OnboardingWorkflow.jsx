@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { UserPlus, CheckCircle, Circle, Clock, ChevronDown, ChevronRight, Plus, X } from 'lucide-react';
-import client from '../../../../core/api/client';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import client from '@/core/api/client';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 import toast from 'react-hot-toast';
 
 const TASK_CATEGORIES = [
@@ -110,7 +110,7 @@ export default function OnboardingWorkflow() {
                                 <div className="flex justify-between items-start mb-3">
                                     <div>
                                         <p className="text-white font-bold group-hover:text-pink-200 transition-colors">{inst.employee_name}</p>
-                                        <p className="text-slate-500 text-xs">{inst.department} · Started {inst.start_date}</p>
+                                        <p className="text-slate-500 text-xs">{inst.department} Â· Started {inst.start_date}</p>
                                     </div>
                                     <span className="text-xl font-black text-pink-400">{pct}%</span>
                                 </div>
@@ -132,7 +132,7 @@ export default function OnboardingWorkflow() {
                         <div className="p-6 border-b border-slate-800 sticky top-0 bg-slate-950 z-10 flex justify-between items-start">
                             <div>
                                 <h2 className="text-xl font-bold text-white">{selected.employee_name}</h2>
-                                <p className="text-slate-400 text-sm">{selected.department} · {selected.start_date}</p>
+                                <p className="text-slate-400 text-sm">{selected.department} Â· {selected.start_date}</p>
                             </div>
                             <button onClick={() => setSelected(null)} className="text-slate-500 hover:text-white p-1"><X size={22} /></button>
                         </div>

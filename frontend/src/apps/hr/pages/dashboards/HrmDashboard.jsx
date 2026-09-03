@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, CreditCard, Calendar, Briefcase, Loader2, ArrowRight, DollarSign, PieChart, TrendingUp } from 'lucide-react';
-import { hrmService } from '../../../../core/api/hrmService';
+import { hrService } from '../../api/hrService';
 import { Link } from 'react-router-dom';
 
 export default function HrmDashboard() {
@@ -11,9 +11,9 @@ export default function HrmDashboard() {
 
     useEffect(() => {
         Promise.all([
-            hrmService.getDashboardStats(),
-            hrmService.getPayrollPeriods(),
-            hrmService.getJobPositions()
+            hrService.getDashboardStats(),
+            hrService.getPayrollPeriods(),
+            hrService.getJobPositions()
         ]).then(([data, periodsData, jobsData]) => {
             setStats({
                 employees: data?.headcount || 0,

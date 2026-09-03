@@ -1,5 +1,5 @@
 import React from 'react';
-import PageMeta from '../../../../../core/components/shared/PageMeta';
+import PageMeta from '@/core/components/shared/PageMeta';
 
 const Blog = () => {
     return (

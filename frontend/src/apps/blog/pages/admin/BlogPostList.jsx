@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Plus, Edit2, Trash2, ExternalLink, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import blogService from '../../../../core/api/blogService';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import blogService from '../../api/blogService';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const STATUS_STYLES = {

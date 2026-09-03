@@ -9,20 +9,28 @@ class StockLotSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockLot
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class StorageLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = StorageLocation
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class StockPickingSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockPicking
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 class WarehouseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Warehouse
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class InventoryItemSerializer(serializers.ModelSerializer):
     quantity_available = serializers.ReadOnlyField()
@@ -44,25 +52,35 @@ class GoodsReceiptLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = GoodsReceiptLine
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class GoodsReceiptSerializer(serializers.ModelSerializer):
     lines = GoodsReceiptLineSerializer(many=True, read_only=True)
     class Meta:
         model = GoodsReceipt
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class StockMoveSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockMove
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class StockAdjustmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockAdjustment
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class ReorderRuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReorderRule
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 

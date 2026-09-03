@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, User, Shield, Clock, Loader2, CheckCircle2 } from 'lucide-react';
-import { helpdeskService } from '../../../core/api/helpdeskService';
+import { helpdeskService } from '../api/helpdeskService';
 import { toast } from 'react-hot-toast';
 
 const TicketThread = ({ ticketId, onStatusChange }) => {

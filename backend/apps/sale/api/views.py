@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework import viewsets, permissions, status
@@ -19,7 +20,7 @@ class StandardPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 200
 
-class SaleOrderViewSet(viewsets.ModelViewSet):
+class SaleOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = SaleOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -31,11 +32,11 @@ class SaleOrderViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return SaleOrder.objects.filter(
             tenant=self.request.user.tenant
-        ).select_related('client', 'user').prefetch_related('lines')
+        ).select_related('partner', 'crm_lead', 'tenant').prefetch_related('lines').select_related('client', 'user').prefetch_related('lines')
 
     def perform_create(self, serializer):
         tenant = self.request.user.tenant
-        count = SaleOrder.objects.filter(tenant=tenant).count()
+        count = SaleOrder.objects.filter(tenant=tenant).select_related('partner', 'crm_lead', 'tenant').prefetch_related('lines').count()
         order_number = f"SO-{timezone.now().year}-{count+1:04d}"
         serializer.save(tenant=tenant, created_by=self.request.user, order_number=order_number)
 
@@ -64,22 +65,8 @@ class SaleOrderViewSet(viewsets.ModelViewSet):
         order = self.get_object()
         if order.status != 'sale':
             return Response({'error': 'Only confirmed orders can be invoiced.'}, status=400)
-        from apps.accounting.domain.models import Invoice, InvoiceLine
-        invoice = Invoice.objects.create(
-            tenant=order.tenant,
-            client=order.client,
-            status='draft',
-            issue_date=timezone.now().date(),
-            due_date=timezone.now().date() + timedelta(days=30),
-            created_by=request.user,
-            reference=order.order_number,
-        )
-        for line in order.lines.all():
-            InvoiceLine.objects.create(
-                invoice=invoice, description=line.name,
-                quantity=line.product_uom_qty, unit_price=line.price_unit,
-                tax_rate=line.tax_rate, subtotal=line.price_subtotal
-            )
+        from apps.accounting.services.invoicing import InvoiceService
+        invoice = InvoiceService.generate_from_sales_order(order, request.user)
         return Response({'invoice_id': invoice.id, 'invoice_number': str(invoice)}, status=201)
 
     @action(detail=True, methods=['post'], url_path='create-delivery')
@@ -96,7 +83,7 @@ class SaleOrderViewSet(viewsets.ModelViewSet):
         )
         return Response({'delivery_id': delivery.id}, status=201)
 
-class SaleOrderLineViewSet(viewsets.ModelViewSet):
+class SaleOrderLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = SaleOrderLineSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -107,7 +94,7 @@ class SaleOrderLineViewSet(viewsets.ModelViewSet):
         tenant = self.request.user.tenant
         serializer.save(tenant=tenant)
 
-class SalesTeamViewSet(viewsets.ModelViewSet):
+class SalesTeamViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = SalesTeamSerializer
     permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
@@ -115,7 +102,7 @@ class SalesTeamViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class PricelistViewSet(viewsets.ModelViewSet):
+class PricelistViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PricelistSerializer
     permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
@@ -123,7 +110,7 @@ class PricelistViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class QuotationTemplateViewSet(viewsets.ModelViewSet):
+class QuotationTemplateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = QuotationTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):

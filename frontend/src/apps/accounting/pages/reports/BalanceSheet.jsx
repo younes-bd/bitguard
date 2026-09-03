@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Scale, Calendar, Download } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const BalanceSheet = () => {
@@ -12,7 +12,7 @@ const BalanceSheet = () => {
         const fetchReport = async () => {
             setLoading(true);
             try {
-                const data = await erpService.getBalanceSheet(date);
+                const data = await accountingService.getBalanceSheet(date);
                 setReport(data);
             } catch (err) {
                 console.error("Failed to fetch balance sheet", err);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Loader2, FolderOpen, Image as ImageIcon, Video, File, Search, Presentation } from 'lucide-react';
-import documentsService from '../../../../core/api/documentsService';
+import documentsService from '../../../documents/api/documentsService';
 import DocumentUploadModal from '../../../documents/components/DocumentUploadModal';
 
 export default function SalesCollateral() {

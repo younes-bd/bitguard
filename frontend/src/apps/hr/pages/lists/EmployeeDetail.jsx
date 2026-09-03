@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import RecordFormLayout from '../../../../core/components/shared/forms/RecordFormLayout';
-import ChatterPanel from '../../../../core/components/shared/chatter/ChatterPanel';
-import { hrmService } from '../../../../core/api/hrmService';
+import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import ChatterPanel from '@/core/components/shared/chatter/ChatterPanel';
+import { hrService } from '../../api/hrService';
 import { Users, Mail, Phone, Calendar, Briefcase, Hash } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -19,7 +19,7 @@ export default function EmployeeDetail() {
   const fetchEmployee = async () => {
     try {
       setLoading(true);
-      const res = await hrmService.getEmployee(id);
+      const res = await hrService.getEmployee(id);
       setEmployee(res);
     } catch (err) {
       toast.error('Failed to load employee details');
@@ -31,7 +31,7 @@ export default function EmployeeDetail() {
 
   const handleSave = async (data) => {
     try {
-      await hrmService.updateEmployee(id, data);
+      await hrService.updateEmployee(id, data);
       toast.success('Employee updated successfully');
       fetchEmployee();
     } catch (err) {

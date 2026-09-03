@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, FileText, CreditCard, Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { boardService } from '../../../../core/api/boardService';
-import { erpService } from '../../../../core/api/erpService';
+import { boardService } from '../../../board/api/boardService';
+import { accountingService } from '../../api/accountingService';
 
 const FinancialsDashboard = () => {
     const [metrics, setMetrics] = useState(null);
@@ -15,10 +15,10 @@ const FinancialsDashboard = () => {
         const fetchFinances = async () => {
             try {
                 const [dashStats, expRes, payRes, monthlyRes] = await Promise.all([
-                    erpService.getDashboardStats(),
-                    erpService.getExpenses(),
-                    erpService.getPayments(),
-                    erpService.getMonthlyFinancials(6)
+                    accountingService.getDashboardStats(),
+                    accountingService.getExpenses(),
+                    accountingService.getPayments(),
+                    accountingService.getMonthlyFinancials(6)
                 ]);
                 
                 setMetrics(dashStats || {});

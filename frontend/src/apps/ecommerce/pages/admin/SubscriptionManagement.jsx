@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, Search, CalendarClock, Loader2 } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 import { PauseCircle, XCircle, ArrowUpCircle } from 'lucide-react';
 
 export default function SubscriptionManagement() {

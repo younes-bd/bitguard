@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import {
     Search, Filter, Plus, FileText,
     MoreVertical, Download, ArrowUpRight,
@@ -36,7 +36,7 @@ const InvoiceList = () => {
     const loadInvoices = async () => {
         setLoading(true);
         try {
-            const data = await erpService.getInvoices();
+            const data = await accountingService.getInvoices();
             setInvoices(Array.isArray(data) ? data : data.results || []);
             setSelectedIds([]);
         } catch (error) {
@@ -49,7 +49,7 @@ const InvoiceList = () => {
 
     const handleDownload = async (id) => {
         try {
-            await erpService.downloadInvoice(id);
+            await accountingService.downloadInvoice(id);
             toast.success("Download started");
         } catch (error) {
             toast.error("Download failed. PDF endpoint might not be ready.");
@@ -75,9 +75,9 @@ const InvoiceList = () => {
         let successCount = 0;
         for (const id of selectedIds) {
             try {
-                if (action === 'paid') await erpService.markInvoicePaid(id);
-                if (action === 'sent') await erpService.sendInvoiceToClient(id);
-                if (action === 'void') await erpService.voidInvoice(id);
+                if (action === 'paid') await accountingService.markInvoicePaid(id);
+                if (action === 'sent') await accountingService.sendInvoiceToClient(id);
+                if (action === 'void') await accountingService.voidInvoice(id);
                 successCount++;
             } catch (e) {
                 console.error(`Failed to apply ${action} to ${id}`, e);
@@ -327,11 +327,11 @@ const InvoiceList = () => {
                                                     {/* Custom simple dropdown on hover for "More" */}
                                                     <div className="absolute right-0 top-full mt-1 w-36 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                                                         {inv.status === 'draft' && <button onClick={() => navigate(`/admin/accounting/invoices/${inv.id}/edit`)} className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700">Edit</button>}
-                                                        <button onClick={() => handleStatusChange(inv.id, 'sent', erpService.sendInvoiceToClient)} className="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-slate-700">Mark Sent</button>
-                                                        <button onClick={() => handleStatusChange(inv.id, 'paid', erpService.markInvoicePaid)} className="w-full text-left px-4 py-2 text-sm text-emerald-400 hover:bg-slate-700">Mark Paid</button>
-                                                        <button onClick={() => handleStatusChange(inv.id, 'void', erpService.voidInvoice)} className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-700">Void</button>
+                                                        <button onClick={() => handleStatusChange(inv.id, 'sent', accountingService.sendInvoiceToClient)} className="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-slate-700">Mark Sent</button>
+                                                        <button onClick={() => handleStatusChange(inv.id, 'paid', accountingService.markInvoicePaid)} className="w-full text-left px-4 py-2 text-sm text-emerald-400 hover:bg-slate-700">Mark Paid</button>
+                                                        <button onClick={() => handleStatusChange(inv.id, 'void', accountingService.voidInvoice)} className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-700">Void</button>
                                                         <button onClick={async () => {
-                                                            const res = await erpService.duplicateInvoice(inv.id);
+                                                            const res = await accountingService.duplicateInvoice(inv.id);
                                                             if(res) { toast.success("Duplicated"); navigate(`/admin/accounting/invoices/${res.id}/edit`); }
                                                         }} className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700">Duplicate</button>
                                                     </div>

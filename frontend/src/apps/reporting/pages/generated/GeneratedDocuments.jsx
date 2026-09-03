@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, CheckCircle, Clock, Loader2, AlertCircle, Search, Filter, RefreshCw, ExternalLink, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import reportingService from '../../../../core/api/reportingService';
+import reportingService from '../../api/reportingService';
 
 export default function GeneratedDocuments() {
     const [reports, setReports] = useState([]);
@@ -43,6 +43,26 @@ export default function GeneratedDocuments() {
             fetchReports();
         } catch (e) {
             alert("Failed to regenerate");
+        }
+    };
+
+    const handleDownload = async (fileUrl, fileName) => {
+        if (!fileUrl) return;
+        try {
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = fileName || 'document.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Download failed, falling back to new tab', error);
+            window.open(fileUrl, '_blank');
         }
     };
 
@@ -199,15 +219,13 @@ export default function GeneratedDocuments() {
                                                         <ExternalLink size={16} />
                                                     </Link>
                                                     {r.file && r.status === 'done' ? (
-                                                        <a 
-                                                            href={r.file} 
-                                                            target="_blank" 
-                                                            rel="noreferrer"
+                                                        <button 
+                                                            onClick={() => handleDownload(r.file, `${r.template_name}.pdf`)}
                                                             className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 rounded transition-colors"
                                                             title="Download PDF"
                                                         >
                                                             <Download size={16} />
-                                                        </a>
+                                                        </button>
                                                     ) : (
                                                         <button disabled className="p-2 text-slate-600 cursor-not-allowed">
                                                             <Download size={16} />

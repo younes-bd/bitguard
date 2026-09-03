@@ -1,54 +1,26 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from ..domain.models import (
-    StoreCustomization, Category, Product, LicenseKey, CustomerProfile,
+    StoreCustomization, LicenseKey, CustomerProfile,
     Order, ShippingSetting, TrackingConfig, AddOn, SubscriptionPlan, Subscription, StoreSetting, PartnerRequest, Cart, CartItem, Coupon
 )
 from ..api.serializers import (
-    StoreCustomizationSerializer, CategorySerializer, ProductSerializer, LicenseKeySerializer,
+    StoreCustomizationSerializer, LicenseKeySerializer,
     CustomerProfileSerializer, OrderSerializer, ShippingSettingSerializer,
     TrackingConfigSerializer, AddOnSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, StoreSettingSerializer, PartnerRequestSerializer, CartSerializer, CartItemSerializer, CouponSerializer
 )
 from ..application.services import CommerceService
 
-class StoreCustomizationViewSet(viewsets.ModelViewSet):
+class StoreCustomizationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = StoreCustomization.objects.all()
     serializer_class = StoreCustomizationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def perform_create(self, serializer):
-        CommerceService.create_category(serializer.validated_data, self.request)
 
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all().order_by('-created_at')
-    serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def checkout(self, request, pk=None):
-        product = self.get_object()
-        success_url = request.data.get('success_url') or request.build_absolute_uri('/')
-        cancel_url = request.data.get('cancel_url') or request.build_absolute_uri('/')
-
-        checkout_url = CommerceService.create_checkout_session(
-            user=request.user,
-            product=product,
-            success_url=success_url,
-            cancel_url=cancel_url,
-            request=request
-        )
-        return Response({'checkout_url': checkout_url})
-
-    def perform_create(self, serializer):
-        CommerceService.create_product(serializer.validated_data, self.request)
-
-class LicenseKeyViewSet(viewsets.ModelViewSet):
+class LicenseKeyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = LicenseKeySerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -57,7 +29,7 @@ class LicenseKeyViewSet(viewsets.ModelViewSet):
             return LicenseKey.objects.filter(tenant=self.request.user.tenant)
         return LicenseKey.objects.none()
 
-class CustomerProfileViewSet(viewsets.ModelViewSet):
+class CustomerProfileViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = CustomerProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -66,7 +38,7 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
             return CustomerProfile.objects.filter(tenant=self.request.user.tenant)
         return CustomerProfile.objects.none()
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -88,28 +60,28 @@ class OrderViewSet(viewsets.ModelViewSet):
         CommerceService.update_order_status(order, new_status, request)
         return Response({"status": "updated", "new_status": new_status})
 
-class ShippingSettingViewSet(viewsets.ModelViewSet):
+class ShippingSettingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = ShippingSetting.objects.all()
     serializer_class = ShippingSettingSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class TrackingConfigViewSet(viewsets.ModelViewSet):
+class TrackingConfigViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = TrackingConfig.objects.all()
     serializer_class = TrackingConfigSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class AddOnViewSet(viewsets.ModelViewSet):
+class AddOnViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = AddOn.objects.all()
     serializer_class = AddOnSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class SubscriptionPlanViewSet(viewsets.ModelViewSet):
+class SubscriptionPlanViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = SubscriptionPlan.objects.all()
     serializer_class = SubscriptionPlanSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class SubscriptionViewSet(viewsets.ModelViewSet):
+class SubscriptionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -138,7 +110,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
         sub.save()
         return Response({'status': 'Subscription resumed'})
 
-class CartViewSet(viewsets.ModelViewSet):
+class CartViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = CartSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -150,7 +122,7 @@ class CartViewSet(viewsets.ModelViewSet):
             return Cart.objects.filter(session_id=session_id)
         return Cart.objects.none()
 
-class CouponViewSet(viewsets.ModelViewSet):
+class CouponViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = CouponSerializer
     permission_classes = [permissions.IsAdminUser]
     
@@ -159,31 +131,54 @@ class CouponViewSet(viewsets.ModelViewSet):
             return Coupon.objects.filter(tenant=self.request.user.tenant)
         return Coupon.objects.all()
 
-class StoreSettingViewSet(viewsets.ModelViewSet):
+class StoreSettingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = StoreSetting.objects.all()
     serializer_class = StoreSettingSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class PartnerRequestViewSet(viewsets.ModelViewSet):
+class PartnerRequestViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = PartnerRequest.objects.all().order_by('-created_at')
     serializer_class = PartnerRequestSerializer
     permission_classes = [permissions.AllowAny] # Allow public submission
 
 
-from ..domain.models import ProductAttribute, ProductAttributeValue, ProductVariant
-from .serializers import ProductAttributeSerializer, ProductAttributeValueSerializer, ProductVariantSerializer
 
-class ProductAttributeViewSet(viewsets.ModelViewSet):
-    queryset = ProductAttribute.objects.all()
-    serializer_class = ProductAttributeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class ProductAttributeValueViewSet(viewsets.ModelViewSet):
-    queryset = ProductAttributeValue.objects.all()
-    serializer_class = ProductAttributeValueSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class ProductVariantViewSet(viewsets.ModelViewSet):
-    queryset = ProductVariant.objects.all()
-    serializer_class = ProductVariantSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+class RevenueReportView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        from apps.ecommerce.domain.models import Order
+        from django.db.models import Sum, Count
+        orders = Order.objects.all()
+        if tenant: orders = orders.filter(tenant=tenant)
+        result = {
+            "store_revenue": float(orders.filter(status='completed').aggregate(t=Sum('total_amount'))['t'] or 0),
+            "total_orders": orders.count(),
+            "avg_order_value": float(orders.filter(status='completed').aggregate(t=Sum('total_amount'))['t'] or 0) / (orders.count() or 1)
+        }
+        return Response({"status": "success", "data": result})
+
+class ExportRevenueCSV(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        import csv
+        from django.http import HttpResponse
+        from apps.ecommerce.domain.models import Order
+        from django.db.models import Sum
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="revenue_export.csv"'
+        writer = csv.writer(response)
+        tenant = getattr(request, 'tenant', None)
+        writer.writerow(['Type', 'Amount'])
+        orders = Order.objects.all()
+        if tenant: orders = orders.filter(tenant=tenant)
+        store_rev = float(orders.filter(status='completed').aggregate(total=Sum('total_amount'))['total'] or 0)
+        writer.writerow(['Store Revenue', store_rev])
+        return response
+

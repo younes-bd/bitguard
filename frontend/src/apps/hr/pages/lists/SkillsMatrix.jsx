@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { hrmService } from '../../../../core/api/hrmService';
+import { hrService } from '../../api/hrService';
 import { Award, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -14,7 +14,7 @@ export default function SkillsMatrix() {
   const fetchSkills = async () => {
     try {
       setLoading(true);
-      const res = await hrmService.getEmployeeSkills();
+      const res = await hrService.getEmployeeSkills();
       setSkills(res.results || res || []);
     } catch (err) {
       toast.error('Failed to fetch skills matrix');

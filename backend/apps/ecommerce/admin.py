@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .domain.models import (
-    StoreCustomization, Category, Product, LicenseKey, CustomerProfile,
+    StoreCustomization, LicenseKey, CustomerProfile,
     Order, OrderItem, OrderTimeline, ShippingSetting, TrackingConfig,
     AddOn, SubscriptionPlan, Subscription, StoreSetting, PartnerRequest,
     Cart, CartItem, Coupon
@@ -18,19 +18,7 @@ class OrderTimelineInline(admin.TabularInline):
     model = OrderTimeline
     extra = 1
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'product_type', 'brand', 'delivery_type', 'status', 'created_at', 'stock_quantity')
-    list_filter = ('product_type', 'status', 'delivery_type', 'brand')
-    search_fields = ('name', 'description', 'brand', 'sku')
-    prepopulated_fields = {'slug': ('name',)}
-    inlines = [LicenseKeyInline]
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_visible', 'parent_category', 'tenant')
-    prepopulated_fields = {'slug': ('name',)}
-    search_fields = ('name',)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

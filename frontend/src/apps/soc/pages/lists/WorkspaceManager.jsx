@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { platformService } from '../../../../core/api/platformService';
+import { settingsService } from '../../../system/api/settingsService';
 import {
     Squares2X2Icon,
     PlusIcon,
@@ -17,7 +17,7 @@ const WorkspaceManager = () => {
     const fetchWorkspaces = async () => {
         setLoading(true);
         try {
-            const data = await platformService.getWorkspaces();
+            const data = await settingsService.getWorkspaces();
             setWorkspaces(Array.isArray(data) ? data : (data?.results || data?.data || []));
         } catch (error) {
             console.error("Failed to fetch workspaces", error);
@@ -34,7 +34,7 @@ const WorkspaceManager = () => {
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
-            await platformService.createWorkspace({ name: newWorkspaceName });
+            await settingsService.createWorkspace({ name: newWorkspaceName });
             setNewWorkspaceName('');
             setIsModalOpen(false);
             fetchWorkspaces();
@@ -46,7 +46,7 @@ const WorkspaceManager = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this workspace?")) return;
         try {
-            await platformService.deleteWorkspace(id);
+            await settingsService.deleteWorkspace(id);
             setWorkspaces(prev => prev.filter(w => w.id !== id));
         } catch (error) {
             console.error("Failed to delete workspace", error);

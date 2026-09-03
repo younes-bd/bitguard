@@ -27,6 +27,7 @@ class QuotationTemplate(TenantAwareModel):
         return self.name
 
 class SaleOrder(TenantAwareModel):
+    crm_lead = models.ForeignKey('crm.Lead', on_delete=models.SET_NULL, null=True, blank=True, related_name='sale_orders')
     STATUS_CHOICES = [
         ('draft', 'Quotation'),
         ('sent', 'Quotation Sent'),
@@ -65,13 +66,21 @@ class SaleOrder(TenantAwareModel):
     def __str__(self):
         return self.order_number
 
+    @classmethod
+    def cancel_expired_quotations(cls):
+        from django.utils import timezone
+        today = timezone.now().date()
+        expired = cls.objects.filter(status='draft', validity_date__lt=today)
+        count = expired.update(status='cancelled')
+        print(f"[Cron Job] Cancelled {count} expired quotations.")
+
 class SaleOrderLine(TenantAwareModel):
     order = models.ForeignKey(SaleOrder, on_delete=models.CASCADE, related_name='lines')
-    product = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey('product.Product', on_delete=models.SET_NULL, null=True, blank=True)
     name = models.TextField(help_text="Description")
     product_uom_qty = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     price_unit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    taxes = models.ManyToManyField('accounting.Tax', blank=True)
     price_subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     analytic_account = models.ForeignKey('accounting.AnalyticAccount', on_delete=models.SET_NULL, null=True, blank=True)
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mrp_plmService from '../../../../core/api/plmService';
+import mrp_plmService from '../../api/plmService';
 import { Plus, Search, Edit2, Trash2, LayoutDashboard } from 'lucide-react';
 
 const EngineeringChangeOrderList = () => {

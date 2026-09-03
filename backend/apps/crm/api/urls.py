@@ -1,8 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
+    ExportCRMCSV,
+    CRMReportView,
     ClientViewSet, ContactViewSet, LeadViewSet, DealViewSet, ActivityViewSet,
-    CrmStageViewSet, CrmSalesTeamViewSet, LostReasonViewSet, CrmTagViewSet
+    CrmStageViewSet, CrmSalesTeamViewSet, LostReasonViewSet, CrmTagViewSet, DashboardStatsView
 )
 
 router = DefaultRouter()
@@ -17,5 +19,8 @@ router.register(r'lost-reasons', LostReasonViewSet, basename='lost-reason')
 router.register(r'tags', CrmTagViewSet, basename='tag')
 
 urlpatterns = [
+    path('report/export/', ExportCRMCSV.as_view(), name='crm-export-csv'),
+    path('report/metrics/', CRMReportView.as_view(), name='crm-metrics-report'),
+    path('dashboard/stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('', include(router.urls)),
 ]

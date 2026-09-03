@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Settings } from 'lucide-react';
-import posService from '../../../../core/api/posService';
+import posService from '../../api/posService';
 
 export default function RestaurantFloorPlan({ config, onTableSelect, onBack }) {
   const [floors, setFloors] = useState([]);

@@ -16,7 +16,7 @@ DEBUG = True
 import os
 
 # Use a robust path resolution that works across WSL and Windows
-_NATIVE_DB = BASE_DIR / 'db.sqlite3'
+_NATIVE_DB = os.path.expanduser('~/website13_db.sqlite3')
 
 _CUSTOM_DB = os.environ.get('CUSTOM_DB_PATH')
 NAME = _CUSTOM_DB if _CUSTOM_DB else _NATIVE_DB
@@ -32,3 +32,4 @@ DATABASES = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+CORS_ALLOW_ALL_ORIGINS = True

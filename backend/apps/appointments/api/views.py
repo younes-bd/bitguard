@@ -1,9 +1,10 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from apps.appointments.domain.models import Appointment, AppointmentType, AppointmentResource
 from apps.appointments.api.serializers import AppointmentSerializer, AppointmentTypeSerializer, AppointmentResourceSerializer
 
-class AppointmentTypeViewSet(viewsets.ModelViewSet):
+class AppointmentTypeViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = AppointmentTypeSerializer
     permission_classes = [IsAuthenticated]
 
@@ -13,7 +14,7 @@ class AppointmentTypeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class AppointmentResourceViewSet(viewsets.ModelViewSet):
+class AppointmentResourceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = AppointmentResourceSerializer
     permission_classes = [IsAuthenticated]
 
@@ -23,7 +24,7 @@ class AppointmentResourceViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class AppointmentViewSet(viewsets.ModelViewSet):
+class AppointmentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
     permission_classes = [IsAuthenticated]
 

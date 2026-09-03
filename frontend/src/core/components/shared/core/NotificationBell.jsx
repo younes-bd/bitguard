@@ -23,7 +23,7 @@ const NotificationBell = () => {
                 )}
             </button>
 
-            {isOpen && (
+            {isOpen && safeNotifications.length > 0 && (
                 <div className="absolute right-0 top-full mt-2 w-80 bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
                     <div className="p-3 border-b border-slate-800 bg-slate-950/50">
                         <h4 className="text-sm font-semibold text-white">Notifications</h4>

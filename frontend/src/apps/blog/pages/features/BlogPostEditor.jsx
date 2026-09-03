@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Globe, FileText, Loader2 } from 'lucide-react';
-import blogService from '../../../../core/api/blogService';
+import blogService from '../../api/blogService';
 import toast from 'react-hot-toast';
 
 const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');

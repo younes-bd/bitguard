@@ -17,9 +17,10 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from apps.tenants.models import Tenant
-from apps.users.models import Role, UserRole, UserProfile
+from apps.users.models import Role, UserRole
+from apps.core.models import Partner
 from apps.crm.models import Client, Contact, Lead, Deal, Activity
-from apps.erp.models import Invoice, Payment, Expense
+from apps.accounting.models import Invoice, Payment, Expense
 from apps.soc.models import Alert, Incident, ThreatIntelligence, LogAnalysis
 from apps.ecommerce.models import Product, Order, LicenseKey
 
@@ -48,7 +49,6 @@ def create_users_and_roles(tenant):
             "username": "admin@bitguard.tech",
             "first_name": "Admin",
             "last_name": "User",
-            "tenant": tenant,
             "is_staff": True,
             "is_superuser": True
         }
@@ -57,47 +57,53 @@ def create_users_and_roles(tenant):
     admin.set_password("admin")
     admin.save()
     UserRole.objects.get_or_create(user=admin, role=role_admin)
-    UserProfile.objects.get_or_create(
+    partner, _ = Partner.objects.get_or_create(
+        tenant=tenant,
+        email=admin.email,
+        defaults={"name": "Admin User", "bio": "Chief Executive Officer"}
+    )
+    admin.partner = partner
+    admin.save()
+    
+    # Create tenant membership
+    from apps.users.domain.models import TenantMembership
+    TenantMembership.objects.get_or_create(
         user=admin,
         tenant=tenant,
-        defaults={"bio": "Chief Executive Officer"}
+        defaults={"is_active": True}
     )
         
     return admin
 
 def create_crm_data(tenant, admin):
     print("Creating CRM Data...")
-    Client.objects.all().delete()
+    from apps.crm.domain.models import Client, Contact, Deal, Activity, CrmStage
+    
+    # Create Stages
+    stage_new, _ = CrmStage.objects.get_or_create(tenant=tenant, name="New", defaults={"sequence": 10})
+    stage_qualified, _ = CrmStage.objects.get_or_create(tenant=tenant, name="Qualified", defaults={"sequence": 20})
+    stage_negotiation, _ = CrmStage.objects.get_or_create(tenant=tenant, name="Negotiation", defaults={"sequence": 30})
+    stage_won, _ = CrmStage.objects.get_or_create(tenant=tenant, name="Won", defaults={"sequence": 40, "is_won": True})
     
     clients = []
-    for comp in ["Massive Dynamic", "Cyberdyne Systems", "Acme Corp"]:
+    for i, comp in enumerate(["TechCorp", "GlobalFlow", "DataSystems"]):
+        # Client
         client = Client.objects.create(
             tenant=tenant,
             name=comp,
             industry="Technology",
-            website=f"https://www.{comp.lower().replace(' ', '')}.com",
-            assigned_to=admin
+            website=f"www.{comp.lower()}.com"
         )
         clients.append(client)
         
-        # Contacts
+        # Contact
         contact = Contact.objects.create(
             tenant=tenant,
             client=client,
             first_name="John",
-            last_name="Doe",
-            email=f"johndoe@{comp.lower().replace(' ', '')}.com",
-            job_title="CTO"
-        )
-        
-        # Leads
-        lead = Lead.objects.create(
-            tenant=tenant,
-            contact=contact,
-            title=f"Enterprise Deal for {comp}",
-            status="qualified",
-            value=Decimal("50000.00"),
-            assigned_to=admin
+            last_name=f"Doe {i}",
+            email=f"john.doe{i}@{comp.lower()}.com",
+            phone=f"+1555000{i}{i}{i}"
         )
         
         # Deals
@@ -106,7 +112,7 @@ def create_crm_data(tenant, admin):
             client=client,
             title=f"{comp} Q3 Expansion",
             amount=Decimal("120000.00"),
-            stage="negotiation",
+            stage=stage_negotiation,
             expected_close_date=timezone.now().date() + timedelta(days=30),
             assigned_to=admin
         )
@@ -132,7 +138,7 @@ def create_erp_data(tenant, clients, admin):
             tenant=tenant,
             invoice_number=f"INV-{random.randint(1000, 9999)}",
             client=client,
-            amount=Decimal("15000.00"),
+            total_amount=Decimal("15000.00"),
             issue_date=timezone.now().date(),
             due_date=timezone.now().date() + timedelta(days=30),
             status="sent"
@@ -184,7 +190,7 @@ def create_soc_data(tenant, admin):
     
     ThreatIntelligence.objects.create(
         indicator="192.168.1.100",
-        type="IP Address",
+        indicator_type="IP Address",
         confidence=95,
         description="Known malicious IP from Emotet botnet"
     )

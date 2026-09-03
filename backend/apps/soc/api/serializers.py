@@ -119,11 +119,11 @@ class RemoteSessionSerializer(serializers.ModelSerializer):
 class ComplianceFrameworkSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComplianceFramework
-        fields = '__all__'
+        fields = ['id', 'FRAMEWORK_CHOICES', 'framework', 'description', 'last_assessed']
         read_only_fields = ['id', 'created_at', 'updated_at', 'tenant']
 
 class ComplianceControlSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComplianceControl
-        fields = '__all__'
+        fields = ['id', 'STATUS_CHOICES', 'framework', 'control_id', 'title', 'description', 'status', 'evidence', 'owner', 'last_reviewed']
         read_only_fields = ['id', 'created_at', 'updated_at', 'tenant']

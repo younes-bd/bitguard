@@ -5,8 +5,8 @@ import {
     LineChart, Line, AreaChart, Area
 } from 'recharts';
 import { DollarSign, ShoppingBag, Users, TrendingUp, Package, Loader2 } from 'lucide-react';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
-import { boardService } from '../../../../core/api/boardService';
+import { ecommerceService } from '../../api/ecommerceService';
+import { boardService } from '../../../board/api/boardService';
 
 const StoreAdminDashboard = () => {
     const navigate = useNavigate();

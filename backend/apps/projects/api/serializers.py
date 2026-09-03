@@ -5,11 +5,15 @@ class SprintSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sprint
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class TaskTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskTag
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 class TimeLogSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
 
@@ -33,6 +37,8 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
     def get_assignee_name(self, obj):
         if obj.assignee:
@@ -47,6 +53,8 @@ class MilestoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Milestone
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class ProjectListSerializer(serializers.ModelSerializer):
@@ -64,6 +72,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
             'client_name', 'manager_name', 'start_date', 'deadline',
             'budget', 'progress', 'task_count', 'done_count', 'created_at',
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
     def get_client_name(self, obj):
         return obj.client.name if obj.client else 'Internal'
@@ -90,6 +99,8 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
     def get_client_name(self, obj):
         return obj.client.name if obj.client else 'Internal'
@@ -100,3 +111,5 @@ class TaskTimesheetSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskTimesheet
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

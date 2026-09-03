@@ -3,9 +3,9 @@ from apps.core.domain.models import BaseModel, TenantAwareModel, ChatterMixin
 from django.conf import settings
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # CRM CONFIGURATION MODELS (Odoo crm.stage, crm.team, crm.tag)
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class CrmStage(TenantAwareModel):
     """
@@ -60,7 +60,7 @@ class CrmSalesTeam(TenantAwareModel):
         settings.AUTH_USER_MODEL, blank=True, related_name='crm_teams'
     )
     alias_email = models.EmailField(
-        blank=True, help_text="Inbound email alias — emails sent here auto-create leads"
+        blank=True, help_text="Inbound email alias â€” emails sent here auto-create leads"
     )
     is_active = models.BooleanField(default=True)
 
@@ -104,14 +104,14 @@ class CrmTag(TenantAwareModel):
         return self.name
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # CORE CRM MODELS
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class Client(ChatterMixin, TenantAwareModel):
     """
     A customer/client in the CRM system.
-    Charter §15: Every customer exists in a single lifecycle model.
+    Charter Â§15: Every customer exists in a single lifecycle model.
     """
     STATUS_CHOICES = [
         ('prospect', 'Prospect'),
@@ -208,7 +208,7 @@ class Lead(ChatterMixin, TenantAwareModel):
         ('3', 'Very High'),
     ]
 
-    # Lead/prospect information (denormalized — matches Odoo's crm.lead pattern)
+    # Lead/prospect information (denormalized â€” matches Odoo's crm.lead pattern)
     title = models.CharField(max_length=255, help_text="Opportunity or lead title")
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
@@ -216,6 +216,11 @@ class Lead(ChatterMixin, TenantAwareModel):
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=50, blank=True)
     source = models.CharField(max_length=50, choices=SOURCE_CHOICES, default='website')
+
+    # UTM parameters for marketing tracking
+    utm_source = models.CharField(max_length=100, blank=True)
+    utm_medium = models.CharField(max_length=100, blank=True)
+    utm_campaign = models.CharField(max_length=100, blank=True)
 
     # Qualification
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='new')
@@ -225,7 +230,7 @@ class Lead(ChatterMixin, TenantAwareModel):
     )
     score = models.IntegerField(default=0, help_text="Lead score based on activity and profile")
     probability = models.IntegerField(
-        default=10, help_text="Estimated win probability 0–100%"
+        default=10, help_text="Estimated win probability 0â€“100%"
     )
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='0')
     description = models.TextField(blank=True)
@@ -271,7 +276,7 @@ class Deal(ChatterMixin, TenantAwareModel):
 
     KEY FIX: `stage` is now a FK to CrmStage (configurable from Settings)
     instead of a hardcoded CharField. This lets users add/reorder pipeline
-    stages without any code changes — exactly like Odoo.
+    stages without any code changes â€” exactly like Odoo.
     """
     PRIORITY_CHOICES = [
         ('0', 'Normal'),
@@ -293,7 +298,7 @@ class Deal(ChatterMixin, TenantAwareModel):
     )
 
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    probability = models.IntegerField(default=10, help_text="Win probability 0–100%")
+    probability = models.IntegerField(default=10, help_text="Win probability 0â€“100%")
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='0')
     expected_close_date = models.DateField(null=True, blank=True)
 

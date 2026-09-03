@@ -26,7 +26,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f"Roles err: {roles_resp.content}")
 
-        settings_resp = c.get('/api/v1/base_setup/settings/')
+        settings_resp = c.get('/api/v1/system/settings/')
         self.stdout.write(f"Settings status: {settings_resp.status_code}")
         if settings_resp.status_code == 200:
             data = settings_resp.json()

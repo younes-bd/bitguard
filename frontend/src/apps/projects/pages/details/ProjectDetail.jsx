@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
     ArrowLeft, Kanban, CheckCircle, Clock, Users,
@@ -7,8 +7,8 @@ import {
     MoreVertical, Edit2, Trash2, Shield, Info,
     PlusCircle, ExternalLink, ChevronRight
 } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import projectsService from '../../api/projectsService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 import { toast } from 'react-hot-toast';
 
 const STATUS_MAP = {

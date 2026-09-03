@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import blogService from '../../../../core/api/blogService';
-import SectionDivider from '../../../../core/components/SectionDivider';
-import PageMeta from '../../../../core/components/shared/PageMeta';
+import blogService from '../../api/blogService';
+import SectionDivider from '@/core/components/SectionDivider';
+import PageMeta from '@/core/components/shared/PageMeta';
 
 const CATEGORIES = ['All', 'Engineering', 'Security', 'Releases', 'Cloud'];
 

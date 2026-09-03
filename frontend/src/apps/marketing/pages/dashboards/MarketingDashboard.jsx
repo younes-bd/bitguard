@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Megaphone, Target, BarChart, Users, TrendingUp, MousePointer2, Share2, Eye } from 'lucide-react';
-import { marketingService } from '../../../../core/api/marketingService';
+import { marketingService } from '../../api/marketingService';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as ReBarChart, Bar, Cell } from 'recharts';
 
 const MarketingDashboard = () => {

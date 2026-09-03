@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
-import client from '../../../../core/api/client';
+import boardService from '../../api/boardService';
 import toast from 'react-hot-toast';
 
 export default function MrrDashboard() {
@@ -9,10 +9,10 @@ export default function MrrDashboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        client.get('board/mrr/')
-            .then(res => {
-                setStats(res.data?.stats || res.data || { current_mrr: 0, arr: 0, growth_pct: 0, active_subscriptions: 0 });
-                setHistory(res.data?.history || []);
+        boardService.getMrr()
+            .then(data => {
+                setStats(data?.stats || data || { mrr: 0, arr: 0, growth: 0, active: 0 });
+                setHistory(data?.history || []);
             })
             .catch(() => toast.error('Failed to load MRR metrics'))
             .finally(() => setLoading(false));
@@ -25,7 +25,7 @@ export default function MrrDashboard() {
         </div>
     );
 
-    const isPositive = stats.growth_pct >= 0;
+    const isPositive = stats.growth >= 0;
 
     return (
         <div className="space-y-6 max-w-7xl mx-auto pb-12 px-4 sm:px-6 animate-in fade-in duration-500">
@@ -42,11 +42,11 @@ export default function MrrDashboard() {
                         <DollarSign size={80} className="text-emerald-500" />
                     </div>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 relative z-10">Current MRR</p>
-                    <p className="text-4xl font-black text-white mb-2 relative z-10">${(stats.current_mrr || 0).toLocaleString()}</p>
+                    <p className="text-4xl font-black text-white mb-2 relative z-10">${(stats.mrr || 0).toLocaleString()}</p>
                     <div className="flex items-center gap-1.5 relative z-10">
                         <span className={`flex items-center text-xs font-bold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
                             {isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                            {Math.abs(stats.growth_pct || 0)}%
+                            {Math.abs(stats.growth || 0)}%
                         </span>
                         <span className="text-xs text-slate-500">vs last month</span>
                     </div>
@@ -57,18 +57,18 @@ export default function MrrDashboard() {
                         <TrendingUp size={80} className="text-emerald-500" />
                     </div>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 relative z-10">Annual Run Rate (ARR)</p>
-                    <p className="text-4xl font-black text-white relative z-10">${((stats.current_mrr || 0) * 12).toLocaleString()}</p>
+                    <p className="text-4xl font-black text-white relative z-10">${((stats.mrr || 0) * 12).toLocaleString()}</p>
                 </div>
 
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden group hover:border-blue-500/30 transition-all">
                     <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 relative z-10">Active Contracts</p>
-                    <p className="text-4xl font-black text-blue-400 relative z-10">{stats.active_subscriptions || 0}</p>
+                    <p className="text-4xl font-black text-blue-400 relative z-10">{stats.active || 0}</p>
                 </div>
 
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden group hover:border-amber-500/30 transition-all">
                     <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 relative z-10">Avg Revenue Per Client</p>
                     <p className="text-4xl font-black text-amber-400 relative z-10">
-                        ${stats.active_subscriptions > 0 ? Math.round((stats.current_mrr || 0) / stats.active_subscriptions).toLocaleString() : 0}
+                        ${stats.active > 0 ? Math.round((stats.mrr || 0) / stats.active).toLocaleString() : 0}
                     </p>
                 </div>
             </div>

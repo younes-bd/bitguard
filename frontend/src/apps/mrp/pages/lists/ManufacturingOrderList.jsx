@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mrpService from '../../../../core/api/mrpService';
-import DataTable from '../../../../core/components/shared/views/DataTable';
+import mrpService from '../../api/mrpService';
+import DataTable from '@/core/components/shared/views/DataTable';
 import { Settings, Plus, LayoutDashboard, Wrench } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 

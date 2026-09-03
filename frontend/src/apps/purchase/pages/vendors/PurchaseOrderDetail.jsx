@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
+import { purchaseService } from '../../api/purchaseService';
 import {
     ArrowLeft, Printer, Download, Mail,
     CheckCircle, AlertCircle, Clock, FileCheck, RefreshCcw, FileText, Truck
@@ -15,7 +15,7 @@ const PurchaseOrderDetail = () => {
 
     const fetchPO = async () => {
         try {
-            const data = await erpService.getPurchaseOrder(id);
+            const data = await purchaseService.getPurchaseOrder(id);
             setPo(data);
         } catch (error) {
             console.error("Failed to load purchase order", error);
@@ -33,7 +33,7 @@ const PurchaseOrderDetail = () => {
         
         setActionLoading(true);
         try {
-            await erpService.receivePurchaseOrder(id);
+            await purchaseService.receivePurchaseOrder(id);
             await fetchPO();
         } catch (error) {
             console.error("Receiving failed", error);
@@ -86,7 +86,7 @@ const PurchaseOrderDetail = () => {
                             onClick={async () => {
                                 setActionLoading(true);
                                 try {
-                                    await erpService.approvePurchaseOrder(id);
+                                    await purchaseService.approvePurchaseOrder(id);
                                     await fetchPO();
                                 } catch (e) { alert("Failed to approve"); }
                                 finally { setActionLoading(false); }
@@ -113,7 +113,7 @@ const PurchaseOrderDetail = () => {
                             onClick={async () => {
                                 setActionLoading(true);
                                 try {
-                                    await erpService.cancelPurchaseOrder(id);
+                                    await purchaseService.cancelPurchaseOrder(id);
                                     await fetchPO();
                                 } catch (e) { alert("Failed to cancel"); }
                                 finally { setActionLoading(false); }
@@ -133,7 +133,7 @@ const PurchaseOrderDetail = () => {
                         onClick={async () => {
                             setActionLoading(true);
                             try {
-                                await erpService.downloadPurchaseOrder(id);
+                                await purchaseService.downloadPurchaseOrder(id);
                             } catch (e) {
                                 alert("Failed to download PDF.");
                             } finally {

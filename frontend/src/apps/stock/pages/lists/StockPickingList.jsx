@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from '../../../../core/components/shared/views/DataTable';
-import inventoryService from '../../../../core/api/inventoryService';
-import { Truck } from 'lucide-react';
+import DataTable from '@/core/components/shared/views/DataTable';
+import inventoryService from '../../api/inventoryService';
+import { Truck, Download } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export default function StockPickingList() {
@@ -52,6 +52,31 @@ export default function StockPickingList() {
           'bg-slate-800 text-slate-400'
         }`}>{val?.toUpperCase()}</span>
       )
+    },
+    {
+      key: 'actions',
+      label: '',
+      render: (_, row) => (
+        <div className="flex justify-end" onClick={e => e.stopPropagation()}>
+          <button
+            onClick={async () => {
+              try {
+                const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
+                const res = await reportingService.generateReport(null, 'stock.StockPicking', row.id);
+                if (res && res.url) {
+                  window.open(res.url, '_blank');
+                }
+              } catch (err) {
+                console.error('Failed to generate PDF', err);
+              }
+            }}
+            className="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded transition-colors"
+            title="Download PDF"
+          >
+            <Download className="w-4 h-4" />
+          </button>
+        </div>
+      )
     }
   ];
 
@@ -74,6 +99,7 @@ export default function StockPickingList() {
           columns={columns}
           data={pickings}
           isLoading={loading}
+          onRowClick={(row) => window.location.href = `/admin/stock/transfers/${row.id}`}
           emptyMessage="No transfers found."
         />
       </div>

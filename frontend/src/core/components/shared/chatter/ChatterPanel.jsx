@@ -3,7 +3,7 @@ import {
   MessageSquare, Activity, Clock, Paperclip, Send, User, 
   Lock, CheckCircle, Calendar, Plus, Eye, EyeOff 
 } from 'lucide-react';
-import chatterService from "../../../api/chatterService";
+import chatterService from '../../../../apps/discuss/api/chatterService';
 import { toast } from 'react-hot-toast';
 
 export default function ChatterPanel({ model, objectId, className = '' }) {

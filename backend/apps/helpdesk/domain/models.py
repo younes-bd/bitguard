@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from apps.core.domain.models import BaseModel, TenantAwareModel
 
 class HelpdeskTeam(TenantAwareModel):
@@ -30,6 +31,7 @@ class SlaPolicy(TenantAwareModel):
     target_hours = models.FloatField()
 
 class Ticket(TenantAwareModel):
+    service_contract = models.ForeignKey('subscriptions.ServiceContract', on_delete=models.SET_NULL, null=True, blank=True, related_name='tickets')
     PRIORITY_CHOICES = [
         ('low', 'Low'),
         ('medium', 'Medium'),
@@ -61,7 +63,7 @@ class Ticket(TenantAwareModel):
     title = models.CharField(max_length=255)
     ticket_number = models.CharField(max_length=20, blank=True)
     description = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', db_index=True)
     ticket_type = models.CharField(max_length=20, choices=TICKET_TYPE_CHOICES, default='incident')
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
     risk_level = models.CharField(max_length=20, choices=RISK_CHOICES, default='low')
@@ -89,6 +91,20 @@ class Ticket(TenantAwareModel):
     def __str__(self):
         return f"[{self.status.upper()}] [{self.get_ticket_type_display()}] {self.title}"
 
+    @classmethod
+    def escalate_sla_breaches(cls):
+        from django.utils import timezone
+        now = timezone.now()
+        breached = cls.objects.filter(status__in=["open", "in_progress"], sla_breached=False, sla_deadline__lt=now)
+        for t in breached:
+            t.sla_breached = True
+            if t.priority == "low": t.priority = "medium"
+            elif t.priority == "medium": t.priority = "high"
+            elif t.priority == "high": t.priority = "critical"
+            t.save(update_fields=["sla_breached", "priority"])
+            from apps.helpdesk.domain.models import TicketMessage
+            TicketMessage.objects.create(ticket=t, body=f"System: SLA breached. Priority escalated to {t.get_priority_display()}.")
+
 class TicketMessage(BaseModel):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
@@ -109,3 +125,49 @@ class KnowledgeArticle(TenantAwareModel):
 
     def __str__(self):
         return self.title
+
+class SLATier(BaseModel):
+    """
+    Defines an SLA tier (e.g. Basic, Standard, Premium, Critical).
+    Reusable across multiple contracts.
+    """
+    COVERAGE_CHOICES = [
+        ('business_hours', 'Business Hours (8x5)'),
+        ('extended', 'Extended (12x5)'),
+        ('always_on', '24x7'),
+    ]
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    first_response_hours = models.IntegerField(help_text="Max hours to first response")
+    resolution_hours = models.IntegerField(help_text="Max hours to resolution")
+    uptime_percent = models.DecimalField(
+        max_digits=5, decimal_places=2, default=99.9,
+        help_text="Guaranteed uptime (e.g. 99.9)"
+    )
+    coverage = models.CharField(max_length=20, choices=COVERAGE_CHOICES, default='business_hours')
+
+    def __str__(self):
+        return f"{self.name} ({self.first_response_hours}h response / {self.resolution_hours}h resolution)"
+
+class SLABreach(BaseModel):
+    """
+    Charter §25: SLA breaches must be logged and trigger notifications.
+    Automatically created when a support ticket exceeds SLA tier thresholds.
+    """
+    BREACH_TYPE_CHOICES = [
+        ('first_response', 'First Response Exceeded'),
+        ('resolution', 'Resolution Time Exceeded'),
+        ('uptime', 'Uptime SLA Violated'),
+    ]
+    contract = models.ForeignKey('subscriptions.ServiceContract', on_delete=models.CASCADE, related_name='sla_breaches')
+    ticket_id = models.UUIDField(null=True, blank=True, help_text="UUID of the Support Ticket")
+    breach_type = models.CharField(max_length=20, choices=BREACH_TYPE_CHOICES)
+    breached_at = models.DateTimeField(default=timezone.now)
+    acknowledged = models.BooleanField(default=False)
+    resolution_note = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = 'SLA Breach'
+
+    def __str__(self):
+        return f"SLA Breach ({self.breach_type}) on {self.contract}"

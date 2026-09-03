@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { erpService } from '../../../../core/api/erpService';
+import { projectsService } from '../../api/projectsService';
 import {
     MoreHorizontal, ArrowUpRight, DollarSign, ShoppingBag,
     Plus, Search, Filter, Calendar
@@ -18,7 +18,7 @@ const ProjectList = () => {
 
     const fetchProjects = async () => {
         try {
-            const data = await erpService.getProjects();
+            const data = await projectsService.getProjects();
             setProjects(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to load projects", error);

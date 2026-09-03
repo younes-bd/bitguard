@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Save, ArrowLeft, Trash2, Building2 } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { purchaseService } from '../../api/purchaseService';
 import { toast } from 'react-hot-toast';
 
 const PurchaseOrderCreate = () => {
@@ -23,7 +23,7 @@ const PurchaseOrderCreate = () => {
     useEffect(() => {
         const fetchVendors = async () => {
             try {
-                const data = await erpService.getVendors();
+                const data = await purchaseService.getVendors();
                 setVendors(data?.filter(v => v.is_active) || []);
             } catch (err) {
                 console.error(err);
@@ -60,7 +60,7 @@ const PurchaseOrderCreate = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await erpService.createPurchaseOrder({ ...form, items });
+            await purchaseService.createPurchaseOrder({ ...form, items });
             toast.success('Purchase Order created');
             navigate('/admin/purchase/orders');
         } catch (err) {

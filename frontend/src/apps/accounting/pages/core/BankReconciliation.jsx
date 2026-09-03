@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeftRight, CheckCircle, Clock, Loader, AlertTriangle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { erpService } from '../../../../core/api/erpService';
 import { accountingService } from '../../api/accountingService';
 
 const BankReconciliation = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../../../core/hooks/useAuth';
+import { useAuth } from '@/core/hooks/useAuth';
 import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const Login = () => {
@@ -35,10 +35,12 @@ const Login = () => {
         try {
             const data = await login(formData.email, formData.password);
 
-            // Check if backend requests OTP (assuming 'action' is in the returned data)
-            if (data.action === 'require_otp') {
+            // Check if backend requests OTP
+            if (data.action === 'require_otp' || (data.user?.mfa_enabled && !data.access_token)) {
                 setShowOTP(true);
-                setTempUserId(data.temp_user_id);
+                setTempUserId(data.temp_user_id || data.user?.id);
+            } else if (data.user?.must_change_password) {
+                navigate('/admin/settings/profile?tab=security');
             } else {
                 handleLoginSuccess();
             }
@@ -68,8 +70,7 @@ const Login = () => {
 
     if (showOTP) {
         return (
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-md animate-in fade-in zoom-in duration-300">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-md animate-in fade-in zoom-in duration-300 mx-4 shadow-xl">
                     <div className="text-center mb-8">
                         <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-400">
                             <ShieldCheck size={32} />
@@ -111,15 +112,13 @@ const Login = () => {
                         <button onClick={() => setShowOTP(false)} className="text-sm text-slate-400 hover:text-white transition-colors">
                             Back to login
                         </button>
-                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-md animate-in fade-in zoom-in duration-300">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-md animate-in fade-in zoom-in duration-300 mx-4 shadow-xl">
                 <div className="text-center mb-8">
                     <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-400">
                         <Lock size={32} />
@@ -196,9 +195,8 @@ const Login = () => {
                     <Link to="/register" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">Create one now</Link>
                 </div>
             </div>
-        </div>
-    );
-};
-
-export default Login;
+        );
+    };
+    
+    export default Login;
 

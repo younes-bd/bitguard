@@ -3,7 +3,7 @@ import {
     Clock, Search, Filter, Plus, FileSpreadsheet, 
     CheckCircle2, AlertCircle, ChevronDown, Calendar
 } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
+import projectsService from '../../api/projectsService';
 import { toast } from 'react-hot-toast';
 
 export default function TimesheetList() {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GanttChart, Calendar, ChevronLeft, ChevronRight, Layers, Loader2 } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
+import projectsService from '../../api/projectsService';
 import { toast } from 'react-hot-toast';
 
 export default function GanttView() {

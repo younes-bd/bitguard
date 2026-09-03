@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid, LayoutDashboard, Users, PieChart, Layers, ShieldCheck, LifeBuoy, Package, BookOpen } from 'lucide-react';
-import { adminSections } from '../../../api/menu';
+import { Grid, LayoutDashboard } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+import { settingsService } from '../../../../apps/system/api/settingsService';
 
 export default function AppSwitcher() {
     const [isOpen, setIsOpen] = useState(false);
+    const [apps, setApps] = useState([]);
     const dropdownRef = useRef(null);
 
-    // Close on click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -18,8 +19,14 @@ export default function AppSwitcher() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Get all top-level items from adminSections for the grid
-    const allApps = adminSections.flatMap(section => section.items);
+    useEffect(() => {
+        if (isOpen && apps.length === 0) {
+            settingsService.getModules().then(res => {
+                const modules = Array.isArray(res) ? res : res.results || [];
+                setApps(modules.filter(m => m.is_installed));
+            }).catch(console.error);
+        }
+    }, [isOpen]);
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -41,12 +48,13 @@ export default function AppSwitcher() {
                     </div>
                     
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                        {allApps.map((app, index) => {
-                            const Icon = app.icon || LayoutDashboard;
+                        {apps.map((app, index) => {
+                            const Icon = LucideIcons[app.icon] || LayoutDashboard;
+                            const path = app.technical_name === 'board' ? '/admin/board' : `/admin/${app.technical_name}`;
                             return (
                                 <Link
                                     key={index}
-                                    to={app.path}
+                                    to={path}
                                     onClick={() => setIsOpen(false)}
                                     className="flex flex-col items-center justify-center p-3 rounded-xl hover:bg-slate-800 transition-colors group text-center"
                                 >
@@ -54,11 +62,12 @@ export default function AppSwitcher() {
                                         <Icon size={24} strokeWidth={1.5} />
                                     </div>
                                     <span className="text-[11px] font-medium text-slate-300 group-hover:text-white leading-tight line-clamp-2">
-                                        {app.label}
+                                        {app.name}
                                     </span>
                                 </Link>
                             );
                         })}
+                        {apps.length === 0 && <div className="col-span-full text-center text-slate-500 py-4">Loading apps...</div>}
                     </div>
                 </div>
             )}

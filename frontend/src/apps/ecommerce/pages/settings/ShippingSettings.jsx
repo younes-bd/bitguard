@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Truck, Search, Loader2, Edit2, Trash2 } from 'lucide-react';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import { ecommerceService } from '../../api/ecommerceService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const SHIPPING_FIELDS = [

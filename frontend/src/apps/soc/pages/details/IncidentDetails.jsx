@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import securityService from '../../../../core/api/securityService';
+import securityService from '../../api/securityService';
 import {
     ShieldCheckIcon,
     ExclamationTriangleIcon,
@@ -10,7 +10,7 @@ import {
     ArrowLeftIcon,
     ArrowDownTrayIcon as DownloadIcon
 } from '@heroicons/react/24/outline';
-import reportingService from '../../../../core/api/reportingService';
+import reportingService from '@/apps/reporting/api/reportingService';
 
 const IncidentDetails = () => {
     const { id } = useParams();

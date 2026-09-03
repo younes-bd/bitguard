@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from ..domain.models import User, Role, UserProfile, SecurityPolicy, RolePermission, RecordRule
+from ..domain.models import User, Role, SecurityPolicy, RolePermission, RecordRule
 from django.contrib.contenttypes.models import ContentType
+from apps.core.domain.models import Partner
 
 class RoleSerializer(serializers.ModelSerializer):
     user_count = serializers.IntegerField(read_only=True, required=False)
@@ -9,6 +10,7 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ['id', 'name', 'description', 'parent', 'permissions', 'user_count', 'permissions_count']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
     def get_permissions_count(self, obj):
         return len(obj.permissions) if isinstance(obj.permissions, list) else 0
@@ -20,6 +22,7 @@ class RolePermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RolePermission
         fields = ['id', 'role', 'content_type', 'model_name', 'app_label', 'can_read', 'can_write', 'can_create', 'can_delete']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class ContentTypeSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()
@@ -27,24 +30,30 @@ class ContentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContentType
         fields = ['id', 'app_label', 'model', 'label']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
         
     def get_label(self, obj):
         return obj.model.replace('_', ' ').title()
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class PartnerProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserProfile
-        fields = ['id', 'bio', 'date_of_birth', 'gender', 'city', 'country', 'language']
+        model = Partner
+        fields = ['id', 'name', 'bio', 'date_of_birth', 'gender', 'city', 'country', 'language', 'image', 'phone', 'address']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = UserProfileSerializer(read_only=True)
+    partner = PartnerProfileSerializer(read_only=True)
     roles = RoleSerializer(many=True, read_only=True)
     tenant_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     contact_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     role_ids = serializers.ListField(child=serializers.UUIDField(), write_only=True, required=False)
+    manager_name = serializers.SerializerMethodField()
     memberships = serializers.SerializerMethodField()
+    tenants = serializers.SerializerMethodField()
     tenant = serializers.SerializerMethodField()
+    avatar = serializers.ImageField(source='partner.image', read_only=True)
+    phone_number = serializers.CharField(source='partner.phone', read_only=True)
 
     class Meta:
         model = User
@@ -52,13 +61,22 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'username', 'first_name', 'last_name', 
             'phone_number', 'is_verified', 'is_active', 'is_staff', 'is_superuser',
             'mfa_enabled', 'is_locked', 'last_login_ip',
-            'tenant', 'tenant_id', 'contact_id', 'roles', 'role_ids', 'profile', 'date_joined', 'memberships'
+            'tenant', 'tenant_id', 'contact_id', 'roles', 'role_ids', 'partner', 'date_joined', 'memberships', 'tenants',
+            'user_type', 'must_change_password', 'manager', 'manager_name', 'avatar'
         ]
-        read_only_fields = ['id', 'date_joined', 'tenant', 'mfa_enabled', 'is_locked', 'last_login_ip', 'memberships']
+        read_only_fields = ['id', 'date_joined', 'tenant', 'mfa_enabled', 'is_locked', 'last_login_ip', 'memberships', 'tenants', 'manager_name']
+
+    def get_tenants(self, obj):
+        return self.get_memberships(obj)
+
+    def get_manager_name(self, obj):
+        if obj.manager:
+            return f"{obj.manager.first_name} {obj.manager.last_name}".strip() or obj.manager.email
+        return None
 
     def get_memberships(self, obj):
-        from apps.users.models import TenantMembership
-        from apps.tenants.models import Tenant
+        from apps.users.domain.models import TenantMembership
+        from apps.tenants.domain.models import Tenant
         request = self.context.get('request')
         if getattr(obj, 'is_superuser', False):
             tenants = Tenant.objects.all()
@@ -101,12 +119,17 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         role_ids = validated_data.pop('role_ids', [])
         tenant_id = validated_data.pop('tenant_id', None)
+        tenant_obj = validated_data.pop('tenant', None)
         contact_id = validated_data.pop('contact_id', None)
         
-        if tenant_id:
-            validated_data['tenant_id'] = tenant_id
-            
+        # Extract phone and avatar from initial_data if provided by frontend
+        phone_val = self.initial_data.get('phone_number', '')
+        
         user = User.objects.create_user(**validated_data)
+        
+        if tenant_obj:
+            from apps.users.domain.models import TenantMembership
+            TenantMembership.objects.create(user=user, tenant=tenant_obj)
         
         if role_ids:
             roles = Role.objects.filter(id__in=role_ids)
@@ -116,16 +139,20 @@ class UserSerializer(serializers.ModelSerializer):
             from apps.crm.domain.models import Contact
             Contact.objects.filter(id=contact_id).update(user=user)
             
-        UserProfile.objects.create(user=user)
+        partner = Partner.objects.create(
+            name=f"{user.first_name} {user.last_name}".strip() or user.username,
+            email=user.email,
+            phone=phone_val
+        )
+        user.partner = partner
+        user.save()
         return user
 
     def update(self, instance, validated_data):
         role_ids = validated_data.pop('role_ids', None)
         tenant_id = validated_data.pop('tenant_id', None)
+        tenant_obj = validated_data.pop('tenant', None)
         contact_id = validated_data.pop('contact_id', None)
-        
-        if tenant_id is not None:
-            instance.tenant_id = tenant_id
             
         if role_ids is not None:
             roles = Role.objects.filter(id__in=role_ids)
@@ -147,7 +174,8 @@ class PasswordChangeSerializer(serializers.Serializer):
 class SecurityPolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = SecurityPolicy
-        fields = '__all__'
+        fields = ['id', 'tenant', 'password_complexity', 'session_timeout', 'mfa_required', 'api_key_rotation', 'ip_whitelist', 'failed_login_lock', 'lock_duration', 'concurrent_sessions']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class RecordRuleSerializer(serializers.ModelSerializer):
     role_name = serializers.CharField(source='role.name', read_only=True)
@@ -160,3 +188,5 @@ class RecordRuleSerializer(serializers.ModelSerializer):
         model = RecordRule
         fields = ['id', 'name', 'role', 'role_name', 'content_type', 'model_label', 
                   'domain_filter', 'is_global', 'created_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+

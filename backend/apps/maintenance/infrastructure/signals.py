@@ -13,7 +13,7 @@ def provision_assets_from_order(sender, instance, created, **kwargs):
         from apps.crm.domain.models import Contact
         
         # Identify CRM client
-        contact = Contact.objects.filter(email=instance.customer.user.email).first() if instance.customer else None
+        contact = Contact.objects.filter(email=instance.user.email).first() if instance.user else None
         client = contact.client if contact else None
 
         for item in instance.items.all():

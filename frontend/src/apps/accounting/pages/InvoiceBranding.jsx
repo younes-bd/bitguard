@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Palette, Save, Image as ImageIcon, Banknote, Globe } from 'lucide-react';
-import api from '../../../core/api/client';
+import { accountingService } from '../api/accountingService';
 import toast from 'react-hot-toast';
 
 const InvoiceBranding = () => {
@@ -16,8 +16,7 @@ const InvoiceBranding = () => {
     useEffect(() => {
         const fetchBranding = async () => {
             try {
-                const res = await api.get('/accounting/invoice-branding/');
-                const data = res.data.data || res.data;
+                const data = await accountingService.getInvoiceBrandings();
                 if (data && data.length > 0) {
                     setBranding(data[0]);
                 }
@@ -34,10 +33,10 @@ const InvoiceBranding = () => {
         setSaving(true);
         try {
             if (branding.id) {
-                await api.put(`/accounting/invoice-branding/${branding.id}/`, branding);
+                await accountingService.updateInvoiceBranding(branding.id, branding);
             } else {
-                const res = await api.post('/accounting/invoice-branding/', branding);
-                setBranding(res.data.data || res.data);
+                const data = await accountingService.createInvoiceBranding(branding);
+                setBranding(data);
             }
             toast.success("Branding settings saved successfully");
         } catch (err) {

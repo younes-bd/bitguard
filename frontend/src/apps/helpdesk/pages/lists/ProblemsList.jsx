@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
     AlertCircle, Search, Filter, Plus, ChevronRight, 
     User, Calendar, CheckCircle, XCircle, Activity,
     FileText, Zap, HelpCircle, Loader2
 } from 'lucide-react';
-import serviceService from '../../../../core/api/serviceService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import serviceService from '../../../field-service/api/serviceService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 import { toast } from 'react-hot-toast';
 
 export default function ProblemsList() {

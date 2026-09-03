@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from '../../../../core/components/shared/views/DataTable';
-import { erpService } from '../../../../core/api/erpService';
+import DataTable from '@/core/components/shared/views/DataTable';
+import { accountingService } from '../../api/accountingService';
 import { Percent } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -15,7 +15,7 @@ export default function TaxList() {
   const fetchTaxes = async () => {
     try {
       setLoading(true);
-      const res = await erpService.getTaxesV2();
+      const res = await accountingService.getTaxesV2();
       setTaxes(res.results || res || []);
     } catch (err) {
       toast.error('Failed to fetch taxes');

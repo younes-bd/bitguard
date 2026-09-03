@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Search, Plus, AlertTriangle, Package, ArrowUpDown, Edit2, Trash2 } from 'lucide-react';
-import { inventoryService } from '../../../../core/api/inventoryService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import { inventoryService } from '../../api/inventoryService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const stockBadge = (qty, reorderLevel = 10) => {
@@ -141,7 +141,7 @@ const InventoryList = () => {
                                     <p className="text-white font-medium">{item.name}</p>
                                     <p className="text-slate-500 text-xs font-mono">{item.sku}</p>
                                 </td>
-                                <td className="px-5 py-4 text-slate-300">{item.category ?? 'â€”'}</td>
+                                <td className="px-5 py-4 text-slate-300">{item.category ?? 'Ã¢â‚¬â€'}</td>
                                 <td className="px-5 py-4 text-slate-200 font-mono">{item.quantity_on_hand ?? 0}</td>
                                 <td className="px-5 py-4 text-slate-400 font-mono">{item.reorder_level ?? 10}</td>
                                 <td className="px-5 py-4 text-slate-300">${Number(item.unit_price ?? 0).toFixed(2)}</td>
@@ -202,7 +202,7 @@ const InventoryList = () => {
                                 <h2 className="text-xl font-bold text-white">Adjust Stock</h2>
                                 <p className="text-slate-400 text-sm mt-1">{adjustingItem?.name} ({adjustingItem?.sku})</p>
                             </div>
-                            <button onClick={() => setIsAdjustModalOpen(false)} className="text-slate-400 hover:text-white">âœ•</button>
+                            <button onClick={() => setIsAdjustModalOpen(false)} className="text-slate-400 hover:text-white">Ã¢Å“â€¢</button>
                         </div>
                         <form onSubmit={handleAdjustStock} className="p-6 space-y-4">
                             <div>

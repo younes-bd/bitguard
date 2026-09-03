@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layers, Plus, Trash2, Edit, Loader2 } from 'lucide-react';
-import helpdeskService from '../../../../core/api/helpdeskService';
+import helpdeskService from '../../api/helpdeskService';
 
 const HelpdeskStages = () => {
     const [stages, setStages] = useState([]);

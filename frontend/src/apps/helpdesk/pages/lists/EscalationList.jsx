@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { AlertOctagon, Clock, User, ArrowUpCircle, CheckCircle, UserPlus, Loader2 } from 'lucide-react';
-import helpdeskService from '../../../../core/api/helpdeskService';
-import { iamService } from '../../../../core/api/iamService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import helpdeskService from '../../api/helpdeskService';
+import { usersService } from '../../../users/api/usersService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 
 const priorityBadge = (priority) => {
     const map = {
@@ -35,7 +35,7 @@ const EscalationList = () => {
                 setEscalations(Array.isArray(data) ? data : data.results || []);
                 
                 // Fetch users for assignment
-                const usersData = await iamService.getUsers();
+                const usersData = await usersService.getUsers();
                 setUsers(Array.isArray(usersData) ? usersData : usersData.results || []);
             } catch (error) {
                 console.error("Fetch Escalations Error:", error);
@@ -112,12 +112,12 @@ const EscalationList = () => {
                                 <div>
                                     <div className="text-white font-semibold">{esc.subject}</div>
                                     <div className="flex items-center gap-4 mt-1.5">
-                                        <span className="text-slate-400 text-xs">{esc.client ?? '—'}</span>
+                                        <span className="text-slate-400 text-xs">{esc.client ?? 'â€”'}</span>
                                         <span className="flex items-center gap-1 text-slate-500 text-xs">
                                             <User size={10} /> {esc.assigned_to ?? 'Unassigned'}
                                         </span>
                                         <span className="flex items-center gap-1 text-slate-500 text-xs">
-                                            <Clock size={10} /> {esc.created_at?.split('T')[0] ?? '—'}
+                                            <Clock size={10} /> {esc.created_at?.split('T')[0] ?? 'â€”'}
                                         </span>
                                     </div>
                                 </div>

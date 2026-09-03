@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -20,7 +21,7 @@ MOCK_INTEGRATIONS = [
     { 'name': 'Slack', 'description': 'Team notifications for campaign events', 'connected': True, 'icon': '💬' },
 ]
 
-class IntegrationViewSet(viewsets.ViewSet):
+class IntegrationViewSet(TenantScopedMixin, viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
@@ -33,7 +34,7 @@ class IntegrationViewSet(viewsets.ViewSet):
             return Response({'error': 'name required'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'status': 'success', 'is_connected': True})
 
-class CampaignViewSet(viewsets.ModelViewSet):
+class CampaignViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Standard CRUD viewset for Marketing Campaigns bounded by Tenant.
     """
@@ -137,27 +138,27 @@ class MarketingDashboardView(APIView):
 from ..domain.models import MassMailing, SocialPost, SMSCampaign, Event, Survey
 from .serializers import MassMailingSerializer, SocialPostSerializer, SMSCampaignSerializer, EventSerializer, SurveySerializer
 
-class MassMailingViewSet(viewsets.ModelViewSet):
+class MassMailingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = MassMailingSerializer
     def get_queryset(self): return MassMailing.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else MassMailing.objects.all()
 
-class SocialPostViewSet(viewsets.ModelViewSet):
+class SocialPostViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SocialPostSerializer
     def get_queryset(self): return SocialPost.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else SocialPost.objects.all()
 
-class SMSCampaignViewSet(viewsets.ModelViewSet):
+class SMSCampaignViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SMSCampaignSerializer
     def get_queryset(self): return SMSCampaign.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else SMSCampaign.objects.all()
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = EventSerializer
     def get_queryset(self): return Event.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else Event.objects.all()
 
-class SurveyViewSet(viewsets.ModelViewSet):
+class SurveyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SurveySerializer
     def get_queryset(self): return Survey.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else Survey.objects.all()

@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -7,7 +8,7 @@ from ..api.serializers import NotificationSerializer
 
 from ..application.services import NotificationService
 
-class NotificationViewSet(viewsets.ModelViewSet):
+class NotificationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
 

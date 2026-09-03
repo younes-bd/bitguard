@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Search, Filter, TrendingUp, AlertCircle, Clock, CheckCircle2, MoreVertical, LayoutGrid, Calendar, ChevronRight } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
-import { iamService } from '../../../../core/api/iamService';
+import projectsService from '../../api/projectsService';
+import { usersService } from '../../../users/api/usersService';
 import { toast } from 'react-hot-toast';
 
 const ResourceManagement = () => {
@@ -12,7 +12,7 @@ const ResourceManagement = () => {
     const loadData = async () => {
         try {
             // Fetch all users and then map their tasks
-            const users = await iamService.getUsers();
+            const users = await usersService.getUsers();
             const allTasks = await projectsService.getTasks();
             
             const resourceData = users.map(user => {

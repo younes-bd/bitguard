@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Sparkles, TrendingUp, Activity, FileText } from 'lucide-react';
-import rentalService from '../../../../core/api/rentalService';
+import rentalService from '../../api/rentalService';
 
 const RentalDashboard = () => {
   const [orders, setOrders] = useState([]);

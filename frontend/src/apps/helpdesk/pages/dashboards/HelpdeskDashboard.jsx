@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import helpdeskService from '../../../../core/api/helpdeskService';
+import helpdeskService from '../../api/helpdeskService';
 import { toast } from 'react-hot-toast';
 import { 
   AlertTriangle, CheckCircle2, Clock, 
   LifeBuoy, Search, Filter, Plus, User, FileText,
   LayoutGrid, List as ListIcon
 } from 'lucide-react';
-import KanbanBoard from '../../../../core/components/shared/views/KanbanBoard';
-import DataTable from '../../../../core/components/shared/views/DataTable';
+import KanbanBoard from '@/core/components/shared/views/KanbanBoard';
+import DataTable from '@/core/components/shared/views/DataTable';
 
 export default function HelpdeskDashboard() {
   const navigate = useNavigate();

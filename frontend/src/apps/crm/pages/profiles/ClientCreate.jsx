@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { crmService } from '../../../../core/api/crmService';
+import { crmService } from '../../api/crmService';
 import {
     Users, Briefcase, MapPin, Mail, Phone, Globe, Save, X
 } from 'lucide-react';

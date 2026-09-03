@@ -5,7 +5,7 @@ import {
     CheckCircle2, Clock, AlertCircle, ArrowLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { Download } from 'lucide-react';
 
 const DeliveryNoteList = () => {
@@ -16,7 +16,7 @@ const DeliveryNoteList = () => {
     useEffect(() => {
         const fetchNotes = async () => {
             try {
-                const data = await erpService.getDeliveryNotes();
+                const data = await accountingService.getDeliveryNotes();
                 setNotes(data || []);
             } catch (err) {
                 console.error("Failed to load delivery notes", err);
@@ -162,7 +162,7 @@ const DeliveryNoteList = () => {
                                         <button 
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                erpService.downloadDeliveryNote(note.id).catch(() => alert('Failed to download PDF'));
+                                                accountingService.downloadDeliveryNote(note.id).catch(() => alert('Failed to download PDF'));
                                             }}
                                             className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                                             title="Download PDF"

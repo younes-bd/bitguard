@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, Tag, DollarSign, Clock, CheckCircle, ChevronRight, Search } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 
 const categoryColors = {
     'Managed IT': 'bg-blue-500/10 text-blue-400', 'Cybersecurity': 'bg-red-500/10 text-red-400',
@@ -34,7 +34,7 @@ const ServiceCatalog = () => {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-white tracking-wider uppercase">Service Catalog</h1>
-                    <p className="text-slate-400 text-sm mt-0.5">{services.length} services — formally defined and priced</p>
+                    <p className="text-slate-400 text-sm mt-0.5">{services.length} services â€” formally defined and priced</p>
                 </div>
                 <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                     <Plus size={16} /> Add Service

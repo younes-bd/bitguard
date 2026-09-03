@@ -1,0 +1,13 @@
+{'name': 'Payments',
+    'technical_name': 'payments',
+    'version': '1.0.0',
+    'category': 'Accounting',
+    'author': 'BitGuard',
+    'summary': 'Core integration module for Payments.',
+    'depends': ['system'],
+    'installable': True,
+    'application': False,
+    'has_settings': True,
+    'ui_paradigm': 'Headless Integration (Background Service/API Sync)',
+    'navigation_path': 'Command Center -> Settings -> Integrations',
+    'sequence': 99}

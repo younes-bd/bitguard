@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import { ecommerceService } from '../../api/ecommerceService';
 import { ShieldCheck, Lock, CheckCircle2, ChevronRight, Truck, MapPin, CreditCard } from 'lucide-react';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';

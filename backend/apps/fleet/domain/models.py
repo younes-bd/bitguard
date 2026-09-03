@@ -2,8 +2,27 @@ from django.db import models
 from apps.core.domain.models import TenantAwareModel
 from django.conf import settings
 
+class VehicleBrand(TenantAwareModel):
+    name = models.CharField(max_length=100, unique=True)
+    country = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        app_label = 'fleet'
+        verbose_name = 'Vehicle Brand'
+
+class VehicleModel(TenantAwareModel):
+    brand = models.ForeignKey(VehicleBrand, on_delete=models.CASCADE, related_name='models')
+    name = models.CharField(max_length=100)
+    vehicle_type = models.CharField(max_length=50, default='car')
+
+    class Meta:
+        app_label = 'fleet'
+        verbose_name = 'Vehicle Model'
+
 class Vehicle(TenantAwareModel):
     name = models.CharField(max_length=255, default='')
+    brand = models.ForeignKey(VehicleBrand, on_delete=models.SET_NULL, null=True, blank=True)
+    model = models.ForeignKey(VehicleModel, on_delete=models.SET_NULL, null=True, blank=True)
     license_plate = models.CharField(max_length=50, default='')
     driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='driven_vehicles')
     state = models.CharField(max_length=20, choices=[('active', 'Active'), ('in_repair', 'In Repair'), ('retired', 'Retired')], default='active')

@@ -1,0 +1,16 @@
+{'name': 'Product',
+    'version': '1.0',
+    'category': 'Inventory',
+    'summary': 'The master product catalog. Accessed via *Sales > Products* or *Inventory > Products*, never as a '
+               'standalone app.',
+    'description': 'BitGuard Product module.',
+    'depends': ['core'],
+    'url': '/admin/product',
+    'installable': True,
+    'application': False,
+    'featured': False,
+    'display_name': 'Product',
+    'sequence': 99,
+    'has_settings': False,
+    'ui_paradigm': 'Hidden UI (Has React Components, but no Command Center Tile)',
+    'navigation_path': 'Embedded UI (Typically accessed via Settings or a parent application)'}

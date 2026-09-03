@@ -6,11 +6,13 @@ class DocumentWorkspaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = DocumentWorkspace
         fields = ['id', 'name', 'description', 'parent', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['id', 'name', 'color', 'workspace']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class DocumentVersionSerializer(serializers.ModelSerializer):
     attachment = AttachmentSerializer(read_only=True)
@@ -19,6 +21,7 @@ class DocumentVersionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DocumentVersion
         fields = ['id', 'document', 'attachment', 'version_number', 'created_by', 'created_by_name', 'notes', 'created_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class DocumentSerializer(serializers.ModelSerializer):
     attachment = AttachmentSerializer(read_only=True)
@@ -44,6 +47,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             'is_archived', 'is_locked', 'ocr_text', 'created_at', 'updated_at',
             'versions', 'source_module', 'source_id', 'expiry_date'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 from apps.documents.domain.models import SpreadsheetDocument
 
@@ -51,3 +55,5 @@ class SpreadsheetDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpreadsheetDocument
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

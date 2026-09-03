@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Activity, Clock, AlertTriangle, CheckCircle, Eye, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 import toast from 'react-hot-toast';
 
 const formatCountdown = (ms) => {
@@ -40,7 +40,7 @@ export default function SlaLiveDashboard() {
         try {
             const [ticketsRes, slaRes] = await Promise.all([
                 client.get('support/tickets/', { params: { status: 'open', limit: 200 } }),
-                client.get('contracts/sla-tiers/').catch(() => ({ data: [] }))
+                client.get('sign/sla-tiers/').catch(() => ({ data: [] }))
             ]);
             setTickets(ticketsRes.data?.results || ticketsRes.data || []);
             setSlaTiers(slaRes.data?.results || slaRes.data || []);
@@ -198,4 +198,5 @@ export default function SlaLiveDashboard() {
         </div>
     );
 }
+
 

@@ -13,3 +13,11 @@ router.register(r'tags', HelpdeskTagViewSet, basename='helpdesktag')
 router.register(r'sla-policies', SlaPolicyViewSet, basename='slapolicy')
 
 urlpatterns = router.urls
+
+from django.urls import path
+from .views import SupportReportView, ExportSupportCSV
+
+urlpatterns += [
+    path('report/metrics/', SupportReportView.as_view(), name='helpdesk-metrics-report'),
+    path('report/export/', ExportSupportCSV.as_view(), name='helpdesk-export-csv'),
+]

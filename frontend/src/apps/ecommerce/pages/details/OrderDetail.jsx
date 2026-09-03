@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Package, Truck, CreditCard, ChevronLeft, Calendar, FileText, CheckCircle2, Clock } from 'lucide-react';
 
@@ -151,7 +151,7 @@ export default function OrderDetail() {
                             <button 
                                 onClick={async () => {
                                     try {
-                                        const { default: reportingService } = await import('../../../../core/api/reportingService');
+                                        const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
                                         // The order id could be numeric or a string depending on how it was fetched. 
                                         const res = await reportingService.generateReport(null, 'store.Order', order.id);
                                         if (res && res.file) {
@@ -193,3 +193,4 @@ export default function OrderDetail() {
         </div>
     );
 }
+

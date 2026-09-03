@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Monitor, ArrowLeft, Clock, AlertTriangle, CheckCircle, Wrench, Archive, Download } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 import toast from 'react-hot-toast';
 
 export default function AssetDetail() {
@@ -14,13 +14,14 @@ export default function AssetDetail() {
 
     useEffect(() => {
         Promise.all([
-            client.get(`assets/maintenance/${id}/`),
-            client.get(`assets/maintenance/${id}/history/`).catch(() => ({ data: [] })),
+            client.get(`maintenance/maintenance/${id}/`),
+            client.get(`maintenance/maintenance/${id}/history/`).catch(() => ({ data: [] })),
         ]).then(([assetRes, histRes]) => {
             setAsset(assetRes.data);
             setHistory(histRes.data?.results || histRes.data || []);
-        }).catch(() => toast.error('Failed to load asset')).finally(() => setLoading(false));
-    }, [id]);
+            setLoading(false);
+        }).catch(() => { toast.error('Asset not found'); navigate('/admin/maintenance'); });
+    }, [id, navigate]);
 
     const handleAction = async (action) => {
         const messages = { decommission: 'Decommission this asset? This cannot be undone.', repair: 'Send this asset for repair?' };
@@ -28,7 +29,7 @@ export default function AssetDetail() {
         setActionLoading(true);
         try {
             const status = action === 'decommission' ? 'decommissioned' : 'in_repair';
-            await client.patch(`assets/maintenance/${id}/`, { status });
+            await client.patch(`maintenance/maintenance/${id}/`, { status });
             toast.success(`Asset ${action === 'decommission' ? 'decommissioned' : 'sent for repair'}`);
             setAsset(prev => ({ ...prev, status }));
         } catch { toast.error('Action failed'); }
@@ -75,7 +76,7 @@ export default function AssetDetail() {
                     <button 
                         onClick={async () => {
                             try {
-                                const { default: reportingService } = await import('../../../../core/api/reportingService');
+                                const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
                                 const res = await reportingService.generateReport(null, 'maintenance.Asset', asset.id);
                                 if (res && res.file) window.open(res.file, '_blank');
                             } catch (e) { toast.error("Failed to download PDF"); }
@@ -140,7 +141,7 @@ export default function AssetDetail() {
                                     </div>
                                     <div>
                                         <p className="text-slate-200 text-sm font-medium">{h.action || 'Assigned'}</p>
-                                        <p className="text-slate-500 text-xs">{h.user || h.assigned_to} Â· {h.date || h.created_at}</p>
+                                        <p className="text-slate-500 text-xs">{h.user || h.assigned_to} Ã‚Â· {h.date || h.created_at}</p>
                                     </div>
                                 </div>
                             ))}

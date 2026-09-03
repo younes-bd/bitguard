@@ -39,23 +39,28 @@ class KnowledgeArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = KnowledgeArticle
         fields = ['id', 'title', 'slug', 'author', 'status', 'category', 'content', 'views', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class HelpdeskTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpdeskTeam
-        fields = '__all__'
+        fields = ['id', 'name', 'leader', 'members', 'alias_email', 'use_sla']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class HelpdeskStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpdeskStage
-        fields = '__all__'
+        fields = ['id', 'name', 'sequence', 'team', 'is_closed', 'fold', 'color']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class HelpdeskTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpdeskTag
-        fields = '__all__'
+        fields = ['id', 'name', 'color']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class SlaPolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = SlaPolicy
-        fields = '__all__'
+        fields = ['id', 'name', 'team', 'priority', 'ticket_type', 'target_type', 'target_hours']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

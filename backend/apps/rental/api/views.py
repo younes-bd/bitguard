@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,7 +11,7 @@ class StandardPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 200
 
-class RentalOrderViewSet(viewsets.ModelViewSet):
+class RentalOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RentalOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -34,7 +35,7 @@ class RentalOrderViewSet(viewsets.ModelViewSet):
             is_rental_order=True
         )
 
-class RentalOrderLineViewSet(viewsets.ModelViewSet):
+class RentalOrderLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RentalOrderLineSerializer
     permission_classes = [permissions.IsAuthenticated]
 

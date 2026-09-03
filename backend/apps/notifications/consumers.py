@@ -19,7 +19,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.user_group, self.channel_name)
         await self.accept()
         # Send unread count on connect
-        await self.send(json.dumps({'type': 'connected', 'user_id': user.id}))
+        await self.send(json.dumps({'type': 'connected', 'user_id': str(user.id)}))
 
     async def disconnect(self, close_code):
         if hasattr(self, 'user_group'):

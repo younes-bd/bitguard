@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Clock, CheckCircle, AlertCircle, ChevronRight, Sparkles } from 'lucide-react';
-import helpdeskService from '../../../../core/api/helpdeskService';
+import helpdeskService from '../../api/helpdeskService';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 

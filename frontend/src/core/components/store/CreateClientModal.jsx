@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
-import { ecommerceService } from '../../api/ecommerceService';
+import { ecommerceService } from '../../../apps/ecommerce/api/ecommerceService';
 
 const CreateClientModal = ({ onClose, onSave, loading, initialData = null }) => {
     const defaultState = {

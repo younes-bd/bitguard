@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
-import reportingService from '../../../../core/api/reportingService';
+import { accountingService } from '../../api/accountingService';
+import reportingService from '@/apps/reporting/api/reportingService';
 import {
     ArrowLeft, Printer, Download, Mail,
     CheckCircle, AlertCircle, Clock, FileCheck, RefreshCcw, Link, DollarSign, FileText, X
 } from 'lucide-react';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 
 const InvoiceDetail = () => {
     const { id } = useParams();
@@ -17,10 +18,41 @@ const InvoiceDetail = () => {
     const [templates, setTemplates] = useState([]);
     const [showTemplateModal, setShowTemplateModal] = useState(false);
     const [generatingReport, setGeneratingReport] = useState(false);
+    
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+    const PAYMENT_FIELDS = [
+        { name: 'amount', label: 'Amount', type: 'number', required: true },
+        { name: 'date', label: 'Payment Date', type: 'date', required: true },
+        { name: 'method', label: 'Method', type: 'select', options: [
+            { value: 'bank_transfer', label: 'Bank Transfer' },
+            { value: 'credit_card', label: 'Credit Card' },
+            { value: 'cash', label: 'Cash' },
+            { value: 'check', label: 'Check' }
+        ], required: true },
+        { name: 'reference', label: 'Reference / Transaction ID' },
+    ];
+
+    const handleRecordPayment = async (data) => {
+        setActionLoading(true);
+        try {
+            await accountingService.createPayment({
+                ...data,
+                invoice: invoice.id,
+            });
+            setShowPaymentModal(false);
+            fetchInvoice();
+        } catch (error) {
+            console.error(error);
+            alert("Failed to record payment");
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     const fetchInvoice = async () => {
         try {
-            const data = await erpService.getInvoice(id);
+            const data = await accountingService.getInvoice(id);
             setInvoice(data);
         } catch (error) {
             console.error("Failed to load invoice", error);
@@ -38,7 +70,7 @@ const InvoiceDetail = () => {
         
         setActionLoading(true);
         try {
-            await erpService.updateInvoice(id, { type: 'standard', status: 'sent' });
+            await accountingService.updateInvoice(id, { type: 'standard', status: 'sent' });
             await fetchInvoice();
         } catch (error) {
             console.error("Conversion failed", error);
@@ -133,9 +165,7 @@ const InvoiceDetail = () => {
                 <div className="flex flex-wrap gap-2">
                     {invoice.status !== 'paid' && invoice.status !== 'void' && invoice.type !== 'proforma' && (
                         <button 
-                            onClick={() => {
-                                alert("Open record payment modal/page");
-                            }}
+                            onClick={() => setShowPaymentModal(true)}
                             className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-all shadow-lg shadow-emerald-500/20 font-medium"
                         >
                             <DollarSign size={18} />
@@ -167,7 +197,7 @@ const InvoiceDetail = () => {
                         onClick={async () => {
                             setActionLoading(true);
                             try {
-                                await erpService.downloadInvoice(id);
+                                await accountingService.downloadInvoice(id);
                             } catch (e) {
                                 alert("Failed to download PDF.");
                             } finally {
@@ -196,7 +226,7 @@ const InvoiceDetail = () => {
                         onClick={async () => {
                             setActionLoading(true);
                             try {
-                                await erpService.sendInvoiceToClient(id);
+                                await accountingService.sendInvoiceToClient(id);
                                 alert("Invoice dispatched successfully!");
                             } catch (e) {
                                 alert("Failed to dispatch invoice.");
@@ -343,7 +373,7 @@ const InvoiceDetail = () => {
                                                 <button 
                                                     onClick={async () => {
                                                         try {
-                                                            const { default: reportingService } = await import('../../../../core/api/reportingService');
+                                                            const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
                                                             const res = await reportingService.generateReport(null, 'accounting.Payment', p.id);
                                                             if (res && res.file) {
                                                                 window.open(res.file, '_blank');
@@ -442,6 +472,16 @@ const InvoiceDetail = () => {
                     </div>
                 </div>
             )}
+
+            <GenericModal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                title="Record Payment"
+                fields={PAYMENT_FIELDS}
+                initialData={{ amount: invoice.balance_due, date: new Date().toISOString().split('T')[0], method: 'bank_transfer' }}
+                onSubmit={handleRecordPayment}
+                loading={actionLoading}
+            />
         </div>
     );
 };
@@ -450,6 +490,7 @@ const CalendarIcon = ({ size, className }) => <svg width={size} height={size} vi
 const ClockIcon = ({ size, className }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
 
 export default InvoiceDetail;
+
 
 
 

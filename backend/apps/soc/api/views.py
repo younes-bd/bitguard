@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 """
 SOC Views — Extended for Security Platform (SIEM/MDR/ITAM product).
 Charter §8: Views orchestrate; services decide.
@@ -28,7 +29,7 @@ from apps.core.permissions import HasRole, IsSuperAdmin
 
 # ─── Internal SOC ViewSets ───────────────────────────────────
 
-class AlertViewSet(viewsets.ModelViewSet):
+class AlertViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsSuperAdmin | HasRole(['SOC_ADMIN', 'SOC_ANALYST'])]
     serializer_class = AlertSerializer
 
@@ -44,7 +45,7 @@ class AlertViewSet(viewsets.ModelViewSet):
         return Response({'status': 'resolved'})
 
 
-class IncidentViewSet(viewsets.ModelViewSet):
+class IncidentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsSuperAdmin | HasRole(['SOC_ADMIN', 'SOC_ANALYST'])]
     serializer_class = IncidentSerializer
 
@@ -66,7 +67,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ThreatIntelligenceViewSet(viewsets.ModelViewSet):
+class ThreatIntelligenceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ThreatIntelligenceSerializer
 
@@ -74,7 +75,7 @@ class ThreatIntelligenceViewSet(viewsets.ModelViewSet):
         return ThreatIntelligenceService.get_queryset(self.request)
 
 
-class LogAnalysisViewSet(viewsets.ModelViewSet):
+class LogAnalysisViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsSuperAdmin | HasRole(['SOC_ADMIN', 'SOC_ANALYST'])]
     serializer_class = LogAnalysisSerializer
 
@@ -84,7 +85,7 @@ class LogAnalysisViewSet(viewsets.ModelViewSet):
 
 # ─── Security Platform ViewSets (Customer-facing) ─────────────
 
-class WorkspaceViewSet(viewsets.ModelViewSet):
+class WorkspaceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """Customer environment groupings (HQ Network, AWS Production, etc.)."""
     permission_classes = [IsAuthenticated]
     serializer_class = WorkspaceSerializer
@@ -96,7 +97,7 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         WorkspaceService.create_workspace(self.request, serializer.validated_data)
 
 
-class ManagedEndpointViewSet(viewsets.ModelViewSet):
+class ManagedEndpointViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """Managed devices — workstations, servers, firewalls."""
     permission_classes = [IsAuthenticated]
     serializer_class = ManagedEndpointSerializer
@@ -115,7 +116,7 @@ class ManagedEndpointViewSet(viewsets.ModelViewSet):
         return Response({'status': 'isolated', 'hostname': endpoint.hostname})
 
 
-class CloudAppViewSet(viewsets.ModelViewSet):
+class CloudAppViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """Cloud applications in the customer's tech stack."""
     permission_classes = [IsAuthenticated]
     serializer_class = CloudAppSerializer
@@ -124,7 +125,7 @@ class CloudAppViewSet(viewsets.ModelViewSet):
         return CloudAppService.get_queryset(self.request)
 
 
-class SystemMonitorViewSet(viewsets.ModelViewSet):
+class SystemMonitorViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """Real-time health metrics per endpoint."""
     permission_classes = [IsAuthenticated]
     serializer_class = SystemMonitorSerializer
@@ -133,7 +134,7 @@ class SystemMonitorViewSet(viewsets.ModelViewSet):
         return SystemMonitorService.get_queryset(self.request)
 
 
-class NetworkEventViewSet(viewsets.ModelViewSet):
+class NetworkEventViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """Network traffic and security events."""
     permission_classes = [IsAuthenticated]
     serializer_class = NetworkEventSerializer
@@ -142,7 +143,7 @@ class NetworkEventViewSet(viewsets.ModelViewSet):
         return NetworkEventService.get_queryset(self.request)
 
 
-class CloudIntegrationViewSet(viewsets.ModelViewSet):
+class CloudIntegrationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """Third-party integrations (Microsoft 365, AWS, Okta, Slack)."""
     permission_classes = [IsAuthenticated]
     serializer_class = CloudIntegrationSerializer
@@ -154,7 +155,7 @@ class CloudIntegrationViewSet(viewsets.ModelViewSet):
         CloudIntegrationService.connect_integration(self.request, serializer.validated_data)
 
 
-class RemoteSessionViewSet(viewsets.ModelViewSet):
+class RemoteSessionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """Auditable remote management sessions to customer endpoints."""
     permission_classes = [IsAuthenticated]
     serializer_class = RemoteSessionSerializer
@@ -174,7 +175,7 @@ class RemoteSessionViewSet(viewsets.ModelViewSet):
         RemoteSessionService.end_session(request, session)
         return Response({'status': 'ended'})
 
-class SecurityStatsViewSet(viewsets.ViewSet):
+class SecurityStatsViewSet(TenantScopedMixin, viewsets.ViewSet):
     """
     Aggregated SOC metrics for the Command Center.
     """
@@ -238,7 +239,7 @@ class EventIngestView(viewsets.views.APIView):
 
         return Response({"status": "created", "incident_id": incident.id}, status=status.HTTP_201_CREATED)
 
-class ComplianceFrameworkViewSet(viewsets.ModelViewSet):
+class ComplianceFrameworkViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ComplianceFrameworkSerializer
 
@@ -248,7 +249,7 @@ class ComplianceFrameworkViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=getattr(self.request.user, 'tenant', None))
 
-class ComplianceControlViewSet(viewsets.ModelViewSet):
+class ComplianceControlViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ComplianceControlSerializer
 
@@ -261,3 +262,45 @@ class ComplianceControlViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+class SecurityReportView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        from apps.soc.domain.models import Alert
+        alerts = Alert.objects.all()
+        if tenant: alerts = alerts.filter(tenant=tenant)
+        open_alerts = alerts.filter(is_resolved=False)
+        critical = open_alerts.filter(severity='critical').count()
+        high = open_alerts.filter(severity='high').count()
+        result = {
+            "open_alerts": open_alerts.count(),
+            "critical": critical,
+            "high": high,
+            "total_alerts": alerts.count(),
+            "threat_score": min((critical * 10) + (high * 5), 100)
+        }
+        return Response({"status": "success", "data": result})
+
+class ExportSecurityCSV(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        import csv
+        from django.http import HttpResponse
+        from apps.soc.domain.models import Alert
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="security_export.csv"'
+        writer = csv.writer(response)
+        tenant = getattr(request, 'tenant', None)
+        writer.writerow(['Severity', 'Count'])
+        alerts = Alert.objects.filter(is_resolved=False)
+        if tenant: alerts = alerts.filter(tenant=tenant)
+        writer.writerow(['Critical', alerts.filter(severity='critical').count()])
+        writer.writerow(['High', alerts.filter(severity='high').count()])
+        return response
+

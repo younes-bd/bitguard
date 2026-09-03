@@ -1,6 +1,8 @@
+import apiClient from '../../../../core/api/client';
+import client from '@/core/api/client';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import quality_controlService from '../../../../core/api/qualityService';
+import quality_controlService from '../../api/qualityService';
 import { Plus, Search, Edit2, Trash2, LayoutDashboard } from 'lucide-react';
 
 const QualityAlertList = () => {
@@ -17,7 +19,7 @@ const QualityAlertList = () => {
     qualityService.getQualityAlerts ? qualityService.getQualityAlerts().then(res => {
       setData(Array.isArray(res) ? res : res.results || []);
       setLoading(false);
-    }) : fetch(`/api/quality_control/qualityalerts/`).then(r => r.json()).then(res => {
+    }) : apiClient.get(`/api/quality_control/qualityalerts/`).then(r => r.data).then(res => {
       setData(Array.isArray(res) ? res : res.results || []);
       setLoading(false);
     });
@@ -25,7 +27,7 @@ const QualityAlertList = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure?")) {
-      fetch(`/api/quality_control/qualityalerts/${id}/`, { method: 'DELETE' }).then(() => fetchData());
+      apiClient.delete(`/api/quality_control/qualityalerts/${id}/`).then(() => fetchData());
     }
   };
 

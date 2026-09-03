@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Clock, Calendar, User, Timer, Loader2, Plus, X, CheckCircle2 } from 'lucide-react';
-import { hrmService } from '../../../../core/api/hrmService';
-import { projectsService } from '../../../../core/api/projectsService';
+import { attendanceService } from '@/apps/hr_attendance/api/attendanceService';
+import { projectsService } from '../../../projects/api/projectsService';
 import toast from 'react-hot-toast';
 
 const TimeTracking = () => {
@@ -17,8 +17,8 @@ const TimeTracking = () => {
         setLoading(true);
         try {
             const [entriesData, empsData, projsData] = await Promise.all([
-                hrmService.getTimeEntries ? hrmService.getTimeEntries() : [],
-                hrmService.getEmployees ? hrmService.getEmployees() : [],
+                attendanceService.getTimeEntries ? attendanceService.getTimeEntries() : [],
+                attendanceService.getEmployees ? attendanceService.getEmployees() : [],
                 projectsService.getProjects ? projectsService.getProjects() : []
             ]);
             setEntries(Array.isArray(entriesData) ? entriesData : entriesData?.results ?? []);
@@ -37,8 +37,8 @@ const TimeTracking = () => {
         e.preventDefault();
         setSubmitting(true);
         try {
-            if (hrmService.createTimeEntry) {
-                await hrmService.createTimeEntry(form);
+            if (attendanceService.createTimeEntry) {
+                await attendanceService.createTimeEntry(form);
             } else {
                 await (await import('../../../../core/api/client')).default.post('hrm/time-entries/', form);
             }

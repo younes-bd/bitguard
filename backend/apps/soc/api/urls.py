@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
+    ExportSecurityCSV,
+    SecurityReportView,
     AlertViewSet, IncidentViewSet, ThreatIntelligenceViewSet, LogAnalysisViewSet,
     WorkspaceViewSet, ManagedEndpointViewSet, CloudAppViewSet, SystemMonitorViewSet,
     NetworkEventViewSet, CloudIntegrationViewSet, RemoteSessionViewSet,
@@ -27,6 +29,8 @@ router.register(r'compliance-frameworks', ComplianceFrameworkViewSet, basename='
 router.register(r'compliance-controls', ComplianceControlViewSet, basename='compliance-control')
 
 urlpatterns = [
+    path('report/export/', ExportSecurityCSV.as_view(), name='soc-export-csv'),
+    path('report/metrics/', SecurityReportView.as_view(), name='soc-metrics-report'),
     path('events/ingest/', EventIngestView.as_view(), name='event-ingest'),
     path('', include(router.urls)),
 ]

@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowRight, ArrowLeft } from 'lucide-react';
+import client from '@/core/api/client';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState(null);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mock password reset flow
-        setSubmitted(true);
+        setError(null);
+        try {
+            await client.post('auth/password-reset/request/', { email });
+            setSubmitted(true);
+        } catch (err) {
+            setError('Failed to send reset email. Please try again.');
+        }
     };
 
     return (
@@ -38,6 +45,11 @@ const ForgotPassword = () => {
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {error && (
+                            <div className="bg-rose-50 text-rose-600 p-3 rounded-lg text-sm border border-rose-200">
+                                {error}
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Email Address</label>
                             <div className="relative">
@@ -73,3 +85,4 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
+

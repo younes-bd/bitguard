@@ -7,7 +7,9 @@ import {
 
 import client from '../api/client';
 import { useSidebarState } from '../hooks/useSidebarState';
-import { adminSections, adminMenu } from '../api/menu';
+import { useManifest } from '../hooks/useManifest';
+import { settingsService } from '../../apps/system/api/settingsService';
+import * as LucideIcons from 'lucide-react';
 import { useTenant } from '../context/TenantContext';
 import { useAuth } from '../hooks/useAuth';
 import NotificationBell from '../components/shared/core/NotificationBell';
@@ -23,6 +25,7 @@ const BackendLayout = () => {
     const navigate = useNavigate();
     const [sidebarCollapsed, setSidebarCollapsed] = useSidebarState();
     const [mobileOpen, setMobileOpen] = useState(false);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [showSearchResults, setShowSearchResults] = useState(false);
@@ -113,26 +116,14 @@ const BackendLayout = () => {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Filter sections based on bundle access and RBAC permissions
-    const filteredSections = adminSections.map(section => ({
-        ...section,
-        items: section.items.filter(item => {
-            if (item.requiredProduct && !hasProduct(item.requiredProduct)) return false;
-            if (user?.is_superuser) return true;
-            if (item.permissions?.length > 0) {
-                const userPerms = user?.permissions || [];
-                return item.permissions.some(p => userPerms.includes(p));
-            }
-            return true;
-        })
-    })).filter(section => section.items.length > 0);
+    const { commandCenterSections, installedSet } = useManifest();
 
     return (
         <div className="min-h-screen bg-slate-950 flex text-slate-100 font-sans selection:bg-blue-500/30">
             {/* Main Sidebar with grouped sections */}
             <Sidebar
                 title="BITGUARD"
-                sections={filteredSections}
+                sections={commandCenterSections}
                 moduleKey="global"
                 backLink={null}
                 collapsed={sidebarCollapsed}

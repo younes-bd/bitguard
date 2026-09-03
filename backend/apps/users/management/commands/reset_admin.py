@@ -18,7 +18,7 @@ class Command(BaseCommand):
         except User.DoesNotExist:
             self.stdout.write(self.style.ERROR(f"User {email} does not exist. Creating..."))
             user = User.objects.create_superuser(
-                username="admin",
+                username=email,
                 email=email,
                 password="admin",
             )

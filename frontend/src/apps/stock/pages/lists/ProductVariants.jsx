@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from '../../../../core/components/shared/views/DataTable';
-import inventoryService from '../../../../core/api/inventoryService';
+import DataTable from '@/core/components/shared/views/DataTable';
+import inventoryService from '../../api/inventoryService';
 import { Layers } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 

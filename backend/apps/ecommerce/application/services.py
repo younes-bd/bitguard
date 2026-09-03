@@ -1,8 +1,9 @@
 import stripe
 from django.conf import settings
 from django.utils import timezone
+from apps.product.domain.models import Product, Category
 from ..domain.models import (
-    StoreCustomization, Category, Product, CustomerProfile, Order, OrderTimeline,
+    StoreCustomization, CustomerProfile, Order, OrderTimeline,
     ShippingSetting, TrackingConfig, AddOn, SubscriptionPlan, Subscription, StoreSetting
 )
 from apps.core.services.base import BaseService
@@ -89,7 +90,7 @@ class CommerceService(BaseService):
         # Cross-module workflow: If order has an ERP service linked, create obligation
         if order.product and getattr(order.product, 'service', None):
             try:
-                from apps.erp.services import InternalProjectService
+                from apps.projects.application.services import InternalProjectService
                 InternalProjectService.create_project_from_order(request, order)
             except ImportError:
                 pass # Gracefull degradation if ERP module doesn't expose this yet
@@ -108,7 +109,7 @@ class CommerceService(BaseService):
             order_paid.send(sender=cls, order=order, request=request)
             
             try:
-                from apps.erp.services import InvoiceService
+                from apps.accounting.application.services import InvoiceService
                 InvoiceService.create_invoice(request, {
                     "invoice_number": f"ORD-{order.id.hex[:8].upper()}",
                     "client": getattr(order.user, 'client', None),
@@ -222,6 +223,14 @@ class CommerceService(BaseService):
     def get_order_revenue(user=None):
         from django.db.models import Sum
         queryset = Order.objects.all()
+        if user:
+            tenant = getattr(user, 'tenant', None) or (getattr(user, 'employee_profile', None) and user.employee_profile.tenant)
+            if tenant:
+                queryset = queryset.filter(tenant=tenant)
+        if user:
+            tenant = getattr(user, 'tenant', None) or (getattr(user, 'employee_profile', None) and user.employee_profile.tenant)
+            if tenant:
+                queryset = queryset.filter(tenant=tenant)
         if user:
             queryset = queryset.filter(user=user)
         return queryset.aggregate(Sum('total_amount'))['total_amount__sum'] or 0

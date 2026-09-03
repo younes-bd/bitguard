@@ -5,5 +5,10 @@ class UsersConfig(AppConfig):
     name='apps.users'
 
     def ready(self):
+        self._register_api_routes()
         import apps.users.infrastructure.signals
+
+    def _register_api_routes(self):
+        from apps.core.api.registry import register
+        register('users/', 'apps.users.api.urls')
 

@@ -1,4 +1,5 @@
 from django.contrib import admin
-from .models import AnalysisResult
+from .models import AISettings, AIUsageLog
 
-admin.site.register(AnalysisResult)
+admin.site.register(AISettings)
+admin.site.register(AIUsageLog)

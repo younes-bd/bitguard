@@ -4,7 +4,7 @@ import {
   FileText, Receipt, FileCheck, Truck, ShoppingCart,
   FileMinus, Plus, ArrowRight, TrendingUp, Clock, AlertCircle
 } from 'lucide-react';
-import { erpService } from '../../../core/api/erpService';
+import { accountingService } from '../../accounting/api/accountingService';
 
 const documentTypes = [
   {
@@ -119,7 +119,7 @@ const DocumentHub = () => {
   const [stats, setStats] = useState({ total_invoices: 0, outstanding: 0, overdue_count: 0 });
 
   useEffect(() => {
-    erpService.getDashboardStats().then(data => {
+    accountingService.getDashboardStats().then(data => {
       if (data) setStats(data);
     }).catch(() => {});
   }, []);

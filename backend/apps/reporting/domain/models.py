@@ -1,3 +1,4 @@
+from apps.core.validators import validate_document_file
 from django.db import models
 from apps.core.domain.models import TenantAwareModel
 
@@ -19,7 +20,7 @@ class GeneratedReport(TenantAwareModel):
     template = models.ForeignKey(ReportTemplate, on_delete=models.SET_NULL, null=True, related_name='reports')
     record_model = models.CharField(max_length=100)
     record_id = models.CharField(max_length=255)
-    file = models.FileField(upload_to='reports/%Y/%m/', null=True, blank=True)
+    file = models.FileField(upload_to='reports/%Y/%m/', null=True, blank=True, validators=[validate_document_file])
     status = models.CharField(max_length=20, default='pending')
     
     def __str__(self):
@@ -41,3 +42,10 @@ class ReportEngineSettings(TenantAwareModel):
             existing = ReportEngineSettings.objects.get(tenant=self.tenant)
             self.pk = existing.pk
         super().save(*args, **kwargs)
+
+class ReportTag(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    color = models.CharField(max_length=20, default='blue')
+
+    def __str__(self):
+        return self.name

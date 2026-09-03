@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Package, CreditCard, Clock, ChevronRight, Download, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import { ecommerceService } from '../../api/ecommerceService';
 
 const EcommerceDashboard = () => {
     const navigate = useNavigate();

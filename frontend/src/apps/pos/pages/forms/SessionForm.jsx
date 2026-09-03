@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import posService from '../../../../core/api/posService';
+import posService from '../../api/posService';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const SessionForm = () => {

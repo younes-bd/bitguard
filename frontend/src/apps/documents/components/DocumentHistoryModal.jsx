@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import documentsService from '../../../core/api/documentsService';
+import documentsService from '../api/documentsService';
 import { X, History, FileText, Download, User, Calendar, Loader2 } from 'lucide-react';
 
 const DocumentHistoryModal = ({ isOpen, onClose, document }) => {
@@ -67,7 +67,7 @@ const DocumentHistoryModal = ({ isOpen, onClose, document }) => {
                                         </div>
                                     </div>
                                     <a 
-                                        href={version.attachment?.file} 
+                                        href={version.attachment?.file_url} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         className="p-3 bg-purple-600/10 text-purple-400 hover:bg-purple-600 hover:text-white rounded-xl transition-all"

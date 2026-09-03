@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Command, ArrowRight } from 'lucide-react';
-import { adminSections, productMenu } from '../../../api/menu';
+import { useManifest } from '../../../hooks/useManifest';
+import { settingsService } from '../../../../apps/system/api/settingsService';
+import * as LucideIcons from 'lucide-react';
 
 export default function CommandPalette() {
     const [isOpen, setIsOpen] = useState(false);
@@ -10,20 +12,34 @@ export default function CommandPalette() {
     const inputRef = useRef(null);
     const navigate = useNavigate();
 
+    const { moduleMenus } = useManifest();
+    const [apps, setApps] = useState([]);
+    
+    useEffect(() => {
+        settingsService.getModules().then(res => {
+            const modules = Array.isArray(res) ? res : res.results || [];
+            setApps(modules.filter(m => m.is_installed));
+        }).catch(console.error);
+    }, []);
+
     // Flatten all searchable routes
     const allRoutes = React.useMemo(() => {
         const routes = [];
-        // Add admin sections
-        adminSections.forEach(section => {
-            section.items.forEach(item => {
-                if (item.path) {
-                    routes.push({ ...item, category: section.title });
-                }
+        
+        // Add dynamic apps
+        apps.forEach(app => {
+            routes.push({
+                label: app.name,
+                icon: LucideIcons[app.icon] || LucideIcons.LayoutDashboard,
+                path: app.technical_name === 'board' ? '/admin/board' : `/admin/${app.technical_name}`,
+                category: 'Modules'
             });
         });
-        // Add product menu sections
-        Object.values(productMenu).forEach(moduleGroups => {
+
+        // Add module menu sections
+        Object.values(moduleMenus).forEach(moduleGroups => {
             moduleGroups.forEach(group => {
+
                 group.items.forEach(item => {
                     if (item.path) {
                         routes.push({ ...item, category: group.title });
@@ -42,7 +58,7 @@ export default function CommandPalette() {
             }
         }
         return unique;
-    }, []);
+    }, [apps]);
 
     const [backendResults, setBackendResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -69,7 +85,7 @@ export default function CommandPalette() {
             try {
                 // We need to import boardService at the top of the file.
                 // Assuming it's imported correctly.
-                const { boardService } = await import('../../../api/boardService');
+                const { boardService } = await import('../../../../apps/board/api/boardService');
                 const results = await boardService.globalSearch(searchTerm);
                 
                 // Map backend results to route format

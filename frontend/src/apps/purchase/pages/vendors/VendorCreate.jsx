@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Save, ArrowLeft, Mail, Phone, MapPin, Hash, CreditCard, CheckCircle2 } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { purchaseService } from '../../api/purchaseService';
 import { toast } from 'react-hot-toast';
 
 const VendorCreate = () => {
@@ -31,7 +31,7 @@ const VendorCreate = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await erpService.createVendor(form);
+            await purchaseService.createVendor(form);
             toast.success('Vendor created successfully');
             navigate('/admin/purchase/vendors');
         } catch (err) {
@@ -160,7 +160,7 @@ const VendorCreate = () => {
                                             value={form.email}
                                             onChange={handleChange}
                                             className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-white focus:border-emerald-500 outline-none transition-all"
-                                            placeholder="billing@acme.com"
+                                            placeholder=''
                                         />
                                     </div>
                                 </div>

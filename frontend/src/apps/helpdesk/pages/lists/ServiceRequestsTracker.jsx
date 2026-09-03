@@ -3,7 +3,7 @@ import {
     CheckSquare, Loader2, Calendar, User, Clock, ExternalLink, 
     Shield, Activity, FileText, CheckCircle, XCircle, ChevronRight, HelpCircle
 } from 'lucide-react';
-import serviceService from '../../../../core/api/serviceService';
+import serviceService from '../../../field-service/api/serviceService';
 import { toast } from 'react-hot-toast';
 
 export default function ServiceRequestsTracker() {

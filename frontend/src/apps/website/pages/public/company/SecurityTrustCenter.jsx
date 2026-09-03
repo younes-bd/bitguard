@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import SectionDivider from '../../../../../core/components/SectionDivider';
-import PageMeta from '../../../../../core/components/shared/PageMeta';
+import SectionDivider from '@/core/components/SectionDivider';
+import PageMeta from '@/core/components/shared/PageMeta';
 
 const SecurityTrustCenter = () => {
     const [showSocForm, setShowSocForm] = useState(false);

@@ -1,9 +1,11 @@
+from apps.core.api.mixins import TenantScopedMixin
 """
 CRM Views — Charter §8, §9 Compliant
 Views orchestrate; services decide. All logic delegated to CRM service layer.
 """
 from rest_framework import viewsets, serializers as drf_serializers
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
@@ -16,7 +18,9 @@ from ..api.serializers import (
 from ..application.services import ClientService, ContactService, LeadService, DealService, ActivityService
 
 
-class ClientViewSet(viewsets.ModelViewSet):
+from apps.core.api.mixins import ReportGenerateMixin
+
+class ClientViewSet(ReportGenerateMixin, TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ClientSerializer
 
@@ -45,19 +49,70 @@ class ClientViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=['get'], url_path='statement')
+    def statement(self, request, pk=None):
+        from django.apps import apps
+        from apps.reporting.domain.models import ReportTemplate
+        from apps.reporting.services.pdf_generator import ReportingService
+        client = self.get_object()
+        period_start = request.query_params.get('period_start')
+        period_end = request.query_params.get('period_end')
+        
+        invoices = []
+        if apps.is_installed('apps.accounting'):
+            from apps.accounting.services import AccountingService
+            invoices = AccountingService.get_invoices_for_client(
+                client, 
+                status_exclude=['paid', 'void', 'cancelled'],
+                period_start=period_start,
+                period_end=period_end
+            )
+            invoices = invoices.order_by('issue_date')
+            
+        context = {
+            'period_start': period_start,
+            'period_end': period_end,
+            'invoices': invoices,
+        }
+        
+        template = ReportTemplate.objects.filter(
+            tenant=request.user.tenant,
+            model="crm.client",
+            is_default=True,
+            is_active=True,
+        ).first()
+        if not template:
+            return Response({'error': 'No default template configured.'}, status=404)
+        attachment = ReportingService.generate_pdf(template, client, context_data=context)
+        if not attachment:
+            return Response({'error': 'PDF generation failed.'}, status=500)
+        return Response({'url': attachment.file.url, 'filename': attachment.name})
+
+
     @action(detail=True, methods=['get'], url_path='portal-summary')
     def portal_summary(self, request, pk=None):
+        from django.apps import apps
         client = self.get_object()
         try:
-            from apps.helpdesk.domain.models import Ticket
-            from apps.accounting.domain.models import Invoice
-            from apps.contracts.domain.models import ServiceContract
-            from apps.itam.domain.models import Asset
-
-            open_tickets = Ticket.objects.filter(client=client, status__in=['open', 'in_progress']).count()
-            overdue_invoices = Invoice.objects.filter(client=client, status='overdue').count()
-            active_contracts = ServiceContract.objects.filter(client=client, status='active').count()
-            assigned_assets = Asset.objects.filter(client=client).count()
+            open_tickets = 0
+            if apps.is_installed('apps.helpdesk'):
+                from apps.helpdesk.services import HelpdeskService
+                open_tickets = HelpdeskService.get_open_tickets_for_client(client)
+            
+            overdue_invoices = 0
+            if apps.is_installed('apps.accounting'):
+                from apps.accounting.services import AccountingService
+                overdue_invoices = AccountingService.get_overdue_invoices_for_client(client)
+                
+            active_contracts = 0
+            if apps.is_installed('apps.subscriptions'):
+                from apps.subscriptions.services import SubscriptionService
+                active_contracts = SubscriptionService.get_active_contracts_for_client(client)
+                
+            assigned_assets = 0
+            if apps.is_installed('apps.maintenance'):
+                from apps.maintenance.services import MaintenanceService
+                assigned_assets = MaintenanceService.get_assets_for_client(client)
 
             return Response({
                 'client_id': str(client.id),
@@ -78,7 +133,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             })
 
 
-class ContactViewSet(viewsets.ModelViewSet):
+class ContactViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ContactSerializer
 
@@ -86,7 +141,7 @@ class ContactViewSet(viewsets.ModelViewSet):
         return ContactService.get_queryset(self.request)
 
 
-class LeadViewSet(viewsets.ModelViewSet):
+class LeadViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = LeadSerializer
 
@@ -137,7 +192,7 @@ class LeadViewSet(viewsets.ModelViewSet):
         return Response(LeadSerializer(lead).data, status=status.HTTP_200_OK)
 
 
-class DealViewSet(viewsets.ModelViewSet):
+class DealViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = DealSerializer
 
@@ -218,49 +273,91 @@ class DealViewSet(viewsets.ModelViewSet):
         return Response(DealSerializer(deal).data, status=status.HTTP_200_OK)
 
 
-class ActivityViewSet(viewsets.ModelViewSet):
+class ActivityViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ActivitySerializer
 
     def get_queryset(self):
         return ActivityService.get_queryset(self.request)
 
-class CrmStageViewSet(viewsets.ModelViewSet):
+class CrmStageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CrmStageSerializer
     
     def get_queryset(self):
-        return CrmStage.objects.filter(tenant=self.request.user.tenant).order_by('sequence')
-        
-    def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        return super().get_queryset().order_by('sequence')
 
-class CrmSalesTeamViewSet(viewsets.ModelViewSet):
+class CrmSalesTeamViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CrmSalesTeamSerializer
-    
-    def get_queryset(self):
-        return CrmSalesTeam.objects.filter(tenant=self.request.user.tenant)
-        
-    def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
 
-class LostReasonViewSet(viewsets.ModelViewSet):
+class LostReasonViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = LostReasonSerializer
-    
-    def get_queryset(self):
-        return LostReason.objects.filter(tenant=self.request.user.tenant)
-        
-    def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
 
-class CrmTagViewSet(viewsets.ModelViewSet):
+class CrmTagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CrmTagSerializer
-    
-    def get_queryset(self):
-        return CrmTag.objects.filter(tenant=self.request.user.tenant)
+
+class DashboardStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        from apps.crm.domain.models import Deal, Lead, Activity
+        from django.db.models import Sum
+        tenant = getattr(request, 'tenant', None)
         
-    def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        deals = Deal.objects.filter(tenant=tenant)
+        won_deals = deals.filter(status='won')
+        total_revenue = won_deals.aggregate(Sum('expected_revenue'))['expected_revenue__sum'] or 0
+        pipeline_value = deals.filter(status='open').aggregate(Sum('expected_revenue'))['expected_revenue__sum'] or 0
+        
+        return Response({
+            'total_revenue': total_revenue,
+            'pipeline_value': pipeline_value,
+            'won_deals_count': won_deals.count(),
+            'active_leads': Lead.objects.filter(tenant=tenant, status='new').count(),
+            'recent_activities': Activity.objects.filter(tenant=tenant).order_by('-due_date')[:5].values('id', 'type', 'summary', 'due_date', 'status')
+        })
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+class CRMReportView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        from apps.crm.domain.models import Deal
+        from django.db.models import Sum
+        deals = Deal.objects.all()
+        if tenant: deals = deals.filter(tenant=tenant)
+        total = deals.count()
+        won = deals.filter(stage__is_won=True).count()
+        result = {
+            "total_leads": total,
+            "won_deals": won,
+            "win_rate": round((won / total * 100), 1) if total > 0 else 0,
+            "pipeline_value": float(deals.filter(stage__is_won=False).aggregate(t=Sum('expected_revenue'))['t'] or 0)
+        }
+        return Response({"status": "success", "data": result})
+
+class ExportCRMCSV(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        import csv
+        from django.http import HttpResponse
+        from apps.crm.domain.models import Deal
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="crm_export.csv"'
+        writer = csv.writer(response)
+        tenant = getattr(request, 'tenant', None)
+        writer.writerow(['Metric', 'Value'])
+        deals = Deal.objects.all()
+        if tenant: deals = deals.filter(tenant=tenant)
+        writer.writerow(['Total Deals', deals.count()])
+        writer.writerow(['Won Deals', deals.filter(stage__is_won=True).count()])
+        return response
+

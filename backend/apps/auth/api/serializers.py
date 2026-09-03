@@ -12,6 +12,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     Custom JWT login serializer with MFA support.
     """
 
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        role = user.roles.first()
+        token['role'] = role.name if role else 'EMPLOYEE'
+        token['roles'] = list(user.roles.values_list('name', flat=True))
+        return token
+
     def validate(self, attrs):
         # The frontend sends 'email', but SimpleJWT might expect 'username' 
         # depending on its internal configuration. Let's unify them.
@@ -39,6 +47,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         user.failed_login_attempts = 0
         user.save(update_fields=['failed_login_attempts'])
 
+        role = user.roles.first()
+        role_name = role.name if role else 'EMPLOYEE'
+
         # Format response as requested: {access_token, refresh_token, user}
         return {
             'access_token': data.get('access'),
@@ -47,10 +58,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'id': str(user.id),
                 'email': user.email,
                 'username': user.username,
-                'role': getattr(user.role, 'name', 'EMPLOYEE') if hasattr(user, 'role') and user.role else 'EMPLOYEE',
+                'role': role_name,
+                'roles': list(user.roles.values_list('name', flat=True)),
                 'is_staff': user.is_staff,
                 'is_superuser': user.is_superuser,
-                'tenant_id': str(user.tenant.id) if user.tenant else None
+                'tenant_id': str(user.tenant.id) if getattr(user, 'tenant', None) else None
             }
         }
 
@@ -60,7 +72,6 @@ class VerifyOTPSerializer(serializers.Serializer):
     token = serializers.CharField(required=True, min_length=6, max_length=6)
 
     def validate(self, attrs):
-        import pyotp
         temp_user_id = attrs.get('temp_user_id')
         token = attrs.get('token')
 
@@ -69,20 +80,12 @@ class VerifyOTPSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("Invalid session or user ID.")
 
-        if not user.mfa_enabled or not user.mfa_secret:
-            raise serializers.ValidationError("MFA is not enabled for this account.")
+        from apps.auth.services import AuthService
+        try:
+            return AuthService.verify_otp(user, token)
+        except ValueError as e:
+            raise serializers.ValidationError(str(e))
 
-        totp = pyotp.TOTP(user.mfa_secret)
-        if not totp.verify(token):
-            raise serializers.ValidationError("Invalid OTP token.")
-
-        # Success: Generate final tokens
-        refresh = RefreshToken.for_user(user)
-        return {
-            'refresh_token': str(refresh),
-            'access_token': str(refresh.access_token),
-            'user_id': str(user.id)
-        }
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):

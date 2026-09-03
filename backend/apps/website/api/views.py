@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions, status, views
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -24,7 +25,7 @@ from ..api.serializers import (
 
 # --- Content ViewSets ---
 
-class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
+class AnnouncementViewSet(TenantScopedMixin, viewsets.ReadOnlyModelViewSet):
     """
     Public announcements for the homepage/news section.
     """
@@ -32,7 +33,7 @@ class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AnnouncementSerializer
     permission_classes = [permissions.AllowAny]
 
-class SignupViewSet(viewsets.ModelViewSet):
+class SignupViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Email newsletter signup.
     """
@@ -40,7 +41,7 @@ class SignupViewSet(viewsets.ModelViewSet):
     serializer_class = SignupSerializer
     permission_classes = [permissions.AllowAny]
 
-class WebsiteInquiryViewSet(viewsets.ModelViewSet):
+class WebsiteInquiryViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Contact form submissions.
     """
@@ -48,7 +49,7 @@ class WebsiteInquiryViewSet(viewsets.ModelViewSet):
     serializer_class = WebsiteInquirySerializer
     permission_classes = [permissions.AllowAny]
 
-class LandingPageViewSet(viewsets.ModelViewSet):
+class LandingPageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Landing Page Builder API.
     """
@@ -56,7 +57,7 @@ class LandingPageViewSet(viewsets.ModelViewSet):
     serializer_class = LandingPageSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class PageViewSet(viewsets.ModelViewSet):
+class PageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Standard website pages API.
     """
@@ -64,7 +65,7 @@ class PageViewSet(viewsets.ModelViewSet):
     serializer_class = PageSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class ServicePageViewSet(viewsets.ModelViewSet):
+class ServicePageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Service specific marketing pages API.
     """
@@ -72,7 +73,7 @@ class ServicePageViewSet(viewsets.ModelViewSet):
     serializer_class = ServicePageSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class MediaAssetViewSet(viewsets.ModelViewSet):
+class MediaAssetViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Media Assets API.
     """
@@ -80,7 +81,7 @@ class MediaAssetViewSet(viewsets.ModelViewSet):
     serializer_class = MediaAssetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class WebsiteViewSet(viewsets.ModelViewSet):
+class WebsiteViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Multi-Website management API.
     """
@@ -88,7 +89,7 @@ class WebsiteViewSet(viewsets.ModelViewSet):
     serializer_class = WebsiteSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class WebsiteMenuViewSet(viewsets.ModelViewSet):
+class WebsiteMenuViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Website Menus API.
     """
@@ -96,7 +97,7 @@ class WebsiteMenuViewSet(viewsets.ModelViewSet):
     serializer_class = WebsiteMenuSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class WebsiteRedirectViewSet(viewsets.ModelViewSet):
+class WebsiteRedirectViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     """
     Website Redirects API.
     """

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import fleetService from '../../../../core/api/fleetService';
+import fleetService from '../../api/fleetService';
 import { Truck, Plus, Search, Edit2, Trash2 } from 'lucide-react';
 
 const VehicleList = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarDays, Plus, Edit2, Trash2, Check, X } from 'lucide-react';
-import api from '../../../core/api/client';
+import { accountingService } from '../api/accountingService';
 import toast from 'react-hot-toast';
 
 const PaymentTerms = () => {
@@ -22,8 +22,8 @@ const PaymentTerms = () => {
     const fetchTerms = async () => {
         try {
             setLoading(true);
-            const res = await api.get('/accounting/payment-terms/');
-            setTerms(res.data.data || res.data);
+            const data = await accountingService.getPaymentTerms();
+            setTerms(data || []);
         } catch (err) {
             toast.error("Failed to load payment terms");
         } finally {
@@ -34,10 +34,10 @@ const PaymentTerms = () => {
     const handleSave = async () => {
         try {
             if (formData.id) {
-                await api.put(`/accounting/payment-terms/${formData.id}/`, formData);
+                await accountingService.updatePaymentTerm(formData.id, formData);
                 toast.success("Payment term updated");
             } else {
-                await api.post('/accounting/payment-terms/', formData);
+                await accountingService.createPaymentTerm(formData);
                 toast.success("Payment term created");
             }
             setIsEditing(false);
@@ -51,7 +51,7 @@ const PaymentTerms = () => {
     const handleDelete = async (id) => {
         if (confirm('Are you sure you want to delete this payment term?')) {
             try {
-                await api.delete(`/accounting/payment-terms/${id}/`);
+                await accountingService.deletePaymentTerm(id);
                 toast.success("Deleted successfully");
                 fetchTerms();
             } catch (err) {

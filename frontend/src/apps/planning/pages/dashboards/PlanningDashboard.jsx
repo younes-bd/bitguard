@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, Users, Plus, LayoutDashboard } from 'lucide-react';
-import api from '../../../../core/api/client';
+import { planningService } from '../../api/planningService';
 
 const PlanningDashboard = () => {
   const [shifts, setShifts] = useState([]);
@@ -9,8 +9,16 @@ const PlanningDashboard = () => {
   useEffect(() => {
     const fetchShifts = async () => {
       try {
-        const response = await api.get('/api/planning/shifts/');
-        setShifts(response.data.results || response.data);
+        const response = await planningService.getShifts();
+        let shiftsData = [];
+        if (Array.isArray(response)) {
+          shiftsData = response;
+        } else if (response && Array.isArray(response.results)) {
+          shiftsData = response.results;
+        } else if (response && Array.isArray(response.data)) {
+          shiftsData = response.data;
+        }
+        setShifts(shiftsData);
       } catch (error) {
         console.error('Error fetching shifts:', error);
       } finally {

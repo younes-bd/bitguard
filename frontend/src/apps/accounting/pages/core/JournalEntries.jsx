@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileSpreadsheet, Plus, CheckCircle2, ChevronRight, Activity, Download } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
-import reportingService from '../../../../core/api/reportingService';
+import { accountingService } from '../../api/accountingService';
+import reportingService from '@/apps/reporting/api/reportingService';
 import { toast } from 'react-hot-toast';
 
 const JournalEntries = () => {
@@ -26,8 +26,8 @@ const JournalEntries = () => {
         const fetchData = async () => {
             try {
                 const [entriesData, accountsData] = await Promise.all([
-                    erpService.getJournalEntries(),
-                    erpService.getAccounts()
+                    accountingService.getJournalEntries(),
+                    accountingService.getAccounts()
                 ]);
                 setEntries(Array.isArray(entriesData) ? entriesData : (entriesData?.results || entriesData?.data || []));
                 setAccounts(Array.isArray(accountsData) ? accountsData : (accountsData?.results || accountsData?.data || []));
@@ -79,7 +79,7 @@ const JournalEntries = () => {
 
         setSaving(true);
         try {
-            await erpService.createJournalEntry(formData);
+            await accountingService.createJournalEntry(formData);
             toast.success("Journal Entry created successfully!");
             setShowModal(false);
             setFormData({
@@ -91,7 +91,7 @@ const JournalEntries = () => {
                     { account: '', debit: '', credit: '', description: '' }
                 ]
             });
-            const data = await erpService.getJournalEntries();
+            const data = await accountingService.getJournalEntries();
             setEntries(data || []);
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to create journal entry");
@@ -382,3 +382,4 @@ const JournalEntries = () => {
 };
 
 export default JournalEntries;
+

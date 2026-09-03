@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import blogService from '../../../../core/api/blogService';
-import SectionDivider from '../../../../core/components/SectionDivider';
+import blogService from '../../api/blogService';
+import SectionDivider from '@/core/components/SectionDivider';
 
 const BlogPost = () => {
     const { slug } = useParams();

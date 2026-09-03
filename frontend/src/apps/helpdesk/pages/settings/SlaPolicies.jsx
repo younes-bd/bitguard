@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Plus, Trash2, Loader2, AlertTriangle } from 'lucide-react';
-import helpdeskService from '../../../../core/api/helpdeskService';
+import helpdeskService from '../../api/helpdeskService';
 
 const SlaPolicies = () => {
     const [policies, setPolicies] = useState([]);

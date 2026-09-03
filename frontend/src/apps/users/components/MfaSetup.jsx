@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
-import client from '../../../core/api/client';
+import client from '@/core/api/client';
 import { toast } from 'react-hot-toast';
 
 const MfaSetup = ({ onEnabled }) => {
@@ -13,7 +13,7 @@ const MfaSetup = ({ onEnabled }) => {
     const initiateSetup = async () => {
         setLoading(true);
         try {
-            const res = await client.post('iam/mfa_setup/');
+            const res = await client.post('users/mfa_setup/');
             setSetupData(res.data.data);
             setStep('verify');
         } catch (error) {
@@ -27,7 +27,7 @@ const MfaSetup = ({ onEnabled }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await client.post('iam/mfa_verify/', { token });
+            await client.post('users/mfa_verify/', { token });
             toast.success("Multi-factor authentication enabled!");
             setStep('success');
             if (onEnabled) onEnabled();

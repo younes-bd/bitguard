@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import elearningService from '../../api/elearningService';
 import { Plus, Search, Edit2, Trash2, Package, LayoutDashboard } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -9,16 +10,11 @@ export default function ElearningReviews() {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        // Mock fetch or placeholder for real API
         setLoading(true);
-        setTimeout(() => {
-            setData([
-                { id: 1, name: 'Sample Item 1', status: 'Active', created_at: '2023-10-01' },
-                { id: 2, name: 'Sample Item 2', status: 'Pending', created_at: '2023-10-05' },
-                { id: 3, name: 'Sample Item 3', status: 'Active', created_at: '2023-10-12' },
-            ]);
-            setLoading(false);
-        }, 600);
+        elearningService.getElearningReviews()
+            .then(res => setData(res.results || res || []))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
     }, []);
 
     const filteredData = data.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase()));

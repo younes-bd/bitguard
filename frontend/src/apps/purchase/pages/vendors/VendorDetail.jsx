@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
-import reportingService from '../../../../core/api/reportingService';
+import { purchaseService } from '../../api/purchaseService';
+import reportingService from '@/apps/reporting/api/reportingService';
 import { toast } from 'react-hot-toast';
 import {
     ArrowLeft, Mail, Phone, Globe, MapPin, 
@@ -19,7 +19,7 @@ const VendorDetail = () => {
     useEffect(() => {
         const fetchVendor = async () => {
             try {
-                const data = await erpService.getVendor(id);
+                const data = await purchaseService.getVendor(id);
                 setVendor(data);
             } catch (error) {
                 console.error("Failed to load vendor", error);

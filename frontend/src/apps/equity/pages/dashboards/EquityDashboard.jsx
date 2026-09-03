@@ -1,5 +1,4 @@
-import React from 'react';
-import PlaceholderPage from '../../../../core/components/shared/PlaceholderPage';
+﻿import React from 'react';
 
 export default function EquityDashboard() {
   return (

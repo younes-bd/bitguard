@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 """Purchase Views"""
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -12,7 +13,7 @@ from .serializers import (
     VendorSerializer, PurchaseOrderSerializer, PurchaseOrderLineSerializer, RFQSerializer, VendorPricelistSerializer
 )
 
-class VendorViewSet(viewsets.ModelViewSet):
+class VendorViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = VendorSerializer
 
@@ -28,7 +29,7 @@ class VendorViewSet(viewsets.ModelViewSet):
             'pending_pos': qs_po.filter(status__in=['draft', 'sent']).count(),
         }})
 
-class PurchaseOrderViewSet(viewsets.ModelViewSet):
+class PurchaseOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PurchaseOrderSerializer
 
@@ -65,6 +66,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         po.status = 'confirmed'
         po.approved_by = request.user
         po.save()
+        AuditService.log_action(request.user, 'PURCHASE_PO_APPROVED', f"Purchase Order {po.id} approved", po)
         return Response({'status': po.status})
 
     @action(detail=True, methods=['post'])
@@ -80,26 +82,20 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         if order.status not in ['confirmed', 'purchase']:
             return Response({'error': 'Only confirmed purchase orders can be received.'}, status=status.HTTP_400_BAD_REQUEST)
             
-        from apps.stock.domain.models import GoodsReceipt
-        from django.utils import timezone
-        
-        receipt = GoodsReceipt.objects.create(
-            tenant=order.tenant,
-            purchase_order=order,
-            status='draft',
-            created_by=request.user,
-            receipt_date=timezone.now().date()
-        )
+        from apps.stock.services.receipts import ReceiptService
+        receipt = ReceiptService.generate_for_purchase_order(order, request.user)
         order.status = 'done'
         order.save()
         return Response({'receipt_id': receipt.id, 'status': order.status}, status=status.HTTP_201_CREATED)
 
-class PurchaseOrderLineViewSet(viewsets.ModelViewSet):
+class PurchaseOrderLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PurchaseOrderLineSerializer
     queryset = PurchaseOrderLine.objects.all()
 
-class RFQViewSet(viewsets.ModelViewSet):
+from apps.core.api.mixins import ReportGenerateMixin
+
+class RFQViewSet(ReportGenerateMixin, TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = RFQSerializer
     def get_queryset(self): return BaseService.filter_by_context(RFQ.objects.all(), self.request)
@@ -111,7 +107,7 @@ class RFQViewSet(viewsets.ModelViewSet):
         rfq.save()
         return Response({'status': 'converted_to_po'})
 
-class VendorPricelistViewSet(viewsets.ModelViewSet):
+class VendorPricelistViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = VendorPricelistSerializer
     def get_queryset(self): return BaseService.filter_by_context(VendorPricelist.objects.all(), self.request)

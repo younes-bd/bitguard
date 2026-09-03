@@ -1,0 +1,70 @@
+{
+    "missing_folders": [
+        {
+            "md_tech": "sale_amazon",
+            "phys_tech_expected": "amazon",
+            "name": "Amazon Connector"
+        },
+        {
+            "md_tech": "mrp_workorder_ui",
+            "phys_tech_expected": "shop_floor",
+            "name": "Shop Floor"
+        },
+        {
+            "md_tech": "whatsapp",
+            "phys_tech_expected": "whatsapp",
+            "name": "WhatsApp"
+        },
+        {
+            "md_tech": "frontdesk",
+            "phys_tech_expected": "frontdesk",
+            "name": "Frontdesk"
+        },
+        {
+            "md_tech": "project_todo",
+            "phys_tech_expected": "todo",
+            "name": "To-Do"
+        },
+        {
+            "md_tech": "payments",
+            "phys_tech_expected": "payments",
+            "name": "Payments"
+        },
+        {
+            "md_tech": "ai_engine",
+            "phys_tech_expected": "ai_engine",
+            "name": "AI Engine"
+        }
+    ],
+    "unmapped_folders": [
+        "automation",
+        "equity",
+        "esg",
+        "users"
+    ],
+    "miscategorized": [
+        {
+            "app": "discuss",
+            "issue": "Wrong Pillar. Expected: 'Productivity', Got: 'Discuss'"
+        },
+        {
+            "app": "system",
+            "issue": "Should be application: False (Shared Utilities & Master Data)",
+            "current_section": "Administration"
+        },
+        {
+            "app": "apps",
+            "issue": "Should be application: False (Shared Utilities & Master Data)",
+            "current_section": "Administration"
+        },
+        {
+            "app": "studio",
+            "issue": "Wrong Pillar. Expected: 'Administration', Got: 'Technical'"
+        },
+        {
+            "app": "system",
+            "issue": "Should be application: False (Hidden / Technical Kernel)",
+            "current_section": "Administration"
+        }
+    ]
+}

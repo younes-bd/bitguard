@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { crmService } from '../../../../core/api/crmService';
+import { crmService } from '../../api/crmService';
 import { Target, Search, Plus, TrendingUp, Clock, CheckCircle2, XCircle, Edit2, Trash2, DollarSign } from 'lucide-react';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 const STATUS_MAP = {
     new: { label: 'New', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
     contacted: { label: 'Contacted', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },

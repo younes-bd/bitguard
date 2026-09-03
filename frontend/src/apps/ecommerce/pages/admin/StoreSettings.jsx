@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Save, Loader2 } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 import toast from 'react-hot-toast';
 
 export default function StoreSettings() {

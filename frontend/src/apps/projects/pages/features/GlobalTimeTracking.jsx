@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Timer, Search, Filter, Calendar, Download, Clock, DollarSign, Activity, ChevronRight, MoreVertical, Terminal } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
+import projectsService from '../../api/projectsService';
 import { toast } from 'react-hot-toast';
 
 const GlobalTimeTracking = () => {

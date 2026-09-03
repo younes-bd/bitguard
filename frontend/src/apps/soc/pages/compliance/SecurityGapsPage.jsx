@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import securityService from '../../../../core/api/securityService';
+import securityService from '../../api/securityService';
 import { QueueListIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 const SecurityGapsPage = () => {

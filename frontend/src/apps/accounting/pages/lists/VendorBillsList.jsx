@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Filter, FileText, CheckCircle, XCircle, ArrowUpRight, DollarSign } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const VendorBillsList = () => {
@@ -16,7 +16,7 @@ const VendorBillsList = () => {
     const fetchBills = async () => {
         setLoading(true);
         try {
-            const data = await erpService.getVendorBills();
+            const data = await accountingService.getVendorBills();
             setBills(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to fetch vendor bills:", error);
@@ -29,13 +29,13 @@ const VendorBillsList = () => {
     const handleAction = async (id, action) => {
         try {
             if (action === 'approve') {
-                await erpService.updateVendorBill(id, { status: 'approved' });
+                await accountingService.updateVendorBill(id, { status: 'approved' });
                 toast.success('Bill Approved');
             } else if (action === 'pay') {
-                await erpService.payVendorBill(id);
+                await accountingService.payVendorBill(id);
                 toast.success('Bill Paid');
             } else if (action === 'cancel') {
-                await erpService.updateVendorBill(id, { status: 'cancelled' });
+                await accountingService.updateVendorBill(id, { status: 'cancelled' });
                 toast.success('Bill Cancelled');
             }
             fetchBills();

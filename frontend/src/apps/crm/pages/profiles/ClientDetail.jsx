@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { crmService } from '../../../../core/api/crmService';
-import { projectsService } from '../../../../core/api/projectsService';
-import { contractsService } from '../../../../core/api/contractsService';
-import { billingService } from '../../../../core/api/billingService';
-import { iamService } from '../../../../core/api/iamService';
+import { crmService } from '../../api/crmService';
+import { projectsService } from '../../../projects/api/projectsService';
+import { signService } from '../../../sign/api/signService';
+import { subscriptionsService } from '../../../subscriptions/api/subscriptionsService';
+import { usersService } from '../../../users/api/usersService';
 import {
     ArrowLeft, Users, Briefcase, MapPin, Mail, Phone,
-    Globe, FileText, Ticket, ShoppingCart, Activity, Edit, Trash2,
+    Globe, FileText, Ticket, ShoppingCart, Activity, Edit, Trash2, Printer,
     Server, Layout as ProjectIcon, ShieldCheck as ContractIcon, Receipt as InvoiceIcon, Cloud as CloudIcon
 } from 'lucide-react';
 import ActivityTimeline from '../dashboards/ActivityTimeline';
 import ClientModal from '../modals/ClientModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 
 const ClientDetail = () => {
     const { id } = useParams();
@@ -44,9 +44,9 @@ const ClientDetail = () => {
                 crmService.getClientOrders(id).catch(() => []),
                 crmService.getActivities({ client: id }).catch(() => []),
                 projectsService.getProjects({ client: id }).catch(() => []),
-                contractsService.getContracts({ client: id }).catch(() => []),
-                billingService.getInvoices({ client: id }).catch(() => []),
-                iamService.getTenants({ client: id }).catch(() => [])
+                signService.getContracts({ client: id }).catch(() => []),
+                subscriptionsService.getInvoices({ client: id }).catch(() => []),
+                usersService.getTenants({ client: id }).catch(() => [])
             ]);
             
             setClient(clientData);
@@ -75,6 +75,29 @@ const ClientDetail = () => {
         } catch (error) {
             console.error("Update failed", error);
             alert("Failed to update client.");
+        }
+    };
+
+    const handlePrint = async () => {
+        try {
+            const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
+            const res = await reportingService.generateReport(null, 'crm.Client', id);
+            if (res && res.url) {
+                const response = await fetch(res.url);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = res.filename || 'statement.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        } catch (err) {
+            console.error(err);
+            import('react-hot-toast').then(({ toast }) => toast.error('Failed to generate PDF'));
         }
     };
 
@@ -139,7 +162,14 @@ const ClientDetail = () => {
                                     className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors border border-transparent hover:border-slate-600"
                                     title="Edit Client"
                                 >
-                                    <Edit size={20} />
+                                    <Edit size={18} />
+                                </button>
+                                <button
+                                    onClick={handlePrint}
+                                    className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors border border-transparent hover:border-slate-600"
+                                    title="Print Client Statement"
+                                >
+                                    <Printer size={18} />
                                 </button>
                                 <button
                                     onClick={() => setIsDeleteModalOpen(true)}
@@ -259,7 +289,7 @@ const ClientDetail = () => {
                                 <CloudIcon size={20} className="text-blue-400" />
                                 Cloud Workspaces & Tenants
                             </h3>
-                            <button onClick={() => navigate('/admin/iam/tenants')} className="text-sm text-blue-400 hover:underline">Manage â†’</button>
+                            <button onClick={() => navigate('/admin/users/tenants')} className="text-sm text-blue-400 hover:underline">Manage â†’</button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {tenants.map(tenant => (
@@ -331,7 +361,7 @@ const ClientDetail = () => {
                     <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold text-white">Service Contracts</h3>
-                            <button onClick={() => navigate('/admin/contracts')} className="text-sm text-blue-400 hover:underline">Manage â†’</button>
+                            <button onClick={() => navigate('/admin/sign')} className="text-sm text-blue-400 hover:underline">Manage â†’</button>
                         </div>
                         <div className="space-y-4">
                             {contracts.map(contract => (
@@ -490,3 +520,4 @@ const ClientDetail = () => {
 };
 
 export default ClientDetail;
+

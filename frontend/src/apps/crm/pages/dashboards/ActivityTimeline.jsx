@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { crmService } from '../../../../core/api/crmService';
+import { crmService } from '../../api/crmService';
 import { Phone, Mail, Users, FileText, Send, Plus } from 'lucide-react';
 
 const ActivityTimeline = ({ clientId, interactions, onActivityAdded }) => {

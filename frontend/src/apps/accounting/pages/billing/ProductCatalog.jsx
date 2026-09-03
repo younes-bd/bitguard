@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Plus, Edit2, Trash2 } from 'lucide-react';
-import api from '../../../../core/api/client';
+import { accountingService } from '../../api/accountingService';
+import { ecommerceService } from '../../../ecommerce/api/ecommerceService';
 import toast from 'react-hot-toast';
 
 const ProductCatalog = () => {
@@ -20,12 +21,12 @@ const ProductCatalog = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [prodRes, taxRes] = await Promise.all([
-                api.get('/store/products/'),
-                api.get('/accounting/taxes/')
+            const [prodData, taxData] = await Promise.all([
+                ecommerceService.getProducts(),
+                accountingService.getTaxes()
             ]);
-            setProducts(prodRes.data.data || prodRes.data);
-            setTaxes(taxRes.data.data || taxRes.data || []);
+            setProducts(prodData || []);
+            setTaxes(taxData || []);
         } catch (err) {
             toast.error("Failed to load catalog data");
         } finally {
@@ -37,10 +38,10 @@ const ProductCatalog = () => {
         try {
             const payload = { ...formData, tax_config: formData.tax_config || null };
             if (formData.id) {
-                await api.put(`/store/products/${formData.id}/`, payload);
+                await ecommerceService.updateProduct(formData.id, payload);
                 toast.success("Item updated");
             } else {
-                await api.post('/store/products/', payload);
+                await ecommerceService.createProduct(payload);
                 toast.success("Item created");
             }
             setIsEditing(false);
@@ -53,7 +54,7 @@ const ProductCatalog = () => {
     const handleDelete = async (id) => {
         if (confirm('Delete this item from catalog?')) {
             try {
-                await api.delete(`/store/products/${id}/`);
+                await ecommerceService.deleteProduct(id);
                 toast.success("Deleted successfully");
                 fetchData();
             } catch (err) {

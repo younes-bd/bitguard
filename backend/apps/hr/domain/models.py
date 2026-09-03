@@ -17,6 +17,7 @@ class Department(TenantAwareModel):
 
 
 class Employee(TenantAwareModel):
+    job_application = models.OneToOneField('hr_recruitment.JobApplication', on_delete=models.SET_NULL, null=True, blank=True, related_name='hired_employee')
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('on_leave', 'On Leave'),
@@ -36,6 +37,9 @@ class Employee(TenantAwareModel):
     skills = models.JSONField(default=list, blank=True, help_text="List of skill tags")
     phone = models.CharField(max_length=30, blank=True)
     emergency_contact = models.CharField(max_length=255, blank=True)
+    emergency_contact_name = models.CharField(max_length=100, blank=True, null=True)
+    emergency_contact_phone = models.CharField(max_length=20, blank=True, null=True)
+    bank_account_number = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.get_full_name() or self.user.username} ({self.job_title})"
@@ -75,7 +79,7 @@ class TimeEntry(TenantAwareModel):
         ordering = ['-entry_date']
 
     def __str__(self):
-        return f"{self.employee} — {self.hours}h on {self.entry_date}"
+        return f"{self.employee} Ã¢â‚¬â€ {self.hours}h on {self.entry_date}"
 
 
 class OnboardingInstance(TenantAwareModel):

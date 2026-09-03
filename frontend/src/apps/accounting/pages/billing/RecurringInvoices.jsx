@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Repeat, Plus, Play, Pause, Calendar, Building2, Search, Zap } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
-import { crmService } from '../../../../core/api/crmService';
+import { accountingService } from '../../api/accountingService';
+import { crmService } from '../../../crm/api/crmService';
 import { toast } from 'react-hot-toast';
 
 const RecurringInvoices = () => {
@@ -29,7 +29,7 @@ const RecurringInvoices = () => {
     const fetchData = async () => {
         try {
             const [schedulesData, clientsData] = await Promise.all([
-                erpService.getRecurringInvoices(),
+                accountingService.getRecurringInvoices(),
                 crmService.getClients()
             ]);
             setSchedules(schedulesData || []);
@@ -49,7 +49,7 @@ const RecurringInvoices = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            await erpService.createRecurringInvoice(formData);
+            await accountingService.createRecurringInvoice(formData);
             toast.success("Recurring schedule created successfully!");
             setShowModal(false);
             setFormData({
@@ -88,7 +88,7 @@ const RecurringInvoices = () => {
 
     const handleToggle = async (id) => {
         try {
-            await erpService.toggleRecurring(id);
+            await accountingService.toggleRecurring(id);
             toast.success('Schedule status updated');
             fetchSchedules();
         } catch (err) {
@@ -98,7 +98,7 @@ const RecurringInvoices = () => {
 
     const handleRunNow = async (id) => {
         try {
-            await erpService.runRecurringNow(id);
+            await accountingService.runRecurringNow(id);
             toast.success('Invoice generated successfully from schedule');
             // We could navigate to the newly created invoice if the backend returns it
         } catch (err) {

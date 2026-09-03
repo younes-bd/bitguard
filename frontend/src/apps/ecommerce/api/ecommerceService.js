@@ -1,0 +1,181 @@
+import client from '@/core/api/client';
+
+export const ecommerceService = {
+    // --- Products ---
+    getProducts: async (params = {}) => {
+        const response = await client.get('product/products/', { params });
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    getProduct: async (id) => {
+        const response = await client.get(`product/products/${id}/`);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    getProductById: async (id) => {
+        const response = await client.get(`product/products/${id}/`);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    // --- Categories ---
+    getCategories: async () => {
+        const response = await client.get('product/categories/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    createCategory: async (data) => {
+        const response = await client.post('product/categories/', data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    updateCategory: async (id, data) => {
+        const response = await client.patch(`product/categories/${id}/`, data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    deleteCategory: async (id) => {
+        const response = await client.delete(`product/categories/${id}/`);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    // --- Subscription Plans ---
+    getPlans: async () => {
+        const response = await client.get('ecommerce/subscription-plans/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    // --- Cart ---
+    getCart: async (sessionId) => {
+        const response = await client.get('ecommerce/carts/', { params: { session_id: sessionId } });
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    createCart: async (data) => {
+        const response = await client.post('ecommerce/carts/', data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    addToCart: async (cartId, itemData) => {
+        const response = await client.post(`ecommerce/carts/${cartId}/items/`, itemData);
+        return response.data;
+    },
+    removeFromCart: async (cartId, itemId) => {
+        const response = await client.delete(`ecommerce/carts/${cartId}/items/${itemId}/`);
+        return response.data;
+    },
+
+    // --- Orders & Checkout ---
+    checkout: async (productId, checkoutData) => {
+        const response = await client.post(`product/products/${productId}/checkout/`, checkoutData);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    subscribe: async (planId, subscribeData) => {
+        const response = await client.post(`ecommerce/subscription-plans/${planId}/subscribe/`, subscribeData);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    createOrder: async (orderData) => {
+        const response = await client.post('ecommerce/orders/', orderData);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    getOrders: async () => {
+        const response = await client.get('ecommerce/orders/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    deleteOrder: async (id) => {
+        const response = await client.delete(`ecommerce/orders/${id}/`);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    updateOrderStatus: async (id, status) => {
+        const response = await client.post(`ecommerce/orders/${id}/update_status/`, { status });
+        return response.data;
+    },
+
+    // --- User Subscriptions & Licenses ---
+    getSubscriptions: async () => {
+        const response = await client.get('ecommerce/subscriptions/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    startTrial: async (planId) => {
+        const response = await client.post('ecommerce/subscriptions/start_trial/', { plan_id: planId });
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    createSubscription: async (data) => {
+        const response = await client.post('ecommerce/subscriptions/', data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    updateSubscription: async (id, data) => {
+        const response = await client.put(`ecommerce/subscriptions/${id}/`, data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    cancelSubscription: async (id) => {
+        const response = await client.post(`ecommerce/subscriptions/${id}/cancel/`);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    getLicenses: async () => {
+        const response = await client.get('ecommerce/licenses/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    // --- Customers ---
+    getCustomers: async () => {
+        const response = await client.get('ecommerce/customers/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    // --- Admin Management (Write Operations) ---
+    createProduct: async (data) => {
+        const response = await client.post('product/products/', data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    updateProduct: async (id, data) => {
+        const response = await client.put(`product/products/${id}/`, data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    deleteProduct: async (id) => {
+        const response = await client.delete(`product/products/${id}/`);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    // --- Service Catalog ---
+    getServiceCatalog: async () => {
+        const response = await client.get('ecommerce/service-catalog/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+
+    // --- Settings & Configurations ---
+    getSettings: async () => {
+        const response = await client.get('ecommerce/settings/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    updateSettings: async (id, data) => {
+        const response = await client.put(`ecommerce/settings/${id}/`, data);
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    getCustomization: async () => {
+        const response = await client.get('ecommerce/customization/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    getShippingSettings: async () => {
+        const response = await client.get('ecommerce/shipping-settings/');
+        return response.data?.data ?? response.data;
+    },
+    createShippingSetting: async (data) => {
+        const response = await client.post('ecommerce/shipping-settings/', data);
+        return response.data?.data ?? response.data;
+    },
+    updateShippingSetting: async (id, data) => {
+        const response = await client.patch(`ecommerce/shipping-settings/${id}/`, data);
+        return response.data?.data ?? response.data;
+    },
+    deleteShippingSetting: async (id) => {
+        const response = await client.delete(`ecommerce/shipping-settings/${id}/`);
+        return response.data?.data ?? response.data;
+    },
+
+    getAddons: async () => {
+        const response = await client.get('ecommerce/addons/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    getTrackingConfigs: async () => {
+        const response = await client.get('ecommerce/tracking-configs/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    },
+    getLandingPages: async () => {
+        const response = await client.get('ecommerce/landing-pages/');
+        return response.data?.data ?? response.data?.results ?? response.data;
+    }
+};

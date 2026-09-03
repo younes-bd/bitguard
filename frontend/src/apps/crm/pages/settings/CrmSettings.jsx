@@ -1,116 +1,89 @@
-import React, { useState } from 'react';
-import { Settings, Save, Bell, Shield, Globe, Database, Mail, Clock, ListChecks, Target, MessageSquare } from 'lucide-react';
+import React from 'react';
+import { Users, Mail, PieChart, Activity, Target } from 'lucide-react';
+import { useSettings } from '../../../system/hooks/useSettings';
 
-const SettingRow = ({ icon: Icon, title, description, children }) => (
-    <div className="flex items-start justify-between gap-6 py-5 border-b border-slate-800 last:border-0">
-        <div className="flex items-start gap-4">
-            {Icon && (
-                <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Icon size={18} className="text-slate-400" />
-                </div>
-            )}
-            <div>
-                <h4 className="text-white font-medium text-sm">{title}</h4>
-                <p className="text-slate-500 text-xs mt-0.5 max-w-md">{description}</p>
-            </div>
+const Card = ({ children, className }) => <div className={`border rounded-xl shadow-sm ${className}`}>{children}</div>;
+const CardHeader = ({ children }) => <div className="p-6 border-b border-slate-800">{children}</div>;
+const CardTitle = ({ children, className }) => <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>;
+const CardContent = ({ children, className }) => <div className={`p-6 ${className}`}>{children}</div>;
+const Label = ({ children, className }) => <label className={`font-medium ${className}`}>{children}</label>;
+const Button = ({ children, className, ...props }) => <button className={`px-4 py-2 rounded-xl font-bold transition-colors ${className}`} {...props}>{children}</button>;
+
+const Switch = ({ checked, onCheckedChange, disabled }) => (
+    <button 
+        type="button"
+        onClick={() => !disabled && onCheckedChange(!checked)}
+        disabled={disabled}
+        className={`w-11 h-6 rounded-full transition-colors relative ${checked ? 'bg-emerald-600' : 'bg-slate-700'} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${checked ? 'translate-x-5' : ''}`} />
+    </button>
+);
+
+
+const SettingRow = ({ title, description, children }) => (
+    <div className="flex items-center justify-between py-2 border-b border-slate-800/50 last:border-0">
+        <div className="space-y-0.5 pr-8">
+            <Label className="text-base text-white">{title}</Label>
+            <p className="text-sm text-slate-400">{description}</p>
         </div>
-        <div className="flex-shrink-0">{children}</div>
+        <div>
+            {children}
+        </div>
     </div>
 );
 
-const Toggle = ({ defaultOn = false }) => {
-    const [on, setOn] = useState(defaultOn);
+const CRMSettings = () => {
+    const { settings, updateSetting, loading } = useSettings();
+
+    const settingRows = [
+        { key: 'crm_lead_scoring', label: 'Lead Scoring', desc: 'Automatically score incoming leads based on activity and engagement.' },
+        { key: 'crm_auto_assign', label: 'Auto-Assign Leads', desc: 'Automatically assign new leads to the least loaded salesperson.' },
+        { key: 'crm_pipeline_stages', label: 'Custom Pipeline Stages', desc: 'Allow custom pipeline stage configuration per sales team.' },
+        { key: 'crm_email_alias', label: 'Email Alias for Leads', desc: 'Create leads automatically from incoming emails.' },
+        { key: 'crm_activity_reminders', label: 'Activity Reminders', desc: 'Send scheduled reminders for overdue CRM activities.' },
+    ];
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+        );
+    }
+
     return (
-        <button onClick={() => setOn(!on)}
-            className={`w-11 h-6 rounded-full transition-colors relative ${on ? 'bg-blue-600' : 'bg-slate-700'}`}>
-            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${on ? 'translate-x-5' : ''}`} />
-        </button>
-    );
-};
-
-const CrmSettings = () => {
-    const [saving, setSaving] = useState(false);
-
-    const handleSave = () => {
-        setSaving(true);
-        setTimeout(() => setSaving(false), 1000);
-    };
-
-    return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
+        <div className="p-8 max-w-5xl mx-auto animate-fade-in-up">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-white font-['Oswald'] tracking-wider uppercase flex items-center gap-3">
-                        <Settings className="text-blue-400" size={28} />
-                        Sales & CRM Settings
-                    </h1>
-                    <p className="text-slate-400 text-sm mt-0.5">Configure sales pipeline, lead management, and activities</p>
+                    <h1 className="text-3xl font-extrabold text-white tracking-tight font-['Oswald'] uppercase mb-2">CRM Settings</h1>
+                    <p className="text-slate-400">Configure your Sales Pipeline and Lead Management</p>
                 </div>
-                <button 
-                    onClick={handleSave}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
-                >
-                    <Save size={14} /> {saving ? 'Saving...' : 'Save Changes'}
-                </button>
+                {/* Global Save Button - Toggles are saved instantly, so we don't necessarily need this, but we'll leave it as requested */}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                {/* Sales Pipeline */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                    <h3 className="text-white font-semibold mb-4 text-lg flex items-center gap-2">
-                        <ListChecks size={20} className="text-blue-400" />
-                        Sales Pipeline
-                    </h3>
-                    <SettingRow title="Pipeline Stages" description="Define the stages for your sales deals">
-                        <div className="flex flex-col gap-2">
-                            {['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'].map(stage => (
-                                <div key={stage} className="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg text-xs text-slate-300">
-                                    {stage}
-                                </div>
-                            ))}
-                        </div>
-                    </SettingRow>
-                    <SettingRow title="Probability Distribution" description="Automatically set deal probability based on stage">
-                        <Toggle defaultOn />
-                    </SettingRow>
-                </div>
-
-                {/* Lead Management */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                    <h3 className="text-white font-semibold mb-4 text-lg flex items-center gap-2">
-                        <Target size={20} className="text-blue-400" />
-                        Lead Scoring
-                    </h3>
-                    <SettingRow title="Email Engagement" description="Add points for lead opening/clicking emails">
-                        <input type="number" defaultValue={5} className="w-16 bg-slate-950 border border-slate-800 text-slate-200 px-3 py-1.5 rounded-lg text-sm" />
-                    </SettingRow>
-                    <SettingRow title="Inactivity Decay" description="Deduct points for leads with no activity for 30 days">
-                        <Toggle defaultOn />
-                    </SettingRow>
-                </div>
-
-                {/* Activity Types */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 lg:col-span-2">
-                    <h3 className="text-white font-semibold mb-4 text-lg flex items-center gap-2">
-                        <MessageSquare size={20} className="text-blue-400" />
-                        Activity & Task Types
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <SettingRow icon={Mail} title="Email Tracking" description="Automatically log outgoing sales emails">
-                            <Toggle defaultOn />
-                        </SettingRow>
-                        <SettingRow icon={Clock} title="Task Deadlines" description="Auto-notify when a sales task is overdue">
-                            <Toggle defaultOn />
-                        </SettingRow>
-                        <SettingRow icon={Shield} title="Data Residency" description="Enforce data location for sensitive client info">
-                            <Toggle />
-                        </SettingRow>
-                    </div>
-                </div>
+            <div className="grid gap-6">
+                <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                            <Target size={18} className="text-blue-500" />
+                            General CRM Settings
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        {settingRows.map(row => (
+                            <SettingRow key={row.key} title={row.label} description={row.desc}>
+                                <Switch
+                                    checked={settings[row.key] === 'true'}
+                                    onCheckedChange={(val) => updateSetting(row.key, val)}
+                                    disabled={loading}
+                                />
+                            </SettingRow>
+                        ))}
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );
 };
 
-export default CrmSettings;
+export default CRMSettings;

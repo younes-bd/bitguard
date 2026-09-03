@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import RecordFormLayout from '../../../core/components/shared/forms/RecordFormLayout';
-import crmService from '../api/crmService';
+import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import { crmService } from '../api/crmService';
 import { toast } from 'react-hot-toast';
 import { Loader2, DollarSign, Calendar, Check, X } from 'lucide-react';
 
 export default function DealDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const handleConvertToSale = async () => {
+    try {
+      const { data } = await client.post(`/crm/deals/${id}/convert-to-sale/`);
+      toast.success('Deal converted to Sale Order!');
+      navigate(`/sales/orders/${data.id}`);
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to convert deal');
+    }
+  };
+
   const isNew = id === 'new';
 
   const [deal, setDeal] = useState({

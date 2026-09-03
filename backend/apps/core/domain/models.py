@@ -1,3 +1,4 @@
+from apps.core.validators import validate_document_file, validate_image_file
 import uuid
 from django.db import models
 from django.utils import timezone
@@ -29,7 +30,7 @@ class BaseModel(UUIDModel):
     """
     Tenant-aware base model for all isolated BitGuard entities.
     """
-    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_set')
+    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.PROTECT, null=True, blank=True, related_name='%(app_label)s_%(class)s_set')
 
     def save(self, *args, **kwargs):
         if not getattr(self, 'tenant_id', None):
@@ -67,7 +68,21 @@ class TenantAwareModel(BaseModel):
 # - Tenancy -> apps.tenants
 # - Notifications -> apps.notifications
 
-# AuditTrail has been moved to apps.audit to align with domain-driven design.
+class AuditTrail(TenantAwareModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_trails')
+    action = models.CharField(max_length=255)
+    resource_type = models.CharField(max_length=255)
+    resource_id = models.CharField(max_length=255)
+    details = models.JSONField(default=dict, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        app_label = 'core'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user} - {self.action} on {self.resource_type} ({self.resource_id})"
+
 # See apps.audit.models.AuditTrail for the centralized implementation.
 
 class Partner(TenantAwareModel):
@@ -90,6 +105,14 @@ class Partner(TenantAwareModel):
     is_active = models.BooleanField(default=True)
     credit_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
+    # Profile/Demographic fields transferred from UserProfile
+    bio = models.TextField(blank=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')], blank=True, null=True)
+    image = models.ImageField(upload_to='partners/%Y/%m/%d/', blank=True, null=True, validators=[validate_image_file])
+    city = models.CharField(max_length=100, blank=True, null=True)
+    language = models.CharField(max_length=10, default='en-us')
+
     def __str__(self):
         return f"{self.name} ({self.get_partner_type_display()})"
 
@@ -99,7 +122,7 @@ class Attachment(TenantAwareModel):
     (Odoo ir.attachment equivalent)
     """
     name = models.CharField(max_length=255)
-    file = models.FileField(upload_to='attachments/%Y/%m/')
+    file = models.FileField(upload_to='attachments/%Y/%m/', validators=[validate_document_file])
     res_model = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     res_id = models.CharField(max_length=255)  # Stored as string to support UUIDs and Ints
     content_object = GenericForeignKey('res_model', 'res_id')
@@ -145,14 +168,14 @@ class CompanySettings(TenantAwareModel):
     setup_completed = models.BooleanField(default=False)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # CHATTER SYSTEM  (Odoo mail.thread / mail.activity.mixin equivalent)
 # Every business record that inherits ChatterMixin gains:
-#   • Threaded message history (public + internal notes)
-#   • Scheduled activities (calls, emails, meetings, to-dos)
-#   • Follower subscriptions
-#   • Automatic field-change audit trail
-# ─────────────────────────────────────────────────────────────────────────────
+#   â€¢ Threaded message history (public + internal notes)
+#   â€¢ Scheduled activities (calls, emails, meetings, to-dos)
+#   â€¢ Follower subscriptions
+#   â€¢ Automatic field-change audit trail
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class RecordMessage(TenantAwareModel):
     """
@@ -171,13 +194,13 @@ class RecordMessage(TenantAwareModel):
         )
     """
     MESSAGE_TYPE_CHOICES = [
-        ('comment', 'Message'),            # public — sent to followers by email
+        ('comment', 'Message'),            # public â€” sent to followers by email
         ('note', 'Internal Note'),         # internal only
         ('email', 'Inbound Email'),        # received email matched to record
         ('notification', 'Notification'), # system-generated
     ]
 
-    # Generic FK — attaches to ANY model
+    # Generic FK â€” attaches to ANY model
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE,
         related_name='record_messages',
@@ -202,7 +225,7 @@ class RecordMessage(TenantAwareModel):
         verbose_name=_('Internal Note'),
         help_text=_('Internal notes are only visible to team members, not sent externally.'),
     )
-    # Attachments stored via core.Attachment generic FK — no direct M2M to keep it simple
+    # Attachments stored via core.Attachment generic FK â€” no direct M2M to keep it simple
     attachment_ids = models.JSONField(
         default=list, blank=True,
         help_text=_('List of Attachment UUIDs linked to this message.'),
@@ -215,7 +238,7 @@ class RecordMessage(TenantAwareModel):
         verbose_name_plural = _('Record Messages')
 
     def __str__(self):
-        return f"[{self.message_type}] {self.author} → {self.content_type.model}/{self.object_id}"
+        return f"[{self.message_type}] {self.author} â†’ {self.content_type.model}/{self.object_id}"
 
 
 class RecordActivity(TenantAwareModel):
@@ -271,7 +294,7 @@ class RecordActivity(TenantAwareModel):
         verbose_name_plural = _('Record Activities')
 
     def __str__(self):
-        return f"[{self.activity_type}] {self.assigned_to} · due {self.due_date}"
+        return f"[{self.activity_type}] {self.assigned_to} Â· due {self.due_date}"
 
     def mark_done(self, feedback=''):
         """Mark this activity as done and log a completion message."""
@@ -324,7 +347,7 @@ class FieldChangeLog(TenantAwareModel):
     Odoo's tracking=True field equivalent.
 
     Written by ChatterMixin.log_field_change() when a tracked field is updated.
-    Displayed in the chatter history as "Field changed: Old → New".
+    Displayed in the chatter history as "Field changed: Old â†’ New".
     """
     # Generic FK
     content_type = models.ForeignKey(
@@ -355,39 +378,6 @@ class FieldChangeLog(TenantAwareModel):
         return f"{self.content_type.model}/{self.object_id}: {self.field_name} changed by {self.changed_by}"
 
 
-class AutomatedAction(TenantAwareModel):
-    """
-    Event-driven workflow automation rule.
-    Odoo base_automation equivalent.
-
-    Example: "When a Ticket's priority changes to Critical, send an email to the manager."
-    """
-    TRIGGER_CHOICES = [
-        ('on_create', 'On Record Creation'),
-        ('on_write', 'On Record Update'),
-        ('on_unlink', 'On Record Deletion'),
-        ('on_stage_set', 'When Stage Is Set To'),
-        ('on_time', 'Based on Time Condition'),
-    ]
-    ACTION_TYPE_CHOICES = [
-        ('update_field', 'Update a Field'),
-        ('send_email', 'Send Email'),
-        ('send_notification', 'Send In-App Notification'),
-        ('create_activity', 'Schedule Activity'),
-        ('call_webhook', 'Call External Webhook'),
-    ]
-    name = models.CharField(max_length=255)
-    model_name = models.CharField(max_length=100, help_text="e.g. crm.Lead, helpdesk.Ticket")
-    trigger = models.CharField(max_length=30, choices=TRIGGER_CHOICES)
-    filter_domain = models.JSONField(default=dict, blank=True)
-    action_type = models.CharField(max_length=30, choices=ACTION_TYPE_CHOICES)
-    action_data = models.JSONField(default=dict)
-    is_active = models.BooleanField(default=True)
-    last_run = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        app_label = 'core'
-        verbose_name = _('Automated Action')
 
 
 class ScheduledAction(TenantAwareModel):
@@ -411,6 +401,7 @@ class ScheduledAction(TenantAwareModel):
     class Meta:
         app_label = 'core'
         verbose_name = _('Scheduled Action')
+        unique_together = ('tenant', 'model_name', 'method_name')
 
 
 class ChatterMixin(models.Model):
@@ -430,7 +421,7 @@ class ChatterMixin(models.Model):
     class Meta:
         abstract = True
 
-    # ── Messages ─────────────────────────────────────────────────────────────
+    # â”€â”€ Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def post_message(self, body, author=None, message_type='comment', is_internal=False, subject=''):
         """Post a message or internal note to this record's chatter thread."""
@@ -456,7 +447,7 @@ class ChatterMixin(models.Model):
         ct = ContentType.objects.get_for_model(self)
         return RecordMessage.objects.filter(content_type=ct, object_id=str(self.pk))
 
-    # ── Activities ────────────────────────────────────────────────────────────
+    # â”€â”€ Activities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def schedule_activity(self, activity_type, due_date, assigned_to=None, summary='', note=''):
         """Schedule a new activity (call, email, meeting, to-do) on this record."""
@@ -480,7 +471,7 @@ class ChatterMixin(models.Model):
             qs = qs.filter(is_done=False)
         return qs
 
-    # ── Followers ─────────────────────────────────────────────────────────────
+    # â”€â”€ Followers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def follow(self, user):
         """Subscribe a user to notifications on this record."""
@@ -505,13 +496,13 @@ class ChatterMixin(models.Model):
         ct = ContentType.objects.get_for_model(self)
         return RecordFollower.objects.filter(content_type=ct, object_id=str(self.pk))
 
-    # ── Field-Change Tracking ─────────────────────────────────────────────────
+    # â”€â”€ Field-Change Tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def log_field_change(self, field_name, old_value, new_value, user=None, field_label=''):
         """
         Log a field value change to the FieldChangeLog.
         Call this inside your model's save() or a service method when a tracked
-        field changes. The change will appear in the chatter as "Field → New Value".
+        field changes. The change will appear in the chatter as "Field â†’ New Value".
         """
         ct = ContentType.objects.get_for_model(self)
         return FieldChangeLog.objects.create(

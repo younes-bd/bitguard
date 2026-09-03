@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { crmService } from '../../../../core/api/crmService';
-import client from '../../../../core/api/client';
+import { crmService } from '../../api/crmService';
+import client from '@/core/api/client';
 import toast from 'react-hot-toast';
 import { ShoppingCart, Search, Filter, DollarSign, User, Calendar, CheckCircle, Clock } from 'lucide-react';
 

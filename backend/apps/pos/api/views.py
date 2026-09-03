@@ -1,6 +1,8 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,7 +14,7 @@ class StandardPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 200
 
-class PosConfigViewSet(viewsets.ModelViewSet):
+class PosConfigViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PosConfigSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -24,7 +26,7 @@ class PosConfigViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class PosSessionViewSet(viewsets.ModelViewSet):
+class PosSessionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PosSessionSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -85,7 +87,7 @@ class PosSessionViewSet(viewsets.ModelViewSet):
                 
         return Response({'status': session.state})
 
-class PosOrderViewSet(viewsets.ModelViewSet):
+class PosOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PosOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -100,7 +102,7 @@ class PosOrderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class PosPaymentViewSet(viewsets.ModelViewSet):
+class PosPaymentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PosPaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -112,7 +114,7 @@ class PosPaymentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class RestaurantFloorViewSet(viewsets.ModelViewSet):
+class RestaurantFloorViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RestaurantFloorSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -124,7 +126,7 @@ class RestaurantFloorViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class RestaurantTableViewSet(viewsets.ModelViewSet):
+class RestaurantTableViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RestaurantTableSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -136,7 +138,7 @@ class RestaurantTableViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class RestaurantPrinterViewSet(viewsets.ModelViewSet):
+class RestaurantPrinterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RestaurantPrinterSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -147,3 +149,21 @@ class RestaurantPrinterViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+
+class DashboardStatsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        qs = PosOrder.objects.all()
+        if tenant:
+            qs = qs.filter(tenant=tenant)
+
+        from django.db.models import Sum
+        
+        return Response({
+            'total_orders': qs.count(),
+            'total_sales': qs.filter(state__in=['paid', 'done', 'invoiced']).aggregate(Sum('amount_total'))['amount_total__sum'] or 0,
+            'active_sessions': PosSession.objects.filter(tenant=tenant, state='opened').count(),
+            'total_tables': RestaurantTable.objects.filter(tenant=tenant).count(),
+        })

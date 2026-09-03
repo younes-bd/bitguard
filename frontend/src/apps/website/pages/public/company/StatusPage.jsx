@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import PageMeta from '../../../../../core/components/shared/PageMeta';
-import statusService from '../../../../../core/api/statusService';
+import PageMeta from '@/core/components/shared/PageMeta';
+import { settingsService } from '../../../../system/api/settingsService';
 import { Loader2 } from 'lucide-react';
 
 const StatusPage = () => {
@@ -12,7 +12,7 @@ const StatusPage = () => {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const data = await statusService.getSystemStatus();
+                const data = await settingsService.getSystemStatus();
                 setSystems(data.systems.map(s => ({
                     ...s,
                     status: s.status.toLowerCase()

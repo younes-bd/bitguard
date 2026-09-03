@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { platformService } from '../../../../core/api/platformService';
+import { settingsService } from '../../../system/api/settingsService';
 import {
     ServerStackIcon,
     SignalIcon,
@@ -16,8 +16,8 @@ const PlatformDashboard = () => {
         setLoading(true);
         try {
             const [monitorsData, networkData] = await Promise.all([
-                platformService.getSystemMonitors(),
-                platformService.getNetworkEvents({ limit: 10 })
+                settingsService.getSystemMonitors(),
+                settingsService.getNetworkEvents({ limit: 10 })
             ]);
             setMonitors(monitorsData.results || monitorsData);
             setNetworkEvents(networkData.results || networkData);

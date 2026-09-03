@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Search, Plus, User, Building2, Mail, Phone, ChevronRight, Edit2, Trash2, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { hrmService } from '../../../../core/api/hrmService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import { hrService } from '../../api/hrService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 
 const statusBadge = (status) => {
     const map = { active: 'bg-emerald-500/10 text-emerald-400', inactive: 'bg-slate-700 text-slate-400', on_leave: 'bg-amber-500/10 text-amber-400' };
@@ -24,14 +24,17 @@ const EmployeeList = () => {
         const fetchAll = async () => {
             try {
                 const [empData, deptData] = await Promise.all([
-                    hrmService.getEmployees({ search }),
-                    hrmService.getDepartments ? hrmService.getDepartments().catch(() => []) : Promise.resolve([])
+                    hrService.getEmployees({ search }),
+                    hrService.getDepartments ? hrService.getDepartments().catch(() => []) : Promise.resolve([])
                 ]);
                 setEmployees(empData?.results ?? empData ?? []);
                 setDepartments(deptData?.results ?? deptData ?? []);
             } catch (err) {
-                console.error(err);
-            } finally {
+      const message = err.response?.data?.detail || err.message || 'An unexpected error occurred';
+      console.error(err);
+      toast.error(message);
+      
+    } finally {
                 setLoading(false);
             }
         };
@@ -42,12 +45,12 @@ const EmployeeList = () => {
         setActionLoading(true);
         try {
             if (selectedEmployee) {
-                await hrmService.updateEmployee(selectedEmployee.id, formData);
+                await hrService.updateEmployee(selectedEmployee.id, formData);
             } else {
-                await hrmService.createEmployee(formData);
+                await hrService.createEmployee(formData);
             }
             setIsModalOpen(false);
-            const data = await hrmService.getEmployees();
+            const data = await hrService.getEmployees();
             setEmployees(data?.results ?? data ?? []);
             toast.success(selectedEmployee ? 'Employee updated successfully!' : 'Employee created successfully!');
         } catch (error) {
@@ -62,9 +65,9 @@ const EmployeeList = () => {
         if (!selectedEmployee) return;
         setActionLoading(true);
         try {
-            await hrmService.deleteEmployee(selectedEmployee.id);
+            await hrService.deleteEmployee(selectedEmployee.id);
             setIsDeleteModalOpen(false);
-            const data = await hrmService.getEmployees();
+            const data = await hrService.getEmployees();
             setEmployees(data?.results ?? data ?? []);
             toast.success('Employee deleted successfully!');
         } catch (error) {
@@ -133,9 +136,9 @@ const EmployeeList = () => {
                                         <span className="text-white font-medium">{emp.first_name} {emp.last_name}</span>
                                     </div>
                                 </td>
-                                <td className="px-5 py-4 text-slate-300">{emp.department?.name ?? emp.department ?? 'â€”'}</td>
-                                <td className="px-5 py-4 text-slate-400">{emp.job_title ?? emp.role ?? 'â€”'}</td>
-                                <td className="px-5 py-4 text-slate-400">{emp.email ?? 'â€”'}</td>
+                                <td className="px-5 py-4 text-slate-300">{emp.department?.name ?? emp.department ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                                <td className="px-5 py-4 text-slate-400">{emp.job_title ?? emp.role ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                                <td className="px-5 py-4 text-slate-400">{emp.email ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
                                 <td className="px-5 py-4">{statusBadge(emp.status)}</td>
                                 <td className="px-5 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -143,7 +146,7 @@ const EmployeeList = () => {
                                             onClick={async (e) => { 
                                                 e.stopPropagation(); 
                                                 try {
-                                                    const { default: reportingService } = await import('../../../../core/api/reportingService');
+                                                    const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
                                                     const res = await reportingService.generateReport(null, 'hrm.Employee', emp.id);
                                                     if (res && res.file) {
                                                         window.open(res.file, '_blank');
@@ -203,4 +206,5 @@ const EmployeeList = () => {
 };
 
 export default EmployeeList;
+
 

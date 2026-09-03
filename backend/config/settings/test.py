@@ -8,10 +8,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+import os
+_NATIVE_DB = os.path.expanduser('~/website13_test_db.sqlite3')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'test_db.sqlite3',
+        'NAME': _NATIVE_DB,
     }
 }
 

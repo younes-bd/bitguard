@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileBarChart, Download, Search, RefreshCw, AlertTriangle } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const AgedReceivables = () => {
@@ -11,7 +11,7 @@ const AgedReceivables = () => {
     const fetchReport = async () => {
         setLoading(true);
         try {
-            const data = await erpService.getAgedReceivables();
+            const data = await accountingService.getAgedReceivables();
             setReportData(data || []);
         } catch (error) {
             console.error("Failed to fetch Aged Receivables:", error);

@@ -62,6 +62,14 @@ class PurchaseOrder(TenantAwareModel):
     def __str__(self):
         return f"PO #{self.id} — {self.vendor.name} ({self.status})"
 
+    @classmethod
+    def flag_delayed_deliveries(cls):
+        from django.utils import timezone
+        today = timezone.now().date()
+        delayed = cls.objects.filter(status='sent', expected_date__lt=today)
+        count = delayed.count()
+        print(f"[Cron Job] Found {count} delayed purchase orders.")
+
 
 class PurchaseOrderLine(BaseModel):
     """Individual line item within a PurchaseOrder. Supports both inventory and ad-hoc items."""
@@ -113,3 +121,5 @@ class VendorPricelist(TenantAwareModel):
     min_quantity = models.IntegerField(default=1)
     valid_from = models.DateField(null=True, blank=True)
     valid_to = models.DateField(null=True, blank=True)
+
+

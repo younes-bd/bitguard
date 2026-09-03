@@ -3,7 +3,7 @@ import {
     Building2, User, CreditCard, ShieldCheck, Database, Server, CheckCircle2,
     ChevronRight, ChevronLeft, ArrowRight, Activity, Globe, Package
 } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 
 export default function OnboardingWizard() {
     const [step, setStep] = useState(1);
@@ -211,7 +211,7 @@ export default function OnboardingWizard() {
                                 <div className="space-y-2">
                                     <label className="text-xs uppercase font-bold text-slate-400 tracking-wider">Domain</label>
                                     <input value={formData.domain} onChange={e => updateForm('domain', e.target.value)} 
-                                        type="text" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" placeholder="acme.com" />
+                                        type="text" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" placeholder="example.com" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs uppercase font-bold text-slate-400 tracking-wider">Industry</label>
@@ -249,7 +249,7 @@ export default function OnboardingWizard() {
                                 <div className="space-y-2">
                                     <label className="text-xs uppercase font-bold text-slate-400 tracking-wider">Email Address *</label>
                                     <input value={formData.contactEmail} onChange={e => updateForm('contactEmail', e.target.value)} 
-                                        type="email" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sky-500" placeholder="jane@acme.com" />
+                                        type="email" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sky-500" placeholder='' />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs uppercase font-bold text-slate-400 tracking-wider">Phone</label>
@@ -345,7 +345,7 @@ export default function OnboardingWizard() {
                                 <div className="space-y-2">
                                     <label className="text-xs uppercase font-bold text-slate-400 tracking-wider">Billing Email</label>
                                     <input value={formData.billingEmail} onChange={e => updateForm('billingEmail', e.target.value)} 
-                                        type="email" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sky-500" placeholder="accounting@acme.com" />
+                                        type="email" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sky-500" placeholder="accounting@example.com" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs uppercase font-bold text-slate-400 tracking-wider">Tax ID / VAT</label>
@@ -384,9 +384,9 @@ export default function OnboardingWizard() {
                                     <div className="relative">
                                         <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
                                         <input value={formData.tenantSlug} onChange={e => updateForm('tenantSlug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
-                                            type="text" className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-sky-500" placeholder="acme-corp" />
+                                            type="text" className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-sky-500" placeholder='' />
                                     </div>
-                                    <p className="text-xs text-slate-500 mt-1">Tenant will be accessible at: {formData.tenantSlug || 'acme-corp'}.bitguard.cloud</p>
+                                    <p className="text-xs text-slate-500 mt-1">Tenant will be accessible at: {formData.tenantSlug || ''}.bitguard.cloud</p>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs uppercase font-bold text-slate-400 tracking-wider">Hosting Region</label>

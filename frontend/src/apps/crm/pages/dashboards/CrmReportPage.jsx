@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Users, TrendingUp, Activity, Loader2 } from 'lucide-react';
-import { crmService } from '../../../../core/api/crmService';
+import { crmService } from '../../api/crmService';
 
 export default function CrmReportPage() {
     const [clients, setClients] = useState([]);

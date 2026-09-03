@@ -1,4 +1,51 @@
 BitGuard Final Fullstack Package
+# COMPANY IDENTITY DIRECTIVE — PERMANENT
+
+> **THIS IS THE MOST IMPORTANT RULE IN THIS FILE.**
+>
+> BitGuard is a **Do-It-All Managed Service Provider (MSP) and Full-Service IT Enterprise**. It is NOT a cybersecurity SaaS company. It is NOT a SOC monitoring platform. It is a comprehensive IT services company that offers ALL of the following service pillars equally:
+>
+> 1. **Managed IT Services** — Helpdesk, NOC, Co-Managed IT, Hardware Procurement, Disaster Recovery
+> 2. **Web Development & Digital** — Custom Web Dev, E-Commerce Platforms, App Development, UI/UX Design
+> 3. **AI & Automation** — AI Workflow Automation, LLM Integration, Business Intelligence, Data Analytics
+> 4. **Cloud & Infrastructure** — Azure/AWS Migrations, Microsoft 365, VDI, VoIP, Structured Cabling
+> 5. **Cybersecurity** — Managed SOC/MDR, Penetration Testing, Compliance (vCISO), Zero Trust
+> 6. **Physical Security** — Camera Surveillance, Access Control, Alarm Systems, Structured Cabling
+> 7. **Digital Transformation** — Legacy modernization, ERP/CRM implementations, process automation
+
+
+Context
+You are working on BitGuard ERP, a full-stack ERP application built with:
+
+Backend: Django REST Framework (DRF), PostgreSQL, multi-tenant architecture
+Frontend: React 18, Vite, Tailwind CSS, Lucide React icons, React Router v6
+Architecture: Modular ERP inspired by Odoo — each feature is a "module" (app) with a __manifest__.py, a Django app, and a React app
+The codebase structure for each module follows this pattern:
+
+
+backend/apps/<module_name>/
+  __manifest__.py          ← module metadata
+  domain/models.py         ← Django models
+  api/views.py             ← DRF ViewSets
+  api/serializers.py       ← DRF Serializers
+  api/urls.py              ← URL routing
+frontend/src/apps/<module_name>/
+  pages/                   ← React page components
+  api/                     ← API service functions
+  config/menu.js           ← Sidebar menu config
+  routes/<name>AdminRoutes.jsx  ← React Router route definitions
+CONTEXT
+
+You are working on a production-ready multi-tenant ERP system built in Django (DRF backend) + React (Vite frontend), following Domain-Driven Design (DDD) architecture. The system is architecturally equivalent to Odoo Enterprise.
+
+The PDF engine is already fully working: apps/reporting/services/pdf_generator.py (WeasyPrint), ReportTemplate model (stores html_content + css_content as Jinja2/Django templates), and ReportingService.generate_pdf(template, record) as the unified generation method. Every module that needs PDF generation already has the backend viewset @action plumbing and frontend Download/Print buttons — BUT the actual HTML/CSS html_content of every seeded template is either empty or a minimal placeholder.
+
+Your job is to bring this ERP document suite to full Odoo-standard production quality across three tracks:
+
+Write every HTML/CSS report template (Jinja2/Django syntax, WeasyPrint-compatible)
+Implement the four missing backend document actions
+Fix the four frontend gaps
+The tenant's branding variables are always available in every template context as {{ company_name }}, {{ company_logo_url }}, {{ company_address }}, {{ company_vat }}, {{ company_phone }}, {{ company_email }}, {{ primary_color }}.
 
 Includes:
 - Django backend with server-rendered templates (dark cyber theme), models, serializers, API endpoints and admin.
@@ -11,7 +58,18 @@ Password: admin
 follo AI_INSTRUCTIONS.md
 
 Quick start:
+# 1. Remove the broken environment
+rm -rf venv
 
+# 2. Create a fresh virtual environment
+python3 -m venv venv --clear
+
+# 3. Activate it
+source venv/bin/activate
+
+# 4. Upgrade pip and install all requirements
+pip install --upgrade pip
+pip install -r requirements.txt
 1) cd backend
 2) python3 -m venv venv
 3) source venv/bin/activate
@@ -35,7 +93,11 @@ python manage.py test apps.projects.tests
 python manage.py test apps.scm.tests
 python manage.py test apps.hrm.tests
 python manage.py sync_modules
-
+cd backend
+./venv/bin/python manage.py shell
+from django.core.cache import cache
+cache.clear()
+echo "from django.core.cache import cache; cache.clear()" | ./venv/bin/python manage.py shell
 Load and apply the BitGuard Platform Charter (CHARTER.md).
 git status
 git add .
@@ -162,3 +224,87 @@ Workflow Diagram showing how your platform should operate as a unified tech comp
 
 
 I just want you to audit my website and make sure it matches with enterprise grade like my IT enterprise that offers SaaS services and managed services and like other IT enterprise. But I want you to make a full audit including the navigation bar, the headers, the sections, all of the pages of my website module and make it much with enterprise grade. Give me a audit, please. 
+
+SYSTEM CONTEXT
+You are refactoring BitGuard Enterprise Platform, a multi-tenant ERP SaaS built on:
+
+Backend: Django 5 + Django REST Framework (DRF), following Domain-Driven Design (DDD) for internal business logic.
+Frontend: React 18 + Vite, following Feature-Sliced Design (FSD).
+Architecture: Registry-Driven Plugin Architecture for 100% decoupling (see ARCHITECTURE_REGISTRY_MIGRATION.md).
+Root path: c:\Users\youne\Desktop\2-InfoTech\website\website13\
+The platform has 53 frontend app modules and 40+ backend app modules. An automated deep audit has identified 38 total violations (24 frontend, 14 backend). Your job is to fix ALL of them without breaking any existing functionality.
+
+CRITICAL OPERATING RULE: Never break a working feature to achieve modularity. Every fix must be a clean refactor: same behavior, stricter boundaries.
+
+Phase 1 — Foundation (no risk of breakage)
+  ├── A4: Register missing apps in api/urls.py (additive only)
+  ├── A5: Fix AppConfig labels (low-risk with care)
+  ├── B2: Eliminate inline API calls (pure refactor, no behavior change)
+  └── B1: Fix flat directory structure (move files + update imports)
+
+Phase 2 — Service Layer (moderate complexity)
+  ├── A1: Create services.py for 27 apps (move logic, don't delete)
+  ├── A2: Add missing AuditService calls (additive only)
+  └── A3: Fix serializer fields (be careful not to break API contracts)
+
+Phase 3 — Structural Boundaries (higher complexity)
+  ├── A6: Fix cross-app model imports → string references
+  ├── A7: Fix base class inheritance (requires migration)
+  ├── B3: Remove cross-module component imports
+  ├── B4: Fix cross-module API imports → backend orchestration
+  └── B5: Fix core importing from apps
+
+Phase 4 — Architectural Patterns (advanced)
+  ├── A8: Centralize signals in core/signals.py
+  └── B6: Implement app registry for BackendRoutes
+
+
+🔴 Fix all hardcoded company data and credentials (move to env vars and tenant context)
+🔴 Add QuerySet-level tenant isolation to ALL ViewSets
+🔴 Fix WebSocket authentication
+🔴 Implement atomic transactions on all state transitions
+⚠️ Add read_only_fields to all serializers
+⚠️ Move business logic from views to services across all modules
+⚠️ Implement React Query for server state
+⚠️ Complete Lead→Order→Invoice→Payment frontend flow
+⚠️ Link Helpdesk tickets to ServiceContracts
+⚠️ Add DB indexes on high-query fields
+📋 Remove all console.log statements
+📋 Add Error Boundary to React app
+📋 Complete "coming soon" stubs (payroll, reporting exports, appointments)
+📋 Standardize FSD folder structure across all 54 frontend modules
+Implement read_only_fields on all model serializers to protect audit fields.
+Apply select_related and prefetch_related to complex ViewSets to prevent N+1 query issues.
+Add database indexes to high-query fields (Ticket.status, Invoice.due_date, Notification.user).
+Add robust file upload security validation (extensions and size limits).
+
+
+
+Module	Documents Required
+
+Accounting	
+Invoice, Credit Note, Vendor Bill, Payment Receipt, Statement of Account, Aged Receivables Report, Aged Payables Report, Bank Reconciliation Report, Tax Report (VAT), Trial Balance, P&L, Balance Sheet
+
+Sales
+Quotation/Proposal, Sales Order Confirmation, Delivery Order, Proforma Invoice, Customer Portal Order Summary
+
+Purchases	
+Purchase Order, Request for Quotation (RFQ), Goods Receipt Note (GRN), Vendor Bill confirmation
+
+Inventory/Stock
+Delivery Slip, Reception Report, Inventory Adjustment Report, Picking List, Packing List, Barcode Label, Stock Valuation Report
+
+HR
+Employment Contract, Payslip, Leave Request, Expense Report, Employee Badge
+
+CRM	
+Meeting/Activity Report, Pipeline Summary
+
+Projects	
+Project Status Report, Timesheet Report
+
+E-sign
+ / EDMS	Document templates with signature blocks
+
+
+"Act as a Senior Tier-1 ERP Architect. Audit my codebase for Domain Leakage, Separation of Concerns (SoC) violations, and Architectural Inversions. Specifically, verify that downstream business plugins are perfectly encapsulated and are not accidentally hosting global dispatchers, system infrastructure, or cross-module orchestrators that rightfully belong in the core or system modules

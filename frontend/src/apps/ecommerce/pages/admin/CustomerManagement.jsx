@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Search, Activity, Loader2 } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 
 export default function CustomerManagement() {
     const [customers, setCustomers] = useState([]);

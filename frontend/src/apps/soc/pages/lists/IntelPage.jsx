@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import securityService from '../../../../core/api/securityService';
+import securityService from '../../api/securityService';
 import { Search, Globe } from 'lucide-react';
 
 const IntelPage = () => {

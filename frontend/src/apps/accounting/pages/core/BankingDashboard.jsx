@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Landmark, ArrowUpRight, ArrowDownRight, RefreshCw, Plus, Building2, CreditCard, CheckCircle2 } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const BankingDashboard = () => {
@@ -26,9 +26,9 @@ const BankingDashboard = () => {
         const fetchData = async () => {
             try {
                 const [accs, trans, coa] = await Promise.all([
-                    erpService.getBankAccounts(),
-                    erpService.getBankTransactions(),
-                    erpService.getAccounts()
+                    accountingService.getBankAccounts(),
+                    accountingService.getBankTransactions(),
+                    accountingService.getAccounts()
                 ]);
                 setAccounts(accs || []);
                 setTransactions(trans || []);
@@ -47,7 +47,7 @@ const BankingDashboard = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            await erpService.createBankAccount(formData);
+            await accountingService.createBankAccount(formData);
             toast.success("Bank account created successfully!");
             setShowModal(false);
             setFormData({
@@ -58,7 +58,7 @@ const BankingDashboard = () => {
                 initial_balance: '0',
                 linked_account: ''
             });
-            const accs = await erpService.getBankAccounts();
+            const accs = await accountingService.getBankAccounts();
             setAccounts(accs || []);
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to create bank account");

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { platformService } from '../../../../core/api/platformService';
+import { settingsService } from '../../../system/api/settingsService';
 import {
     ComputerDesktopIcon,
     PlusIcon,
@@ -15,7 +15,7 @@ const RemoteSupport = () => {
     const fetchSessions = async () => {
         setLoading(true);
         try {
-            const data = await platformService.getRemoteSessions();
+            const data = await settingsService.getRemoteSessions();
             setSessions(Array.isArray(data) ? data : (data?.results || data?.data || []));
         } catch (error) {
             console.error("Failed to fetch remote sessions", error);
@@ -32,7 +32,7 @@ const RemoteSupport = () => {
     const handleCreateSession = async () => {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         try {
-            await platformService.createRemoteSession({
+            await settingsService.createRemoteSession({
                 session_code: code,
                 status: 'active'
             });

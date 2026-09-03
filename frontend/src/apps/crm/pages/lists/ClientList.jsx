@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { crmService } from '../../../../core/api/crmService';
-import { contractsService } from '../../../../core/api/contractsService';
-import helpdeskService from '../../../../core/api/helpdeskService';
+﻿import React, { useEffect, useState } from 'react';
+import { crmService } from '../../api/crmService';
+import { signService } from '../../../sign/api/signService';
+import helpdeskService from '../../../helpdesk/api/helpdeskService';
 import { Users, Search, Filter, Briefcase, MapPin, ExternalLink, Edit2, Trash2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 
 const ClientList = () => {
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ const ClientList = () => {
             try {
                 const [clientsData, contractsData, ticketsData] = await Promise.all([
                     crmService.getClients(),
-                    contractsService.getContracts(),
+                    signService.getContracts(),
                     helpdeskService.getTickets()
                 ]);
                 setClients(Array.isArray(clientsData) ? clientsData : clientsData.results || []);

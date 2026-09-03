@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Layers, Search, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
-import client from '../../../../core/api/client';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import { ecommerceService } from '../../api/ecommerceService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const CATEGORY_FIELDS = [
@@ -27,8 +27,8 @@ export default function CategoryManagement() {
     const fetchCategories = async () => {
         setLoading(true);
         try {
-            const res = await client.get('store/categories/');
-            setCategories(res.data.results || res.data || []);
+            const data = await ecommerceService.getCategories();
+            setCategories(data || []);
         } catch (error) {
             console.error("Failed to fetch categories:", error);
             toast.error('Failed to fetch categories');
@@ -41,10 +41,10 @@ export default function CategoryManagement() {
         setActionLoading(true);
         try {
             if (selectedItem) {
-                await client.patch(`store/categories/${selectedItem.id}/`, formData);
+                await ecommerceService.updateCategory(selectedItem.id, formData);
                 toast.success('Category updated');
             } else {
-                await client.post('store/categories/', formData);
+                await ecommerceService.createCategory(formData);
                 toast.success('Category created');
             }
             setIsModalOpen(false);
@@ -61,7 +61,7 @@ export default function CategoryManagement() {
     const handleDelete = async () => {
         setActionLoading(true);
         try {
-            await client.delete(`store/categories/${selectedItem.id}/`);
+            await ecommerceService.deleteCategory(selectedItem.id);
             toast.success('Category deleted');
             setIsDeleteModalOpen(false);
             setSelectedItem(null);

@@ -162,11 +162,6 @@ class IdentityService(BaseService):
             
         user.set_password(new_password)
         user.save()
-        
-        # Update last changed timestamp
-        profile, _ = Profile.objects.get_or_create(user=user)
-        profile.password_last_changed = timezone.now()
-        profile.save()
             
         AuditService.log_action(
             request, 
@@ -182,20 +177,76 @@ class IdentityService(BaseService):
         """
         Updates a user profile. Ensures traceability and validates data.
         """
-        profile, created = Profile.objects.get_or_create(user=user)
         for attr, value in data.items():
-            if hasattr(profile, attr):
-                setattr(profile, attr, value)
-        profile.save()
+            if hasattr(user, attr):
+                setattr(user, attr, value)
+        user.save()
         
         AuditService.log_action(
             request, 
             action="PROFILE_UPDATE", 
-            resource=f"users.Profile:{profile.id}",
+            resource=f"users.User:{user.id}",
             payload={"fields_updated": list(data.keys())}
         )
             
-        return profile
+        return user
+
+    @classmethod
+    def invite_user(cls, request, email, first_name, last_name, role_ids, user_type):
+        from django.contrib.auth import get_user_model
+        from ..domain.models import Role, TenantMembership
+        from django.utils.http import urlsafe_base64_encode
+        from django.utils.encoding import force_bytes
+        from django.contrib.auth.tokens import default_token_generator
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        User = get_user_model()
+        tenant = getattr(request.user, 'tenant', None)
+        
+        if User.objects.filter(email=email, tenant_memberships__tenant=tenant).exists():
+            return False, 'User with this email already exists', None
+            
+        user = User.objects.create(
+            email=email,
+            username=email,
+            first_name=first_name,
+            last_name=last_name,
+            user_type=user_type,
+            must_change_password=True,
+            is_active=True
+        )
+        if tenant:
+            TenantMembership.objects.create(user=user, tenant=tenant)
+            
+        user.set_unusable_password()
+        user.save()
+        
+        if role_ids:
+            user.roles.set(Role.objects.filter(id__in=role_ids))
+            
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        invite_url = f"{settings.FRONTEND_URL}/auth/set-password/{uid}/{token}/"
+        
+        tenant_name = tenant.name if tenant else 'our platform'
+        send_mail(
+            subject=f"You've been invited to {tenant_name}",
+            message=f"Click here to set your password and activate your account: {invite_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=True,
+        )
+        
+        from apps.core.services.audit import AuditService
+        AuditService.log_action(
+            request, 
+            action="USER_INVITED", 
+            resource=f"users.User:{user.id}",
+            payload={"email": email, "roles": role_ids}
+        )
+        
+        return True, f'Invitation sent to {email}', user
 
     @classmethod
     def create_connection(cls, request, from_user, to_user_email):

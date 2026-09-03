@@ -1,5 +1,5 @@
 import React from 'react';
-import SectionDivider from '../../../../../core/components/SectionDivider';
+import SectionDivider from '@/core/components/SectionDivider';
 
 const Accessibility = () => {
     return (

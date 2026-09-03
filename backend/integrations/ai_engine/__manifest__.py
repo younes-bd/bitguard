@@ -1,0 +1,13 @@
+{'name': 'AI Engine',
+    'technical_name': 'ai_engine',
+    'version': '1.0.0',
+    'category': 'Technical',
+    'author': 'BitGuard',
+    'summary': 'Core integration module for Ai Engine.',
+    'depends': ['system'],
+    'installable': True,
+    'application': False,
+    'has_settings': True,
+    'ui_paradigm': 'Headless Integration (Background Service/API Sync)',
+    'navigation_path': 'Command Center -> Settings -> Integrations',
+    'sequence': 99}

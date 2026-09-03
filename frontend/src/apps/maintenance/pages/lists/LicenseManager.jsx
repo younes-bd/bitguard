@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Key, Plus, Search, Trash2, AlertTriangle, CheckCircle } from 'lucide-react';
-import client from '../../../../core/api/client';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import client from '@/core/api/client';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const daysUntil = (dateStr) => {
@@ -19,7 +19,7 @@ const expiryBadge = (days) => {
 };
 
 const expiryLabel = (days) => {
-    if (days === null) return '—';
+    if (days === null) return 'â€”';
     if (days < 0) return `Expired ${Math.abs(days)}d ago`;
     if (days === 0) return 'Expires today!';
     return `${days}d remaining`;
@@ -77,9 +77,9 @@ export default function LicenseManager() {
     };
 
     const maskKey = (key) => {
-        if (!key) return '—';
-        if (key.length <= 8) return '••••••••';
-        return key.substring(0, 4) + '•'.repeat(Math.min(key.length - 8, 16)) + key.slice(-4);
+        if (!key) return 'â€”';
+        if (key.length <= 8) return 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢';
+        return key.substring(0, 4) + 'â€¢'.repeat(Math.min(key.length - 8, 16)) + key.slice(-4);
     };
 
     const filtered = licenses.filter(l =>
@@ -118,7 +118,7 @@ export default function LicenseManager() {
                     {expired > 0 && (
                         <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 px-4 py-3 rounded-xl">
                             <AlertTriangle size={18} className="text-rose-400 shrink-0" />
-                            <p className="text-rose-300 text-sm font-medium">{expired} license{expired > 1 ? 's' : ''} expired — renew immediately</p>
+                            <p className="text-rose-300 text-sm font-medium">{expired} license{expired > 1 ? 's' : ''} expired â€” renew immediately</p>
                         </div>
                     )}
                     {expiringSoon > 0 && (

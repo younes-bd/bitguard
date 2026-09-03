@@ -5,7 +5,7 @@ from apps.website.models import Page
 
 class PageService(BaseService):
     def get_queryset(self, request=None, **kwargs):
-        qs = Page.objects.all()
+        qs = self.filter_by_context(Page.objects.all(), request)
         # Non-staff users should ideally only see published pages, but since this
         # is an admin CMS, the frontend will use this.
         if request and not request.user.is_staff:

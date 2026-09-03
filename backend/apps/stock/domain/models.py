@@ -19,8 +19,8 @@ class Warehouse(TenantAwareModel):
         return self.name
 
 class InventoryItem(TenantAwareModel):
-    """Physical product stock record. Linked to store.Product."""
-    product_id = models.IntegerField(null=True, blank=True, help_text="FK to store.Product")
+    """Physical product stock record. Linked to product.Product."""
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE, null=True, blank=True, related_name='inventory_items')
     product_name = models.CharField(max_length=255, help_text="Snapshot of product name")
     sku = models.CharField(max_length=100, blank=True)
     quantity_on_hand = models.IntegerField(default=0)

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Plus, Search, Filter } from 'lucide-react';
+import { FileText, Plus, Search, Filter, Download } from 'lucide-react';
 
 export default function RfqList() {
     const [rfqs] = useState([
@@ -40,11 +40,16 @@ export default function RfqList() {
                             <th className="px-6 py-4 font-semibold">Order Date</th>
                             <th className="px-6 py-4 font-semibold">Deadline</th>
                             <th className="px-6 py-4 font-semibold">Status</th>
+                            <th className="px-6 py-4 font-semibold"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800 text-sm">
                         {rfqs.map(rfq => (
-                            <tr key={rfq.id} className="hover:bg-slate-800/30">
+                            <tr 
+                                key={rfq.id} 
+                                className="hover:bg-slate-800/30 cursor-pointer"
+                                onClick={() => window.location.href = `/admin/purchase/rfqs/${rfq.id}`}
+                            >
                                 <td className="px-6 py-4 font-bold text-white">{rfq.number}</td>
                                 <td className="px-6 py-4 text-slate-300">{rfq.vendor}</td>
                                 <td className="px-6 py-4 text-slate-400">{rfq.date}</td>
@@ -57,6 +62,25 @@ export default function RfqList() {
                                     }`}>
                                         {rfq.status}
                                     </span>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <button
+                                        onClick={async () => {
+                                            try {
+                                                const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
+                                                const res = await reportingService.generateReport(null, 'purchase.PurchaseOrder', rfq.id);
+                                                if (res && res.url) {
+                                                    window.open(res.url, '_blank');
+                                                }
+                                            } catch (err) {
+                                                console.error('Failed to generate PDF', err);
+                                            }
+                                        }}
+                                        className="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded transition-colors"
+                                        title="Download PDF"
+                                    >
+                                        <Download size={16} />
+                                    </button>
                                 </td>
                             </tr>
                         ))}

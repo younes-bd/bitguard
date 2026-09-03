@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from django.db.models import Count
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
@@ -5,8 +6,9 @@ from apps.core.utils.response import standard_response
 from apps.core.permissions import HasRole, IsSuperAdmin
 from ..domain.models import Tenant
 from ..api.serializers import TenantSerializer
+from django.conf import settings
 
-class TenantViewSet(viewsets.ModelViewSet):
+class TenantViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = TenantSerializer
     def get_permissions(self):
         if self.action in ['retrieve', 'update', 'partial_update', 'my_company']:
@@ -33,7 +35,65 @@ class TenantViewSet(viewsets.ModelViewSet):
 
     from rest_framework.decorators import action
 
-    @action(detail=False, methods=['get', 'patch'])
+    @action(detail=False, methods=['post'])
+    def switch(self, request):
+        tenant_id = request.data.get('tenant_id')
+        if not tenant_id:
+            from rest_framework.response import Response
+            return Response({'detail': 'tenant_id required'}, status=400)
+        
+        from apps.users.domain.models import TenantMembership
+        from apps.tenants.domain.models import Tenant
+        
+        has_membership = TenantMembership.objects.filter(user=request.user, tenant_id=tenant_id).exists()
+        is_super = request.user.is_superuser or request.user.roles.filter(name='SUPER_ADMIN').exists()
+        
+        if not has_membership and not is_super:
+            from rest_framework.response import Response
+            return Response({'detail': 'Access denied to this company'}, status=403)
+        
+        try:
+            tenant = Tenant.objects.get(id=tenant_id)
+        except Tenant.DoesNotExist:
+            from rest_framework.response import Response
+            return Response({'detail': 'Company not found'}, status=404)
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(request.user)
+        refresh['tenant_id'] = str(tenant.id)
+        refresh['tenant_name'] = tenant.name
+        
+        from rest_framework.response import Response
+        return Response({
+            'access_token': str(refresh.access_token),
+            'refresh_token': str(refresh),
+            'tenant': {'id': str(tenant.id), 'name': tenant.name, 'domain': getattr(tenant, 'domain', None)}
+        })
+
+    @action(detail=False, methods=['get'], url_path='public-info', permission_classes=[])
+    def public_info(self, request):
+        domain = request.query_params.get('domain')
+        if not domain:
+            from rest_framework.response import Response
+            return Response({'name': getattr(settings, 'PLATFORM_VENDOR_NAME', 'BitGuard'), 'logo': None})
+            
+        from apps.tenants.domain.models import Tenant
+        tenant = Tenant.objects.filter(domain=domain).first()
+        # Fallback to the first active tenant if domain not found (for single-tenant setups)
+        if not tenant:
+            tenant = Tenant.objects.filter(is_active=True).first()
+            
+        if tenant:
+            logo_url = request.build_absolute_uri(tenant.logo.url) if tenant.logo else None
+            from rest_framework.response import Response
+            return Response({
+                'name': tenant.name,
+                'logo': logo_url
+            })
+            
+        from rest_framework.response import Response
+        return Response({'name': getattr(settings, 'PLATFORM_VENDOR_NAME', 'BitGuard'), 'logo': None})
+
+    @action(detail=False, methods=['get', 'patch'], url_path='my-company')
     def my_company(self, request):
         tenant = getattr(request, 'tenant', None)
         if not tenant:

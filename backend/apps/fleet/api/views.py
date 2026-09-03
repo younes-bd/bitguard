@@ -1,18 +1,42 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from apps.fleet.domain.models import Vehicle, VehicleLog, VehicleContract
-from .serializers import VehicleSerializer, VehicleLogSerializer, VehicleContractSerializer
+from apps.fleet.domain.models import Vehicle, VehicleLog, VehicleContract, VehicleBrand, VehicleModel
+from .serializers import VehicleSerializer, VehicleLogSerializer, VehicleContractSerializer, VehicleBrandSerializer, VehicleModelSerializer
 
 class StandardPagination(PageNumberPagination):
     page_size = 25
     page_size_query_param = 'page_size'
     max_page_size = 200
 
-class VehicleViewSet(viewsets.ModelViewSet):
+class VehicleBrandViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    serializer_class = VehicleBrandSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        tenant = getattr(self.request.user, 'tenant', None)
+        qs = VehicleBrand.objects.all()
+        if tenant:
+            qs = qs.filter(tenant=tenant)
+        return qs
+
+class VehicleModelViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    serializer_class = VehicleModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        tenant = getattr(self.request.user, 'tenant', None)
+        qs = VehicleModel.objects.all()
+        if tenant:
+            qs = qs.filter(tenant=tenant)
+        return qs
+
+class VehicleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -82,7 +106,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
                 
         return Response({'status': 'fuel_added', 'log_id': log.id})
 
-class VehicleLogViewSet(viewsets.ModelViewSet):
+class VehicleLogViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = VehicleLogSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -96,7 +120,7 @@ class VehicleLogViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class VehicleContractViewSet(viewsets.ModelViewSet):
+class VehicleContractViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = VehicleContractSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -109,3 +133,23 @@ class VehicleContractViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
+
+class DashboardStatsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        qs = Vehicle.objects.all()
+        if tenant:
+            qs = qs.filter(tenant=tenant)
+
+        from django.db.models import Sum
+        logs = VehicleLog.objects.filter(vehicle__in=qs)
+        
+        return Response({
+            'total_vehicles': qs.count(),
+            'active_vehicles': qs.filter(state='active').count(),
+            'in_maintenance': qs.filter(state='maintenance').count(),
+            'total_fuel_cost': logs.filter(log_type='fuel').aggregate(Sum('cost'))['cost__sum'] or 0,
+            'total_maintenance_cost': logs.filter(log_type='service').aggregate(Sum('cost'))['cost__sum'] or 0,
+        })

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import RecordFormLayout from '../../../../core/components/shared/forms/RecordFormLayout';
-import mrpService from '../../../../core/api/mrpService';
+import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import mrpService from '../../api/mrpService';
 import { toast } from 'react-hot-toast';
 import { Loader2, Play, CheckCircle, Wrench } from 'lucide-react';
 

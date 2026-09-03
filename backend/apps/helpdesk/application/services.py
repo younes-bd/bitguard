@@ -35,7 +35,7 @@ class TicketService(BaseService):
         
         # Cross-module SLA matching
         from apps.crm.domain.models import Contact
-        from apps.contracts.domain.models import ServiceContract
+        from apps.subscriptions.domain.models import ServiceContract
         from django.utils import timezone
         import datetime
         
@@ -199,3 +199,4 @@ class TicketMessageService(BaseService):
             ticket.status = 'in_progress'
             ticket.save(update_fields=['status'])
         return message
+

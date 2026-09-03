@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { crmService } from '../../../../core/api/crmService';
+import { crmService } from '../../api/crmService';
 import { DollarSign, Plus, Calendar, User, GripVertical, Trash2 } from 'lucide-react';
 import DealModal from '../modals/DealModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 import { useNavigate } from 'react-router-dom';
 
 const STAGES = [

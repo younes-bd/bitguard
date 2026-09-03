@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, User, Search, Settings, WifiOff, Wifi, CreditCard, Banknote, ScanBarcode, DoorOpen, Calculator, Trash2, Play, Square } from 'lucide-react';
-import posService, { posDb } from '../../../../core/api/posService';
+import posService, { posDb } from '../../api/posService';
 import toast from 'react-hot-toast';
 
 import RestaurantFloorPlan from './RestaurantFloorPlan';
@@ -121,7 +121,7 @@ export default function PosTerminal() {
       setSession({ ...session, state: updated.status });
       setShowCloseModal(false);
       toast.success("Session Closed");
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.assign(window.location.pathname), 1000);
     } catch (e) {
       toast.error("Failed to close session");
     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Search, Filter, FileText } from 'lucide-react';
-import { hrmService } from '../../../../core/api/hrmService';
+import { hrService } from '../../api/hrService';
 
 const ContractsList = () => {
     const navigate = useNavigate();
@@ -11,8 +11,8 @@ const ContractsList = () => {
     useEffect(() => {
         const fetchContracts = async () => {
             try {
-                // Fetch contracts from hrmService
-                const res = await hrmService.api.get('/contracts/');
+                // Fetch contracts from hrService
+                const res = await hrService.api.get('/contracts/');
                 setContracts(res.data?.results || res.data || []);
             } catch (error) {
                 console.error("Failed to fetch contracts:", error);

@@ -90,7 +90,53 @@ class ReportingService:
                 source_id=str(record.id),
                 version='1.0',
             )
+            
+            # --- AUTO-LOG TO GENERATED REPORTS DASHBOARD ---
+            from apps.reporting.domain.models import GeneratedReport
+            GeneratedReport.objects.create(
+                tenant=record.tenant,
+                template=report_template,
+                record_model=record_model_str,
+                record_id=str(record.id),
+                file=attachment.file,
+                status='done'
+            )
         except Exception as e:
-            logger.error(f"Failed to auto-save to EDMS: {str(e)}")
+            logger.error(f"Failed to auto-save to EDMS/Reports: {str(e)}")
         
         return attachment
+
+    @classmethod
+    def preview_html(cls, template_obj, sample_data):
+        from django.template import Template, Context
+        django_template = Template(template_obj.html_content)
+        django_context = Context({'record': sample_data})
+        rendered_html = django_template.render(django_context)
+        return f"<html><head><style>{template_obj.css_content}</style></head><body>{rendered_html}</body></html>"
+
+    @classmethod
+    def generate_and_fetch_report(cls, template_id, record_model_str, record_id, tenant):
+        from django.apps import apps
+        from apps.reporting.domain.models import ReportTemplate, GeneratedReport
+        
+        if template_id:
+            template_obj = ReportTemplate.objects.get(id=template_id)
+        else:
+            template_obj = ReportTemplate.objects.filter(model=record_model_str, is_default=True).first()
+            if not template_obj:
+                raise ValueError(f'No default template found for {record_model_str}')
+
+        app_label, model_name = record_model_str.split('.')
+        model_class = apps.get_model(app_label, model_name)
+        record = model_class.objects.get(id=record_id)
+        
+        attachment = cls.generate_pdf(template_obj, record)
+        if not attachment:
+            raise RuntimeError('PDF generation failed.')
+            
+        report = GeneratedReport.objects.filter(
+            tenant=tenant,
+            record_id=str(record.id),
+            template=template_obj
+        ).order_by('-created_at').first()
+        return report

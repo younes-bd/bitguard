@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, Plus, Trash2, Edit3, Loader2 } from 'lucide-react';
-import documentsService from '../../../../core/api/documentsService';
+import documentsService from '../../api/documentsService';
 
 export default function WorkspaceManager() {
     const [workspaces, setWorkspaces] = useState([]);

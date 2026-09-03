@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Edit3, Trash2, Code, Eye, Loader2, RefreshCw } from 'lucide-react';
-import reportingService from '../../../../core/api/reportingService';
+import reportingService from '../../api/reportingService';
 
 export default function TemplateManager() {
     const [templates, setTemplates] = useState([]);

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft, Printer, Download, Mail, CheckCircle, Wallet
@@ -54,7 +54,7 @@ const PayslipDetail = () => {
                     </button>
                     <button 
                         onClick={() => {
-                            import('../../../../core/api/reportingService').then(({ default: reportingService }) => {
+                            import('@/apps/reporting/api/reportingService').then(({ default: reportingService }) => {
                                 reportingService.generateReport(null, 'hrm.Payslip', id).then(res => {
                                     if (res && res.file) window.open(res.file, '_blank');
                                 }).catch(err => alert("Failed to generate payslip."));
@@ -215,3 +215,4 @@ const PayslipDetail = () => {
 };
 
 export default PayslipDetail;
+

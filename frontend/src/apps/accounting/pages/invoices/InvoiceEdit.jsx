@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
-import { crmService } from '../../../../core/api/crmService';
-import { contractsService } from '../../../../core/api/contractsService';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import { accountingService } from '../../api/accountingService';
+import { projectsService } from '../../../projects/api/projectsService';
+import { crmService } from '../../../crm/api/crmService';
+import { signService } from '../../../sign/api/signService';
+import { ecommerceService } from '../../../ecommerce/api/ecommerceService';
 import { toast } from 'react-hot-toast';
 import { Save, ArrowLeft, FileText, User, Tag, Briefcase, FileSignature } from 'lucide-react';
-import InvoiceLineItems from '../billing/InvoiceLineItems';
+import InvoiceLineItems from '@/core/components/shared/InvoiceLineItems';
 
 const InvoiceEdit = () => {
     const navigate = useNavigate();
@@ -43,10 +44,10 @@ const InvoiceEdit = () => {
             try {
                 const [clientsRes, projectsRes, contractsRes, productsRes, invoiceRes] = await Promise.all([
                     crmService.getClients(),
-                    erpService.getProjects(),
-                    contractsService.getContracts(),
+                    projectsService.getProjects(),
+                    signService.getContracts(),
                     ecommerceService.getProducts(),
-                    erpService.getInvoice(id)
+                    accountingService.getInvoice(id)
                 ]);
                 setClients(Array.isArray(clientsRes) ? clientsRes : clientsRes.results || []);
                 setProjects(Array.isArray(projectsRes) ? projectsRes : projectsRes.results || []);
@@ -202,7 +203,7 @@ const InvoiceEdit = () => {
                 ...formData,
                 items: formData.items.map(({ _isContractItem, _isProjectItem, ...item }) => item)
             };
-            await erpService.updateInvoice(id, payload);
+            await accountingService.updateInvoice(id, payload);
             toast.success('Invoice updated successfully!');
             navigate('/admin/accounting/invoices');
         } catch (error) {
@@ -472,6 +473,7 @@ const InvoiceEdit = () => {
 };
 
 export default InvoiceEdit;
+
 
 
 

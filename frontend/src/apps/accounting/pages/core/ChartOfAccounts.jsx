@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Search, Plus, Filter, Activity, CheckCircle2, AlertTriangle } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const ChartOfAccounts = () => {
@@ -21,7 +21,7 @@ const ChartOfAccounts = () => {
 
     const fetchAccounts = async () => {
             try {
-                const data = await erpService.getAccounts();
+                const data = await accountingService.getAccounts();
                 setAccounts(data || []);
             } catch (err) {
                 console.error("Failed to fetch accounts", err);
@@ -39,7 +39,7 @@ const ChartOfAccounts = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            await erpService.createAccount(formData);
+            await accountingService.createAccount(formData);
             toast.success("Account created successfully!");
             setShowModal(false);
             setFormData({ code: '', name: '', account_type: 'asset', description: '' });

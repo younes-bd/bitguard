@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { erpService } from '../../../../core/api/erpService';
+import { projectsService } from '../../api/projectsService';
 import { 
     Shield, AlertTriangle, Search, Filter, Plus, Edit2, Trash2, X, CheckCircle2
 } from 'lucide-react';
@@ -26,7 +26,7 @@ const RiskList = () => {
 
     const loadRisks = async () => {
         try {
-            const data = await erpService.getRisks();
+            const data = await projectsService.getRisks();
             setRisks(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to load risks", error);
@@ -40,9 +40,9 @@ const RiskList = () => {
         setActionLoading(true);
         try {
             if (selectedRisk) {
-                await erpService.updateRisk(selectedRisk.id, formData);
+                await projectsService.updateRisk(selectedRisk.id, formData);
             } else {
-                await erpService.createRisk(formData);
+                await projectsService.createRisk(formData);
             }
             setShowModal(false);
             loadRisks();
@@ -56,7 +56,7 @@ const RiskList = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this risk?")) return;
         try {
-            await erpService.deleteRisk(id);
+            await projectsService.deleteRisk(id);
             loadRisks();
         } catch (error) {
             alert("Delete failed");

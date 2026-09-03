@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Clock, Filter, Plus, Download } from 'lucide-react';
-import { hrmService } from '../../../../core/api/hrmService';
-import reportingService from '../../../../core/api/reportingService';
-import client from '../../../../core/api/client';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import { holidaysService } from '@/apps/hr_holidays/api/holidaysService';
+import reportingService from '@/apps/reporting/api/reportingService';
+import client from '@/core/api/client';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 import toast from 'react-hot-toast';
 
 const LEAVE_FIELDS = [
@@ -36,7 +36,7 @@ const LeaveManagement = () => {
 
     const fetchLeaves = () => {
         setLoading(true);
-        hrmService.getLeaveRequests({ status: filter }).then(d => {
+        holidaysService.getLeaveRequests({ status: filter }).then(d => {
             setLeaves(d?.results ?? d ?? []);
             setLoading(false);
         }).catch(() => setLoading(false));
@@ -46,7 +46,7 @@ const LeaveManagement = () => {
 
     const handleApprove = async (id) => {
         try {
-            await hrmService.approveLeave(id);
+            await holidaysService.approveLeave(id);
             toast.success('Leave approved');
             fetchLeaves();
         } catch(e) {
@@ -58,7 +58,7 @@ const LeaveManagement = () => {
         const reason = window.prompt("Reason for rejection (optional):");
         if (reason === null) return;
         try {
-            await hrmService.rejectLeave(id, reason);
+            await holidaysService.rejectLeave(id, reason);
             toast.success('Leave rejected');
             fetchLeaves();
         } catch(e) {
@@ -69,7 +69,7 @@ const LeaveManagement = () => {
     const handleRequestLeave = async (formData) => {
         setActionLoading(true);
         try {
-            await hrmService.createLeaveRequest(formData);
+            await holidaysService.createLeaveRequest(formData);
             toast.success('Leave requested successfully');
             setIsModalOpen(false);
             fetchLeaves();
@@ -118,7 +118,7 @@ const LeaveManagement = () => {
                             <div>
                                 <p className="text-white font-semibold">{leave.employee?.first_name} {leave.employee?.last_name}</p>
                                 <p className="text-slate-400 text-xs mt-0.5">
-                                    {leave.leave_type ?? leave.type} Â· {leave.start_date} â†’ {leave.end_date}
+                                    {leave.leave_type ?? leave.type} Ãƒâ€šÃ‚Â· {leave.start_date} ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ {leave.end_date}
                                 </p>
                                 {leave.reason && <p className="text-slate-500 text-xs mt-1 italic">"{leave.reason}"</p>}
                             </div>
@@ -168,4 +168,5 @@ const LeaveManagement = () => {
 };
 
 export default LeaveManagement;
+
 

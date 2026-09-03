@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 from apps.users.domain.models import Role, RolePermission
-from apps.base_setup.domain.models import SystemSetting
+from apps.system.domain.models import SystemSetting
 
 class Command(BaseCommand):
     help = 'Seeds default roles, permissions, and system settings.'

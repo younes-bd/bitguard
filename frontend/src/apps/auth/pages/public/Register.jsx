@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../../core/hooks/useAuth';
+import { useAuth } from '@/core/hooks/useAuth';
 import { UserPlus, Mail, Lock, User, ArrowRight } from 'lucide-react';
 
 const Register = () => {

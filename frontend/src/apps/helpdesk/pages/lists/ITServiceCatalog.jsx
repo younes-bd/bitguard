@@ -3,7 +3,7 @@ import {
     Tag, Search, Filter, ShieldCheck, Cpu, Monitor, HelpCircle, 
     ChevronRight, Loader2, XCircle, FileText, Send, CheckCircle2, User
 } from 'lucide-react';
-import serviceService from '../../../../core/api/serviceService';
+import serviceService from '../../../field-service/api/serviceService';
 import { toast } from 'react-hot-toast';
 
 export default function ITServiceCatalog() {

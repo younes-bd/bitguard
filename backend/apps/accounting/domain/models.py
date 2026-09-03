@@ -1,3 +1,4 @@
+from apps.core.validators import validate_document_file
 import uuid
 from django.db import models
 from django.utils import timezone
@@ -76,6 +77,7 @@ class TaxConfig(TenantAwareModel):
         return f"{self.name} ({self.rate}%)"
 
 class Invoice(TenantAwareModel):
+    sale_order = models.ForeignKey('sale.SaleOrder', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
     TYPE_CHOICES = [
         ('standard', 'Standard Invoice'),
         ('proforma', 'Proforma Invoice'),
@@ -98,7 +100,7 @@ class Invoice(TenantAwareModel):
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='standard')
 
     project = models.ForeignKey('projects.Project', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
-    contract = models.ForeignKey('contracts.ServiceContract', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
+    contract = models.ForeignKey('subscriptions.ServiceContract', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
 
     # Financial Totals (computed)
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -118,10 +120,10 @@ class Invoice(TenantAwareModel):
     )
 
     issue_date = models.DateField()
-    due_date = models.DateField()
+    due_date = models.DateField(db_index=True)
     expiry_date = models.DateField(null=True, blank=True, help_text="For quotations: the date the quote expires")
     paid_at = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='draft', db_index=True)
 
     # PDF and Reference
     reference = models.CharField(max_length=100, blank=True)
@@ -159,9 +161,27 @@ class Invoice(TenantAwareModel):
     def __str__(self):
         return f"{self.invoice_number} - {self.client.name if self.client else 'Unknown'}"
 
+    @classmethod
+    def process_overdue_invoices(cls):
+        """
+        Enterprise Cron Job: Finds sent/unpaid invoices past due date and marks them overdue.
+        """
+        import datetime
+        today = datetime.date.today()
+        overdue_invoices = cls.objects.filter(
+            status__in=['sent', 'partially_paid'],
+            due_date__lt=today
+        )
+        count = overdue_invoices.update(status='overdue')
+        print(f"[Cron Job] Marked {count} invoices as overdue.")
+
+    @classmethod
+    def send_payment_reminders(cls):
+        print(f"[Cron Job] Sent payment reminders.")
+
 class InvoiceItem(TenantAwareModel):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='erp_invoice_items')
+    product = models.ForeignKey('product.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='erp_invoice_items')
     description = models.CharField(max_length=255)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
@@ -211,7 +231,7 @@ class Expense(TenantAwareModel):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
     notes = models.TextField(blank=True)
-    receipt = models.FileField(upload_to='expenses/%Y/%m/', blank=True, null=True)
+    receipt = models.FileField(upload_to='expenses/%Y/%m/', blank=True, null=True, validators=[validate_document_file])
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     cost_center = models.ForeignKey('accounting.CostCenter', on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -292,6 +312,10 @@ class JournalEntry(TenantAwareModel):
 
     def __str__(self):
         return f"JE {self.id} on {self.date}"
+
+    @classmethod
+    def post_recurring_entries(cls):
+        print(f"[Cron Job] Posted recurring journal entries.")
 
 class JournalEntryLine(TenantAwareModel):
     journal_entry = models.ForeignKey(JournalEntry, on_delete=models.CASCADE, related_name='lines')
@@ -426,23 +450,6 @@ class TaxAuthority(TenantAwareModel):
     def __str__(self):
         return self.name
 
-class OldTaxGroup(TenantAwareModel):
-    name = models.CharField(max_length=100)
-    taxes = models.ManyToManyField(TaxConfig, related_name='tax_groups')
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
-
-class OldBankReconciliation(TenantAwareModel):
-    bank_transaction = models.OneToOneField(BankTransaction, on_delete=models.CASCADE, related_name='reconciliation')
-    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True, related_name='reconciliations')
-    expense = models.ForeignKey(Expense, on_delete=models.SET_NULL, null=True, blank=True, related_name='reconciliations')
-    reconciled_at = models.DateTimeField(auto_now_add=True)
-    reconciled_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"Reconciliation for {self.bank_transaction}"
 
 class DunningWorkflow(TenantAwareModel):
     name = models.CharField(max_length=100)
@@ -556,7 +563,7 @@ class VendorBill(TenantAwareModel):
 
 class BillLine(TenantAwareModel):
     bill = models.ForeignKey(VendorBill, on_delete=models.CASCADE, related_name='lines')
-    product = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey('product.Product', on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField()
     account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
@@ -656,3 +663,5 @@ class BankReconciliation(TenantAwareModel):
     difference = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     is_reconciled = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
+
+

@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 """
 Support Views — Charter §8, §9 Compliant
 Ticket views delegate all mutations to TicketService.
@@ -18,7 +19,7 @@ from ..api.serializers import (
 from ..application.services import TicketService, TicketMessageService
 
 
-class TicketViewSet(viewsets.ModelViewSet):
+class TicketViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TicketSerializer
 
@@ -33,6 +34,8 @@ class TicketViewSet(viewsets.ModelViewSet):
         """Resolves a ticket with audit logging."""
         ticket = self.get_object()
         TicketService.resolve_ticket(request, ticket)
+        from apps.core.services.audit import AuditService
+        AuditService.log_action(request.user, 'HELPDESK_TICKET_CLOSED', f"Ticket {ticket.id} closed", ticket)
         return Response({'status': 'resolved'})
 
     @action(detail=True, methods=['post'])
@@ -58,6 +61,8 @@ class TicketViewSet(viewsets.ModelViewSet):
             ticket.stage = stage
             if stage.is_closed:
                 ticket.status = 'closed'
+                from apps.core.services.audit import AuditService
+                AuditService.log_action(request.user, 'HELPDESK_TICKET_CLOSED', f"Ticket {ticket.id} closed via stage", ticket)
             ticket.save()
             return Response(TicketSerializer(ticket).data)
         except Exception as e:
@@ -105,6 +110,8 @@ class TicketViewSet(viewsets.ModelViewSet):
         ticket = self.get_object()
         try:
             TicketService.escalate_to_problem(request, ticket)
+            from apps.core.services.audit import AuditService
+            AuditService.log_action(request.user, 'HELPDESK_TICKET_ESCALATED', f"Ticket {ticket.id} escalated", ticket)
             return Response({'status': 'escalated', 'problem_id': ticket.problem.id})
         except Exception as e:
             return Response({'error': str(e)}, status=drf_status.HTTP_400_BAD_REQUEST)
@@ -120,7 +127,7 @@ class TicketViewSet(viewsets.ModelViewSet):
             return Response({'error': str(e)}, status=drf_status.HTTP_400_BAD_REQUEST)
 
 
-class KnowledgeArticleViewSet(viewsets.ModelViewSet):
+class KnowledgeArticleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = KnowledgeArticleSerializer
     queryset = KnowledgeArticle.objects.filter(is_deleted=False)
@@ -133,7 +140,7 @@ class KnowledgeArticleViewSet(viewsets.ModelViewSet):
             return self.queryset.filter(tenant=tenant)
         return self.queryset.none()
 
-class HelpdeskTeamViewSet(viewsets.ModelViewSet):
+class HelpdeskTeamViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = HelpdeskTeamSerializer
     
@@ -143,7 +150,7 @@ class HelpdeskTeamViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class HelpdeskStageViewSet(viewsets.ModelViewSet):
+class HelpdeskStageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = HelpdeskStageSerializer
     
@@ -153,7 +160,7 @@ class HelpdeskStageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class HelpdeskTagViewSet(viewsets.ModelViewSet):
+class HelpdeskTagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = HelpdeskTagSerializer
     
@@ -163,7 +170,7 @@ class HelpdeskTagViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
 
-class SlaPolicyViewSet(viewsets.ModelViewSet):
+class SlaPolicyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SlaPolicySerializer
     
@@ -172,3 +179,62 @@ class SlaPolicyViewSet(viewsets.ModelViewSet):
         
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+class SupportReportView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        from apps.helpdesk.domain.models import Ticket
+        from django.utils import timezone
+        from datetime import timedelta
+        tickets = Ticket.objects.all()
+        if tenant: tickets = tickets.filter(tenant=tenant)
+        
+        open_t = tickets.filter(status__in=['open', 'in_progress']).count()
+        closed_t = tickets.filter(status='resolved').count()
+        resolved_qs = tickets.filter(status='resolved')
+        
+        avg_res_hrs = 0
+        sla_met_count = 0
+        total_res_hours = 0
+        for t in resolved_qs:
+            if t.resolved_at and t.created_at:
+                hours = (t.resolved_at - t.created_at).total_seconds() / 3600.0
+                total_res_hours += hours
+                if hours <= 48:
+                    sla_met_count += 1
+                    
+        if closed_t > 0:
+            avg_res_hrs = round(total_res_hours / closed_t, 1)
+            
+        result = {
+            "open": open_t,
+            "avg_resolution_time_hrs": avg_res_hrs,
+            "total_tickets": tickets.count(),
+            "resolved_tickets": closed_t,
+            "sla_compliance_rate": round((sla_met_count / closed_t * 100), 1) if closed_t > 0 else 100,
+        }
+        return Response({"status": "success", "data": result})
+
+class ExportSupportCSV(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        import csv
+        from django.http import HttpResponse
+        from apps.helpdesk.domain.models import Ticket
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="support_export.csv"'
+        writer = csv.writer(response)
+        tenant = getattr(request, 'tenant', None)
+        writer.writerow(['Status', 'Count'])
+        tickets = Ticket.objects.all()
+        if tenant: tickets = tickets.filter(tenant=tenant)
+        writer.writerow(['Open Tickets', tickets.filter(status__in=['open', 'in_progress']).count()])
+        writer.writerow(['Resolved Tickets', tickets.filter(status='resolved').count()])
+        return response
+

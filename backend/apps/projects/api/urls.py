@@ -13,6 +13,12 @@ router.register(r'task-timesheets', TaskTimesheetViewSet, basename='tasktimeshee
 router.register(r'sprints', SprintViewSet, basename='sprint')
 router.register(r'task-tags', TaskTagViewSet, basename='tasktag')
 
+from .views import DashboardStatsView
+
+from .views import ProjectsAggReportView
+
 urlpatterns = [
+    path('report/metrics/', ProjectsAggReportView.as_view(), name='projects-metrics-report'),
+    path('dashboard/stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('', include(router.urls)),
 ]

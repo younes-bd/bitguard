@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Monitor, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 import maintenanceService from '../../api/maintenanceService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 
 const TYPE_OPTIONS = ['', 'laptop', 'desktop', 'server', 'network', 'mobile', 'printer', 'software', 'cloud', 'other'];
 const STATUS_OPTIONS = ['', 'active', 'spare', 'maintenance', 'retired', 'lost'];
 
 const typeIcons = {
-    laptop: '💻', desktop: '🖥️', server: '🗄️', network: '🌐',
-    mobile: '📱', printer: '🖨️', software: '📦', cloud: '☁️', other: '📌',
+    laptop: 'ðŸ’»', desktop: 'ðŸ–¥ï¸', server: 'ðŸ—„ï¸', network: 'ðŸŒ',
+    mobile: 'ðŸ“±', printer: 'ðŸ–¨ï¸', software: 'ðŸ“¦', cloud: 'â˜ï¸', other: 'ðŸ“Œ',
 };
 
 const statusBadge = (status) => {
@@ -155,15 +155,15 @@ const AssetList = () => {
                                 <td className="px-5 py-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-xl shadow-inner border border-slate-700/50">
-                                            {typeIcons[a.asset_type] ?? '📌'}
+                                            {typeIcons[a.asset_type] ?? 'ðŸ“Œ'}
                                         </div>
                                         <div>
                                             <div className="text-slate-200 font-bold group-hover:text-teal-400 transition-colors">{a.name}</div>
-                                            <div className="text-slate-500 text-xs mt-0.5">{[a.make, a.model].filter(Boolean).join(' ') || '—'}</div>
+                                            <div className="text-slate-500 text-xs mt-0.5">{[a.make, a.model].filter(Boolean).join(' ') || 'â€”'}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="px-5 py-4 text-slate-400 font-mono text-xs">{a.asset_tag ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-400 font-mono text-xs">{a.asset_tag ?? 'â€”'}</td>
                                 <td className="px-5 py-4 text-slate-400 capitalize text-xs font-semibold tracking-wide">{a.asset_type}</td>
                                 <td className="px-5 py-4 text-slate-400 text-xs">{a.client_name ?? 'Internal'}</td>
                                 <td className="px-5 py-4">{statusBadge(a.status)}</td>
@@ -172,9 +172,9 @@ const AssetList = () => {
                                         <span className={a.is_warranty_active ? 'text-emerald-400' : 'text-red-400'}>
                                             {a.warranty_expires}
                                         </span>
-                                    ) : <span className="text-slate-600">—</span>}
+                                    ) : <span className="text-slate-600">â€”</span>}
                                 </td>
-                                <td className="px-5 py-4 text-slate-500 text-xs font-medium">{a.purchase_date ?? '—'}</td>
+                                <td className="px-5 py-4 text-slate-500 text-xs font-medium">{a.purchase_date ?? 'â€”'}</td>
                                 <td className="px-5 py-4">
                                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button onClick={() => { setSelectedAsset(a); setIsModalOpen(true); }} className="p-2 text-slate-400 hover:text-teal-400 hover:bg-teal-500/10 rounded-lg transition-colors">

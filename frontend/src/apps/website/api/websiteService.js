@@ -1,4 +1,4 @@
-import api from '../../../core/api/client';
+import api from '@/core/api/client';
 
 export const websiteService = {
     // Services
@@ -100,6 +100,12 @@ export const websiteService = {
         const response = await api.delete(`/home/redirects/${id}/`);
         return response.data;
     }
+,
+    getWebsites: async (params = {}) => client.get('website/websites/', { params }).then(r => r.data?.results ?? r.data),
+    getWebsitePages: async (params = {}) => client.get('website/pages/', { params }).then(r => r.data?.results ?? r.data),
+    getWebsiteMenus: async (params = {}) => client.get('website/menus/', { params }).then(r => r.data?.results ?? r.data),
+    getWebsiteRedirects: async (params = {}) => client.get('website/redirects/', { params }).then(r => r.data?.results ?? r.data),
+    
 };
 
 export default websiteService;

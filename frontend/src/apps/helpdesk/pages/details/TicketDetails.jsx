@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Sparkles, CheckCircle, ArrowLeft, Download } from 'lucide-react';
-import helpdeskService from '../../../../core/api/helpdeskService';
-import reportingService from '../../../../core/api/reportingService';
+import helpdeskService from '../../api/helpdeskService';
+import reportingService from '@/apps/reporting/api/reportingService';
 import { toast } from 'react-hot-toast';
 
 const statusBadge = (status) => {
@@ -160,4 +160,5 @@ const TicketDetails = () => {
 };
 
 export default TicketDetails;
+
 

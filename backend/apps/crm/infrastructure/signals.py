@@ -95,7 +95,7 @@ def trigger_contract_on_deal_won(sender, instance, created, **kwargs):
     """
     # Check if the deal was just moved to 'won'
     if instance.stage == 'won':
-        from apps.contracts.domain.models import ServiceContract
+        from apps.subscriptions.domain.models import ServiceContract
         from apps.accounting.domain.models import Invoice
         import datetime
         from django.utils import timezone
@@ -104,7 +104,7 @@ def trigger_contract_on_deal_won(sender, instance, created, **kwargs):
         contract_exists = ServiceContract.objects.filter(client=instance.client, start_date=timezone.now().date()).exists()
         if not contract_exists:
             # Find a default SLA tier (or create one)
-            from apps.contracts.domain.models import SLATier
+            from apps.helpdesk.domain.models import SLATier
             sla_tier = SLATier.objects.filter(name='Standard').first()
             if not sla_tier:
                 sla_tier = SLATier.objects.create(
@@ -141,5 +141,6 @@ def trigger_contract_on_deal_won(sender, instance, created, **kwargs):
             # Link to the deal notes or references if applicable
             invoice.notes = f"Initial invoice generated from Deal: {instance.title}"
             invoice.save(update_fields=['notes'])
+
 
 

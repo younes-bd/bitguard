@@ -4,7 +4,7 @@ import {
     AlertCircle, PieChart, Activity, Download, 
     Calendar, Filter, ChevronRight, Zap
 } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
+import projectsService from '../../api/projectsService';
 import { toast } from 'react-hot-toast';
 
 const ProjectReports = () => {

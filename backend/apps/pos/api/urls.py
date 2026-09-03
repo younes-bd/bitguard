@@ -11,6 +11,9 @@ router.register(r'floors', RestaurantFloorViewSet, basename='pos-floor')
 router.register(r'tables', RestaurantTableViewSet, basename='pos-table')
 router.register(r'printers', RestaurantPrinterViewSet, basename='pos-printer')
 
+from .views import DashboardStatsView
+
 urlpatterns = [
+    path('dashboard/stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('', include(router.urls)),
 ]

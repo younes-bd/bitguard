@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import securityService from '../../../../core/api/securityService';
+import securityService from '../../api/securityService';
 import {
     ShieldCheckIcon,
     BellAlertIcon,

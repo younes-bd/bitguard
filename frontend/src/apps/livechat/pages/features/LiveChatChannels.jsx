@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Layout, Plus, Edit2, Trash2, Loader2, X, Save, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import discussService from '../../../../core/api/discussService';
+import discussService from '@/apps/discuss/api/discussService';
 
 export default function LiveChatChannels() {
     const [channels, setChannels] = useState([]);
@@ -175,3 +175,4 @@ export default function LiveChatChannels() {
         </div>
     );
 }
+

@@ -82,7 +82,7 @@ class Command(BaseCommand):
         user, created = User.objects.get_or_create(
             email="admin@bitguard.tech",
             defaults={
-                "username": "admin",
+                "username": "admin@bitguard.tech",
                 "is_staff": True,
                 "is_superuser": True,
             },
@@ -100,13 +100,15 @@ class Command(BaseCommand):
 
     def _flush(self):
         self.stdout.write(self.style.WARNING("  ⚠️  Flushing demo data…"))
-        from apps.crm.domain.models import Client, Deal, Contact, Lead, Activity
-        from apps.helpdesk.domain.models import Ticket, KnowledgeArticle
-        from apps.billing.domain.models import Plan, Subscription
+        from apps.crm.domain.models import Client, Deal, Contact, Lead, Activity, CrmStage
+        from apps.helpdesk.domain.models import Ticket, KnowledgeArticle, SLATier
+        from apps.subscriptions.domain.models import Plan, Subscription, ServiceContract
         from apps.accounting.domain.models import Invoice
         from apps.soc.domain.models import Alert, Incident
-        from apps.hr.domain.models import Employee, LeaveRequest
-        from apps.purchase.domain.models import PurchaseOrder, InventoryItem
+        from apps.hr.domain.models import Employee
+        from apps.hr_holidays.domain.models import LeaveRequest
+        from apps.purchase.domain.models import PurchaseOrder
+        from apps.stock.domain.models import InventoryItem
         from apps.projects.domain.models import Project, Task
         from apps.notifications.domain.models import Notification
 
@@ -129,7 +131,7 @@ class Command(BaseCommand):
 
     def _seed_crm(self, tenant, admin):
         self.stdout.write("\n  ── CRM")
-        from apps.crm.domain.models import Client, Contact, Deal, Lead, Activity
+        from apps.crm.domain.models import Client, Contact, Deal, Lead, Activity, CrmStage
 
         now = timezone.now()
 
@@ -192,7 +194,8 @@ class Command(BaseCommand):
         ]
 
         deals = []
-        for title, client, amount, stage in deal_data:
+        for title, client, amount, stage_name in deal_data:
+            stage, _ = CrmStage.objects.get_or_create(name=stage_name.capitalize(), tenant=tenant)
             deal, _ = Deal.objects.get_or_create(
                 title=title, tenant=tenant,
                 defaults={
@@ -261,8 +264,9 @@ class Command(BaseCommand):
 
     def _seed_billing(self, tenant, admin):
         self.stdout.write("\n  ── Billing")
-        from apps.billing.domain.models import Plan, Subscription
+        from apps.subscriptions.domain.models import Plan, Subscription
         from apps.accounting.domain.models import Invoice
+        from apps.crm.domain.models import Client
 
         now = timezone.now()
 
@@ -311,16 +315,18 @@ class Command(BaseCommand):
             ("INV-2026-003", "paid", Decimal("1999.00")),
             ("INV-2026-004", "pending", Decimal("1999.00")),
         ]
+        client = Client.objects.filter(tenant=tenant).first()
         for inv_num, status, amount in invoices_data:
             Invoice.objects.get_or_create(
                 invoice_number=inv_num,
                 defaults={
                     "tenant": tenant,
-                    "user": admin,
+                    "client": client,
                     "status": status,
-                    "amount": amount,
+                    "total_amount": amount,
                     "currency": "USD",
                     "due_date": now + timedelta(days=30),
+                    "issue_date": now.date(),
                 }
             )
         self._ok(f"{len(invoices_data)} invoices")
@@ -370,7 +376,8 @@ class Command(BaseCommand):
 
     def _seed_hrm(self, tenant, admin):
         self.stdout.write("\n  ── HRM")
-        from apps.hr.domain.models import Employee, LeaveRequest, Department
+        from apps.hr.domain.models import Employee, Department
+        from apps.hr_holidays.domain.models import LeaveRequest
 
         departments = ["Engineering", "Security", "Sales", "Operations", "Finance"]
         employee_names = [
@@ -430,7 +437,8 @@ class Command(BaseCommand):
 
     def _seed_scm(self, tenant, admin):
         self.stdout.write("\n  ── SCM / Procurement")
-        from apps.purchase.domain.models import PurchaseOrder, InventoryItem
+        from apps.purchase.domain.models import PurchaseOrder
+        from apps.stock.domain.models import InventoryItem
         from apps.core.domain.models import Partner
 
         vendors = ["Dell Technologies", "Palo Alto Networks", "CrowdStrike", "Cisco Systems"]
@@ -521,7 +529,8 @@ class Command(BaseCommand):
 
     def _seed_contracts(self, tenant, admin):
         self.stdout.write("\n  ── Contracts")
-        from apps.contracts.domain.models import ServiceContract, SLATier
+        from apps.subscriptions.domain.models import ServiceContract
+        from apps.helpdesk.domain.models import SLATier
 
         from apps.crm.domain.models import Client
         clients = list(Client.objects.filter(tenant=tenant)[:5])
@@ -563,7 +572,7 @@ class Command(BaseCommand):
 
     def _seed_itam(self, tenant, admin):
         self.stdout.write("\n  ── IT Assets (ITAM)")
-        from apps.itam.domain.models import Asset
+        from apps.maintenance.domain.models import Asset
 
         assets_data = [
             ("FW-CORE-01", "Palo Alto PA-3260", "network"),
@@ -618,3 +627,4 @@ class Command(BaseCommand):
                 }
             )
         self._ok(f"{len(messages)} notifications")
+

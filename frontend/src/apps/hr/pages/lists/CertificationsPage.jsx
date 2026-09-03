@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Award, Plus, Loader2, X, CheckCircle2, AlertTriangle, Calendar } from 'lucide-react';
-import { hrmService } from '../../../../core/api/hrmService';
+import { hrService } from '../../api/hrService';
 
 const CertificationsPage = () => {
     const [certs, setCerts] = useState([]);
@@ -12,7 +12,7 @@ const CertificationsPage = () => {
     const fetchCerts = async () => {
         setLoading(true);
         try {
-            const data = await hrmService.getCertifications();
+            const data = await hrService.getCertifications();
             setCerts(Array.isArray(data) ? data : data?.results ?? []);
         } catch (err) {
             console.error('Failed to load certifications:', err);

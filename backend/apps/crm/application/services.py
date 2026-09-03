@@ -82,7 +82,7 @@ class ClientService(BaseService):
         """
         from apps.helpdesk.domain.models import Ticket
         from apps.projects.domain.models import Project
-        from apps.contracts.domain.models import ServiceContract
+        from apps.subscriptions.domain.models import ServiceContract
         from apps.ecommerce.domain.models import Order
         
         # Note: Serializers should be imported here or at top level if no circular dependency
@@ -277,4 +277,5 @@ class ActivityService(BaseService):
     @classmethod
     def get_queryset(cls, request):
         return cls.filter_by_context(Activity.objects.all(), request)
+
 

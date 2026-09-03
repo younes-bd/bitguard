@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
     LifeBuoy, Plus, Search, MessageSquare, Clock, 
     CheckCircle2, AlertCircle, ChevronRight, Loader2,
     Activity, Lock
 } from 'lucide-react';
-import { helpdeskService } from '../../../../core/api/helpdeskService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import { helpdeskService } from '../../api/helpdeskService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 import TicketThread from '../../components/TicketThread';
 
 const STATUS_CONFIG = {

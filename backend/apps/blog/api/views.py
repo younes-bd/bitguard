@@ -1,10 +1,11 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions, filters
 from ..domain.models import Post, Category, Comment
 from ..api.serializers import PostSerializer, CategorySerializer, CommentSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = Post.objects.filter(status='published').order_by('-publish_date')
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -57,13 +58,13 @@ class PostViewSet(viewsets.ModelViewSet):
             self.get_queryset().filter(category__slug=cat_slug), many=True
         ).data)
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'slug'
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]

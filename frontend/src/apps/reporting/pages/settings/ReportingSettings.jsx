@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Save, Loader2, FileCode2 } from 'lucide-react';
-import reportingService from '../../../../core/api/reportingService';
+import reportingService from '../../api/reportingService';
 
 export default function ReportingSettings() {
     const [settings, setSettings] = useState(null);

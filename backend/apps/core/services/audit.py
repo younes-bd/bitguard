@@ -1,4 +1,4 @@
-from apps.base_setup.domain.models import AuditTrail
+from apps.core.domain.models import AuditTrail
 from .base import BaseService
 
 class AuditService(BaseService):

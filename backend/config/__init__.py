@@ -3,3 +3,4 @@ try:
     __all__ = ('celery_app',)
 except ImportError:
     pass
+

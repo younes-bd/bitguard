@@ -5,7 +5,7 @@ Monitors platform activity against the BitGuard Enterprise Charter.
 from django.utils import timezone
 from apps.core.services.base import BaseService
 from apps.core.services.audit import AuditService
-from apps.base_setup.domain.models import AuditTrail
+from apps.core.domain.models import AuditTrail
 
 class SecurityAuditService(BaseService):
     """

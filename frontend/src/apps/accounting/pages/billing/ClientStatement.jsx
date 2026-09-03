@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FileText, ArrowLeft, Download, Building2, Calendar, DollarSign, Activity } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
-import { crmService } from '../../../../core/api/crmService';
+import { accountingService } from '../../api/accountingService';
+import { crmService } from '../../../crm/api/crmService';
 
 const ClientStatement = () => {
     const { clientId } = useParams();
@@ -15,7 +15,7 @@ const ClientStatement = () => {
         const fetchData = async () => {
             try {
                 // In a real app we might fetch client details separately or they come with the statement
-                const stmtData = await erpService.getClientStatement(clientId);
+                const stmtData = await accountingService.getClientStatement(clientId);
                 setStatement(stmtData);
                 // Fake client details for display if not fully populated in statement
                 setClient({ id: clientId, name: stmtData?.client_name || 'Client', company: stmtData?.client_name || 'Company' });
@@ -53,7 +53,20 @@ const ClientStatement = () => {
                     </div>
                 </div>
                 <button 
-                    onClick={() => window.print()}
+                    onClick={async () => {
+                        try {
+                            const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
+                            const res = await reportingService.generateReport(null, 'crm.client', clientId, {
+                                period_start: '', // Can add date filters if needed
+                                period_end: ''
+                            });
+                            if (res && res.url) {
+                                window.open(res.url, '_blank');
+                            }
+                        } catch (err) {
+                            console.error('Failed to generate statement', err);
+                        }
+                    }}
                     className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-700 transition-colors border border-slate-700"
                 >
                     <Download size={18} />

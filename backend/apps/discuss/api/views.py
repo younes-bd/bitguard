@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
@@ -10,7 +11,7 @@ class StandardPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 200
 
-class ChannelViewSet(viewsets.ModelViewSet):
+class ChannelViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ChannelSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
@@ -29,7 +30,7 @@ class ChannelViewSet(viewsets.ModelViewSet):
         )
         channel.members.add(self.request.user)
 
-class MessageViewSet(viewsets.ModelViewSet):
+class MessageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -50,7 +51,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             created_by=self.request.user
         )
 
-class LiveChatChannelViewSet(viewsets.ModelViewSet):
+class LiveChatChannelViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = LiveChatChannelSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter]

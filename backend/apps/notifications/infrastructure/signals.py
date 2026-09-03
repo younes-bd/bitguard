@@ -18,7 +18,7 @@ def push_global_notification(sender, instance, created, **kwargs):
     
     if sender_name == 'order':
         title = "New Store Order Placed"
-        message = f"Order #{instance.id} for ${instance.total}."
+        message = f"Order #{instance.id} for ${instance.total_amount}."
     elif sender_name == 'ticket':
         title = f"Support Ticket Generated ({instance.priority})"
         message = instance.title

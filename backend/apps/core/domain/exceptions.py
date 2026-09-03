@@ -26,6 +26,19 @@ def custom_exception_handler(exc, context):
             status=response.status_code
         )
 
+    from django.core.exceptions import ObjectDoesNotExist
+    if isinstance(exc, ObjectDoesNotExist):
+        # If a user is deleted but sends an old JWT, it triggers DoesNotExist during token refresh.
+        # Returning 401 allows the frontend to log the user out cleanly instead of crashing on a 500.
+        status_code = 401 if 'jwt' in getattr(context.get('request'), 'path', '') else 404
+        return standard_response(
+            success=False,
+            message="Resource not found.",
+            data=None,
+            errors=str(exc),
+            status=status_code
+        )
+
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
     return standard_response(
         success=False,

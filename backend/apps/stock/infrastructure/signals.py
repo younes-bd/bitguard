@@ -15,7 +15,7 @@ def provision_assets_from_po(sender, instance, created, **kwargs):
     if instance.status != 'received':
         return
     try:
-        from apps.itam.domain.models import Asset
+        from apps.maintenance.domain.models import Asset
 
         po_ref = getattr(instance, 'po_number', None) or str(instance.id)[:8].upper()
         total = getattr(instance, 'total_amount', None) or getattr(instance, 'total_cost', 0)
@@ -49,3 +49,23 @@ def provision_assets_from_po(sender, instance, created, **kwargs):
     except Exception as e:
         logger.warning(f"provision_assets_from_po skipped for PO {instance.id}: {e}")
 
+
+from django.dispatch import receiver
+try:
+    from apps.sale.infrastructure.signals import sale_order_confirmed_signal
+    @receiver(sale_order_confirmed_signal)
+    def reserve_stock_on_sale(sender, instance, **kwargs):
+        from apps.stock.domain.models import StockMove, StorageLocation
+        warehouse = StorageLocation.objects.filter(tenant=instance.tenant, location_type='internal').first()
+        customer_loc = StorageLocation.objects.filter(tenant=instance.tenant, location_type='customer').first()
+        
+        if warehouse and customer_loc:
+            for line in instance.lines.all():
+                StockMove.objects.get_or_create(
+                    tenant=instance.tenant,
+                    inventory_item_id=line.product_id,
+                    quantity=line.product_uom_qty,
+                    reference=f"SO-{getattr(instance, 'name', instance.order_number)}"
+                )
+except ImportError:
+    pass

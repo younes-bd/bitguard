@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Palette, LayoutTemplate, Save, Loader2, Upload } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 import toast from 'react-hot-toast';
 
 export default function StoreCustomization() {

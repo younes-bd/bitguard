@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,7 +11,7 @@ class StandardPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 200
 
-class EngineeringChangeOrderViewSet(viewsets.ModelViewSet):
+class EngineeringChangeOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = EngineeringChangeOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -31,7 +32,7 @@ class EngineeringChangeOrderViewSet(viewsets.ModelViewSet):
             created_by=self.request.user
         )
 
-class ECOTypeViewSet(viewsets.ModelViewSet):
+class ECOTypeViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ECOTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination

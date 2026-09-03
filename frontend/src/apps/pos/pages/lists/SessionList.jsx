@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import posService from '../../../../core/api/posService';
+import posService from '../../api/posService';
 import { Monitor, Plus, Search, Edit2, Trash2 } from 'lucide-react';
 
 const SessionList = () => {

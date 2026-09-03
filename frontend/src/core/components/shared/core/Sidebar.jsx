@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogOut, ChevronLeft, ChevronDown, X, LayoutDashboard, Home } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTenant } from '../../../context/TenantContext';
+import TenantSwitcher from './TenantSwitcher';
 
 // ─── Sidebar Item ────────────────────────────────────────────────────────────
 const SidebarItem = ({ icon: Icon, label, path, active, collapsed, count }) => (
@@ -186,6 +187,13 @@ const Sidebar = ({
                 )}
             </div>
 
+            {/* Tenant Switcher */}
+            {moduleKey === 'global' && !collapsed && (
+                <div className="px-3 py-2 border-b border-slate-800/80">
+                    <TenantSwitcher />
+                </div>
+            )}
+
             {/* Navigation */}
             <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto overflow-x-hidden custom-scrollbar">
                 {menuData.map((section, sIndex) => {
@@ -226,8 +234,23 @@ const Sidebar = ({
                                         if (!item.path) return null;
                                         if (item.permissions?.length > 0 && !isAdmin) return null;
 
-                                        const isActive = location.pathname === item.path
-                                            || (item.path !== '/admin' && location.pathname.startsWith(item.path + '/'));
+                                        let isActive = false;
+                                        const [itemPathname, itemSearch] = item.path.split('?');
+                                        
+                                        if (itemSearch) {
+                                            // Exact match required if query params exist
+                                            isActive = location.pathname === itemPathname && location.search === `?${itemSearch}`;
+                                        } else {
+                                            isActive = location.pathname === itemPathname;
+                                            if (!isActive && itemPathname !== '/admin' && itemPathname !== moduleRoot) {
+                                                isActive = location.pathname.startsWith(itemPathname + '/');
+                                            }
+                                        }
+
+                                        // Odoo Architecture alignment: My Profile maps to Users
+                                        if (location.pathname === '/admin/settings/profile' && itemPathname === '/admin/settings/users') {
+                                            isActive = true;
+                                        }
 
                                         return (
                                             <SidebarItem

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import { ecommerceService } from '../../api/ecommerceService';
 import { Plus, Search, Edit2, Trash2, Package, Filter, MoreVertical } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-import CreateProductModal from '../../../../core/components/store/CreateProductModal';
+import CreateProductModal from '@/core/components/store/CreateProductModal';
 
 const StoreProducts = () => {
     const [products, setProducts] = useState([]);

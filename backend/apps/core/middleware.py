@@ -9,6 +9,7 @@ def get_current_tenant():
 
 from django.utils.deprecation import MiddlewareMixin
 from django.http import JsonResponse
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +72,7 @@ class TenantMiddleware:
 
         if tenant_domain:
             # Map legacy or default frontend tenant IDs to the seeded internal tenant domain
-            if tenant_domain in ['0aff5946-c015-4cc6-9d06-416cdf204651', 'bitguard.tech', 'cfc72aac-52e3-44fb-847c-5041cbd1bda2']:
+            if tenant_domain in getattr(settings, 'DEMO_TENANT_IDS', []) or tenant_domain == getattr(settings, 'PLATFORM_VENDOR_DOMAIN', 'localhost'):
                 tenant_domain = 'cfc72aac-52e3-44fb-847c-5041cbd1bda2'
                 
             try:
@@ -96,7 +97,7 @@ class TenantMiddleware:
                             has_access = True
                             
                     # For BitGuard Internal testing/demo
-                    if str(request.tenant.id) in ['cfc72aac-52e3-44fb-847c-5041cbd1bda2', '0aff5946-c015-4cc6-9d06-416cdf204651']:
+                    if str(request.tenant.id) in getattr(settings, 'DEMO_TENANT_IDS', []):
                         has_access = True
                         
                     if not has_access:
@@ -111,4 +112,7 @@ class TenantMiddleware:
 
         _thread_locals.tenant = request.tenant
 
-        return self.get_response(request)
+        try:
+            return self.get_response(request)
+        finally:
+            _thread_locals.tenant = None

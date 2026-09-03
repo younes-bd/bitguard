@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Printer, Settings, Loader2, BarChart2, PieChart as PieChartIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import reportingService from '../../../../core/api/reportingService';
+import reportingService from '../../api/reportingService';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const ReportingDashboard = () => {
@@ -48,16 +48,23 @@ const ReportingDashboard = () => {
 
     const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
 
-    // Mock recent activity for bar chart since we might not have enough historical data
-    const barData = [
-        { name: 'Mon', docs: Math.floor(Math.random() * 20) + 5 },
-        { name: 'Tue', docs: Math.floor(Math.random() * 20) + 5 },
-        { name: 'Wed', docs: Math.floor(Math.random() * 20) + 15 },
-        { name: 'Thu', docs: Math.floor(Math.random() * 20) + 10 },
-        { name: 'Fri', docs: Math.floor(Math.random() * 20) + 25 },
-        { name: 'Sat', docs: Math.floor(Math.random() * 10) },
-        { name: 'Sun', docs: Math.floor(Math.random() * 10) },
-    ];
+    // Process recent activity for bar chart from historical data
+    const barData = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+        
+        // Count reports generated on this date
+        const count = reportsData.filter(r => {
+            if (!r.created_at) return false;
+            return r.created_at.startsWith(dateStr);
+        }).length;
+        
+        barData.push({ name: dayName, docs: count });
+    }
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 max-w-7xl mx-auto pb-20">

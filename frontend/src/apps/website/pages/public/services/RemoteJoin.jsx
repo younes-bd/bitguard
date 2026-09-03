@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import client from '../../../../../core/api/client';
-import PageMeta from '../../../../../core/components/shared/PageMeta';
+import client from '@/core/api/client';
+import PageMeta from '@/core/components/shared/PageMeta';
 import { MonitorPlay, ShieldCheck, Loader2, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
 
 const RemoteJoin = () => {

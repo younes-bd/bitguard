@@ -70,7 +70,7 @@ class WorkflowEngine:
 
     @staticmethod
     def _get_entity_type(obj):
-        from apps.billing.domain.models import Order
+        from apps.subscriptions.domain.models import Order
         from apps.soc.domain.models import Incident  # Correct model name (not SecurityIncident)
         from apps.projects.domain.models import Project as InternalProject
 

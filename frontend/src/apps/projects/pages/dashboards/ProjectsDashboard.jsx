@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
     FolderKanban, TrendingUp, CheckCircle, PauseCircle, 
     AlertTriangle, Plus, Edit2, Trash2, Search, 
     Filter, MoreVertical, Calendar, Users, Clock 
 } from 'lucide-react';
-import projectsService from '../../../../core/api/projectsService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import projectsService from '../../api/projectsService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const PROJECT_FIELDS = [

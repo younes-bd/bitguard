@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,7 +20,7 @@ class StandardPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 200
 
-class WorkCenterViewSet(viewsets.ModelViewSet):
+class WorkCenterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = WorkCenterSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -34,7 +35,7 @@ class WorkCenterViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class RoutingViewSet(viewsets.ModelViewSet):
+class RoutingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RoutingSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -44,7 +45,7 @@ class RoutingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class BillOfMaterialViewSet(viewsets.ModelViewSet):
+class BillOfMaterialViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = BillOfMaterialSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination
@@ -57,7 +58,7 @@ class BillOfMaterialViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class WorkOrderViewSet(viewsets.ModelViewSet):
+class WorkOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = WorkOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -67,7 +68,7 @@ class WorkOrderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class ScrapOrderViewSet(viewsets.ModelViewSet):
+class ScrapOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ScrapOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -77,7 +78,7 @@ class ScrapOrderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
 
-class ManufacturingOrderViewSet(viewsets.ModelViewSet):
+class ManufacturingOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ManufacturingOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardPagination

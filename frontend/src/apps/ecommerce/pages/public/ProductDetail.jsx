@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Server, Cloud, Headphones, Package, ArrowLeft, Check, Loader2, ShoppingCart } from 'lucide-react';
-import client from '../../../../core/api/client';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import client from '@/core/api/client';
+import { ecommerceService } from '../../api/ecommerceService';
 import toast from 'react-hot-toast';
 
 const typeLabels = {

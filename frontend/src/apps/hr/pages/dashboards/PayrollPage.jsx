@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DollarSign, Calendar, Users, Calculator, Loader2, Download, Play } from 'lucide-react';
-import { hrmService } from '../../../../core/api/hrmService';
+import { hrService } from '../../api/hrService';
 import toast from 'react-hot-toast';
 
 const PayrollPage = () => {
@@ -13,8 +13,8 @@ const PayrollPage = () => {
             setLoading(true);
             try {
                 const [empData, statsData] = await Promise.all([
-                    hrmService.getEmployees(),
-                    hrmService.getStats(),
+                    hrService.getEmployees(),
+                    hrService.getStats(),
                 ]);
                 const empList = Array.isArray(empData) ? empData : empData?.results ?? [];
                 setEmployees(empList.filter(e => e.status === 'active'));

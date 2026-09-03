@@ -1,3 +1,4 @@
+from apps.core.validators import validate_document_file, validate_image_file
 
 from django.utils import timezone
 from django.db import models
@@ -10,17 +11,17 @@ from apps.core.domain.models import TenantAwareModel
 User = get_user_model()
 
 
-class Announcement(models.Model):
+class Announcement(TenantAwareModel):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    image = models.ImageField(upload_to='announcements/', blank=True, null=True)
+    image = models.ImageField(upload_to='announcements/', blank=True, null=True, validators=[validate_image_file])
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
 
-class Signup(models.Model):
+class Signup(TenantAwareModel):
     email = models.EmailField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -28,12 +29,11 @@ class Signup(models.Model):
         return self.email
 
 
-class WebsiteInquiry(models.Model):
+class WebsiteInquiry(TenantAwareModel):
     full_name = models.CharField(max_length=100)
     email = models.EmailField()
     subject = models.CharField(max_length=200)
     message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
 
     class Meta:
@@ -82,26 +82,23 @@ class WebsiteRedirect(TenantAwareModel):
     def __str__(self):
         return f"{self.url_from} -> {self.url_to}"
 
-class LandingPage(models.Model):
-    tenant = models.ForeignKey('tenants.Tenant', on_delete=models.CASCADE, related_name='landing_pages', null=True, blank=True)
+class LandingPage(TenantAwareModel):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     campaign_slug = models.CharField(max_length=100, blank=True)
     builder_json = models.JSONField(default=dict, blank=True)
     seo_metadata = models.JSONField(default=dict, blank=True)
     is_published = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class MediaAsset(TenantAwareModel):
-    file = models.FileField(upload_to='cms_media/%Y/%m/%d/')
+    file = models.FileField(upload_to='cms_media/%Y/%m/%d/', validators=[validate_document_file])
     filename = models.CharField(max_length=255)
     file_type = models.CharField(max_length=50) # e.g. image/png, application/pdf
     file_size = models.PositiveIntegerField(help_text="File size in bytes")
     dimensions = models.CharField(max_length=50, blank=True, help_text="e.g. 1920x1080")
     alt_text = models.CharField(max_length=255, blank=True)
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.filename
@@ -117,7 +114,7 @@ class ServicePage(TenantAwareModel):
     content = models.TextField() # HTML content
     features = models.JSONField(default=list)
     content_data = models.JSONField(default=dict, blank=True)
-    linked_service = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='marketing_pages')
+    linked_service = models.ForeignKey('product.Product', on_delete=models.SET_NULL, null=True, blank=True, related_name='marketing_pages')
     status = models.CharField(max_length=20, choices=[('draft', 'Draft'), ('published', 'Published'), ('archived', 'Archived')], default='draft')
     published_at = models.DateTimeField(null=True, blank=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='authored_service_pages')

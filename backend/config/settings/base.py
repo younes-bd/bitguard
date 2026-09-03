@@ -5,15 +5,53 @@ from dotenv import load_dotenv
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-development-key-314159')
+if SECRET_KEY == 'fallback-development-key-314159':
+    import warnings
+    warnings.warn('Using fallback SECRET_KEY. Please set DJANGO_SECRET_KEY in production.')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:3000', 'http://127.0.0.1:3000']
 
+PLATFORM_VENDOR_DOMAIN = os.getenv('PLATFORM_VENDOR_DOMAIN', 'localhost')
+PLATFORM_VENDOR_NAME = os.getenv('PLATFORM_VENDOR_NAME', 'BitGuard')
+DEMO_TENANT_IDS = os.getenv('DEMO_TENANT_IDS', '0aff5946-c015-4cc6-9d06-416cdf204651,cfc72aac-52e3-44fb-847c-5041cbd1bda2').split(',')
 
 LOGIN_REDIRECT_URL = 'dashboard_home'
 LOGIN_URL = '/users/login/'
 LOGOUT_URL = 'logout'
 
+import os
+import sys
+
+# Dynamic App Discovery (ERP Standard)
+APPS_DIR = BASE_DIR / 'apps'
+INTEGRATIONS_DIR = BASE_DIR / 'integrations'
+
+# Mandatory Core Apps that must be loaded first
+CORE_APPS = [
+    'apps.core',
+    'apps.users',
+    'apps.tenants',
+    'apps.auth',
+    'apps.system',
+    'apps.notifications',
+    'api',
+]
+
+# Discover all other business modules dynamically
+DYNAMIC_APPS = []
+if APPS_DIR.exists():
+    for d in APPS_DIR.iterdir():
+        if d.is_dir() and d.name != '__pycache__' and not d.name.startswith('.'):
+            app_module = f'apps.{d.name}'
+            if app_module not in CORE_APPS:
+                DYNAMIC_APPS.append(app_module)
+
+if INTEGRATIONS_DIR.exists():
+    for d in INTEGRATIONS_DIR.iterdir():
+        if d.is_dir() and d.name != '__pycache__' and not d.name.startswith('.'):
+            INTEGRATIONS_DIR_STR = f'integrations.{d.name}'
+            DYNAMIC_APPS.append(INTEGRATIONS_DIR_STR)
 
 INSTALLED_APPS = [
     # Django Built-in
@@ -33,69 +71,13 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'taggit',
-
-    # Local Apps
-    'apps.core',        # Core functionality first
-    'apps.users',    # Auth & Users
-    'apps.tenants',     # Multi-tenancy
-    'apps.soc',
-    'apps.auth',
-    'apps.website',
-    'apps.portal',
-    'apps.elearning',
-    'apps.blog',
-    'apps.ecommerce',
-    'apps.billing',
-    'apps.crm',
-    'apps.notifications',
-    'integrations.ai_engine',
-    'integrations.automation',
-    'api',
-
-
-    'apps.board',
-    'apps.helpdesk',
-    'apps.marketing',
-    # New business modules (Sprint 3 & 4)
-    'apps.accounting',
-    'apps.hr',
-    'apps.hr_attendance',
-    'apps.hr_holidays',
-    'apps.hr_recruitment',
-    'apps.hr_payroll',
-    'apps.hr_appraisal',
-    'apps.hr_expense',
-    'apps.purchase',
-    'apps.stock',
-    'apps.delivery',
-    'apps.contracts',
-    'apps.projects',    # Dedicated Project Management (PSA)
-    'apps.maintenance',        # Generic Asset Management
-    'apps.base_setup',    # System Administration
-    'apps.appointments',
-    'apps.planning',
-    'apps.field_service',
-    'apps.documents',        # Electronic Document Management System
-    'apps.reporting',   # PDF Reporting Engine
-    'apps.sale',
-    'apps.approvals',   # Next-Gen Enterprise Approvals
-    'apps.mrp',         # Manufacturing Resource Planning
-    'apps.pos',         # Point of Sale
-    'apps.fleet',       # Fleet Management
-    'apps.discuss',     # Internal Communication / Team Chat
-    'apps.rental',      # Rental Management
-    'apps.mrp_plm',         # Product Lifecycle Management
-    'apps.quality_control',     # Quality Management
-    'apps.esg',         # ESG & Sustainability
-    'apps.equity',      # Equity Management
-    # 'django_celery_beat',
-]
+    'django_celery_beat',
+] + CORE_APPS + DYNAMIC_APPS
 
 # Django Channels — WebSocket layer (install: pip install channels daphne)
 # Conditionally added so Django starts even without channels installed
 try:
     import channels  # noqa
-    INSTALLED_APPS += ['channels', 'daphne']
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels.layers.InMemoryChannelLayer',
@@ -128,6 +110,7 @@ TEMPLATES = [{'BACKEND':'django.template.backends.django.DjangoTemplates',
               'django.contrib.messages.context_processors.messages']}}]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 
@@ -161,7 +144,7 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
@@ -248,3 +231,17 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+import importlib.util
+if importlib.util.find_spec('daphne') and importlib.util.find_spec('channels'):
+    INSTALLED_APPS.insert(0, 'daphne')
+    INSTALLED_APPS.insert(1, 'channels')
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        }
+    }
+
+from celery.schedules import crontab
+# CELERY_BEAT_SCHEDULE is now managed via the database using django_celery_beat
+

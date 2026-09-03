@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Sparkles, TrendingUp, Activity, Truck } from 'lucide-react';
-import fleetService from '../../../../core/api/fleetService';
+import fleetService from '../../api/fleetService';
 
 const FleetDashboard = () => {
-  const [vehicles, setVehicles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    total_vehicles: 0,
+    active_vehicles: 0,
+    in_maintenance: 0,
+    total_fuel_cost: 0,
+    total_maintenance_cost: 0,
+  });
 
   useEffect(() => {
-    fleetService.getVehicles().then(data => {
+    Promise.all([
+      fleetService.getDashboardStats().catch(() => ({})),
+      fleetService.getVehicles().catch(() => ({ results: [] }))
+    ]).then(([s, data]) => {
+      if (s && s.total_vehicles !== undefined) {
+          setStats(s);
+      }
       setVehicles(Array.isArray(data) ? data : data.results || []);
       setLoading(false);
-    }).catch(() => setLoading(false));
+    });
   }, []);
-
-  const activeVehicles = vehicles.filter(v => v.state === 'active').length;
-  const inRepair = vehicles.filter(v => v.state === 'in_repair').length;
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -45,7 +53,7 @@ const FleetDashboard = () => {
             </div>
           </div>
           <h3 className="text-slate-500 dark:text-slate-400 font-medium mb-1">Total Vehicles</h3>
-          <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : vehicles.length}</p>
+          <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : stats.total_vehicles}</p>
         </div>
         
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden relative">
@@ -56,7 +64,7 @@ const FleetDashboard = () => {
             </div>
           </div>
           <h3 className="text-slate-500 dark:text-slate-400 font-medium mb-1">Active Vehicles</h3>
-          <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : activeVehicles}</p>
+          <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : stats.active_vehicles}</p>
         </div>
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden relative">
@@ -67,7 +75,29 @@ const FleetDashboard = () => {
             </div>
           </div>
           <h3 className="text-slate-500 dark:text-slate-400 font-medium mb-1">In Repair</h3>
-          <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : inRepair}</p>
+          <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : stats.in_maintenance}</p>
+        </div>
+        
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden relative">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-rose-500/20 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-rose-50 dark:bg-rose-500/10 rounded-xl">
+              <TrendingUp className="w-6 h-6 text-rose-500 dark:text-rose-400" />
+            </div>
+          </div>
+          <h3 className="text-slate-500 dark:text-slate-400 font-medium mb-1">Total Fuel Cost</h3>
+          <p className="text-3xl font-bold text-slate-800 dark:text-white">${loading ? '...' : stats.total_fuel_cost}</p>
+        </div>
+        
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden relative">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
+              <TrendingUp className="w-6 h-6 text-purple-500 dark:text-purple-400" />
+            </div>
+          </div>
+          <h3 className="text-slate-500 dark:text-slate-400 font-medium mb-1">Maintenance Cost</h3>
+          <p className="text-3xl font-bold text-slate-800 dark:text-white">${loading ? '...' : stats.total_maintenance_cost}</p>
         </div>
       </div>
 

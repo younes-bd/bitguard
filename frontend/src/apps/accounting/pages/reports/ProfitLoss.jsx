@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, Download } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const ProfitLoss = () => {
@@ -14,7 +14,7 @@ const ProfitLoss = () => {
         const fetchReport = async () => {
             setLoading(true);
             try {
-                const data = await erpService.getProfitLoss(startDate, endDate);
+                const data = await accountingService.getProfitLoss(startDate, endDate);
                 setReport(data);
             } catch (err) {
                 toast.error('Failed to load Profit & Loss report');

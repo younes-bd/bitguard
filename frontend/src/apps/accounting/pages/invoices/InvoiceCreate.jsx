@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
-import { crmService } from '../../../../core/api/crmService';
-import { contractsService } from '../../../../core/api/contractsService';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import { projectsService } from '../../../projects/api/projectsService';
+import { accountingService } from '../../api/accountingService';
+import { crmService } from '../../../crm/api/crmService';
+import { signService } from '../../../sign/api/signService';
+import { ecommerceService } from '../../../ecommerce/api/ecommerceService';
 import { toast } from 'react-hot-toast';
 import { Save, ArrowLeft, FileText, User, Tag, Briefcase, FileSignature } from 'lucide-react';
-import InvoiceLineItems from '../billing/InvoiceLineItems';
+import InvoiceLineItems from '@/core/components/shared/InvoiceLineItems';
 
 const InvoiceCreate = () => {
     const navigate = useNavigate();
@@ -42,8 +43,8 @@ const InvoiceCreate = () => {
             try {
                 const [clientsRes, projectsRes, contractsRes, productsRes] = await Promise.all([
                     crmService.getClients(),
-                    erpService.getProjects(),
-                    contractsService.getContracts(),
+                    projectsService.getProjects(),
+                    signService.getContracts(),
                     ecommerceService.getProducts()
                 ]);
                 setClients(Array.isArray(clientsRes) ? clientsRes : clientsRes.results || []);
@@ -179,7 +180,7 @@ const InvoiceCreate = () => {
                 ...formData,
                 items: formData.items.map(({ _isContractItem, _isProjectItem, ...item }) => item)
             };
-            await erpService.createInvoice(payload);
+            await accountingService.createInvoice(payload);
             toast.success('Invoice created successfully!');
             navigate('/admin/accounting/invoices');
         } catch (error) {
@@ -449,6 +450,7 @@ const InvoiceCreate = () => {
 };
 
 export default InvoiceCreate;
+
 
 
 

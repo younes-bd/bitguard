@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Truck, Search, Plus, Eye } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../../accounting/api/accountingService';
 
 export default function DeliveryNoteList() {
     const [deliveryNotes, setDeliveryNotes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        erpService.getDeliveryNotes()
+        accountingService.getDeliveryNotes()
             .then(data => {
                 setDeliveryNotes(data || []);
                 setIsLoading(false);

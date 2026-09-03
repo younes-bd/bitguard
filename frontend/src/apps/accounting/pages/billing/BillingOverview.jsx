@@ -5,7 +5,7 @@ import {
     ArrowUpRight, Plus, TrendingUp, AlertTriangle,
     BarChart2, CreditCard, Activity
 } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const BillingOverview = () => {
@@ -18,8 +18,8 @@ const BillingOverview = () => {
         const loadBillingData = async () => {
             try {
                 const [dashData, invoiceData] = await Promise.all([
-                    erpService.getDashboardStats(),
-                    erpService.getInvoices({ ordering: '-created_at', page_size: 5 }),
+                    accountingService.getDashboardStats(),
+                    accountingService.getInvoices({ ordering: '-created_at', page_size: 5 }),
                 ]);
                 setStats(dashData);
                 const results = Array.isArray(invoiceData) ? invoiceData : invoiceData?.results || [];

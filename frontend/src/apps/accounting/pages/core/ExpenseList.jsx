@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { erpService } from '../../../../core/api/erpService';
+﻿import React, { useEffect, useState } from 'react';
+import { accountingService } from '../../api/accountingService';
 import {
     Search, Filter, Plus, DollarSign,
-    FileText, Check, X, Clock, Download
+    FileText, Check, X, Clock, Download, ThumbsUp, ThumbsDown, CreditCard
 } from 'lucide-react';
 
 const ExpenseList = () => {
@@ -26,7 +26,7 @@ const ExpenseList = () => {
 
     const loadExpenses = async () => {
         try {
-            const data = await erpService.getExpenses();
+            const data = await accountingService.getExpenses();
             setExpenses(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to load expenses", error);
@@ -38,12 +38,23 @@ const ExpenseList = () => {
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
-            await erpService.createExpense(formData);
+            await accountingService.createExpense(formData);
             setShowModal(false);
             setFormData({ title: '', amount: '', category: 'other', incurred_date: new Date().toISOString().split('T')[0], notes: '' });
             loadExpenses(); // Refresh
         } catch (error) {
             alert("Failed to submit expense");
+        }
+    };
+
+    const handleAction = async (id, action) => {
+        try {
+            if (action === 'approve') await accountingService.approveExpense(id);
+            if (action === 'reject') await accountingService.rejectExpense(id);
+            if (action === 'reimburse') await accountingService.reimburseExpense(id);
+            loadExpenses();
+        } catch (error) {
+            alert(`Failed to ${action} expense`);
         }
     };
 
@@ -110,9 +121,9 @@ const ExpenseList = () => {
                                 <h3 className="text-white font-medium">{exp.title}</h3>
                                 <div className="text-sm text-slate-400 flex items-center gap-2">
                                     <span className="capitalize">{exp.category}</span>
-                                    <span>â€¢</span>
+                                    <span>Ã¢â‚¬Â¢</span>
                                     <span>{exp.incurred_date}</span>
-                                    <span>â€¢</span>
+                                    <span>Ã¢â‚¬Â¢</span>
                                     <span className="text-slate-500">by {exp.user_name || 'User'}</span>
                                 </div>
                             </div>
@@ -131,10 +142,41 @@ const ExpenseList = () => {
                                     `}>{exp.status}</span>
                                 </div>
                             </div>
+                            
+                            <div className="flex gap-2 mr-4">
+                                {exp.status === 'pending' && (
+                                    <>
+                                        <button 
+                                            onClick={() => handleAction(exp.id, 'approve')}
+                                            className="p-2 text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-lg transition-colors"
+                                            title="Approve"
+                                        >
+                                            <ThumbsUp size={18} />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleAction(exp.id, 'reject')}
+                                            className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                                            title="Reject"
+                                        >
+                                            <ThumbsDown size={18} />
+                                        </button>
+                                    </>
+                                )}
+                                {exp.status === 'approved' && (
+                                    <button 
+                                        onClick={() => handleAction(exp.id, 'reimburse')}
+                                        className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
+                                        title="Reimburse"
+                                    >
+                                        <CreditCard size={18} />
+                                    </button>
+                                )}
+                            </div>
+
                             <button
                                     onClick={async () => {
                                         try {
-                                            const { default: reportingService } = await import('../../../../core/api/reportingService');
+                                            const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
                                             const res = await reportingService.generateReport(null, 'accounting.Expense', exp.id);
                                             if (res && res.file) {
                                                 window.open(res.file, '_blank');
@@ -245,6 +287,7 @@ const ExpenseList = () => {
 };
 
 export default ExpenseList;
+
 
 
 

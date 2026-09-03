@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, status, pagination, views
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -11,12 +12,12 @@ from apps.documents.domain.models import DocumentWorkspace, Tag, Document, Docum
 from apps.core.domain.models import Attachment
 from .serializers import DocumentWorkspaceSerializer, TagSerializer, DocumentSerializer, DocumentVersionSerializer
 
-class DocumentWorkspaceViewSet(viewsets.ModelViewSet):
+class DocumentWorkspaceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = DocumentWorkspace.objects.all()
     serializer_class = DocumentWorkspaceSerializer
     permission_classes = [IsAuthenticated]
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAuthenticated]
@@ -26,8 +27,8 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class DocumentViewSet(viewsets.ModelViewSet):
-    queryset = Document.objects.select_related('attachment', 'workspace', 'owner').prefetch_related('tags').all()
+class DocumentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    queryset = Document.objects.select_related('attachment', 'workspace', 'owner').prefetch_related('tags').order_by('-created_at')
     serializer_class = DocumentSerializer
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticated]
@@ -56,6 +57,21 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 Q(attachment__name__icontains=search) | 
                 Q(ocr_text__icontains=search)
             )
+
+        is_archived = self.request.query_params.get('is_archived')
+        if is_archived is not None:
+            qs = qs.filter(is_archived=is_archived.lower() == 'true')
+            
+        owner = self.request.query_params.get('owner')
+        if owner:
+            qs = qs.filter(owner_id=owner)
+            
+        recent_days = self.request.query_params.get('recent_days')
+        if recent_days:
+            from django.utils import timezone
+            import datetime
+            cutoff = timezone.now() - datetime.timedelta(days=int(recent_days))
+            qs = qs.filter(created_at__gte=cutoff)
             
         return qs
 
@@ -64,47 +80,22 @@ class DocumentViewSet(viewsets.ModelViewSet):
         if not file_obj:
             return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Max file size 50MB (could be a setting later)
-        if file_obj.size > 50 * 1024 * 1024:
-            return Response({'error': 'File too large. Maximum size is 50MB.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Basic file type check
-        allowed_types = ['application/pdf', 'image/png', 'image/jpeg', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
-        if file_obj.content_type not in allowed_types:
-             return Response({'error': 'Unsupported file type.'}, status=status.HTTP_400_BAD_REQUEST)
-
         title = request.data.get('title', file_obj.name)
-        workspace_id = request.data.get('workspace_id')
-        
-        # 1. Create the Document instance first (to get an ID for Attachment)
-        document = Document.objects.create(
-            workspace_id=workspace_id,
-            owner=request.user,
-            # We will set attachment shortly
-        )
-
-        # 2. Create the Attachment
-        content_type = ContentType.objects.get_for_model(Document)
-        attachment = Attachment.objects.create(
-            name=title,
-            res_model=content_type,
-            res_id=str(document.id),
-            mimetype=file_obj.content_type,
-            file_size=file_obj.size,
-            file=file_obj
-        )
-
-        # 3. Link them
-        document.attachment = attachment
-        document.save()
-
-        # Handle tags if provided
+        workspace_id = request.data.get('workspace_id') or request.data.get('workspace')
         tag_ids = request.data.getlist('tag_ids')
-        if tag_ids:
-            document.tags.set(tag_ids)
 
-        # Trigger text extraction for search indexing
-        document.extract_text()
+        from apps.documents.services import DocumentService
+        try:
+            document = DocumentService.create_document(
+                user=request.user,
+                tenant=getattr(request, 'tenant', None),
+                file_obj=file_obj,
+                title=title,
+                workspace_id=workspace_id,
+                tag_ids=tag_ids
+            )
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(document)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -117,39 +108,19 @@ class DocumentViewSet(viewsets.ModelViewSet):
     def bump_version(self, request, pk=None):
         document = self.get_object()
         file_obj = request.FILES.get('file')
-        if not file_obj:
-            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        notes = request.data.get('notes', '')
         new_version_number = request.data.get('version', f"{float(document.version) + 0.1:.1f}")
 
-        # 1. Save current attachment to history
-        DocumentVersion.objects.create(
-            document=document,
-            attachment=document.attachment,
-            version_number=document.version,
-            created_by=request.user,
-            notes="Archived version"
-        )
-
-        # 2. Create new Attachment
-        content_type = ContentType.objects.get_for_model(Document)
-        new_attachment = Attachment.objects.create(
-            name=file_obj.name,
-            res_model=content_type,
-            res_id=str(document.id),
-            mimetype=file_obj.content_type,
-            file_size=file_obj.size,
-            file=file_obj
-        )
-
-        # 3. Update document
-        document.attachment = new_attachment
-        document.version = new_version_number
-        document.save()
-
-        # Extract text from new version
-        document.extract_text()
+        from apps.documents.services import DocumentService
+        try:
+            document = DocumentService.bump_version(
+                document=document,
+                user=request.user,
+                tenant=getattr(request, 'tenant', None),
+                file_obj=file_obj,
+                new_version_number=new_version_number
+            )
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(self.get_serializer(document).data)
 
@@ -193,7 +164,7 @@ class PublicDocumentView(views.APIView):
             
         return FileResponse(document.attachment.file, as_attachment=False, filename=document.attachment.name)
 
-class DocumentVersionViewSet(viewsets.ReadOnlyModelViewSet):
+class DocumentVersionViewSet(TenantScopedMixin, viewsets.ReadOnlyModelViewSet):
     queryset = DocumentVersion.objects.all()
     serializer_class = DocumentVersionSerializer
     permission_classes = [IsAuthenticated]
@@ -208,7 +179,7 @@ class DocumentVersionViewSet(viewsets.ReadOnlyModelViewSet):
 from apps.documents.domain.models import SpreadsheetDocument
 from .serializers import SpreadsheetDocumentSerializer
 
-class SpreadsheetDocumentViewSet(viewsets.ModelViewSet):
+class SpreadsheetDocumentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SpreadsheetDocumentSerializer
     def get_queryset(self): return SpreadsheetDocument.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else SpreadsheetDocument.objects.all()

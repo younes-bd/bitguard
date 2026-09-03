@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Database, Search, Filter, Download, RefreshCw, AlertTriangle, Info, AlertCircle, Loader2 } from 'lucide-react';
-import { platformService } from '../../../../core/api/platformService';
+import { settingsService } from '../../../system/api/settingsService';
 
 const SEVERITY_MAP = {
     critical: { color: 'bg-red-500/10 text-red-400 border-red-500/20', icon: AlertCircle },
@@ -18,7 +18,7 @@ const LogAnalysisPage = () => {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const data = await platformService.getLogs();
+            const data = await settingsService.getLogs();
             setLogs(Array.isArray(data) ? data : data.results || []);
         } catch (err) {
             console.error("Failed to fetch logs", err);

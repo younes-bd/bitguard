@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import helpdeskService from '../../../../core/api/helpdeskService';
-import { crmService } from '../../../../core/api/crmService';
+import helpdeskService from '../../api/helpdeskService';
+import { crmService } from '../../../crm/api/crmService';
 import {
     Ticket, Users, AlertCircle, Save, X
 } from 'lucide-react';

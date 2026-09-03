@@ -17,7 +17,7 @@ import {
     Calendar,
     Search
 } from 'lucide-react';
-import { ecommerceService } from '../../../../core/api/ecommerceService';
+import { ecommerceService } from '../../../ecommerce/api/ecommerceService';
 
 const ClientTab = ({ label, icon: Icon, isActive, onClick }) => (
     <button
@@ -312,7 +312,7 @@ const ClientProfile = () => {
                     <button 
                         onClick={async () => {
                             try {
-                                const { default: crmService } = await import('../../../../core/api/crmService');
+                                const { default: crmService } = await import('../../api/crmService');
                                 // id here comes from useParams()
                                 await crmService.downloadDocument('crm.Client', id);
                             } catch (err) {

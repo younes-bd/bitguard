@@ -68,7 +68,7 @@ def handle_order_paid(sender, order, request=None, **kwargs):
         )
         logger.info(f"Synced core.Partner and crm.Client for paid Order {order.id}")
 
-@receiver(post_save, sender='contracts.Quote')
+@receiver(post_save, sender='sale.saleorder')
 def handle_quote_accepted(sender, instance, created, **kwargs):
     """
     contracts.Quote.status = 'accepted' → Disable auto-generation to prevent duplicates.
@@ -96,7 +96,7 @@ def handle_low_stock(sender, instance, created, **kwargs):
                 type="low_stock"
             )
 
-@receiver(post_save, sender='contracts.ServiceContract')
+@receiver(post_save, sender='subscriptions.servicecontract')
 def handle_contract_created(sender, instance, created, **kwargs):
     """
     contracts.ServiceContract created → create soc.Workspace
@@ -112,7 +112,7 @@ def handle_contract_created(sender, instance, created, **kwargs):
         )
         logger.info(f"Created SOC Workspace for Contract {instance.id}")
 
-@receiver(post_save, sender='contracts.SLABreach')
+@receiver(post_save, sender='helpdesk.slabreach')
 def handle_sla_breach(sender, instance, created, **kwargs):
     """
     contracts.SLABreach created → create soc.Alert

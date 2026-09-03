@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import mrpService from '../../../../core/api/mrpService';
+import mrpService from '../../api/mrpService';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const OrderForm = () => {

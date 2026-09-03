@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 import client from '../api/client';
-import { iamService } from '../api/iamService';
+import { usersService } from '../../apps/users/api/usersService';
 import { useSidebarState } from '../hooks/useSidebarState';
 import { useAuth } from '../hooks/useAuth';
 import UserAvatarDropdown from '../components/shared/core/UserAvatarDropdown';

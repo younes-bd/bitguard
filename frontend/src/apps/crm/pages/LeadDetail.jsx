@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import RecordFormLayout from '../../../core/components/shared/forms/RecordFormLayout';
-import crmService from '../api/crmService';
+import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import { crmService } from '../api/crmService';
 import { toast } from 'react-hot-toast';
 import { Loader2, User, Building, Mail, Phone, ArrowRightCircle, X, Check } from 'lucide-react';
 
 export default function LeadDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const handleConvertToSale = async () => {
+    try {
+      const { data } = await client.post(`/crm/leads/${id}/convert-to-sale/`);
+      toast.success('Lead converted to Sale Order!');
+      navigate(`/sales/orders/${data.id}`);
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to convert lead');
+    }
+  };
+
   const isNew = id === 'new';
 
   const [lead, setLead] = useState({

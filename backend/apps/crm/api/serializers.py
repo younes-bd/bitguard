@@ -4,44 +4,53 @@ from ..domain.models import Client, Contact, Lead, Deal, Activity, CrmStage, Crm
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = '__all__'
+        fields = ['id', 'STATUS_CHOICES', 'TYPE_CHOICES', 'name', 'partner', 'client_type', 'status', 'industry', 'website', 'email', 'phone', 'assigned_to', 'team']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        fields = '__all__'
+        fields = ['id', 'client', 'user', 'first_name', 'last_name', 'email', 'phone', 'job_title', 'role', 'is_primary']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class LeadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lead
-        fields = '__all__'
+        fields = ['id', 'STATUS_CHOICES', 'SOURCE_CHOICES', 'PRIORITY_CHOICES', 'title', 'first_name', 'last_name', 'company', 'email', 'phone', 'source', 'utm_source', 'utm_medium', 'utm_campaign', 'status', 'value', 'score', 'probability', 'priority', 'description', 'expected_close_date', 'lost_reason', 'assigned_to', 'team', 'tags', 'contact', 'client']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class DealSerializer(serializers.ModelSerializer):
     class Meta:
         model = Deal
-        fields = '__all__'
+        fields = ['id', 'PRIORITY_CHOICES', 'title', 'client', 'lead', 'stage', 'amount', 'probability', 'priority', 'expected_close_date', 'assigned_to', 'team', 'lost_reason', 'tags', 'notes']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
-        fields = '__all__'
+        fields = ['id', 'TYPE_CHOICES', 'activity_type', 'description', 'deal', 'lead', 'client']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class CrmStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CrmStage
-        fields = '__all__'
+        fields = ['id', 'name', 'sequence', 'is_won', 'is_lost', 'fold', 'probability', 'color', 'requirements']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class CrmSalesTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = CrmSalesTeam
-        fields = '__all__'
+        fields = ['id', 'name', 'leader', 'members', 'alias_email', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class LostReasonSerializer(serializers.ModelSerializer):
     class Meta:
         model = LostReason
-        fields = '__all__'
+        fields = ['id', 'name', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class CrmTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = CrmTag
-        fields = '__all__'
+        fields = ['id', 'name', 'color']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

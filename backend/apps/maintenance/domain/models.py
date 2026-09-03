@@ -107,6 +107,11 @@ class MaintenanceRecord(BaseModel):
     cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     notes = models.TextField(blank=True)
 
+    # Recurrence for Preventive Maintenance
+    is_recurring = models.BooleanField(default=False)
+    recurrence_interval_days = models.IntegerField(null=True, blank=True, help_text="Days between recurring maintenance")
+    next_due_date = models.DateField(null=True, blank=True)
+
     class Meta:
         verbose_name = 'Maintenance Record'
         ordering = ['-performed_at']

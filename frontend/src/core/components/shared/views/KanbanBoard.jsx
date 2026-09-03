@@ -91,6 +91,18 @@ export default function KanbanBoard({
                   {column.cards?.length || 0}
                 </span>
               </div>
+              <button 
+                onClick={() => {
+                  const newTitle = window.prompt(`Quick create in ${column.label}:`);
+                  if (newTitle) {
+                    // Would typically call a prop like onQuickCreate(column.id, newTitle)
+                  }
+                }}
+                className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-200 transition-colors"
+                title="Quick Create"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
 
             {/* Column Body / Cards Area */}

@@ -1,6 +1,8 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.db.models import Count, Q
 from ..domain.models import Project, Task, Milestone, TimeLog, Sprint, TaskTag
 from ..api.serializers import (
@@ -9,20 +11,20 @@ from ..api.serializers import (
     SprintSerializer, TaskTagSerializer
 )
 
-class SprintViewSet(viewsets.ModelViewSet):
+class SprintViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SprintSerializer
     def get_queryset(self):
         return Sprint.objects.filter(tenant=self.request.user.tenant)
 
-class TaskTagViewSet(viewsets.ModelViewSet):
+class TaskTagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TaskTagSerializer
     def get_queryset(self):
         return TaskTag.objects.filter(tenant=self.request.user.tenant)
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -115,8 +117,43 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         return Response({'status': 'success', 'budget': project.budget, 'spent': 0})
 
+    @action(detail=True, methods=['post'], url_path='bill-time')
+    def bill_time(self, request, pk=None):
+        from apps.accounting.domain.models import Invoice, InvoiceLine
+        from datetime import date, timedelta
+        from apps.core.services.audit import AuditService
+        
+        project = self.get_object()
+        unbilled_logs = project.time_logs.filter(is_billable=True, billed=False)
+        if not unbilled_logs.exists():
+            return Response({'error': 'No unbilled time entries.'}, status=400)
+            
+        invoice = Invoice.objects.create(
+            tenant=project.tenant,
+            client=project.client,
+            status='draft',
+            issue_date=date.today(),
+            due_date=date.today() + timedelta(days=30),
+            created_by=request.user
+        )
+        
+        for log in unbilled_logs:
+            InvoiceLine.objects.create(
+                tenant=project.tenant,
+                invoice=invoice,
+                description=f"[{project.name}] {log.task.title} — {log.date}",
+                quantity=log.hours,
+                unit_price=project.hourly_rate or 0,
+                subtotal=(log.hours * (project.hourly_rate or 0))
+            )
+            log.billed = True
+            log.save()
+            
+        AuditService.log_action(request.user, 'PROJECT_TIME_BILLED', f"Project {project.id} time billed", project)
+        return Response({'invoice_id': invoice.id, 'status': 'invoice_created'})
 
-class TaskViewSet(viewsets.ModelViewSet):
+
+class TaskViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -150,7 +187,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response({'status': 'comment_added', 'content': content})
 
 
-class MilestoneViewSet(viewsets.ModelViewSet):
+class MilestoneViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = MilestoneSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -171,7 +208,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         return Response({'completed': True})
 
 
-class TimeLogViewSet(viewsets.ModelViewSet):
+class TimeLogViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = TimeLogSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -215,7 +252,52 @@ class TimeLogViewSet(viewsets.ModelViewSet):
 from ..domain.models import TaskTimesheet
 from .serializers import TaskTimesheetSerializer
 
-class TaskTimesheetViewSet(viewsets.ModelViewSet):
+class TaskTimesheetViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TaskTimesheetSerializer
     def get_queryset(self): return TaskTimesheet.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else TaskTimesheet.objects.all()
+
+class DashboardStatsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        qs = Project.objects.all()
+        if tenant:
+            qs = qs.filter(tenant=tenant)
+
+        return Response({
+            'total': qs.count(),
+            'active': qs.filter(status='active').count(),
+            'completed': qs.filter(status='completed').count(),
+            'on_hold': qs.filter(status='on_hold').count(),
+            'overdue': qs.filter(
+                status__in=['planning', 'active'],
+                deadline__lt=__import__('django.utils.timezone', fromlist=['now']).now().date()
+            ).count(),
+        })
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+class ProjectsAggReportView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        tenant = getattr(request, 'tenant', None)
+        from apps.projects.domain.models import Project, Task
+        from django.utils import timezone
+        projects = Project.objects.all()
+        tasks = Task.objects.all()
+        if tenant:
+            projects = projects.filter(tenant=tenant)
+            tasks = tasks.filter(project__tenant=tenant)
+        
+        result = {
+            "total_projects": projects.count(),
+            "active_projects": projects.filter(status='in_progress').count(),
+            "overdue_tasks": tasks.filter(due_date__lt=timezone.now().date(), status__in=['todo','in_progress']).count()
+        }
+        return Response({"status": "success", "data": result})
+

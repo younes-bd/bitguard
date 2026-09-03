@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.decorators import action
@@ -7,7 +8,7 @@ from ..api.serializers import AssetListSerializer, AssetDetailSerializer, AssetA
 from ..domain.models import Asset, AssetAssignment, MaintenanceRecord, SoftwareLicense
 
 
-class AssetViewSet(viewsets.ModelViewSet):
+class AssetViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -45,7 +46,7 @@ class AssetViewSet(viewsets.ModelViewSet):
         })
 
 
-class AssetAssignmentViewSet(viewsets.ModelViewSet):
+class AssetAssignmentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = AssetAssignmentSerializer
 
@@ -53,7 +54,7 @@ class AssetAssignmentViewSet(viewsets.ModelViewSet):
         return AssetAssignment.objects.select_related('asset', 'assigned_to').all()
 
 
-class MaintenanceRecordViewSet(viewsets.ModelViewSet):
+class MaintenanceRecordViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MaintenanceRecordSerializer
 
@@ -83,7 +84,7 @@ class ItamDashboardView(APIView):
             'recent_maintenance': [], # Add query for recent maintenance records if needed
         })
 
-class SoftwareLicenseViewSet(viewsets.ModelViewSet):
+class SoftwareLicenseViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = SoftwareLicenseSerializer
     permission_classes = [permissions.IsAuthenticated]
 

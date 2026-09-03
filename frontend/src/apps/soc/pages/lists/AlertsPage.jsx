@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import securityService from '../../../../core/api/securityService';
+import securityService from '../../api/securityService';
 import {
     ShieldExclamationIcon,
     FunnelIcon,

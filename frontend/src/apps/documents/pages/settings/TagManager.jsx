@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tags, Plus, Trash2, Loader2, Tag } from 'lucide-react';
-import documentsService from '../../../../core/api/documentsService';
+import documentsService from '../../api/documentsService';
 
 export default function TagManager() {
     const [tags, setTags] = useState([]);

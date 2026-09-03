@@ -34,7 +34,7 @@ const NDATemplate = ({ data }) => {
                         <p className="font-bold text-slate-800 mb-2">Receiving Party (Client)</p>
                         <p>{data?.clientName || 'Client Name'}</p>
                         <p>{data?.clientAddress || 'Client Address'}</p>
-                        <p>{data?.clientEmail || 'client@example.com'}</p>
+                        <p>{data?.clientEmail || ''}</p>
                     </div>
                 </div>
             </div>

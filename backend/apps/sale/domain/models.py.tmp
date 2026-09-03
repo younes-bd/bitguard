@@ -1,0 +1,96 @@
+from django.db import models
+from django.utils import timezone
+from apps.core.domain.models import TenantAwareModel
+from django.conf import settings
+
+class SalesTeam(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='led_teams')
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+class Pricelist(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    currency = models.CharField(max_length=10, default='USD')
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+class QuotationTemplate(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+class SaleOrder(TenantAwareModel):
+    crm_lead = models.ForeignKey('crm.Lead', on_delete=models.SET_NULL, null=True, blank=True, related_name='sale_orders')
+    STATUS_CHOICES = [
+        ('draft', 'Quotation'),
+        ('sent', 'Quotation Sent'),
+        ('sale', 'Sales Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
+    ]
+    INVOICE_STATUS_CHOICES = [
+        ('no', 'Nothing to Invoice'),
+        ('to_invoice', 'To Invoice'),
+        ('invoiced', 'Fully Invoiced'),
+    ]
+    client = models.ForeignKey('crm.Client', on_delete=models.CASCADE, related_name='sale_orders')
+    order_number = models.CharField(max_length=100)
+    date_order = models.DateField(default=timezone.now)
+    validity_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    invoice_status = models.CharField(max_length=20, choices=INVOICE_STATUS_CHOICES, default='no')
+    
+    amount_untaxed = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    amount_tax = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    amount_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    team = models.ForeignKey(SalesTeam, on_delete=models.SET_NULL, null=True, blank=True)
+    pricelist = models.ForeignKey(Pricelist, on_delete=models.SET_NULL, null=True, blank=True)
+    shipping_method = models.ForeignKey('delivery.ShippingMethod', on_delete=models.SET_NULL, null=True, blank=True)
+    notes = models.TextField(blank=True)
+    
+    is_rental_order = models.BooleanField(default=False, help_text="Does this order contain rental items?")
+    
+    class Meta:
+        verbose_name = 'Sale Order'
+        unique_together = ('tenant', 'order_number')
+
+    def __str__(self):
+        return self.order_number
+
+    @classmethod
+    def cancel_expired_quotations(cls):
+        from django.utils import timezone
+        today = timezone.now().date()
+        expired = cls.objects.filter(status='draft', validity_date__lt=today)
+        count = expired.update(status='cancelled')
+        print(f"[Cron Job] Cancelled {count} expired quotations.")
+
+class SaleOrderLine(TenantAwareModel):
+    order = models.ForeignKey(SaleOrder, on_delete=models.CASCADE, related_name='lines')
+    product = models.ForeignKey('ecommerce.Product', on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.TextField(help_text="Description")
+    product_uom_qty = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    price_unit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    taxes = models.ManyToManyField('accounting.Tax', blank=True)
+    price_subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    analytic_account = models.ForeignKey('accounting.AnalyticAccount', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Rental Support (Odoo Parity)
+    is_rental = models.BooleanField(default=False)
+    pickup_date = models.DateTimeField(null=True, blank=True)
+    return_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Sale Order Line'
+
+    def __str__(self):
+        return f"{self.order.order_number} - {self.name}"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, History, Tag, Lock, Unlock, Archive, Clock, User, Trash2, FileText, Loader2, Share2, Copy, Check } from 'lucide-react';
-import documentsService from '../../../../core/api/documentsService';
+import documentsService from '../../api/documentsService';
 
 export default function DocumentDetail() {
     const { id } = useParams();
@@ -20,6 +20,26 @@ export default function DocumentDetail() {
             console.error('Failed to fetch document:', err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDownload = async (fileUrl, fileName) => {
+        if (!fileUrl) return;
+        try {
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = fileName || 'document.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Download failed, falling back to new tab', error);
+            window.open(fileUrl, '_blank');
         }
     };
 
@@ -101,14 +121,12 @@ export default function DocumentDetail() {
                     >
                         <Share2 size={16} /> Share
                     </button>
-                    <a 
-                        href={doc.attachment?.file} 
-                        target="_blank" 
-                        rel="noreferrer"
+                    <button 
+                        onClick={() => handleDownload(doc.attachment?.file_url, doc.attachment?.name)}
                         className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors"
                     >
                         <Download size={16} /> Download
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -148,8 +166,8 @@ export default function DocumentDetail() {
                             {isPdf && <span className="text-xs font-mono bg-cyan-500/10 text-cyan-400 px-2 py-1 rounded">PDF Viewer</span>}
                         </div>
                         <div className="flex-1 bg-slate-950/80 p-0 relative">
-                            {isPdf ? (
-                                <iframe src={doc.attachment?.file} className="w-full h-full min-h-[600px] border-0" title="PDF Preview" />
+                            {isPdf && doc.attachment?.file_url ? (
+                                <iframe src={doc.attachment?.file_url} className="w-full h-full min-h-[600px] border-0" title="PDF Preview" />
                             ) : (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 p-8 text-center">
                                     <FileText size={64} className="mb-4 opacity-50" />

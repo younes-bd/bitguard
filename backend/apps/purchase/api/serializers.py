@@ -35,8 +35,12 @@ class RFQSerializer(serializers.ModelSerializer):
     class Meta:
         model = RFQ
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class VendorPricelistSerializer(serializers.ModelSerializer):
     class Meta:
         model = VendorPricelist
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

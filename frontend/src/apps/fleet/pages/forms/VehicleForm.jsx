@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import fleetService from '../../../../core/api/fleetService';
+import fleetService from '../../api/fleetService';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const VehicleForm = () => {

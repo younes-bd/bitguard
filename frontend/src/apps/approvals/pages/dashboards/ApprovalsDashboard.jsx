@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
     CheckSquare, Clock, XCircle, Loader2, CheckCircle2, 
     AlertCircle, Search, Filter, MessageSquare, User, 
     Calendar, ArrowRight, ShieldCheck, RefreshCw
 } from 'lucide-react';
-import client from '../../../../core/api/client';
+import client from '@/core/api/client';
 import toast from 'react-hot-toast';
 
 export default function ApprovalsDashboard() {

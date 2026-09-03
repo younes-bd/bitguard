@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from apps.billing.domain.models import Subscription, Plan
+from apps.subscriptions.domain.models import Subscription, Plan
 from .domain.models import LicenseKey, Order
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -36,7 +36,7 @@ def stripe_webhook(request):
                 
                 # Assign License Key if digital
                 if order.product_id:
-                    from .domain.models import Product
+                    from apps.product.domain.models import Product
                     try:
                         product = Product.objects.get(id=order.product_id)
                         if product.product_type == 'digital':

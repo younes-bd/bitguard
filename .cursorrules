@@ -2,8 +2,24 @@
 
 > **CRITICAL DIRECTIVE**: You are operating within the BitGuard Enterprise Platform monorepo. Before making ANY architectural changes, creating new apps, or refactoring existing code, you MUST:
 > 
-> 1. Use your file reading tools to read `CHARTER.md` and `ARCHITECTURE.md` located in the root of this repository.
+> 1. Use your file reading tools to read `CHARTER.md` and `SYSTEM_ARCHITECTURE_MAP.md` located in the root of this repository.
 > 2. Strictly enforce **Feature-Sliced Design (FSD)** for all React frontend code. Flat folder structures are strictly forbidden and must be refactored on sight.
 > 3. Strictly enforce **Domain-Driven Design (DDD)** for all Django backend code. Views orchestrate, but services dictate business logic.
 >
 > Failure to read the charter and enforce these architectures violates the enterprise standard.
+
+
+### The 3 Core Architectural Pillars (DO NOT VIOLATE)
+When building or modifying features, you MUST adhere to the following Odoo-inspired modern SaaS standards:
+
+1. **Modular Encapsulation (Odoo DNA)**
+   - Every backend feature (`users`, `system`, `auth`) must be isolated into its own application folder with a strict `__manifest__.py`.
+   - Applications must not have hard-coupled spaghetti code; they must remain independently installable/uninstallable.
+
+2. **Headless API-First Design**
+   - The Django backend is strictly a "Data Plane". It must NEVER render HTML or know about the UI.
+   - All communication between frontend and backend must occur via JSON REST APIs.
+
+3. **Dynamic React SPA (State Sync)**
+   - The React frontend is a Single Page Application. Do NOT use `window.location.reload()` to refresh data.
+   - Global UI changes (like installing an app) must use global React Context (`useManifest()`, `refreshManifest()`) to dynamically redraw sidebars and dashboards instantly without page reloads.

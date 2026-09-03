@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { platformService } from '../../../../core/api/platformService';
+import { settingsService } from '../../../system/api/settingsService';
 import {
     ComputerDesktopIcon,
     ShieldCheckIcon,
@@ -16,7 +16,7 @@ const AssetManager = () => {
     const fetchEndpoints = async () => {
         setLoading(true);
         try {
-            const data = await platformService.getEndpoints();
+            const data = await settingsService.getEndpoints();
             setEndpoints(data);
 
             // Calculate stats
@@ -40,7 +40,7 @@ const AssetManager = () => {
 
     const handleIsolate = async (id) => {
         try {
-            await platformService.isolateEndpoint(id);
+            await settingsService.isolateEndpoint(id);
             // Optimistic update
             setEndpoints(prev => prev.map(e =>
                 e.id === id ? { ...e, status: 'isolated' } : e

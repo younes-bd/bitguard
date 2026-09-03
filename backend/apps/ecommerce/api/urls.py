@@ -1,7 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    StoreCustomizationViewSet, CategoryViewSet, ProductViewSet, LicenseKeyViewSet,
+    ExportRevenueCSV,
+    RevenueReportView,
+    StoreCustomizationViewSet, LicenseKeyViewSet,
     CustomerProfileViewSet, OrderViewSet, ShippingSettingViewSet,
     TrackingConfigViewSet, AddOnViewSet, SubscriptionPlanViewSet, SubscriptionViewSet,
     StoreSettingViewSet, PartnerRequestViewSet, CartViewSet, CouponViewSet
@@ -9,8 +11,6 @@ from .views import (
 
 router = DefaultRouter()
 router.register(r'customization', StoreCustomizationViewSet, basename='storecustomization')
-router.register(r'categories', CategoryViewSet, basename='category')
-router.register(r'products', ProductViewSet, basename='product')
 router.register(r'licenses', LicenseKeyViewSet, basename='licensekey')
 router.register(r'customers', CustomerProfileViewSet, basename='customerprofile')
 router.register(r'orders', OrderViewSet, basename='order')
@@ -27,12 +27,11 @@ router.register(r'coupons', CouponViewSet, basename='coupon')
 from ..webhook import stripe_webhook
 
 
-from .views import ProductAttributeViewSet, ProductAttributeValueViewSet, ProductVariantViewSet
-router.register(r'product-attributes', ProductAttributeViewSet, basename='product-attribute')
-router.register(r'product-attribute-values', ProductAttributeValueViewSet, basename='product-attribute-value')
-router.register(r'product-variants', ProductVariantViewSet, basename='product-variant')
+
 
 urlpatterns = [
+    path('report/export/', ExportRevenueCSV.as_view(), name='ecommerce-export-csv'),
+    path('report/revenue/', RevenueReportView.as_view(), name='ecommerce-revenue-report'),
     path('stripe/webhook/', stripe_webhook, name='stripe-webhook'),
     path('', include(router.urls)),
 ]

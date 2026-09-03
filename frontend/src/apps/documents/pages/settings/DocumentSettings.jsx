@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Save, Loader2, ToggleLeft, ToggleRight } from 'lucide-react';
-import { settingsService } from '../../../settings/api/settingsService';
+import { settingsService } from '../../../system/api/settingsService';
 
 const DocumentSettings = () => {
     const [settings, setSettings] = useState({

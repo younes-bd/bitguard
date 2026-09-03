@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import client from '../../../../../core/api/client';
+import client from '@/core/api/client';
 import SolutionReveal from '../../../components/SolutionReveal';
-import PageMeta from '../../../../../core/components/shared/PageMeta';
+import PageMeta from '@/core/components/shared/PageMeta';
 import '../../../../../core/styles/landing.css';
 
 // Static color map to prevent Tailwind purge in production builds

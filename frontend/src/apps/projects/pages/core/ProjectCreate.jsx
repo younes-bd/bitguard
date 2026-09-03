@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
-import { crmService } from '../../../../core/api/crmService';
+import { projectsService } from '../../api/projectsService';
+import { crmService } from '../../../crm/api/crmService';
 import { Save, ArrowLeft, Users, DollarSign, Briefcase } from 'lucide-react';
 
 const ProjectCreate = () => {
@@ -33,7 +33,7 @@ const ProjectCreate = () => {
         try {
             const [clientsData, employeesData] = await Promise.all([
                 crmService.getClients(),
-                erpService.getEmployees()
+                accountingService.getEmployees()
             ]);
             setClients(Array.isArray(clientsData) ? clientsData : clientsData.results || []);
             setManagers(Array.isArray(employeesData) ? employeesData : employeesData.results || []);
@@ -54,7 +54,7 @@ const ProjectCreate = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const newProject = await erpService.createProject(formData);
+            const newProject = await projectsService.createProject(formData);
             navigate(`/erp/projects/${newProject.id}`);
         } catch (error) {
             console.error("Create failed", error);

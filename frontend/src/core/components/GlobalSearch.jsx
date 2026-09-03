@@ -5,9 +5,9 @@ import {
     FileText, Package, Shield, Settings, 
     ChevronRight, Loader2, ArrowRight
 } from 'lucide-react';
-import { iamService } from '../api/iamService';
-import { crmService } from '../api/crmService';
-import { helpdeskService } from '../api/helpdeskService';
+import { usersService } from '../../apps/users/api/usersService';
+import { crmService } from '../../apps/crm/api/crmService';
+import { helpdeskService } from '../../apps/helpdesk/api/helpdeskService';
 
 const GlobalSearch = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
         try {
             // Simultaneous search across core modules
             const [users, clients, tickets] = await Promise.all([
-                iamService.getUsers({ search: q }).catch(() => []),
+                usersService.getUsers({ search: q }).catch(() => []),
                 crmService.getClients({ search: q }).catch(() => []),
                 helpdeskService.getTickets({ search: q }).catch(() => []),
             ]);

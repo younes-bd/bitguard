@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { crmService } from '../../../../core/api/crmService';
+import { crmService } from '../../api/crmService';
 import { X, DollarSign, Calendar, User, FileText, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -82,7 +82,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave }) {
             // automatically creates a draft quote and takes you to it.
             import('../../../../core/api/client').then(async ({ default: apiClient }) => {
                 try {
-                    const response = await apiClient.post('contracts/quotes/', {
+                    const response = await apiClient.post('sign/quotes/', {
                         deal: deal.id,
                         client: formData.client,
                         status: 'draft',
@@ -93,7 +93,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave }) {
                     navigate(`/admin/crm/quotes/${newQuote.id}`);
                 } catch(err) {
                     // Fallback to Quotes list if auto-generation fails
-                    navigate('/admin/contracts/quotes');
+                    navigate('/admin/sign/quotes');
                 }
             });
         } catch (error) {
@@ -264,3 +264,5 @@ export default function DealModal({ isOpen, onClose, deal, onSave }) {
         </div>
     );
 }
+
+

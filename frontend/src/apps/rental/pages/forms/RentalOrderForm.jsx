@@ -1,3 +1,5 @@
+import apiClient from '../../../../core/api/client';
+import client from '@/core/api/client';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
@@ -14,7 +16,7 @@ const RentalOrderForm = () => {
 
   useEffect(() => {
     if (isEdit) {
-      fetch(`/api/rental/rentalorders/${id}/`).then(r => r.json()).then(data => {
+      apiClient.get(`/api/rental/rentalorders/${id}/`).then(r => r.data).then(data => {
         setFormData(data);
       });
     }

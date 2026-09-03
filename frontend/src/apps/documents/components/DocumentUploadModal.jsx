@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { X, UploadCloud, File, AlertCircle } from 'lucide-react';
-import documentsService from '../../../core/api/documentsService';
+import { X, UploadCloud, File, AlertCircle, Loader2 } from 'lucide-react';
+import documentsService from '../api/documentsService';
 
-export default function DocumentUploadModal({ isOpen, onClose, onUploadSuccess, existingDoc, workspaces = [], tags = [] }) {
+export default function DocumentUploadModal({ isOpen, onClose, onUploadSuccess, existingDoc, workspaces = [], tags = [], activeWorkspace = 'all' }) {
     const [file, setFile] = useState(null);
     const [title, setTitle] = useState('');
     const [workspaceId, setWorkspaceId] = useState('');
@@ -13,6 +13,12 @@ export default function DocumentUploadModal({ isOpen, onClose, onUploadSuccess, 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [progress, setProgress] = useState(0);
+
+    React.useEffect(() => {
+        if (isOpen) {
+            setWorkspaceId(activeWorkspace !== 'all' ? activeWorkspace : '');
+        }
+    }, [isOpen, activeWorkspace]);
 
     if (!isOpen) return null;
 

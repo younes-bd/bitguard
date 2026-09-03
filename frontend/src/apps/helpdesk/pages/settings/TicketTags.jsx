@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Plus, Trash2, Loader2 } from 'lucide-react';
-import helpdeskService from '../../../../core/api/helpdeskService';
+import helpdeskService from '../../api/helpdeskService';
 
 const TicketTags = () => {
     const [tags, setTags] = useState([]);

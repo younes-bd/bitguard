@@ -9,7 +9,7 @@ class TenantSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Tenant
-        fields = ['id', 'name', 'domain', 'subscription_plan', 'is_active', 'status', 'user_count', 'allowed_modules', 'partner', 'partner_id', 'created_at', 'logo']
+        fields = '__all__'
         read_only_fields = ['id', 'created_at', 'status', 'user_count', 'partner_id']
 
     def get_status(self, obj):

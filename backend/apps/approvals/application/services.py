@@ -33,25 +33,25 @@ class ApprovalService(BaseService):
         request_obj.save()
         AuditService.log_action(request, "APPROVAL_APPROVED", f"approvals.ApprovalRequest:{request_obj.id}", {"comments": comments})
         
-        # Downstream Triggers
+        # Decoupled Downstream Triggers
         payload = request_obj.payload or {}
-        if request_obj.request_type == 'purchase' and 'po_id' in payload:
-            from apps.purchase.domain.models import PurchaseOrder
+        model_str = payload.get('target_model') # e.g. 'purchase.PurchaseOrder'
+        record_id = payload.get('target_id')
+
+        if model_str and record_id:
             try:
-                po = PurchaseOrder.objects.get(id=payload['po_id'])
-                po.status = 'confirmed'
-                po.approved_by = user
-                po.save()
-            except PurchaseOrder.DoesNotExist:
-                pass
-        elif request_obj.request_type == 'expense' and 'expense_id' in payload:
-            from apps.accounting.domain.models import Expense
-            try:
-                exp = Expense.objects.get(id=payload['expense_id'])
-                exp.status = 'approved'
-                exp.save()
-            except Expense.DoesNotExist:
-                pass
+                from django.apps import apps
+                app_label, model_name = model_str.split('.')
+                Model = apps.get_model(app_label, model_name)
+                record = Model.objects.get(id=record_id)
+                
+                record.status = 'approved'
+                if hasattr(record, 'approved_by'):
+                    record.approved_by = user
+                record.save()
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"Approval downstream trigger failed: {e}")
                 
         return request_obj
 
@@ -68,23 +68,24 @@ class ApprovalService(BaseService):
         request_obj.save()
         AuditService.log_action(request, "APPROVAL_REJECTED", f"approvals.ApprovalRequest:{request_obj.id}", {"comments": comments})
         
-        # Downstream Triggers
+        # Decoupled Downstream Triggers
         payload = request_obj.payload or {}
-        if request_obj.request_type == 'purchase' and 'po_id' in payload:
-            from apps.purchase.domain.models import PurchaseOrder
+        model_str = payload.get('target_model') # e.g. 'purchase.PurchaseOrder'
+        record_id = payload.get('target_id')
+
+        if model_str and record_id:
             try:
-                po = PurchaseOrder.objects.get(id=payload['po_id'])
-                po.status = 'cancelled'
-                po.save()
-            except PurchaseOrder.DoesNotExist:
-                pass
-        elif request_obj.request_type == 'expense' and 'expense_id' in payload:
-            from apps.accounting.domain.models import Expense
-            try:
-                exp = Expense.objects.get(id=payload['expense_id'])
-                exp.status = 'rejected'
-                exp.save()
-            except Expense.DoesNotExist:
-                pass
+                from django.apps import apps
+                app_label, model_name = model_str.split('.')
+                Model = apps.get_model(app_label, model_name)
+                record = Model.objects.get(id=record_id)
+                
+                record.status = 'rejected'
+                if hasattr(record, 'rejected_by'):
+                    record.rejected_by = user
+                record.save()
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"Approval downstream reject trigger failed: {e}")
                 
         return request_obj

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from '../../../../core/components/shared/views/DataTable';
-import { erpService } from '../../../../core/api/erpService';
+import DataTable from '@/core/components/shared/views/DataTable';
+import { accountingService } from '../../api/accountingService';
 import { BookOpen } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -15,7 +15,7 @@ export default function JournalList() {
   const fetchJournals = async () => {
     try {
       setLoading(true);
-      const res = await erpService.getAccountJournals();
+      const res = await accountingService.getAccountJournals();
       setJournals(res.results || res || []);
     } catch (err) {
       toast.error('Failed to fetch journals');

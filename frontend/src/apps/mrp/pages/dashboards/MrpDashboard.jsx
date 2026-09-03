@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { LayoutDashboard, Sparkles, Activity, Box, CheckCircle, AlertOctagon, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import mrpService from '../../../../core/api/mrpService';
-import DataTable from '../../../../core/components/shared/views/DataTable';
+import mrpService from '../../api/mrpService';
+import DataTable from '@/core/components/shared/views/DataTable';
 
 export default function MrpDashboard() {
   const [orders, setOrders] = useState([]);

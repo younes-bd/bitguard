@@ -15,7 +15,7 @@ def provision_assets_from_po(sender, instance, created, **kwargs):
     if instance.status != 'received':
         return
     try:
-        from apps.itam.domain.models import Asset
+        from apps.maintenance.domain.models import Asset
 
         po_ref = getattr(instance, 'po_number', None) or str(instance.id)[:8].upper()
         total = getattr(instance, 'total_amount', None) or getattr(instance, 'total_cost', 0)

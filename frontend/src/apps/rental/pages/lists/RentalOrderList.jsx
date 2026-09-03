@@ -1,6 +1,8 @@
+import apiClient from '../../../../core/api/client';
+import client from '@/core/api/client';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import rentalService from '../../../../core/api/rentalService';
+import rentalService from '../../api/rentalService';
 import { Plus, Search, Edit2, Trash2, LayoutDashboard } from 'lucide-react';
 
 const RentalOrderList = () => {
@@ -17,7 +19,7 @@ const RentalOrderList = () => {
     rentalService.getRentalOrders ? rentalService.getRentalOrders().then(res => {
       setData(Array.isArray(res) ? res : res.results || []);
       setLoading(false);
-    }) : fetch(`/api/rental/rentalorders/`).then(r => r.json()).then(res => {
+    }) : apiClient.get(`/api/rental/rentalorders/`).then(r => r.data).then(res => {
       setData(Array.isArray(res) ? res : res.results || []);
       setLoading(false);
     });
@@ -25,7 +27,7 @@ const RentalOrderList = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure?")) {
-      fetch(`/api/rental/rentalorders/${id}/`, { method: 'DELETE' }).then(() => fetchData());
+      apiClient.delete(`/api/rental/rentalorders/${id}/`).then(() => fetchData());
     }
   };
 

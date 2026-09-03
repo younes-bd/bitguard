@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Sparkles, TrendingUp, Activity, FileText } from 'lucide-react';
-import mrp_plmService from '../../../../core/api/plmService';
+import mrp_plmService from '../../api/plmService';
 
 const PlmDashboard = () => {
   const [ecos, setEcos] = useState([]);

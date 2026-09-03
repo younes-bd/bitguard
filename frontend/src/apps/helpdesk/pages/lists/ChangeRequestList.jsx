@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { GitBranch, Plus, Search, CheckCircle, AlertCircle, Clock, Play, X, ChevronRight, Loader2, XCircle, RotateCcw, CheckSquare, User, Calendar, Download } from 'lucide-react';
-import serviceService from '../../../../core/api/serviceService';
-import reportingService from '../../../../core/api/reportingService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
+import serviceService from '../../../field-service/api/serviceService';
+import reportingService from '@/apps/reporting/api/reportingService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
 import toast from 'react-hot-toast';
 
 const STATUS_CONFIG = {
@@ -178,7 +178,7 @@ export default function ChangeRequestList() {
                                 <p className="text-slate-400 text-xs line-clamp-2 mb-3">{cr.description}</p>
                                 <div className="flex items-center gap-3">
                                     <span className={`text-xs font-bold uppercase ${RISK_COLOR[cr.risk_level] || 'text-slate-400'}`}>
-                                        â¬¥ {cr.risk_level || 'low'} risk
+                                        ÃƒÂ¢Ã‚Â¬Ã‚Â¥ {cr.risk_level || 'low'} risk
                                     </span>
                                     {cr.scheduled_date && (
                                         <span className="text-xs text-slate-500 flex items-center gap-1">
@@ -288,4 +288,5 @@ export default function ChangeRequestList() {
         </div>
     );
 }
+
 

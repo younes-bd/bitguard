@@ -13,48 +13,57 @@ from ..domain.models import (
     BankTransaction, CreditNote, FixedAsset,
     PaymentTerms, InvoiceBranding, DeferredRevenue,
     AccountJournal, TaxGroup, Tax, BankReconciliation,
+    AnalyticAccount, CostCenter, BudgetLine, PurchaseRequisition,
 )
 
 class AccountJournalSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountJournal
-        fields = '__all__'
+        fields = ['id', 'name', 'code', 'journal_type', 'currency', 'default_account', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class TaxGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxGroup
-        fields = '__all__'
+        fields = ['id', 'name', 'sequence']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class TaxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tax
-        fields = '__all__'
+        fields = ['id', 'name', 'tax_type', 'computation', 'amount', 'group', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class BankReconciliationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankReconciliation
-        fields = '__all__'
+        fields = ['id', 'journal', 'date', 'statement_balance', 'system_balance', 'difference', 'is_reconciled', 'notes']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class PaymentTermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentTerms
         fields = ['id', 'name', 'days_due', 'discount_percent', 'discount_days', 'description']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class InvoiceBrandingSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceBranding
         fields = ['id', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_website', 'tax_id', 'logo_url', 'primary_color', 'invoice_footer', 'bank_name', 'bank_account_number', 'bank_routing_number', 'bank_swift', 'default_payment_terms', 'default_currency']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class DeferredRevenueSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeferredRevenue
         fields = ['id', 'invoice', 'total_amount', 'recognized_amount', 'recognition_start', 'recognition_end', 'status', 'deferred_account', 'revenue_account']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class TaxConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxConfig
         fields = ['id', 'name', 'rate', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 # ─── INVOICE ──────────────────────────────────────────────────────────────────
@@ -134,6 +143,7 @@ class InvoiceCreateSerializer(serializers.ModelSerializer):
             'invoice_number', 'client', 'type', 'project', 'contract',
             'issue_date', 'due_date', 'reference', 'notes', 'items',
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
     def validate(self, data):
         items = data.get('items', [])
@@ -178,6 +188,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
             'id', 'title', 'amount', 'incurred_date', 'category',
             'status', 'notes', 'receipt', 'user', 'cost_center'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class GeneralLedgerSerializer(serializers.ModelSerializer):
@@ -187,6 +198,7 @@ class GeneralLedgerSerializer(serializers.ModelSerializer):
             'id', 'account_name', 'amount', 'entry_type',
             'reference_id', 'reference_type', 'transaction_date', 'description'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 # ─── PROJECTS ─────────────────────────────────────────────────────────────────
@@ -218,6 +230,7 @@ class JournalEntryLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = JournalEntryLine
         fields = ['id', 'account', 'account_code', 'account_name', 'debit', 'credit', 'description']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class JournalEntrySerializer(serializers.ModelSerializer):
@@ -258,6 +271,7 @@ class BankAccountSerializer(serializers.ModelSerializer):
             'initial_balance', 'current_balance',
             'linked_account', 'linked_account_name', 'transaction_count'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
     def get_transaction_count(self, obj):
         return obj.transactions.count()
@@ -273,6 +287,7 @@ class BankTransactionSerializer(serializers.ModelSerializer):
             'amount', 'description', 'reference', 'is_reconciled',
             'journal_entry'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 # ─── CREDIT NOTES ────────────────────────────────────────────────────────────
@@ -328,21 +343,25 @@ class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
         fields = ['id', 'code', 'name', 'symbol', 'is_base']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class ExchangeRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExchangeRate
         fields = ['id', 'currency', 'date', 'rate']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class TaxAuthoritySerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxAuthority
         fields = ['id', 'name', 'description']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class TaxGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxGroup
         fields = ['id', 'name', 'taxes', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class BankReconciliationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -354,6 +373,7 @@ class DunningWorkflowSerializer(serializers.ModelSerializer):
     class Meta:
         model = DunningWorkflow
         fields = ['id', 'name', 'days_overdue', 'action_type', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 from ..domain.models import FiscalYear, FiscalPeriod, AccountingJournal, VendorBill, FiscalPosition
 
@@ -361,36 +381,67 @@ class FiscalYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = FiscalYear
         fields = ['id', 'name', 'start_date', 'end_date', 'is_closed']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class FiscalPeriodSerializer(serializers.ModelSerializer):
     fiscal_year_name = serializers.ReadOnlyField(source='fiscal_year.name')
     class Meta:
         model = FiscalPeriod
         fields = ['id', 'fiscal_year', 'fiscal_year_name', 'name', 'start_date', 'end_date', 'is_closed']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class AccountingJournalSerializer(serializers.ModelSerializer):
     default_account_name = serializers.ReadOnlyField(source='default_account.name')
     class Meta:
         model = AccountingJournal
         fields = ['id', 'name', 'code', 'type', 'default_account', 'default_account_name']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class VendorBillSerializer(serializers.ModelSerializer):
     class Meta:
         model = VendorBill
         fields = ['id', 'vendor', 'bill_number', 'reference', 'date', 'due_date', 'subtotal', 'tax_total', 'total_amount', 'status', 'journal']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class FiscalPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FiscalPosition
         fields = ['id', 'name', 'description', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class RecurringInvoiceItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecurringInvoiceItem
         fields = ['id', 'recurring_invoice', 'description', 'quantity', 'unit_price', 'tax_rate']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class RecurringInvoiceSerializer(serializers.ModelSerializer):
     items = RecurringInvoiceItemSerializer(many=True, read_only=True)
     class Meta:
         model = RecurringInvoice
         fields = ['id', 'name', 'client', 'frequency', 'next_run', 'end_date', 'is_active', 'notes', 'payment_terms_days', 'items']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+
+class AnalyticAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnalyticAccount
+        fields = ['id', 'name', 'code', 'partner', 'project', 'is_active']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+
+class CostCenterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CostCenter
+        fields = ['id', 'name', 'code', 'description']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+
+class BudgetLineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BudgetLine
+        fields = ['id', 'cost_center', 'category', 'allocated_amount', 'spent_amount', 'year']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+
+class PurchaseRequisitionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PurchaseRequisition
+        fields = ['id', 'requester', 'department', 'reason', 'date_required', 'status', 'total_estimated_cost', 'budget_line']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

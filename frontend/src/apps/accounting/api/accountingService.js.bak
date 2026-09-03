@@ -1,0 +1,498 @@
+import client from '../../../core/api/client';
+
+export const accountingService = {
+    // ─── BANK RECONCILIATIONS ───────────────────────────────────────────────────
+    getBankReconciliations: async (params = {}) => {
+        const r = await client.get('accounting/bank-reconciliations/', { params });
+        return r.data?.data ?? r.data;
+    },
+    createBankReconciliation: async (data) => {
+        const r = await client.post('accounting/bank-reconciliations/', data);
+        return r.data?.data ?? r.data;
+    },
+    updateBankReconciliation: async (id, data) => {
+        const r = await client.patch(`accounting/bank-reconciliations/${id}/`, data);
+        return r.data?.data ?? r.data;
+    },
+
+    // ─── TAX GROUPS & AUTHORITIES ──────────────────────────────────────────────
+    getTaxGroups: async (params = {}) => {
+        const r = await client.get('accounting/tax-groups/', { params });
+        return r.data?.data ?? r.data;
+    },
+    createTaxGroup: async (data) => {
+        const r = await client.post('accounting/tax-groups/', data);
+        return r.data?.data ?? r.data;
+    },
+    updateTaxGroup: async (id, data) => {
+        const r = await client.patch(`accounting/tax-groups/${id}/`, data);
+        return r.data?.data ?? r.data;
+    },
+    
+    getTaxAuthorities: async (params = {}) => {
+        const r = await client.get('accounting/tax-authorities/', { params });
+        return r.data?.data ?? r.data;
+    },
+
+    // ─── FIXED ASSETS ────────────────────────────────────────────────────────
+    getFixedAssets: async (params = {}) => {
+        const r = await client.get('accounting/fixed-assets/', { params });
+        return r.data?.data ?? r.data;
+    },
+    createFixedAsset: async (data) => {
+        const r = await client.post('accounting/fixed-assets/', data);
+        return r.data?.data ?? r.data;
+    },
+    updateFixedAsset: async (id, data) => {
+        const r = await client.patch(`accounting/fixed-assets/${id}/`, data);
+        return r.data?.data ?? r.data;
+    },
+    deleteFixedAsset: async (id) => {
+        const r = await client.delete(`accounting/fixed-assets/${id}/`);
+        return r.data?.data ?? r.data;
+    },
+    
+    // ─── CURRENCIES & EXCHANGE RATES ──────────────────────────────────────────
+    getCurrencies: async (params = {}) => {
+        const r = await client.get('accounting/currencies/', { params });
+        return r.data?.data ?? r.data;
+    },
+    getExchangeRates: async (params = {}) => {
+        const r = await client.get('accounting/exchange-rates/', { params });
+        return r.data?.data ?? r.data;
+    },
+    
+    // ─── BANK TRANSACTIONS (FOR RECONCILIATION) ──────────────────────────────
+    getBankTransactions: async (params = {}) => {
+        const r = await client.get('accounting/bank-transactions/', { params });
+        return r.data?.data ?? r.data;
+    },
+    
+    // ─── PAYMENTS AND EXPENSES (FOR RECONCILIATION) ──────────────────────────
+    getPayments: async (params = {}) => {
+        const r = await client.get('accounting/payments/', { params });
+        return r.data?.data ?? r.data;
+    },
+    getExpenses: async (params = {}) => {
+        const r = await client.get('accounting/expenses/', { params });
+        return r.data?.data ?? r.data;
+    },
+    
+    // ─── ACCOUNTS & DEPRECIATION ──────────────────────────────────────────────
+    getAccounts: async (params = {}) => {
+        const r = await client.get('accounting/accounts/', { params });
+        return r.data?.data ?? r.data;
+    },
+    runDepreciation: async () => {
+        const r = await client.post('accounting/fixed-assets/run-depreciation/');
+        return r.data?.data ?? r.data;
+    },
+    
+    // ─── DOCUMENT GENERATION ──────────────────────────────────────────────────
+    downloadDocument: async (model, id) => {
+        const { default: reportingService } = await import('../../reporting/api/reportingService');
+        const res = await reportingService.generateReport(null, model, id);
+        if (res && res.file) {
+            window.open(res.file, '_blank');
+        }
+        return res;
+    },
+    getDashboardStats: async () => {
+        try {
+            const r = await client.get('accounting/dashboard/stats/');
+            return r.data?.data ?? r.data?.results ?? r.data;
+        } catch (e) { console.error(e); return null; }
+    },
+
+    // ─── INVOICES ─────────────────────────────────────────────────────────────,
+    getInvoices: async (params = {}) => {
+        const r = await client.get('accounting/invoices/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getInvoice: async (id) => {
+        const r = await client.get(`accounting/invoices/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createInvoice: async (data) => {
+        const r = await client.post('accounting/invoices/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateInvoice: async (id, data) => {
+        const r = await client.patch(`accounting/invoices/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    markInvoiceSent: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/mark-sent/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    markInvoicePaid: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/mark-paid/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    voidInvoice: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/void/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    duplicateInvoice: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/duplicate/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    sendInvoiceToClient: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/send-to-client/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    convertProforma: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/convert-to-invoice/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    convertQuotationToInvoice: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/convert-to-invoice/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    acceptQuotation: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/accept-quotation/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    declineQuotation: async (id) => {
+        const r = await client.post(`accounting/invoices/${id}/decline-quotation/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getAgingReport: async () => {
+        const r = await client.get('accounting/invoices/aging-report/');
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    downloadInvoice: async (id) => {
+        try {
+            const { default: reportingService } = await import('../../reporting/api/reportingService');
+            const res = await reportingService.generateReport(null, 'accounting.Invoice', id);
+            if (res && res.file) {
+                window.open(res.file, '_blank');
+            }
+        } catch (error) {
+            console.error("Download Error:", error);
+            throw error;
+        }
+    },
+
+    // ─── PAYMENTS ─────────────────────────────────────────────────────────────,
+    getPayments: async (params = {}) => {
+        const r = await client.get('accounting/payments/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createPayment: async (data) => {
+        const r = await client.post('accounting/payments/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    voidPayment: async (id) => {
+        const r = await client.post(`accounting/payments/${id}/void/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── EXPENSES ─────────────────────────────────────────────────────────────,
+    getExpenses: async (params = {}) => {
+        const r = await client.get('accounting/expenses/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createExpense: async (data) => {
+        const r = await client.post('accounting/expenses/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateExpense: async (id, data) => {
+        const r = await client.patch(`accounting/expenses/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    deleteExpense: async (id) => {
+        const r = await client.delete(`accounting/expenses/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── DELIVERY NOTES ───────────────────────────────────────────────────────,
+    getDeliveryNotes: async (params = {}) => {
+        const queryParams = { picking_type: 'delivery', ...params };
+        const r = await client.get('stock/pickings/', { params: queryParams });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getDeliveryNote: async (id) => {
+        const r = await client.get(`stock/pickings/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createDeliveryNote: async (data) => {
+        const payload = { picking_type: 'delivery', ...data };
+        const r = await client.post('stock/pickings/', payload);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateDeliveryNoteStatus: async (id, newStatus) => {
+        const r = await client.patch(`stock/pickings/${id}/`, { state: newStatus });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    validateDeliveryNote: async (id) => {
+        const r = await client.post(`stock/delivery-notes/${id}/validate/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    downloadDeliveryNote: async (id) => {
+        try {
+            const { default: reportingService } = await import('../../reporting/api/reportingService');
+            const res = await reportingService.generateReport(null, 'erp.DeliveryNote', id);
+            if (res && res.file) {
+                window.open(res.file, '_blank');
+            }
+        } catch (error) {
+            console.error("Download Error:", error);
+            throw error;
+        }
+    },
+
+    // ─── VENDORS ──────────────────────────────────────────────────────────────,
+    getRecurringInvoices: async (params = {}) => {
+        const r = await client.get('accounting/recurring-invoices/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createRecurringInvoice: async (data) => {
+        const r = await client.post('accounting/recurring-invoices/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateRecurringInvoice: async (id, data) => {
+        const r = await client.patch(`accounting/recurring-invoices/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── SALE ORDERS (PHASE 9/10) ─────────────────────────────────────────────,
+    toggleRecurring: async (id) => {
+        const r = await client.post(`accounting/recurring-invoices/${id}/toggle/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    runRecurringNow: async (id) => {
+        const r = await client.post(`accounting/recurring-invoices/${id}/run-now/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── REPORTS ──────────────────────────────────────────────────────────────,
+    getClientStatement: async (clientId) => {
+        const r = await client.get(`accounting/client-statement/${clientId}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── TAXES & JOURNALS (PHASE 6) ──────────────────────────────────────────,
+    getTaxes: async () => {
+        const r = await client.get('accounting/taxes/');
+        return r.data?.data || r.data;
+    },
+    getTaxesV2: async () => {
+        const r = await client.get('accounting/taxes-v2/');
+        return r.data?.data || r.data;
+    },
+    getTaxGroups: async () => {
+        const r = await client.get('accounting/tax-groups/');
+        return r.data?.data || r.data;
+    },
+    getAccountJournals: async () => {
+        const r = await client.get('accounting/account-journals/');
+        return r.data?.data || r.data;
+    },
+    getBankReconciliations: async () => {
+        const r = await client.get('accounting/bank-reconciliations/');
+        return r.data?.data || r.data;
+    },
+
+    // ─── TAXES / LEDGER / BUDGETS ─────────────────────────────────────────────,
+    getLedger: async (params = {}) => {
+        const r = await client.get('accounting/ledger/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getBudgets: async () => {
+        const r = await client.get('accounting/budgets/');
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getCostCenters: async () => {
+        const r = await client.get('accounting/cost-centers/');
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── PROJECTS & TIME LOGS ─────────────────────────────────────────────────
+    getProjects: async (params = {}) => {
+        const r = await client.get('erp/projects/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getTimeLogs: async (params = {}) => {
+        const r = await client.get('hrm/time-logs/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateTimeLog: async (id, data) => {
+        const r = await client.patch(`hrm/time-logs/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── ACCOUNTS ─────────────────────────────────────────────────────────────,
+    getAccounts: async (params = {}) => {
+        const r = await client.get('accounting/accounts/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createAccount: async (data) => {
+        const r = await client.post('accounting/accounts/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getJournalEntries: async (params = {}) => {
+        const r = await client.get('accounting/journal-entries/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createJournalEntry: async (data) => {
+        const r = await client.post('accounting/journal-entries/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getBankAccounts: async (params = {}) => {
+        const r = await client.get('accounting/bank-accounts/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createBankAccount: async (data) => {
+        const r = await client.post('accounting/bank-accounts/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getBankTransactions: async (params = {}) => {
+        const r = await client.get('accounting/bank-transactions/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getBalanceSheet: async (date) => {
+        const r = await client.get('accounting/reports/balance-sheet/', { params: { date } });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getCashFlow: async (start_date, end_date) => {
+        const r = await client.get('accounting/reports/cash-flow/', { params: { start_date, end_date } });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getFixedAssets: async (params = {}) => {
+        const r = await client.get('accounting/fixed-assets/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createFixedAsset: async (data) => {
+        const r = await client.post('accounting/fixed-assets/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    runDepreciation: async () => {
+        const r = await client.post('accounting/fixed-assets/run-depreciation/');
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── EXPENSE WORKFLOW ────────────────────────────────────────────────,
+    approveExpense: async (id) => {
+        const r = await client.post(`accounting/expenses/${id}/approve/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    rejectExpense: async (id) => {
+        const r = await client.post(`accounting/expenses/${id}/reject/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    reimburseExpense: async (id) => {
+        const r = await client.post(`accounting/expenses/${id}/reimburse/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getProfitLoss: async (date_from, date_to) => {
+        const r = await client.get('accounting/reports/profit-loss/', { params: { date_from, date_to } });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getCreditNotes: async (params = {}) => {
+        const r = await client.get('accounting/credit-notes/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getCreditNote: async (id) => {
+        const r = await client.get(`accounting/credit-notes/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    applyCreditNote: async (id, invoiceId) => {
+        const r = await client.post(`accounting/credit-notes/${id}/apply/`, { invoice_id: invoiceId });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createCreditNote: async (data) => {
+        const r = await client.post('accounting/credit-notes/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getPaymentTerms: async (params = {}) => {
+        const r = await client.get('accounting/payment-terms/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createPaymentTerm: async (data) => {
+        const r = await client.post('accounting/payment-terms/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updatePaymentTerm: async (id, data) => {
+        const r = await client.patch(`accounting/payment-terms/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    deletePaymentTerm: async (id) => {
+        const r = await client.delete(`accounting/payment-terms/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── INVOICE BRANDING ─────────────────────────────────────────────────────,
+    getInvoiceBrandings: async (params = {}) => {
+        const r = await client.get('accounting/invoice-branding/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createInvoiceBranding: async (data) => {
+        const r = await client.post('accounting/invoice-branding/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateInvoiceBranding: async (id, data) => {
+        const r = await client.patch(`accounting/invoice-branding/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    deleteInvoiceBranding: async (id) => {
+        const r = await client.delete(`accounting/invoice-branding/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── DEFERRED REVENUE ─────────────────────────────────────────────────────,
+    getDeferredRevenues: async (params = {}) => {
+        const r = await client.get('accounting/deferred-revenue/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createDeferredRevenue: async (data) => {
+        const r = await client.post('accounting/deferred-revenue/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateDeferredRevenue: async (id, data) => {
+        const r = await client.patch(`accounting/deferred-revenue/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    deleteDeferredRevenue: async (id) => {
+        const r = await client.delete(`accounting/deferred-revenue/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── AGED REPORTS ─────────────────────────────────────────────────────────,
+    getAgedReceivables: async () => {
+        const r = await client.get('accounting/reports/aged-receivables/');
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getAgedPayables: async () => {
+        const r = await client.get('accounting/reports/aged-payables/');
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── VENDOR BILLS ─────────────────────────────────────────────────────────,
+    getVendorBills: async (params = {}) => {
+        const r = await client.get('accounting/vendor-bills/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getVendorBill: async (id) => {
+        const r = await client.get(`accounting/vendor-bills/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    createVendorBill: async (data) => {
+        const r = await client.post('accounting/vendor-bills/', data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    updateVendorBill: async (id, data) => {
+        const r = await client.patch(`accounting/vendor-bills/${id}/`, data);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getRecurringInvoice: async (id) => {
+        const r = await client.get(`accounting/recurring-invoices/${id}/`);
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+    getAnalyticAccounts: async (params = {}) => {
+        const r = await client.get('accounting/analytic-accounts/', { params });
+        return r.data?.data ?? r.data?.results ?? r.data;
+    },
+
+    // ─── HRM PHASE 1 EXTRAS ───────────────────────────────────────────────────
+};

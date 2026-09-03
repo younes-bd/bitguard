@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Search, Clock, AlertCircle, Plus, Edit2, Trash2 } from 'lucide-react';
-import contractsService from '../../../../core/api/contractsService';
-import GenericModal from '../../../../core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '../../../../core/components/shared/core/DeleteConfirmationModal';
+import signService from '../../../sign/api/signService';
+import GenericModal from '@/core/components/shared/forms/GenericModal';
+import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
 
 const SlaTiersPage = () => {
     const [tiers, setTiers] = useState([]);
@@ -14,7 +14,7 @@ const SlaTiersPage = () => {
 
     useEffect(() => {
         const fetchTiers = () => {
-            contractsService.getSlaTiers()
+            signService.getSlaTiers()
                 .then(d => setTiers(d))
                 .catch(e => console.error(e))
                 .finally(() => setLoading(false));
@@ -24,7 +24,7 @@ const SlaTiersPage = () => {
 
     const fetchOnlyTiers = async () => {
         try {
-            const data = await contractsService.getSlaTiers();
+            const data = await signService.getSlaTiers();
             setTiers(data);
         } catch (e) {
             console.error(e);
@@ -35,9 +35,9 @@ const SlaTiersPage = () => {
         setActionLoading(true);
         try {
             if (selectedTier) {
-                await contractsService.updateSlaTier(selectedTier.id, formData);
+                await signService.updateSlaTier(selectedTier.id, formData);
             } else {
-                await contractsService.createSlaTier(formData);
+                await signService.createSlaTier(formData);
             }
             setIsModalOpen(false);
             await fetchOnlyTiers();
@@ -53,7 +53,7 @@ const SlaTiersPage = () => {
         if (!selectedTier) return;
         setActionLoading(true);
         try {
-            await contractsService.deleteSlaTier(selectedTier.id);
+            await signService.deleteSlaTier(selectedTier.id);
             setIsDeleteModalOpen(false);
             await fetchOnlyTiers();
         } catch (error) {

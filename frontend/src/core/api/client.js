@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Base API URL - pointing to our Django backend
-const baseURL = 'http://localhost:8000/api/v1/';
+// Base API URL - environment-based
+export const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api/v1/';
 
 const client = axios.create({
     baseURL: baseURL,
@@ -13,25 +13,55 @@ const client = axios.create({
     withCredentials: false,
 });
 
+/**
+ * Helper to normalize setting headers for Axios 1.x
+ */
+const setHeader = (configOrHeaders, name, value) => {
+    if (configOrHeaders.headers && configOrHeaders.headers.set) {
+        configOrHeaders.headers.set(name, value);
+    } else if (configOrHeaders.set) {
+        configOrHeaders.set(name, value);
+    } else if (configOrHeaders.headers) {
+        configOrHeaders.headers[name] = value;
+    } else {
+        configOrHeaders[name] = value;
+    }
+};
+
+/**
+ * Data extraction helper to handle DRF enveloped responses
+ */
+export const extractData = (response) => {
+    return response.data?.data ?? response.data;
+};
+
+// ─── Token Refresh Mutex Logic ────────────────────────────────────────────────
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const subscribeTokenRefresh = (cb) => {
+    refreshSubscribers.push(cb);
+};
+
+const onRefreshed = (token) => {
+    refreshSubscribers.forEach((cb) => cb(token));
+    refreshSubscribers = [];
+};
+// ──────────────────────────────────────────────────────────────────────────────
+
 // Interceptor: Attach JWT Token and Tenant ID to every request
 client.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
         if (token) {
-            if (config.headers.set) {
-                config.headers.set('Authorization', `Bearer ${token}`);
-            } else {
-                config.headers['Authorization'] = `Bearer ${token}`;
-            }
+            setHeader(config, 'Authorization', `Bearer ${token}`);
         }
 
         // Dynamic Tenant Resolution
-        const tenantId = localStorage.getItem('bitguard_tenant_id') || localStorage.getItem('tenant_id') || 'bitguard.tech';
-        if (config.headers.set) {
-            config.headers.set('X-Tenant-ID', tenantId);
-        } else {
-            config.headers['X-Tenant-ID'] = tenantId;
-        }
+        // Defaulting to 'localhost' prevents the backend middleware from falling back
+        // to IP-based subdomain parsing which incorrectly parses '127.0.0.1' as tenant '127'
+        const tenantId = localStorage.getItem('erp_tenant_id') || 'localhost';
+        setHeader(config, 'X-Tenant-ID', tenantId);
 
         return config;
     },
@@ -46,9 +76,21 @@ client.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // If 401 (Unauthorized) and not already retrying
+        // Handle 401 Unauthorized (Token Expiration)
         if (error.response?.status === 401 && !originalRequest._retry) {
+            if (isRefreshing) {
+                // If already refreshing, wait for it to finish and retry
+                return new Promise((resolve) => {
+                    subscribeTokenRefresh((token) => {
+                        setHeader(originalRequest, 'Authorization', `Bearer ${token}`);
+                        resolve(client(originalRequest));
+                    });
+                });
+            }
+
             originalRequest._retry = true;
+            isRefreshing = true;
+
             try {
                 const refreshToken = localStorage.getItem('refresh_token');
                 if (refreshToken) {
@@ -59,35 +101,26 @@ client.interceptors.response.use(
                     if (res.status === 200) {
                         const newAccessToken = res.data.data?.access_token || res.data.access_token;
                         localStorage.setItem('access_token', newAccessToken);
-                        
-                        // Axios 1.x requires .set() for AxiosHeaders instances
-                        if (client.defaults.headers.common.set) {
-                            client.defaults.headers.common.set('Authorization', `Bearer ${newAccessToken}`);
-                        } else {
-                            client.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-                        }
 
-                        if (originalRequest.headers.set) {
-                            originalRequest.headers.set('Authorization', `Bearer ${newAccessToken}`);
-                        } else {
-                            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                        }
+                        setHeader(client.defaults, 'Authorization', `Bearer ${newAccessToken}`);
                         
+                        isRefreshing = false;
+                        onRefreshed(newAccessToken);
+
+                        setHeader(originalRequest, 'Authorization', `Bearer ${newAccessToken}`);
                         return client(originalRequest);
                     }
                 }
             } catch (refreshError) {
-                // Logout if refresh fails
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                window.location.href = '/login';
+                isRefreshing = false;
+                // Dispatch logout event instead of forcing window reload
+                window.dispatchEvent(new CustomEvent('auth:logout'));
             }
         }
 
         // Handle 403 Forbidden
         if (error.response?.status === 403) {
             console.error('Access Denied: You do not have permission to perform this action.');
-            // Dispatch a custom event that the UI can listen to for showing a toast
             window.dispatchEvent(new CustomEvent('api:error:403', { detail: error.response?.data?.message || 'Access Denied' }));
         }
 

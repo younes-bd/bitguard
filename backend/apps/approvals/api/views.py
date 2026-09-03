@@ -1,3 +1,4 @@
+from apps.core.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -5,7 +6,7 @@ from ..domain.models import ApprovalRequest, ApprovalStep
 from ..api.serializers import ApprovalRequestSerializer, ApprovalStepSerializer
 from ..application.services import ApprovalService
 
-class ApprovalRequestViewSet(viewsets.ModelViewSet):
+class ApprovalRequestViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ApprovalRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -47,7 +48,7 @@ class ApprovalRequestViewSet(viewsets.ModelViewSet):
         processed = ApprovalService.reject(approval, request, comments)
         return Response(self.get_serializer(processed).data)
 
-class ApprovalStepViewSet(viewsets.ModelViewSet):
+class ApprovalStepViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = ApprovalStep.objects.all().order_by('approval_request', 'step_order')
     serializer_class = ApprovalStepSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -310,52 +310,10 @@ class EmployeeContractViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeContractSerializer
     def get_queryset(self): return EmployeeContract.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else EmployeeContract.objects.all()
 
-class LeaveAllocationViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = LeaveAllocationSerializer
-    def get_queryset(self): return LeaveAllocation.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else LeaveAllocation.objects.all()
-
-class AttendanceViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = HrAttendanceerializer
-    def get_queryset(self): return Attendance.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else Attendance.objects.all()
-
-class AppraisalViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = AppraisalSerializer
-    def get_queryset(self): return Appraisal.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else Appraisal.objects.all()
-
-from .serializers import PayrollStructureSerializer, ExpenseReportSerializer
-from apps.hr_payroll.models import PayrollStructure
-from apps.hr_expense.models import ExpenseReport
-
-class PayrollStructureViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = PayrollStructureSerializer
-    def get_queryset(self): return PayrollStructure.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else PayrollStructure.objects.all()
 
 
-class ExpenseReportViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ExpenseReportSerializer
-    def get_queryset(self): return ExpenseReport.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else ExpenseReport.objects.all()
 
-from apps.hr_recruitment.models import JobApplicant
-from apps.hr_appraisal.models import PerformanceAppraisal
-from ..domain.models import ReferralCampaign
-from .serializers import JobApplicantSerializer, PerformanceAppraisalSerializer, ReferralCampaignSerializer
 
-class JobApplicantViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = JobApplicantSerializer
-    def get_queryset(self): return JobApplicant.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else JobApplicant.objects.all()
 
-class PerformanceAppraisalViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = PerformanceAppraisalSerializer
-    def get_queryset(self): return PerformanceAppraisal.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else PerformanceAppraisal.objects.all()
 
-class ReferralCampaignViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ReferralCampaignSerializer
-    def get_queryset(self): return ReferralCampaign.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else ReferralCampaign.objects.all()
+

@@ -1,3 +1,4 @@
+from apps.core.validators import validate_image_file
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -34,7 +35,7 @@ class Post(TenantAwareModel):
     slug = models.SlugField(max_length=200, unique_for_date='publish_date')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='blog_posts')
     content = HTMLField()
-    featured_image = models.ImageField(upload_to='blog/featured_images/', blank=True, null=True)
+    featured_image = models.ImageField(upload_to='blog/featured_images/', blank=True, null=True, validators=[validate_image_file])
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
     website = models.ForeignKey('website.Website', null=True, blank=True, on_delete=models.CASCADE, related_name='blog_posts')
     tags = TaggableManager(blank=True)

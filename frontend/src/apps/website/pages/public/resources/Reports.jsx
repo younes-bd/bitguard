@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import client from '../../../../../core/api/client';
-import SectionDivider from '../../../../../core/components/SectionDivider';
-import PageMeta from '../../../../../core/components/shared/PageMeta';
+import client from '@/core/api/client';
+import SectionDivider from '@/core/components/SectionDivider';
+import PageMeta from '@/core/components/shared/PageMeta';
 
 const Reports = () => {
     const [selectedReport, setSelectedReport] = useState(null);

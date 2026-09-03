@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Sparkles, Activity, CreditCard, Monitor, Utensils, Play, Settings } from 'lucide-react';
-import posService from '../../../../core/api/posService';
+import posService from '../../api/posService';
 import { useNavigate } from 'react-router-dom';
 
 const PosDashboard = () => {
@@ -10,12 +10,16 @@ const PosDashboard = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const [stats, setStats] = useState({ total_orders: 0, total_sales: 0, active_sessions: 0, total_tables: 0 });
+
   useEffect(() => {
     Promise.all([
+      posService.getDashboardStats().catch(() => ({})),
       posService.getSessions().catch(() => ({ results: [] })),
       posService.getOrders().catch(() => ({ results: [] })),
       posService.getConfigs().catch(() => ({ results: [] }))
-    ]).then(([sessData, ordData, confData]) => {
+    ]).then(([statData, sessData, ordData, confData]) => {
+      setStats(statData || {});
       setSessions(Array.isArray(sessData) ? sessData : sessData.results || []);
       setOrders(Array.isArray(ordData) ? ordData : ordData.results || []);
       setConfigs(Array.isArray(confData) ? confData : confData.results || []);
@@ -126,7 +130,7 @@ const PosDashboard = () => {
           </div>
           <div>
             <h3 className="text-slate-500 dark:text-slate-400 font-medium mb-1">Total Orders Today</h3>
-            <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : orders.length}</p>
+            <p className="text-3xl font-bold text-slate-800 dark:text-white">{loading ? '...' : stats.total_orders}</p>
           </div>
         </div>
         
@@ -136,7 +140,7 @@ const PosDashboard = () => {
           </div>
           <div>
             <h3 className="text-slate-500 dark:text-slate-400 font-medium mb-1">Gross Revenue</h3>
-            <p className="text-3xl font-bold text-slate-800 dark:text-white">${loading ? '...' : totalRevenue.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-slate-800 dark:text-white">${loading ? '...' : stats.total_sales}</p>
           </div>
         </div>
       </div>

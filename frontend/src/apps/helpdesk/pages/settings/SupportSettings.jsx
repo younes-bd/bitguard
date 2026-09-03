@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Settings, Save, Bell, Shield, Globe, Database, Mail, Clock, LifeBuoy, Users, Zap, AlertTriangle, Loader2 } from 'lucide-react';
-import { settingsService } from '../../../settings/api/settingsService';
+import { settingsService } from '../../../system/api/settingsService';
 import { toast } from 'react-hot-toast';
 
 const SettingRow = ({ icon: Icon, title, description, children }) => (

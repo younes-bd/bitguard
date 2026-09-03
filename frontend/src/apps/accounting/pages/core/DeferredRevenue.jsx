@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, BarChart3, Clock, DollarSign, CheckCircle2 } from 'lucide-react';
-import client from '../../../../core/api/client';
+import { accountingService } from '../../api/accountingService';
 
 const DeferredRevenue = () => {
     const [loading, setLoading] = useState(true);
@@ -11,8 +11,7 @@ const DeferredRevenue = () => {
         const fetchDeferred = async () => {
             try {
                 // Fetch real data from the Deferred Revenue API endpoint
-                const res = await client.get('/accounting/deferred-revenue/');
-                const data = res.data?.data || res.data || [];
+                const data = await accountingService.getDeferredRevenues();
                 setSchedules(data);
                 
                 const sums = data.reduce((acc, curr) => ({

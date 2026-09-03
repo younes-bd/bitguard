@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import RecordFormLayout from '../../../../core/components/shared/forms/RecordFormLayout';
-import inventoryService from '../../../../core/api/inventoryService';
+import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import inventoryService from '../../api/inventoryService';
 import { toast } from 'react-hot-toast';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -57,7 +57,7 @@ export default function InventoryAdjustment() {
       });
       
       toast.success('Stock adjusted successfully');
-      navigate('/inventory'); // Back to dashboard
+      navigate('/admin/stock/adjustments'); // Back to list
     } catch (err) {
       toast.error('Failed to adjust stock');
     } finally {
@@ -77,9 +77,9 @@ export default function InventoryAdjustment() {
   const difference = selectedItem ? (adjustment.counted_quantity - selectedItem.quantity_on_hand) : 0;
 
   const breadcrumbs = [
-    { label: 'Inventory', href: '/inventory' },
-    { label: 'Operations', href: '/inventory' },
-    { label: 'Stock Adjustment' }
+    { label: 'Inventory', href: '/admin/stock' },
+    { label: 'Stock Adjustments', href: '/admin/stock/adjustments' },
+    { label: 'New Adjustment' }
   ];
 
   return (

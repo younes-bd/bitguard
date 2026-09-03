@@ -1,3 +1,4 @@
+from apps.core.validators import validate_document_file
 from django.db import models
 from django.conf import settings
 from apps.core.domain.models import BaseModel, TenantAwareModel
@@ -5,7 +6,7 @@ from apps.core.domain.models import BaseModel, TenantAwareModel
 
 class Project(TenantAwareModel):
     """
-    Dedicated Project Management model — separate from ERP InternalProject.
+    Dedicated Project Management model Ã¢â‚¬â€ separate from ERP InternalProject.
     Represents a client-facing or internal service engagement.
     """
     STATUS_CHOICES = [
@@ -42,7 +43,7 @@ class Project(TenantAwareModel):
         'crm.Client', on_delete=models.SET_NULL, null=True, blank=True, related_name='pm_projects'
     )
     contract = models.ForeignKey(
-        'contracts.ServiceContract', on_delete=models.SET_NULL, null=True, blank=True, related_name='pm_projects'
+        'subscriptions.ServiceContract', on_delete=models.SET_NULL, null=True, blank=True, related_name='pm_projects'
     )
     manager = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='pm_managed_projects'
@@ -60,7 +61,7 @@ class Project(TenantAwareModel):
     budget = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 
     # Progress (computed from tasks, but can be overridden)
-    progress_override = models.IntegerField(null=True, blank=True, help_text='0–100. Auto-computed from tasks if null.')
+    progress_override = models.IntegerField(null=True, blank=True, help_text='0Ã¢â‚¬â€œ100. Auto-computed from tasks if null.')
 
     class Meta:
         ordering = ['-created_at']
@@ -120,7 +121,7 @@ class TaskTag(TenantAwareModel):
 
 class Task(TenantAwareModel):
     """
-    Kanban card — belongs to a Project and sits in a stage column.
+    Kanban card Ã¢â‚¬â€ belongs to a Project and sits in a stage column.
     """
     PRIORITY_CHOICES = [
         ('low', 'Low'),
@@ -144,6 +145,7 @@ class Task(TenantAwareModel):
     estimated_hours = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
     order = models.PositiveIntegerField(default=0, help_text='Sort order within the column')
     tags = models.ManyToManyField(TaskTag, blank=True)
+    parent_task = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks')
 
     class Meta:
         ordering = ['order', 'created_at']
@@ -163,7 +165,7 @@ class TaskComment(TenantAwareModel):
 
 class TaskAttachment(TenantAwareModel):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='attachments')
-    file = models.FileField(upload_to='task_attachments/%Y/%m/')
+    file = models.FileField(upload_to='task_attachments/%Y/%m/', validators=[validate_document_file])
     filename = models.CharField(max_length=255, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
@@ -216,11 +218,11 @@ class Milestone(TenantAwareModel):
         ordering = ['due_date']
 
     def __str__(self):
-        return f'{self.project.name} — {self.name}'
+        return f'{self.project.name} Ã¢â‚¬â€ {self.name}'
 
 class TimeLog(TenantAwareModel):
     """
-    Time tracking entry — logged against a task.
+    Time tracking entry Ã¢â‚¬â€ logged against a task.
     Feeds into ERP billing for time-and-materials projects.
     """
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='time_logs')
@@ -235,13 +237,13 @@ class TimeLog(TenantAwareModel):
         ordering = ['-date']
 
     def __str__(self):
-        return f'{self.user} — {self.hours}h on {self.task.title}'
+        return f'{self.user} Ã¢â‚¬â€ {self.hours}h on {self.task.title}'
 
 class Timesheet(TenantAwareModel):
     """
     Timesheet model for broader tracking, possibly linked to hrm.
     """
-    employee = models.ForeignKey('hrm.Employee', on_delete=models.CASCADE, null=True)
+    employee = models.ForeignKey('hr.Employee', on_delete=models.CASCADE, null=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='timesheets')
     task = models.ForeignKey(Task, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField()

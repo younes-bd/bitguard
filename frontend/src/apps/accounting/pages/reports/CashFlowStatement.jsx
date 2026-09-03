@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, Download, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
 const CashFlowStatement = () => {
@@ -19,7 +19,7 @@ const CashFlowStatement = () => {
         const fetchReport = async () => {
             setLoading(true);
             try {
-                const data = await erpService.getCashFlow(startDate, endDate);
+                const data = await accountingService.getCashFlow(startDate, endDate);
                 setReport(data);
             } catch (err) {
                 console.error("Failed to fetch cash flow", err);

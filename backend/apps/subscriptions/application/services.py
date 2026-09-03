@@ -1,0 +1,262 @@
+import stripe
+from django.conf import settings
+from django.db import transaction
+from django.utils import timezone
+from ..domain.models import Invoice, Plan, Subscription
+from apps.core.services.base import BaseService
+from apps.core.services.audit import AuditService
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+class SubscriptionService(BaseService):
+    """
+    Handles recurring billing and platform subscriptions.
+    Charter Compliance: Enforces tenant context and logs the action.
+    """
+    
+    @classmethod
+    def create_subscription_session(cls, user, plan, success_url, cancel_url, request=None):
+        """
+        Creates a Stripe Checkout Session for a recurring subscription plan.
+        """
+        tenant = cls.get_tenant_context(request)
+        
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price': plan.stripe_price_id_monthly,
+                'quantity': 1,
+            }],
+            mode='subscription',
+            success_url=success_url + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=cancel_url,
+            customer_email=user.email,
+            metadata={
+                'type': 'plan',
+                'plan_id': plan.id,
+                'user_id': user.id,
+                'tenant_id': tenant.id if tenant else None
+            }
+        )
+        
+        # Log Action
+        if request:
+            AuditService.log_action(
+                request, 
+                action="SUBSCRIPTION_CHECKOUT_INITIATED", 
+                resource=f"billing.Plan:{plan.id}",
+                payload={"stripe_session": session.id, "tenant": tenant.id if tenant else "global"}
+            )
+            
+        return session.url
+
+    @classmethod
+    @transaction.atomic
+    def update_seats(cls, request, subscription: Subscription, new_seat_count: int):
+        """
+        Updates the number of seats for a subscription.
+        Synchronizes with Stripe if necessary.
+        """
+        old_count = subscription.seat_count
+        subscription.seat_count = new_seat_count
+        subscription.save()
+        
+        AuditService.log_action(
+            request,
+            action="SUBSCRIPTION_SEATS_UPDATED",
+            resource=f"billing.Subscription:{subscription.id}",
+            payload={"old_count": old_count, "new_count": new_seat_count}
+        )
+        
+        # Stripe integration for seat updates would go here
+        return subscription
+
+    @staticmethod
+    def get_subscription_stats():
+        from django.db.models import Sum
+        subscriptions = Subscription.objects.all().select_related('plan')
+        # SaaS MRR calculation based on seats
+        total_mrr = sum([(s.plan.price_monthly * s.seat_count) for s in subscriptions if s.is_valid and s.plan])
+        return {
+            "mrr": float(total_mrr),
+            "count": subscriptions.count()
+        }
+
+class BillingService(BaseService):
+    """
+    Handles financial records and invoices within the billing context.
+    """
+    @classmethod
+    @transaction.atomic
+    def create_invoice(cls, user, amount, payment_method='stripe', stripe_invoice_id=None, request=None, due_date=None, notes=""):
+        """
+        Transactional invoice creation with Charter compliance.
+        """
+        tenant = cls.get_tenant_context(request)
+        import uuid
+        invoice_num = f"INV-{str(uuid.uuid4())[:8].upper()}"
+        
+        invoice = Invoice.objects.create(
+            user=user,
+            invoice_number=invoice_num,
+            amount=amount,
+            payment_method=payment_method,
+            stripe_invoice_id=stripe_invoice_id if stripe_invoice_id else "",
+            tenant=tenant,
+            status='pending',
+            due_date=due_date
+        )
+        
+        if request:
+            AuditService.log_action(
+                request,
+                action="BILLING_INVOICE_CREATED",
+                resource=f"billing.Invoice:{invoice.id}",
+                payload={"amount": float(amount), "invoice_number": invoice_num}
+            )
+            
+        return invoice
+
+    @classmethod
+    @transaction.atomic
+    def create_invoice_from_quote(cls, request, quote_id: str) -> Invoice:
+        """
+        Cross-module integration: Generates a billing Invoice when a CRM/Contract Quote is accepted.
+        """
+        from apps.sale.domain.models import SaleOrder
+        tenant = cls.get_tenant_context(request)
+        
+        quote = SaleOrder.objects.get(id=quote_id)
+        
+        # Security: ensure cross-tenant data safety
+        if tenant and quote.tenant and quote.tenant != tenant:
+            raise ValueError("Cross-tenant violation: Quote does not belong to active tenant.")
+            
+        if quote.status != 'accepted' and quote.status != 'done':
+            raise ValueError("Invoice can only be generated from an accepted quote.")
+            
+        # Optional: verify an invoice doesn't already exist for this quote, 
+        # but right now we don't have a direct link on Invoice. We can just create it.
+        
+        # Calculate amount from quote
+        amount = quote.amount_total
+        
+        # Use the client's associated user if available, or request user
+        user = None
+        if quote.client and quote.client.assigned_to:
+             user = quote.client.assigned_to
+        if not user:
+             user = request.user
+             
+        import datetime
+        due_date = timezone.now() + datetime.timedelta(days=30)
+        
+        invoice = cls.create_invoice(
+            user=user,
+            amount=amount,
+            request=request,
+            due_date=due_date,
+            notes=f"Generated from Quote {quote.id}"
+        )
+        
+        AuditService.log_action(
+            request,
+            action="BILLING_QUOTE_TO_INVOICE",
+            resource=f"billing.Invoice:{invoice.id}",
+            payload={"quote_id": str(quote.id), "amount": float(amount)}
+        )
+        return invoice
+
+    @staticmethod
+    def get_invoice_revenue(user=None):
+        from django.db.models import Sum
+        queryset = Invoice.objects.filter(status='paid')
+        if user:
+            queryset = queryset.filter(user=user)
+        return queryset.aggregate(total=Sum('amount'))['total'] or 0
+
+    @classmethod
+    def subscribe_plan(cls, plan, user, interval, frontend_url):
+        stripe_price_id = plan.stripe_price_id_monthly if interval == 'monthly' else plan.stripe_price_id_yearly
+        if not stripe_price_id:
+            raise ValueError('No Stripe price configured for this plan.')
+            
+        import stripe
+        if not stripe.api_key:
+            raise RuntimeError('Stripe is not configured on this server.')
+            
+        session = stripe.checkout.Session.create(
+            mode='subscription',
+            line_items=[{'price': stripe_price_id, 'quantity': 1}],
+            success_url=f"{frontend_url}/admin/billing/success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{frontend_url}/admin/billing/cancel",
+            customer_email=user.email,
+            metadata={'user_id': str(user.id), 'plan_id': str(plan.id), 'interval': interval},
+            client_reference_id=str(user.id),
+        )
+        return session.url
+
+    @classmethod
+    def process_webhook(cls, payload, sig_header, webhook_secret):
+        import stripe
+        from datetime import datetime, timezone as dt_timezone
+        from django.contrib.auth import get_user_model
+        from apps.ecommerce.domain.models import Order
+        from apps.ecommerce.services import CommerceService
+        
+        if webhook_secret:
+            event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+        else:
+            import json
+            event = stripe.Event.construct_from(json.loads(payload), stripe.api_key)
+            
+        event_type = event['type']
+        data = event['data']['object']
+        
+        if event_type == 'checkout.session.completed':
+            stripe_sub_id = data.get('subscription')
+            user_id = data.get('metadata', {}).get('user_id')
+            plan_id = data.get('metadata', {}).get('plan_id')
+            
+            if stripe_sub_id and user_id and plan_id:
+                User = get_user_model()
+                user = User.objects.get(pk=user_id)
+                plan = Plan.objects.get(pk=plan_id)
+                stripe_sub = stripe.Subscription.retrieve(stripe_sub_id)
+                period_end = datetime.fromtimestamp(stripe_sub['current_period_end'], tz=dt_timezone.utc)
+                
+                Subscription.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        'plan': plan,
+                        'stripe_subscription_id': stripe_sub_id,
+                        'stripe_customer_id': data.get('customer', ''),
+                        'status': 'active',
+                        'current_period_end': period_end,
+                        'cancel_at_period_end': False,
+                    }
+                )
+            elif data.get('metadata', {}).get('type') == 'product':
+                session_id = data.get('id')
+                order = Order.objects.filter(payment_intent_id=session_id).first()
+                if order:
+                    class DummyRequest:
+                        user = order.user
+                        META = {'REMOTE_ADDR': '127.0.0.1'}
+                    CommerceService.update_order_status(order, 'paid', DummyRequest())
+                    
+        elif event_type == 'invoice.payment_succeeded':
+            stripe_sub_id = data.get('subscription')
+            period_end_ts = data.get('lines', {}).get('data', [{}])[0].get('period', {}).get('end')
+            if stripe_sub_id:
+                qs = Subscription.objects.filter(stripe_subscription_id=stripe_sub_id)
+                if qs.exists():
+                    update = {'status': 'active'}
+                    if period_end_ts:
+                        update['current_period_end'] = datetime.fromtimestamp(period_end_ts, tz=dt_timezone.utc)
+                    qs.update(**update)
+                    
+        elif event_type == 'customer.subscription.deleted':
+            stripe_sub_id = data.get('id')
+            if stripe_sub_id:
+                Subscription.objects.filter(stripe_subscription_id=stripe_sub_id).update(status='canceled', cancel_at_period_end=False)

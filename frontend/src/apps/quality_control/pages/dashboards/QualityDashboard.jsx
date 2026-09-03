@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Sparkles, TrendingUp, Activity, ShieldAlert } from 'lucide-react';
-import quality_controlService from '../../../../core/api/qualityService';
+import quality_controlService from '../../api/qualityService';
 
 const QualityDashboard = () => {
   const [alerts, setAlerts] = useState([]);

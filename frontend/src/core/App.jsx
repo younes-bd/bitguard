@@ -1,89 +1,82 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { Toaster, toast } from 'react-hot-toast';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+
 import WebsiteLayout from './layouts/WebsiteLayout';
-import ProtectedRoute from './api/auth/ProtectedRoute';
+import ProtectedRoute from './guards/ProtectedRoute';
+import AuthLoader from './guards/AuthLoader';
 
-// Override global alert to utilize enterprise toast notifications
-const originalAlert = window.alert;
-window.alert = (message) => {
-    toast(message, {
-        icon: '🔔',
-        style: {
-            borderRadius: '10px',
-            background: '#1e293b',
-            color: '#fff',
-            border: '1px solid #334155'
-        },
-    });
-};
-
-// Public/Auth Pages
-import Login from '../apps/auth/pages/public/Login';
-import Register from '../apps/auth/pages/public/Register';
-import ForgotPassword from '../apps/auth/pages/public/ForgotPassword';
-import { WebsiteRoutes } from '../apps/website/routes/WebsiteRoutes';
-import { BlogRoutes } from '../apps/blog/routes/BlogRoutes';
-
-// Feature Pages - Store
-import ProductCatalog from '../apps/ecommerce/pages/public/ProductCatalog';
-import ProductDetail from '../apps/ecommerce/pages/public/ProductDetail';
-import Checkout from '../apps/ecommerce/pages/public/Checkout';
+// Frontend Applications
+import { authAdminRoutes as authRoutes } from '../apps/auth/routes/authAdminRoutes';
+import { websitePublicRoutes as WebsiteRoutes } from '../apps/website/routes/websitePublicRoutes';
+import { blogPublicRoutes as BlogRoutes } from '../apps/blog/routes/blogPublicRoutes';
+import { ecommercePublicRoutes } from '../apps/ecommerce/routes/ecommercePublicRoutes';
+import { elearningPublicRoutes } from '../apps/elearning/routes/elearningPublicRoutes';
+import { eventsPublicRoutes } from '../apps/events/routes/eventsPublicRoutes';
+import { helpdeskPublicRoutes } from '../apps/helpdesk/routes/helpdeskPublicRoutes';
+import { appointmentsPublicRoutes } from '../apps/appointments/routes/appointmentsPublicRoutes';
+import { recruitmentPublicRoutes } from '../apps/hr_recruitment/routes/recruitmentPublicRoutes';
 
 // Core Routing
-import { EnterpriseRoutes } from '../apps/board/routes/EnterpriseRouter';
+import { BackendRoutes } from './routes/BackendRoutes';
+import { portalClientRoutes as PortalRoutes } from '../apps/portal/routes/portalClientRoutes';
 import { useAuth } from './hooks/useAuth';
-import { PortalRoutes } from './routes/PortalRoutes';
 
 import { AuthProvider } from './context/AuthContext';
 import { TenantProvider } from './context/TenantContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ThemeProvider } from './context/ThemeProvider';
 
 const AppContent = () => {
-    const { isAdmin, loading } = useAuth();
+    const { isAuthenticated, isAdmin, loading } = useAuth();
+    const location = useLocation();
 
+    // Global loading guard
     if (loading) {
-        return <div className="flex items-center justify-center min-h-screen bg-slate-950 text-blue-500">Loading...</div>;
+        return <AuthLoader />;
+    }
+
+    // Handle after-login redirect gracefully inside AppContent
+    if (isAuthenticated && location.pathname === '/login') {
+        const from = location.state?.from?.pathname || (isAdmin ? '/admin' : '/portal');
+        return <Navigate to={from} replace />;
     }
 
     return (
         <Routes>
-            {/* Specific routes FIRST — before the wildcard */}
+            {/* Frontend / Public Website */}
+            <Route path="/*" element={<WebsiteRoutes />} />
             <Route path="/blog/*" element={<BlogRoutes />} />
-
-            {/* Public Store Routes */}
-            <Route element={<WebsiteLayout />}>
-                <Route path="/store" element={<ProductCatalog />} />
-                <Route path="/store/checkout" element={<Checkout />} />
-                <Route path="/store/:slug" element={<ProductDetail />} />
-            </Route>
+            {ecommercePublicRoutes}
+            <Route path="/courses/*" element={elearningPublicRoutes} />
+            <Route path="/events/*" element={eventsPublicRoutes} />
+            <Route path="/helpdesk/*" element={helpdeskPublicRoutes} />
+            <Route path="/appointments/*" element={appointmentsPublicRoutes} />
+            <Route path="/jobs/*" element={recruitmentPublicRoutes} />
 
             {/* Auth Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+            {authRoutes}
 
             {/* Core Framework Routing (Role Based) */}
             <Route path="/admin/*" element={
-                <ProtectedRoute>
-                    {isAdmin ? <EnterpriseRoutes /> : <Navigate to="/portal" replace />}
+                <ProtectedRoute requireAdmin={true}>
+                    <BackendRoutes />
                 </ProtectedRoute>
             } />
 
             <Route path="/portal/*" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={false}>
                     <PortalRoutes />
                 </ProtectedRoute>
             } />
 
             {/* Redirects */}
             <Route path="/dashboard" element={<Navigate to={isAdmin ? "/admin" : "/portal"} replace />} />
-            {/* Role-aware settings redirect (H-11 fix) */}
-            <Route path="/settings" element={<Navigate to={isAdmin ? "/admin/settings" : "/portal/security"} replace />} />
+            <Route path="/settings" element={<Navigate to={isAdmin ? "/admin/settings" : "/portal/account"} replace />} />
 
             {/* Public Marketing Routes — wildcard LAST so all specific routes above match first */}
             <Route path="/*" element={<WebsiteRoutes />} />
-        </Routes >
+        </Routes>
     );
 };
 
@@ -93,12 +86,14 @@ const App = () => {
             <AuthProvider>
                 <TenantProvider>
                     <NotificationProvider>
-                        <Toaster position="top-right" reverseOrder={false} />
-                        <AppContent />
-                    </NotificationProvider >
-                </TenantProvider >
+                        <ThemeProvider>
+                            <Toaster position="top-right" reverseOrder={false} />
+                            <AppContent />
+                        </ThemeProvider>
+                    </NotificationProvider>
+                </TenantProvider>
             </AuthProvider>
-        </Router >
+        </Router>
     );
 };
 

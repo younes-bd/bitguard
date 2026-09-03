@@ -2,12 +2,11 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TaxGroups from './TaxGroups';
-import { erpService } from '../../../../core/api/erpService';
 
-// Mock the erpService
-vi.mock('../../../../core/api/erpService', () => {
+// Mock the accountingService
+vi.mock('../../api/accountingService', () => {
     return {
-        erpService: {
+        accountingService: {
             getTaxes: vi.fn(),
         }
     };
@@ -28,7 +27,7 @@ describe('TaxGroups Component', () => {
     });
 
     it('renders loading state initially', async () => {
-        erpService.getTaxes.mockImplementation(() => new Promise(() => {})); // Never resolves
+        accountingService.getTaxes.mockImplementation(() => new Promise(() => {})); // Never resolves
         
         render(<TaxGroups />);
         
@@ -37,7 +36,7 @@ describe('TaxGroups Component', () => {
     });
 
     it('renders mock data if api returns empty', async () => {
-        erpService.getTaxes.mockResolvedValueOnce([]);
+        accountingService.getTaxes.mockResolvedValueOnce([]);
         
         render(<TaxGroups />);
         
@@ -52,7 +51,7 @@ describe('TaxGroups Component', () => {
             { id: 1, name: 'VAT', description: 'Standard VAT', rate: 20, is_active: true },
             { id: 2, name: 'Sales Tax', description: 'Local Sales Tax', rate: 7.5, is_active: false }
         ];
-        erpService.getTaxes.mockResolvedValueOnce(mockTaxes);
+        accountingService.getTaxes.mockResolvedValueOnce(mockTaxes);
         
         render(<TaxGroups />);
         

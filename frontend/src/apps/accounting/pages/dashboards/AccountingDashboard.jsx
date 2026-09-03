@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { erpService } from '../../../../core/api/erpService';
+import { accountingService } from '../../api/accountingService';
 import {
     FolderKanban, Clock, Plus, Activity,
     TrendingUp, DollarSign, Scale,
@@ -19,8 +19,8 @@ const AccountingDashboard = () => {
 
     useEffect(() => {
         Promise.all([
-            erpService.getDashboardStats().catch(() => null),
-            erpService.getMonthlyFinancials(6).catch(() => [])
+            accountingService.getDashboardStats().catch(() => null),
+            accountingService.getMonthlyFinancials(6).catch(() => [])
         ]).then(([stats, monthly]) => {
             if (stats) setData(stats);
             if (monthly) setMonthlyData(monthly);
