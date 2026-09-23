@@ -19,7 +19,7 @@
 
     'display_name': 'Appointments',
     'command_center_section': 'Services',
-    'sequence': 6,
+    'sequence': 160,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Appointments Tile',

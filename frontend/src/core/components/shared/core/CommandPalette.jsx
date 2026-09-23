@@ -83,10 +83,10 @@ export default function CommandPalette() {
         const delayDebounceFn = setTimeout(async () => {
             setIsSearching(true);
             try {
-                // We need to import boardService at the top of the file.
+                // We need to import analyticsService at the top of the file.
                 // Assuming it's imported correctly.
-                const { boardService } = await import('../../../../apps/board/api/boardService');
-                const results = await boardService.globalSearch(searchTerm);
+                const { analyticsService } = await import('../../../../apps/analytics/api/analyticsService');
+                const results = await analyticsService.globalSearch(searchTerm);
                 
                 // Map backend results to route format
                 const mappedResults = results.map(r => ({

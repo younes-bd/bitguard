@@ -5,7 +5,7 @@ from apps.users.domain.models import User
 from apps.users.domain.models import TenantMembership
 from apps.crm.domain.models import Client
 from apps.accounting.domain.models import Invoice, InvoiceItem, Payment, GeneralLedger, Account
-from apps.accounting.application.services import GeneralLedgerService
+from apps.accounting.services.accounting import GeneralLedgerService
 
 class FinanceOperationTests(TestCase):
     def setUp(self):

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import AppInstaller from '../pages/AppInstaller';
-import AppDetail from '../pages/AppDetail';
+import AppInstaller from '../pages/AppInstallerPage';
+import AppDetail from '../pages/AppDetailPage';
 
 export const appsAdminRoutes = (
     <>

@@ -1,23 +1,23 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import SocDashboard from '../pages/dashboards/SocDashboard';
-import WorkspaceManager from '../pages/lists/WorkspaceManager';
+import SocDashboard from '../pages/dashboards/SocDashboardPage';
+import WorkspaceManager from '../pages/lists/WorkspaceManagerPage';
 import AssetsPage from '../pages/lists/AssetsPage';
 import AlertsPage from '../pages/lists/AlertsPage';
 import IncidentsPage from '../pages/lists/IncidentsPage';
 import VulnerabilitiesPage from '../pages/compliance/VulnerabilitiesPage';
 import IntelPage from '../pages/lists/IntelPage';
-import RemoteSupport from '../pages/features/RemoteSupport';
-import EmailSecurity from '../pages/features/EmailSecurity';
-import CloudSecurity from '../pages/features/CloudSecurity';
-import NetworkSecurity from '../pages/features/NetworkSecurity';
-import AlertDetails from '../pages/details/AlertDetails';
-import IncidentDetails from '../pages/details/IncidentDetails';
+import RemoteSupport from '../pages/features/RemoteSupportPage';
+import EmailSecurity from '../pages/features/EmailSecurityPage';
+import CloudSecurity from '../pages/features/CloudSecurityPage';
+import NetworkSecurity from '../pages/features/NetworkSecurityPage';
+import AlertDetails from '../pages/details/AlertDetailsPage';
+import IncidentDetails from '../pages/details/IncidentDetailsPage';
 import SecurityGapsPage from '../pages/compliance/SecurityGapsPage';
 import LogAnalysisPage from '../pages/lists/LogAnalysisPage';
-import RiskRegister from '../pages/compliance/RiskRegister';
-import ComplianceRegister from '../pages/compliance/ComplianceRegister';
+import RiskRegister from '../pages/compliance/RiskRegisterPage';
+import ComplianceRegister from '../pages/compliance/ComplianceRegisterPage';
 
 export const socAdminRoutes = (
     <>

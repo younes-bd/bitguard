@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import AssetDashboard from '../pages/dashboards/AssetDashboard';
-import AssetList from '../pages/lists/AssetList';
-import AssetDetail from '../pages/details/AssetDetail';
-import AssetDepreciation from '../pages/features/AssetDepreciation';
-import LicenseManager from '../pages/lists/LicenseManager';
-import ItamSettings from '../pages/settings/ItamSettings';
+import AssetDashboard from '../pages/dashboards/AssetDashboardPage';
+import AssetList from '../pages/lists/AssetListPage';
+import AssetDetail from '../pages/details/AssetDetailPage';
+import AssetDepreciation from '../pages/features/AssetDepreciationPage';
+import LicenseManager from '../pages/lists/LicenseManagerPage';
+import ItamSettings from '../pages/settings/ItamSettingsPage';
 
 export const maintenanceAdminRoutes = (
     <React.Fragment>

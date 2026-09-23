@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Settings',
     'command_center_section': 'Administration',
-    'sequence': 1,
+    'sequence': 1010,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Settings Tile'}

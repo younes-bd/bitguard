@@ -9,17 +9,6 @@ import {
     UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle, MapPin, Utensils, Leaf, UserCheck, Star, Upload, AtSign, Webhook
 } from 'lucide-react';
 
-
-export const crmManifest = {
-    techName: 'crm',
-    displayName: 'CRM',
-    commandCenterSection: 'Sales',
-    commandCenterOrder: 2,
-    hasSettings: true,
-    settingsUrl: '/admin/settings/crm',
-    settingsDesc: 'Configure settings',
-};
-
 export const crmMenu = [
         {
             title: 'Sales',
@@ -36,7 +25,7 @@ export const crmMenu = [
             ]
         },
         {
-            title: 'Reporting',
+            title: 'Reports',
             items: [
                 { label: 'Forecast', icon: TrendingUp, path: '/admin/crm/forecast' },
                 { label: 'Pipeline', icon: Activity, path: '/admin/crm/reports' },

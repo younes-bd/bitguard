@@ -14,8 +14,8 @@
     'url': '/admin/invoicing',
     'screenshots': [],
     'display_name': 'Invoicing',
-    'command_center_section': 'Accounting & Finance',
-    'sequence': 2,
+    'command_center_section': 'Accounting',
+    'sequence': 220,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Invoicing Tile'}

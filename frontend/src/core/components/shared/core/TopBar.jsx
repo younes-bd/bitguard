@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, Menu, LogOut, User, Settings, LayoutDashboard, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
-import NotificationBell from './NotificationBell';
+import InboxBell from './InboxBell';
 import client from '../../../api/client';
 
 /**
  * ModuleTopBar — Used by ModuleLayout (per-module views)
- * Connected to real user data, notifications, and global search.
+ * Connected to real user data, inbox, and global search.
  */
 const TopBar = ({ toggleSidebar, title }) => {
     const { user, logout } = useAuth();
@@ -28,7 +28,7 @@ const TopBar = ({ toggleSidebar, title }) => {
                 return;
             }
             try {
-                const res = await client.get(`/board/search/?q=${encodeURIComponent(searchQuery)}`);
+                const res = await client.get(`/analytics/search/?q=${encodeURIComponent(searchQuery)}`);
                 if (res.data?.status === 'success' && res.data?.data) {
                     setSearchResults(res.data.data.slice(0, 8));
                     setShowResults(true);
@@ -119,9 +119,9 @@ const TopBar = ({ toggleSidebar, title }) => {
                 </div>
             </div>
 
-            {/* Right: Notifications + User */}
+            {/* Right: Inbox + User */}
             <div className="flex items-center gap-2 flex-shrink-0">
-                <NotificationBell />
+                <InboxBell />
 
                 <div className="h-5 w-px bg-slate-800/80" />
 
@@ -193,3 +193,4 @@ const TopBar = ({ toggleSidebar, title }) => {
 };
 
 export default TopBar;
+

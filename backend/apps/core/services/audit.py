@@ -1,5 +1,5 @@
 from apps.core.domain.models import AuditTrail
-from .base import BaseService
+from .core import BaseService
 
 class AuditService(BaseService):
     """

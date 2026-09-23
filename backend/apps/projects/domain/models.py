@@ -243,7 +243,7 @@ class Timesheet(TenantAwareModel):
     """
     Timesheet model for broader tracking, possibly linked to hrm.
     """
-    employee = models.ForeignKey('hr.Employee', on_delete=models.CASCADE, null=True)
+    employee = models.ForeignKey('employees.Employee', on_delete=models.CASCADE, null=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='timesheets')
     task = models.ForeignKey(Task, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField()

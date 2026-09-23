@@ -15,7 +15,7 @@
     'screenshots': [],
     'display_name': 'Lunch',
     'command_center_section': 'Human Resources',
-    'sequence': 11,
+    'sequence': 795,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Lunch Tile'}

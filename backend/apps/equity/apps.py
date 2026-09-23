@@ -10,6 +10,6 @@ class EquityConfig(AppConfig):
         import apps.equity.infrastructure.signals  # noqa
 
     def _register_api_routes(self):
-        from apps.core.api.registry import register
+        from apps.core.registry import register
         register('equity/', 'apps.equity.api.urls')
 

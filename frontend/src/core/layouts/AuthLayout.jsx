@@ -15,7 +15,7 @@ const AuthLayout = () => {
 
     return (
         <div className="min-h-screen bg-slate-950 flex flex-col md:flex-row">
-            {/* Left Panel: Branding / Marketing Graphic */}
+            {/* Left Panel: Branding / Journeys Graphic */}
             <div className="hidden md:flex md:w-1/2 lg:w-[55%] relative flex-col justify-between overflow-hidden bg-slate-900 border-r border-slate-800">
                 {/* Abstract Background Elements */}
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
@@ -39,7 +39,7 @@ const AuthLayout = () => {
                         )}
                     </div>
 
-                    {/* Value Proposition / Marketing Copy */}
+                    {/* Value Proposition / Journeys Copy */}
                     <div className="mt-auto mb-auto max-w-xl">
                         <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight mb-6">
                             Next-generation enterprise management.
@@ -52,7 +52,7 @@ const AuthLayout = () => {
                             {[
                                 "Complete financial & operational control",
                                 "Military-grade access management",
-                                "Real-time analytics and reporting"
+                                "Real-time analytics and reports"
                             ].map((feature, i) => (
                                 <li key={i} className="flex items-center gap-3 text-slate-300 font-medium">
                                     <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">

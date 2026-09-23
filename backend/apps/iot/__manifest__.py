@@ -15,7 +15,7 @@
     'screenshots': [],
     'display_name': 'IoT',
     'command_center_section': 'Manufacturing',
-    'sequence': 7,
+    'sequence': 460,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Iot Tile'}

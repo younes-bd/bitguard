@@ -5,7 +5,7 @@ import { Menu, Search, Command, ChevronRight, Home } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSidebarState } from '../hooks/useSidebarState';
 import UserAvatarDropdown from '../components/shared/core/UserAvatarDropdown';
-import NotificationBell from '../components/shared/core/NotificationBell';
+import InboxBell from '../components/shared/core/InboxBell';
 import CommandPalette from '../components/shared/core/CommandPalette';
 import { portalSections } from '../../apps/portal/config/portalMenu';
 
@@ -138,7 +138,7 @@ const PortalLayout = () => {
                     </div>
 
                     <div className="flex items-center space-x-4 ml-auto">
-                        <NotificationBell />
+                        <InboxBell />
                         
                         <div className="h-6 w-px bg-slate-800 hidden md:block mx-1"></div>
 
@@ -156,3 +156,4 @@ const PortalLayout = () => {
 };
 
 export default PortalLayout;
+

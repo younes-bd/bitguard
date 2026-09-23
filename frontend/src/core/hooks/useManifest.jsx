@@ -28,11 +28,13 @@ export const ManifestProvider = ({ children }) => {
     }, []);
 
     const fetchManifest = async () => {
-        setLoading(true);
+        if (manifestData.length === 0) {
+            setLoading(true);
+        }
         try {
             const [modulesRes, sectionsRes] = await Promise.all([
-                client.get('system/modules/?limit=200'),
-                client.get('system/sections/').catch(() => ({ data: [] }))
+                client.get('core/modules/?limit=200'),
+                client.get('core/sections/').catch(() => ({ data: [] }))
             ]);
             
             const payload = modulesRes?.data ?? modulesRes;
@@ -64,57 +66,45 @@ export const ManifestProvider = ({ children }) => {
     }, []);
 
     const { installedSet, commandCenterSections, settingsAppEntries, moduleMenus } = useMemo(() => {
-        const moduleMap = {};
         const menusMap = {};
-        
-        // 1. Process Frontend Glob Data
+
+        // 1. Extract *Menu sidebar navigation arrays from frontend glob imports.
+        //    This is the React equivalent of Odoo's ir.ui.menu tree for sidebar items.
+        //    *Manifest blocks have been removed — the DB is the sole metadata authority.
         Object.entries(menuConfigs).forEach(([path, moduleExport]) => {
             const appName = path.split('/')[3];
-            
-            // Extract Menu and Manifest
             let moduleMenu = [];
-            let moduleManifest = null;
-            
             Object.keys(moduleExport).forEach(key => {
-                if (key.endsWith('Menu')) moduleMenu = moduleExport[key];
-                if (key.endsWith('Manifest')) moduleManifest = moduleExport[key];
+                if (key.endsWith('Menu') && Array.isArray(moduleExport[key])) {
+                    moduleMenu = moduleExport[key];
+                }
             });
-            
             menusMap[appName] = moduleMenu;
-            if (moduleManifest) {
-                moduleMap[appName] = moduleManifest;
-            }
         });
 
-        // 2. Merge with Backend Data
+        // 2. Build active modules exclusively from the DB response (Odoo 17 standard).
+        //    If the API has not returned yet (loading), activeModules stays empty and
+        //    the UI shows nothing rather than flashing stale hardcoded classifications.
         const installed = new Set();
-        let activeModules = [];
-        
-        if (manifestData.length > 0) {
-            // Backend data available
-            manifestData.filter(m => m.is_installed !== false).forEach(mod => {
-                installed.add(mod.technical_name);
-                activeModules.push({
-                    name: mod.name,
-                    techName: mod.technical_name,
-                    displayName: mod.display_name,
-                    commandCenterSection: mod.command_center_section,
-                    sequence: mod.sequence,
-                    application: mod.application,
-                    hasSettings: mod.has_settings,
-                    url: mod.url,
-                    settingsUrl: mod.settings_url,
-                    settingsDesc: mod.settings_desc,
-                    icon: mod.icon || 'Box'
-                });
+        const activeModules = [];
+
+        manifestData.filter(m => m.is_installed !== false).forEach(mod => {
+            installed.add(mod.technical_name);
+            activeModules.push({
+                name: mod.name,
+                techName: mod.technical_name,
+                displayName: mod.display_name,
+                commandCenterSection: mod.command_center_section,
+                sequence: mod.sequence,
+                application: mod.application,
+                hasSettings: mod.has_settings,
+                url: mod.url,
+                settingsUrl: mod.settings_url,
+                settingsDesc: mod.settings_desc,
+                icon: mod.icon || 'Box'
             });
-        } else {
-            // Fallback to frontend manifest data
-            Object.values(moduleMap).forEach(mod => {
-                installed.add(mod.techName);
-                activeModules.push({ ...mod, icon: 'Box' });
-            });
-        }
+        });
+
 
         // 3. Build Command Center Sections
         const sectionMap = {};
@@ -145,7 +135,7 @@ export const ManifestProvider = ({ children }) => {
             title: 'Overview',
             items: [
                 { label: 'Command Center', icon: LucideIcons.LayoutDashboard, path: '/admin', techName: null },
-                { label: 'Notifications', icon: LucideIcons.Bell, path: '/admin/notifications', techName: null }
+                { label: 'Inbox', icon: LucideIcons.Bell, path: '/admin/inbox', techName: null }
             ]
         };
         

@@ -105,12 +105,12 @@ class Command(BaseCommand):
         from apps.subscriptions.domain.models import Plan, Subscription, ServiceContract
         from apps.accounting.domain.models import Invoice
         from apps.soc.domain.models import Alert, Incident
-        from apps.hr.domain.models import Employee
+        from apps.employees.domain.models import Employee
         from apps.hr_holidays.domain.models import LeaveRequest
-        from apps.purchase.domain.models import PurchaseOrder
-        from apps.stock.domain.models import InventoryItem
+        from apps.procurement.domain.models import PurchaseOrder
+        from apps.inventory.domain.models import InventoryItem
         from apps.projects.domain.models import Project, Task
-        from apps.notifications.domain.models import Notification
+        from apps.inbox.domain.models import Notification
 
         for Model in [Activity, Deal, Lead, Contact, Client,
                       Ticket, KnowledgeArticle,
@@ -376,7 +376,7 @@ class Command(BaseCommand):
 
     def _seed_hrm(self, tenant, admin):
         self.stdout.write("\n  ── HRM")
-        from apps.hr.domain.models import Employee, Department
+        from apps.employees.domain.models import Employee, Department
         from apps.hr_holidays.domain.models import LeaveRequest
 
         departments = ["Engineering", "Security", "Sales", "Operations", "Finance"]
@@ -437,8 +437,8 @@ class Command(BaseCommand):
 
     def _seed_scm(self, tenant, admin):
         self.stdout.write("\n  ── SCM / Procurement")
-        from apps.purchase.domain.models import PurchaseOrder
-        from apps.stock.domain.models import InventoryItem
+        from apps.procurement.domain.models import PurchaseOrder
+        from apps.inventory.domain.models import InventoryItem
         from apps.core.domain.models import Partner
 
         vendors = ["Dell Technologies", "Palo Alto Networks", "CrowdStrike", "Cisco Systems"]
@@ -599,7 +599,7 @@ class Command(BaseCommand):
 
     def _seed_notifications(self, tenant, admin):
         self.stdout.write("\n  ── Notifications (Activity Feed)")
-        from apps.notifications.domain.models import Notification
+        from apps.inbox.domain.models import Notification
 
         now = timezone.now()
 

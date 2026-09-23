@@ -2,37 +2,37 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import client, { extractData, baseURL } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
 
-// Minimal inline service for notifications
-const notificationsService = {
-    getAll: () => client.get('notifications/').then(extractData),
-    markRead: (id) => client.patch(`notifications/${id}/`, { is_read: true }),
-    markAllRead: () => client.post('notifications/mark-all-read/'),
-    delete: (id) => client.delete(`notifications/${id}/`),
+// Minimal inline service for inbox
+const inboxService = {
+    getAll: () => client.get('inbox/').then(extractData),
+    markRead: (id) => client.patch(`inbox/${id}/`, { is_read: true }),
+    markAllRead: () => client.post('inbox/mark-all-read/'),
+    delete: (id) => client.delete(`inbox/${id}/`),
 };
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-    const [notifications, setNotifications] = useState([]);
+    const [inbox, setInbox] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const { isAuthenticated } = useAuth();
     const wsRef = useRef(null);
     const pollingIntervalRef = useRef(null);
 
-    const loadNotifications = useCallback(async () => {
+    const loadInbox = useCallback(async () => {
         try {
-            const data = await notificationsService.getAll();
-            const notificationsArray = Array.isArray(data) ? data : [];
-            setNotifications(notificationsArray);
-            setUnreadCount(notificationsArray.filter(n => !n.is_read).length);
+            const data = await inboxService.getAll();
+            const inboxArray = Array.isArray(data) ? data : [];
+            setInbox(inboxArray);
+            setUnreadCount(inboxArray.filter(n => !n.is_read).length);
         } catch (error) {
-            console.error("Failed to load notifications", error);
+            console.error("Failed to load inbox", error);
         }
     }, []);
 
     useEffect(() => {
         if (!isAuthenticated) {
-            setNotifications([]);
+            setInbox([]);
             setUnreadCount(0);
             if (wsRef.current) {
                 wsRef.current.close();
@@ -46,7 +46,7 @@ export const NotificationProvider = ({ children }) => {
         }
 
         // 1. Initial Load
-        loadNotifications();
+        loadInbox();
 
         // 2. Try WebSocket
         const token = localStorage.getItem('access_token');
@@ -55,14 +55,14 @@ export const NotificationProvider = ({ children }) => {
                 const wsUrl = new URL(baseURL);
                 const wsProtocol = wsUrl.protocol === 'https:' ? 'wss:' : 'ws:';
                 const wsHost = wsUrl.host;
-                const wsEndpoint = `${wsProtocol}//${wsHost}/ws/notifications/?token=${token}`;
+                const wsEndpoint = `${wsProtocol}//${wsHost}/ws/inbox/?token=${token}`;
                 
                 const ws = new WebSocket(wsEndpoint);
                 
                 ws.onmessage = (event) => {
                     try {
                         const newNotif = JSON.parse(event.data);
-                        setNotifications(prev => [newNotif, ...prev]);
+                        setInbox(prev => [newNotif, ...prev]);
                         setUnreadCount(prev => prev + 1);
                     } catch (e) {
                         console.error('WS message error', e);
@@ -76,14 +76,14 @@ export const NotificationProvider = ({ children }) => {
                 ws.onclose = () => {
                     // Fallback to polling if WS closes or fails
                     if (!pollingIntervalRef.current) {
-                        pollingIntervalRef.current = setInterval(loadNotifications, 30000);
+                        pollingIntervalRef.current = setInterval(loadInbox, 30000);
                     }
                 };
 
                 wsRef.current = ws;
             } catch (e) {
                 console.warn('Failed to setup WebSocket, falling back to polling', e);
-                pollingIntervalRef.current = setInterval(loadNotifications, 30000);
+                pollingIntervalRef.current = setInterval(loadInbox, 30000);
             }
         } // No token branch removed, as we shouldn't poll if we don't have a token.
 
@@ -97,59 +97,59 @@ export const NotificationProvider = ({ children }) => {
                 pollingIntervalRef.current = null;
             }
         };
-    }, [isAuthenticated, loadNotifications]);
+    }, [isAuthenticated, loadInbox]);
 
     const addNotification = (type, message) => {
         // Local only for immediate feedback
         const id = `local_${Date.now()}`;
-        setNotifications(prev => [{ id, type, message, is_read: false, created_at: new Date().toISOString() }, ...prev]);
+        setInbox(prev => [{ id, type, message, is_read: false, created_at: new Date().toISOString() }, ...prev]);
         setUnreadCount(prev => prev + 1);
     };
 
     const removeNotification = async (id) => {
         try {
             // Optimistic update
-            const notifToRemove = notifications.find(n => n.id === id);
-            setNotifications(prev => prev.filter(n => n.id !== id));
+            const notifToRemove = inbox.find(n => n.id === id);
+            setInbox(prev => prev.filter(n => n.id !== id));
             if (notifToRemove && !notifToRemove.is_read) {
                 setUnreadCount(prev => Math.max(0, prev - 1));
             }
 
             if (!String(id).startsWith('local_')) {
-                await notificationsService.delete(id);
+                await inboxService.delete(id);
             }
         } catch (e) {
-            loadNotifications(); // Revert on error
+            loadInbox(); // Revert on error
         }
     };
 
     const markRead = async (id) => {
         try {
-            setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+            setInbox(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
             setUnreadCount(prev => Math.max(0, prev - 1));
             
             if (!String(id).startsWith('local_')) {
-                await notificationsService.markRead(id);
+                await inboxService.markRead(id);
             }
         } catch (e) {
             console.error(e);
-            loadNotifications();
+            loadInbox();
         }
     };
 
     const markAllRead = async () => {
         try {
-            setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+            setInbox(prev => prev.map(n => ({ ...n, is_read: true })));
             setUnreadCount(0);
-            await notificationsService.markAllRead();
+            await inboxService.markAllRead();
         } catch (e) {
             console.error(e);
-            loadNotifications();
+            loadInbox();
         }
     };
 
     return (
-        <NotificationContext.Provider value={{ notifications, unreadCount, addNotification, removeNotification, markRead, markAllRead }}>
+        <NotificationContext.Provider value={{ inbox, unreadCount, addNotification, removeNotification, markRead, markAllRead }}>
             {children}
         </NotificationContext.Provider>
     );

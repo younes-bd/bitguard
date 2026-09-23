@@ -16,8 +16,11 @@
     'featured': False,
     'screenshots': [],
     'module_type': 'integration',
-    'command_center_section': 'Marketing',
+    'command_center_section': 'Discuss',
     'command_center_order': 10,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Settings -> Integrations (or Webhook Triggered)',
-    'sequence': 3}
+    'sequence': 840,
+    'has_settings': True,
+    'settings_url': '/admin/settings/whatsapp'
+}

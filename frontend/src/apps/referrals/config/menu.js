@@ -9,17 +9,6 @@ import {
     UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle, MapPin, Utensils, Leaf, UserCheck, Star, Upload, AtSign, Webhook
 } from 'lucide-react';
 
-
-export const referralsManifest = {
-    techName: 'referrals',
-    displayName: 'Referrals',
-    commandCenterSection: 'Human Resources',
-    commandCenterOrder: 8,
-    hasSettings: false,
-    settingsUrl: null,
-    settingsDesc: null,
-};
-
 export const referralsMenu = [
         {
             title: 'Referrals',
@@ -29,7 +18,7 @@ export const referralsMenu = [
             ]
         },
         {
-            title: 'Reporting',
+            title: 'Reports',
             items: [
                 { label: 'Analytics', icon: BarChart3, path: '/admin/referrals/reports' },
             ]

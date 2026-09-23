@@ -5,7 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 import django
 django.setup()
 
-from apps.system.domain.models import InstalledModule
+from apps.core.domain.models import InstalledModule
 from apps.users.domain.models import User
 
 user = User.objects.first()

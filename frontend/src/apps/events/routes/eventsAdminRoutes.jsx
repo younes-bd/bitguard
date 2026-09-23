@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import EventsDashboard from '../pages/dashboards/EventsDashboard';
+import EventsDashboard from '../pages/dashboards/EventsDashboardPage';
 
 export const eventsAdminRoutes = (
     <React.Fragment>

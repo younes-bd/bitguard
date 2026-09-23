@@ -11,4 +11,4 @@
     'installable': True,
     'application': True,
     'command_center_section': 'Human Resources',
-    'sequence': 5}
+    'sequence': 750}

@@ -1,5 +1,6 @@
+from apps.core.domain.models import InstalledModule, CommandCenterSection
 from rest_framework import serializers
-from apps.core.domain.models import Attachment
+from apps.core.domain.models import Language, Translation,  Attachment
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
@@ -181,3 +182,86 @@ class ScheduledActionSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'last_run', 'last_error']
 
+
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = '__all__'
+
+class TranslationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Translation
+        fields = '__all__'
+
+class InstalledModuleSerializer(serializers.ModelSerializer):
+    has_update = serializers.SerializerMethodField()
+
+    class Meta:
+        model = InstalledModule
+        fields = '__all__'
+        read_only_fields = ('tenant', 'technical_name')
+
+    def get_has_update(self, obj):
+        import os
+        import ast
+        from django.conf import settings
+        manifest_path = os.path.join(settings.BASE_DIR, 'apps', obj.technical_name, '__manifest__.py')
+        if os.path.exists(manifest_path):
+            try:
+                with open(manifest_path, 'r', encoding='utf-8') as f:
+                    manifest_content = f.read()
+                    manifest_dict = ast.literal_eval(manifest_content)
+                    manifest_version = manifest_dict.get('version', '')
+                    return bool(manifest_version and manifest_version != obj.version)
+            except Exception:
+                pass
+        return False
+
+
+
+class CommandCenterSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommandCenterSection
+        fields = ['id', 'name', 'sequence']
+
+
+
+class AuditTrailSerializer(serializers.ModelSerializer):
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+
+    class Meta:
+        from apps.core.domain.models import AuditTrail
+        model = AuditTrail
+        fields = ['id', 'user', 'user_email', 'user_name', 'action', 'resource_type', 'resource_id', 'details', 'ip_address', 'created_at']
+        read_only_fields = fields
+
+from apps.core.domain.models import SystemParameter
+
+class SystemParameterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemParameter
+        fields = ['id', 'key', 'value', 'description', 'is_system']
+        read_only_fields = ['is_system']
+
+from django.contrib.contenttypes.models import ContentType
+class ContentTypeSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ContentType
+        fields = ['id', 'app_label', 'model', 'label']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+        
+    def get_label(self, obj):
+        return obj.model.replace('_', ' ').title()
+
+
+
+from apps.core.domain.models import DatabaseBackup
+
+class DatabaseBackupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DatabaseBackup
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

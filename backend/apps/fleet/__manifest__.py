@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Fleet',
     'command_center_section': 'Human Resources',
-    'sequence': 10,
+    'sequence': 790,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Fleet Tile'}

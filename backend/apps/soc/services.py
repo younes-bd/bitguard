@@ -1,1 +1,1 @@
-from .application.services import *
+from .services.soc import *

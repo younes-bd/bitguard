@@ -90,8 +90,8 @@ export const accountingService = {
     
     // ─── DOCUMENT GENERATION ──────────────────────────────────────────────────
     downloadDocument: async (model, id) => {
-        const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
-        const res = await reportingService.generateReport(null, model, id);
+        const { default: reportsService } = await import('@/apps/reports/api/reportsService');
+        const res = await reportsService.generateReport(null, model, id);
         if (res && res.file) {
             window.open(res.file, '_blank');
         }
@@ -163,8 +163,8 @@ export const accountingService = {
     },
     downloadInvoice: async (id) => {
         try {
-            const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
-            const res = await reportingService.generateReport(null, 'accounting.Invoice', id);
+            const { default: reportsService } = await import('@/apps/reports/api/reportsService');
+            const res = await reportsService.generateReport(null, 'accounting.Invoice', id);
             if (res && res.file) {
                 window.open(res.file, '_blank');
             }
@@ -207,32 +207,32 @@ export const accountingService = {
     },
 
     // ─── DELIVERY NOTES ───────────────────────────────────────────────────────,
-    getDeliveryNotes: async (params = {}) => {
-        const queryParams = { picking_type: 'delivery', ...params };
+    getShippingNotes: async (params = {}) => {
+        const queryParams = { picking_type: 'shipping', ...params };
         const r = await client.get('stock/pickings/', { params: queryParams });
         return r.data?.data ?? r.data?.results ?? r.data;
     },
-    getDeliveryNote: async (id) => {
+    getShippingNote: async (id) => {
         const r = await client.get(`stock/pickings/${id}/`);
         return r.data?.data ?? r.data?.results ?? r.data;
     },
-    createDeliveryNote: async (data) => {
-        const payload = { picking_type: 'delivery', ...data };
+    createShippingNote: async (data) => {
+        const payload = { picking_type: 'shipping', ...data };
         const r = await client.post('stock/pickings/', payload);
         return r.data?.data ?? r.data?.results ?? r.data;
     },
-    updateDeliveryNoteStatus: async (id, newStatus) => {
+    updateShippingNoteStatus: async (id, newStatus) => {
         const r = await client.patch(`stock/pickings/${id}/`, { state: newStatus });
         return r.data?.data ?? r.data?.results ?? r.data;
     },
-    validateDeliveryNote: async (id) => {
-        const r = await client.post(`stock/delivery-notes/${id}/validate/`);
+    validateShippingNote: async (id) => {
+        const r = await client.post(`stock/shipping-notes/${id}/validate/`);
         return r.data?.data ?? r.data?.results ?? r.data;
     },
-    downloadDeliveryNote: async (id) => {
+    downloadShippingNote: async (id) => {
         try {
-            const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
-            const res = await reportingService.generateReport(null, 'erp.DeliveryNote', id);
+            const { default: reportsService } = await import('@/apps/reports/api/reportsService');
+            const res = await reportsService.generateReport(null, 'erp.ShippingNote', id);
             if (res && res.file) {
                 window.open(res.file, '_blank');
             }

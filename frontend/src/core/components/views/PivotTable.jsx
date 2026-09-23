@@ -43,12 +43,12 @@ const PivotTable = ({ data = [], rows = [], columns = [], values = [] }) => {
           </thead>
           <tbody>
             <tr className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-              <td className="px-6 py-4 font-medium border border-gray-200 dark:border-gray-600">Q1 Sales</td>
+              <td className="px-6 py-4 font-medium border border-gray-200 dark:border-gray-600">Q1 Saless</td>
               <td className="px-6 py-4 text-right border border-gray-200 dark:border-gray-600">145</td>
               <td className="px-6 py-4 text-right border border-gray-200 dark:border-gray-600">$45,200</td>
             </tr>
             <tr className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-              <td className="px-6 py-4 font-medium border border-gray-200 dark:border-gray-600">Q2 Sales</td>
+              <td className="px-6 py-4 font-medium border border-gray-200 dark:border-gray-600">Q2 Saless</td>
               <td className="px-6 py-4 text-right border border-gray-200 dark:border-gray-600">210</td>
               <td className="px-6 py-4 text-right border border-gray-200 dark:border-gray-600">$68,950</td>
             </tr>

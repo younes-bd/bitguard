@@ -7,7 +7,7 @@ from apps.core.api.mixins import TenantScopedMixin
 from apps.sign.domain.models import SignatureRequest
 from apps.subscriptions.domain.models import ServiceContract
 from apps.helpdesk.domain.models import SLATier, SLABreach
-from apps.sale.domain.models import SaleOrder
+from apps.sales.domain.models import SalesOrder
 
 from .serializers import (
     SLATierSerializer, ServiceContractSerializer, QuoteSerializer,
@@ -25,8 +25,8 @@ class ServiceContractViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 class QuoteViewSet(TenantScopedMixin, viewsets.ModelViewSet):
-    # Mapping Quotes to SaleOrders with draft/sent status
-    queryset = SaleOrder.objects.filter(status__in=['draft', 'sent', 'accepted', 'rejected'])
+    # Mapping Quotes to SalesOrders with draft/sent status
+    queryset = SalesOrder.objects.filter(status__in=['draft', 'sent', 'accepted', 'rejected'])
     serializer_class = QuoteSerializer
     permission_classes = [IsAuthenticated]
     
@@ -54,9 +54,9 @@ class SignatureRequestViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = SignatureRequestSerializer
     permission_classes = [IsAuthenticated]
 
-from apps.sale.domain.models import SaleOrderLine
+from apps.sales.domain.models import SalesOrderLine
 from .serializers import QuoteLineSerializer
 class QuoteLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
-    queryset = SaleOrderLine.objects.all()
+    queryset = SalesOrderLine.objects.all()
     serializer_class = QuoteLineSerializer
     permission_classes = [IsAuthenticated]

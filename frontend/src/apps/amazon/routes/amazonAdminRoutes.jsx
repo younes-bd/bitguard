@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import AmazonDashboard from '../pages/dashboards/AmazonDashboard';
+import AmazonDashboard from '../pages/dashboards/AmazonDashboardPage';
 
 export const amazonAdminRoutes = (
     <>

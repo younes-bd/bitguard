@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import DiscussDashboard from '../pages/DiscussDashboard';
-import WhatsAppDashboard from '../../whatsapp/pages/dashboards/WhatsAppDashboard';
-import Channels from '../pages/features/Channels';
-import DirectMessages from '../pages/features/DirectMessages';
-import WhatsappAccounts from '../../whatsapp/pages/features/WhatsappAccounts';
-import WhatsappTemplates from '../../whatsapp/pages/features/WhatsappTemplates';
+import DiscussDashboard from '../pages/DiscussDashboardPage';
+import WhatsAppDashboard from '../../whatsapp/pages/dashboards/WhatsAppDashboardPage';
+import Channels from '../pages/features/ChannelsPage';
+import DirectMessages from '../pages/features/DirectMessagesPage';
+import WhatsappAccounts from '../../whatsapp/pages/features/WhatsappAccountsPage';
+import WhatsappTemplates from '../../whatsapp/pages/features/WhatsappTemplatesPage';
 
 export const discussAdminRoutes = (
     <React.Fragment>

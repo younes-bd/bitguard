@@ -1,29 +1,29 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import OnboardingWizard from '../pages/modals/OnboardingWizard';
-import CrmDashboard from '../pages/dashboards/CrmDashboard';
-import ClientList from '../pages/lists/ClientList';
-import ClientCreate from '../pages/profiles/ClientCreate';
-import ClientDetail from '../pages/profiles/ClientDetail';
-import ContactList from '../pages/lists/ContactList';
+import OnboardingWizard from '../pages/modals/OnboardingWizardPage';
+import CrmDashboard from '../pages/dashboards/CrmDashboardPage';
+import ClientList from '../pages/lists/ClientListPage';
+import ClientCreate from '../pages/profiles/ClientCreatePage';
+import ClientDetail from '../pages/profiles/ClientDetailPage';
+import ContactList from '../pages/lists/ContactListPage';
 
 // New Phase 2 Components
-import LeadList from '../pages/lists/LeadList';
-import LeadDetail from '../pages/LeadDetail';
-import Pipeline from '../pages/features/Pipeline';
-import DealDetail from '../pages/DealDetail';
+import LeadList from '../pages/lists/LeadListPage';
+import LeadDetail from '../pages/LeadDetailPage';
+import Pipeline from '../pages/features/PipelinePage';
+import DealDetail from '../pages/DealDetailPage';
 
-import InteractionList from '../pages/lists/InteractionList';
-import OrderList from '../pages/lists/OrderList';
-import CrmSettings from '../pages/settings/CrmSettings_new';
+import InteractionList from '../pages/lists/InteractionListPage';
+import OrderList from '../pages/lists/OrderListPage';
+import CrmSettings from '../pages/settings/CrmSettings_newPage';
 import CrmReportPage from '../pages/dashboards/CrmReportPage';
-import SalesCollateral from '../pages/dashboards/SalesCollateral';
-import Forecast from '../pages/dashboards/Forecast';
-import LeadsReport from '../pages/dashboards/LeadsReport';
-import ActivitiesReport from '../pages/dashboards/ActivitiesReport';
-import PipelineSettings from '../pages/settings/PipelineSettings';
-import LostReasons from '../pages/settings/LostReasons';
-import TeamList from '../pages/lists/TeamList';
+import SalesCollateral from '../pages/dashboards/SalesCollateralPage';
+import Forecast from '../pages/dashboards/ForecastPage';
+import LeadsReport from '../pages/dashboards/LeadsReportPage';
+import ActivitiesReport from '../pages/dashboards/ActivitiesReportPage';
+import PipelineSettings from '../pages/settings/PipelineSettingsPage';
+import LostReasons from '../pages/settings/LostReasonsPage';
+import TeamList from '../pages/lists/TeamListPage';
 
 export const crmAdminRoutes = (
     <>

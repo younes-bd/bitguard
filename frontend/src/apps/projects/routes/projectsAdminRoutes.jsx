@@ -1,16 +1,16 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import ProjectsDashboard from '../pages/dashboards/ProjectsDashboard';
-import ProjectDashboard from '../pages/dashboards/ProjectDashboard';
-import ProjectList from '../pages/core/ProjectList';
-import KanbanBoard from '../pages/features/KanbanBoard';
-import ProjectDetail from '../pages/details/ProjectDetail';
-import ProjectReports from '../pages/features/ProjectReports';
-import ResourceManagement from '../pages/features/ResourceManagement';
-import GlobalTimeTracking from '../pages/features/GlobalTimeTracking';
-import TimesheetList from '../pages/lists/TimesheetList';
-import GanttView from '../pages/features/GanttView';
-import SprintBoard from '../pages/features/SprintBoard';
+import ProjectsDashboard from '../pages/dashboards/ProjectsDashboardPage';
+import ProjectDashboard from '../pages/dashboards/ProjectDashboardPage';
+import ProjectList from '../pages/core/ProjectListPage';
+import KanbanBoard from '../pages/features/KanbanBoardPage';
+import ProjectDetail from '../pages/details/ProjectDetailPage';
+import ProjectReports from '../pages/features/ProjectReportsPage';
+import ResourceManagement from '../pages/features/ResourceManagementPage';
+import GlobalTimeTracking from '../pages/features/GlobalTimeTrackingPage';
+import TimesheetList from '../pages/lists/TimesheetListPage';
+import GanttView from '../pages/features/GanttViewPage';
+import SprintBoard from '../pages/features/SprintBoardPage';
 
 export const projectsAdminRoutes = (
     <>

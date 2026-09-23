@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import ApprovalsDashboard from '../pages/dashboards/ApprovalsDashboard';
-import ApprovalSettings from '../pages/settings/ApprovalSettings';
+import ApprovalsDashboard from '../pages/dashboards/ApprovalsDashboardPage';
+import ApprovalSettings from '../pages/settings/ApprovalSettingsPage';
 
 export const approvalsAdminRoutes = (
     <React.Fragment>

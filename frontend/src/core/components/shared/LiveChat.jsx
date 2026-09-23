@@ -43,7 +43,7 @@ const LiveChat = () => {
                                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-blue-600 rounded-full"></div>
                             </div>
                             <div>
-                                <h3 className="font-bold text-sm m-0 leading-tight">BitGuard Sales & Support</h3>
+                                <h3 className="font-bold text-sm m-0 leading-tight">BitGuard Saless & Support</h3>
                                 <p className="text-[10px] text-blue-100 uppercase tracking-widest m-0 mt-1 font-semibold">Replies typically in under 5m</p>
                             </div>
                         </div>

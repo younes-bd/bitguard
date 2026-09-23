@@ -143,7 +143,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.MIGRATE_LABEL('\n[ STEP 6 ] Spot-checking other ViewSets that use TenantScopedMixin...'))
         spot_checks = [
             ('apps.accounting.api.views', 'InvoiceViewSet'),
-            ('apps.system.api.views', 'SystemSettingViewSet'),
+            ('apps.core.api.views', 'SystemParameterViewSet'),
             ('apps.system.api.views', 'AuditTrailViewSet'),
             ('apps.system.api.views', 'LanguageViewSet'),
             ('apps.system.api.views', 'WebhookEndpointViewSet'),

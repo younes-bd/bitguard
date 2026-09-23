@@ -19,8 +19,8 @@ from rest_framework.response import Response
 class ReportGenerateMixin:
     @action(detail=True, methods=['post'], url_path='generate-report')
     def generate_report(self, request, pk=None):
-        from apps.reporting.domain.models import ReportTemplate
-        from apps.reporting.services.pdf_generator import ReportingService
+        from apps.reports.domain.models import ReportTemplate
+        from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
             tenant=getattr(request.user, 'tenant', None),

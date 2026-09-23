@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'eCommerce',
     'command_center_section': 'Website',
-    'sequence': 2,
+    'sequence': 520,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Ecommerce Tile'}

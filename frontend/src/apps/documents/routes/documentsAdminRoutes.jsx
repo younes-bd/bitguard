@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import DocumentsDashboard from '../pages/dashboards/DocumentsDashboard';
-import DocumentSettings from '../pages/settings/DocumentSettings';
-import WorkspaceManager from '../pages/settings/WorkspaceManager';
-import TagManager from '../pages/settings/TagManager';
-import DocumentDetail from '../pages/details/DocumentDetail';
-import SpreadsheetEditor from '../pages/features/SpreadsheetEditor';
+import DocumentsDashboard from '../pages/dashboards/DocumentsDashboardPage';
+import DocumentSettings from '../pages/settings/DocumentSettingsPage';
+import WorkspaceManager from '../pages/settings/WorkspaceManagerPage';
+import TagManager from '../pages/settings/TagManagerPage';
+import DocumentDetail from '../pages/details/DocumentDetailPage';
+import SpreadsheetEditor from '../pages/features/SpreadsheetEditorPage';
 
 export const documentsAdminRoutes = (
     <React.Fragment>

@@ -66,7 +66,7 @@ class TenantAwareModel(BaseModel):
 # - Identity -> apps.users
 # - Identity Access (RBAC) -> apps.auth
 # - Tenancy -> apps.tenants
-# - Notifications -> apps.notifications
+# - Notifications -> apps.inbox
 
 class AuditTrail(TenantAwareModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_trails')
@@ -140,10 +140,14 @@ class Sequence(TenantAwareModel):
     next_number = models.IntegerField(default=1)
 
     class Meta:
+        db_table = 'base_setup_sequence'
+        verbose_name = 'Sequence'
+        verbose_name_plural = 'Sequences'
         unique_together = ('tenant', 'code')
 
     def __str__(self):
         return f"{self.name} ({self.code})"
+
 
 class UoMCategory(TenantAwareModel):
     name = models.CharField(max_length=50)
@@ -520,3 +524,120 @@ class ChatterMixin(models.Model):
         """Return all field-change log entries for this record, newest first."""
         ct = ContentType.objects.get_for_model(self)
         return FieldChangeLog.objects.filter(content_type=ct, object_id=str(self.pk))
+
+class Language(TenantAwareModel):
+    name = models.CharField(max_length=100, help_text="Language name (e.g., English, French)")
+    code = models.CharField(max_length=10, help_text="Language code (e.g., en_US, fr_FR)")
+    is_active = models.BooleanField(default=True)
+    is_default = models.BooleanField(default=False)
+    direction = models.CharField(max_length=3, choices=[('ltr', 'LTR'), ('rtl', 'RTL')], default='ltr')
+
+    class Meta:
+        verbose_name = "Language"
+        verbose_name_plural = "Languages"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+class Translation(TenantAwareModel):
+    name = models.CharField(max_length=255, help_text="The translation key or original term")
+    value = models.TextField(help_text="The translated string")
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='translations')
+    module = models.CharField(max_length=100, default='core', help_text="The module this translation belongs to")
+
+    class Meta:
+        app_label = 'core'
+        verbose_name = "Translation"
+        verbose_name_plural = "Translations"
+        unique_together = ('tenant', 'language', 'name', 'module')
+
+    def __str__(self):
+        return f"{self.name} -> {self.language.code}"
+
+class CommandCenterSection(TenantAwareModel):
+    """
+    Tier-1 ERP equivalent of ir.module.category or ir.ui.menu.
+    Manages the master sequence weights for the Command Center pillars.
+    """
+    name = models.CharField(max_length=100, help_text="e.g. Finance, Sales, HR")
+    sequence = models.IntegerField(default=99, help_text="Master ordering weight (lower appears first)")
+
+    class Meta:
+        db_table = 'base_setup_commandcentersection'
+        verbose_name = "Command Center Section"
+        verbose_name_plural = "Command Center Sections"
+        ordering = ['sequence', 'name']
+        unique_together = ('tenant', 'name')
+
+    def __str__(self):
+        return f"{self.name} (Seq: {self.sequence})"
+
+class InstalledModule(TenantAwareModel):
+    """
+    Registry of installed ERP modules for a tenant.
+    Mimics Odoo's ir.module.module.
+    """
+    technical_name = models.CharField(max_length=100, help_text="e.g. 'crm', 'accounting'")
+    name = models.CharField(max_length=100, help_text="Human readable name")
+    display_name = models.CharField(max_length=100, blank=True, help_text="Name shown in Command Center tile")
+    author = models.CharField(max_length=100, blank=True)
+    version = models.CharField(max_length=20, blank=True)
+    category = models.CharField(max_length=100, blank=True)
+    command_center_section = models.CharField(max_length=100, blank=True, help_text="Pillar grouping in Command Center (e.g. Finance, Sales, HR)")
+    sequence = models.IntegerField(default=99, help_text="Order within the section")
+    summary = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+    icon = models.CharField(max_length=255, blank=True, help_text="Lucide icon name or URL")
+    is_installed = models.BooleanField(default=False)
+    depends = models.JSONField(default=list, blank=True, help_text="List of technical names this module depends on")
+    installable = models.BooleanField(default=True)
+    application = models.BooleanField(default=False)
+    url = models.CharField(max_length=255, blank=True, help_text="URL path to the live app")
+    website = models.URLField(max_length=255, blank=True, help_text="App creator website")
+    license = models.CharField(max_length=100, blank=True, default="LGPL-3")
+    rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0, help_text='App rating out of 5.0')
+    featured = models.BooleanField(default=False, help_text="Highlight as a featured app")
+    screenshots = models.JSONField(default=list, blank=True, help_text="List of screenshot URLs")
+    
+    class Meta:
+        db_table = 'base_setup_installedmodule'
+        verbose_name = "ERP Module"
+        verbose_name_plural = "ERP Modules"
+        ordering = ['name']
+        unique_together = ('tenant', 'technical_name')
+
+    def __str__(self):
+        return f"{self.name} ({self.technical_name})"
+
+
+
+
+class SystemParameter(TenantAwareModel):
+    key = models.CharField(max_length=255, help_text="e.g. web.base.url, auth.session.timeout")
+    value = models.TextField(help_text="Value of the parameter")
+    description = models.TextField(blank=True, help_text="What this parameter does")
+    is_system = models.BooleanField(default=False, help_text="If True, cannot be deleted (required by system)")
+    
+    class Meta:
+        verbose_name = "System Parameter"
+        verbose_name_plural = "System Parameters"
+        ordering = ['key']
+        unique_together = ('tenant', 'key')
+        
+    def __str__(self):
+        return f"{self.key}: {self.value}"
+
+class DatabaseBackup(TenantAwareModel):
+    filename = models.CharField(max_length=255)
+    size_bytes = models.BigIntegerField()
+    status = models.CharField(max_length=50, default='completed')
+    triggered_by = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        verbose_name = "Database Backup"
+        verbose_name_plural = "Database Backups"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.filename

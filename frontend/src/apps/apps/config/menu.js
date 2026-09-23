@@ -1,15 +1,5 @@
 import { Grid, RefreshCw, LayoutTemplate, Briefcase, Calculator, ShoppingCart, Truck, Wrench, Globe, Megaphone, Users, Activity, Settings, List } from 'lucide-react';
 
-export const appsManifest = {
-    techName: 'apps',
-    displayName: 'Apps',
-    commandCenterSection: 'Administration',
-    commandCenterOrder: 1,
-    hasSettings: false,
-    settingsUrl: null,
-    settingsDesc: null,
-};
-
 export const appsMenu = [
     {
         title: 'App Store',

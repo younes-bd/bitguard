@@ -7,6 +7,6 @@ class WebsiteConfig(AppConfig):
         self._register_api_routes()
 
     def _register_api_routes(self):
-        from apps.core.api.registry import register
-        register('home/', 'apps.website.api.urls')
+        from apps.core.registry import register
+        register('website/', 'apps.website.api.urls')
 

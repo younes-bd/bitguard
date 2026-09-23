@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import PosDashboard from '../pages/dashboards/PosDashboard';
-import PosTerminal from '../pages/features/PosTerminal';
-import PaymentMethods from '../pages/features/PaymentMethods';
-import PosPayments from '../pages/features/PosPayments';
+import PosDashboard from '../pages/dashboards/PosDashboardPage';
+import PosTerminal from '../pages/features/PosTerminalPage';
+import PaymentMethods from '../pages/features/PaymentMethodsPage';
+import PosPayments from '../pages/features/PosPaymentsPage';
 
 export const posAdminRoutes = (
     <>

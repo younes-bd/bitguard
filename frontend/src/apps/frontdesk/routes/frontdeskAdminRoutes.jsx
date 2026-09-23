@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import FrontdeskDashboard from '../pages/dashboards/FrontdeskDashboard';
+import FrontdeskDashboard from '../pages/dashboards/FrontdeskDashboardPage';
 
 export const frontdeskAdminRoutes = (
     <>

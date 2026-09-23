@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from ..domain.models import User, Role, SecurityPolicy, RolePermission, RecordRule
 from ..api.serializers import (
     UserSerializer, RoleSerializer, SecurityPolicySerializer,
-    RolePermissionSerializer, ContentTypeSerializer, RecordRuleSerializer
+    RolePermissionSerializer, RecordRuleSerializer
 )
 
 class RoleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
@@ -107,7 +107,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'], permission_classes=[IsAdminUser])
     def invite(self, request):
-        from ..application.services import IdentityService
+        from ..services import IdentityService
         email = request.data.get('email')
         if not email:
             return Response({'detail': 'Email is required'}, status=400)
@@ -239,7 +239,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def activity(self, request):
         from apps.core.domain.models import AuditTrail
-        from apps.system.api.serializers import AuditTrailSerializer
+        from apps.core.api.serializers import AuditTrailSerializer
         
         logs = AuditTrail.objects.filter(user=request.user).order_by('-created_at')[:20]
         serializer = AuditTrailSerializer(logs, many=True)
@@ -280,24 +280,24 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     # --- API Key Endpoints ---
     @action(detail=False, methods=['get', 'post'])
-    def api_keys(self, request):
-        from ..domain.models import ApiKey
+    def personal_access_tokens(self, request):
+        from ..domain.models import PersonalAccessToken
         import secrets
         
         if request.method == 'GET':
-            keys = ApiKey.objects.filter(user=request.user)
-            return standard_response(True, "API Keys retrieved", [{"id": k.id, "name": k.name, "key_prefix": k.key[:8] + "...", "last_used": k.last_used} for k in keys])
+            keys = PersonalAccessToken.objects.filter(user=request.user)
+            return standard_response(True, "Personal Access Tokens retrieved", [{"id": k.id, "name": k.name, "key_prefix": k.key[:8] + "...", "last_used": k.last_used} for k in keys])
         
         name = request.data.get('name', 'Default Key')
         raw_key = secrets.token_urlsafe(32)
-        ApiKey.objects.create(user=request.user, name=name, key=raw_key)
-        return standard_response(True, "API Key created", {"name": name, "key": raw_key})
+        PersonalAccessToken.objects.create(user=request.user, name=name, key=raw_key)
+        return standard_response(True, "Personal Access Token created", {"name": name, "key": raw_key})
 
-    @action(detail=False, methods=['delete'], url_path='api_keys/(?P<key_id>[^/.]+)')
-    def delete_api_key(self, request, key_id=None):
-        from ..domain.models import ApiKey
-        ApiKey.objects.filter(user=request.user, id=key_id).delete()
-        return standard_response(True, "API Key revoked")
+    @action(detail=False, methods=['delete'], url_path='personal_access_tokens/(?P<key_id>[^/.]+)')
+    def delete_personal_access_token(self, request, key_id=None):
+        from ..domain.models import PersonalAccessToken
+        PersonalAccessToken.objects.filter(user=request.user, id=key_id).delete()
+        return standard_response(True, "Personal Access Token revoked")
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
@@ -387,28 +387,13 @@ class RolePermissionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
             }
         return standard_response(True, "Permission Matrix", matrix_data)
 
-class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ContentType.objects.all()
-    serializer_class = ContentTypeSerializer
-    permission_classes = [IsAuthenticated]
-    pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        # Grouping by app_label to match expected format
-        from collections import defaultdict
-        grouped = defaultdict(list)
-        for item in serializer.data:
-            grouped[item['app_label']].append(item)
-        return standard_response(True, "Content Types", dict(grouped))
+class SecurityPolicyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    queryset = SecurityPolicy.objects.all().order_by('id')
+    serializer_class = SecurityPolicySerializer
+    permission_classes = [IsPlatformAdmin]
 
 class RecordRuleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = RecordRule.objects.all()
     serializer_class = RecordRuleSerializer
     permission_classes = [IsPlatformAdmin]
 
-class SecurityPolicyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
-    queryset = SecurityPolicy.objects.all().order_by('id')
-    serializer_class = SecurityPolicySerializer
-    permission_classes = [IsPlatformAdmin]

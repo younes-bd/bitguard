@@ -1,12 +1,12 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import ProductDashboard from '../pages/ProductDashboard';
-import ProductList from '../pages/ProductList';
-import ProductDetail from '../pages/ProductDetail';
-import CategoryList from '../pages/CategoryList';
-import AttributeList from '../pages/AttributeList';
-import VariantList from '../pages/VariantList';
-import ProductSettings from '../pages/ProductSettings';
+import ProductDashboard from '../pages/ProductDashboardPage';
+import ProductList from '../pages/ProductListPage';
+import ProductDetail from '../pages/ProductDetailPage';
+import CategoryList from '../pages/CategoryListPage';
+import AttributeList from '../pages/AttributeListPage';
+import VariantList from '../pages/VariantListPage';
+import ProductSettings from '../pages/ProductSettingsPage';
 
 export const productAdminRoutes = (
   <>

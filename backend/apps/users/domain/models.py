@@ -31,15 +31,6 @@ class RolePermission(BaseModel):
         unique_together = ('role', 'content_type')
         verbose_name = 'Role Permission'
 
-class RecordRule(BaseModel):
-    name = models.CharField(max_length=255)
-    role = models.ForeignKey('Role', on_delete=models.CASCADE, related_name='record_rules')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    domain_filter = models.JSONField(default=list, help_text="ORM-style filter list, e.g. [['user', '=', 'current_user']]")
-    is_global = models.BooleanField(default=True, help_text="If False, only applies to this role")
-    
-    class Meta:
-        verbose_name = 'Record Rule'
 
 class User(AbstractUser, UUIDModel):
     email = models.EmailField(unique=True, default='')
@@ -90,8 +81,8 @@ class User(AbstractUser, UUIDModel):
         membership = self.tenant_memberships.filter(is_active=True).first()
         return membership.tenant if membership else None
 
-class ApiKey(UUIDModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='api_keys')
+class PersonalAccessToken(UUIDModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='personal_access_tokens')
     name = models.CharField(max_length=100)
     key = models.CharField(max_length=64, unique=True)
     last_used = models.DateTimeField(null=True, blank=True)
@@ -200,3 +191,14 @@ class ActiveSession(UUIDModel):
     
     class Meta:
         ordering = ['-last_active']
+
+class RecordRule(TenantAwareModel):
+    name = models.CharField(max_length=255)
+    role = models.ForeignKey('Role', on_delete=models.CASCADE, related_name='record_rules')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    domain_filter = models.JSONField(default=list, help_text="ORM-style filter list, e.g. [['user', '=', 'current_user']]")
+    is_global = models.BooleanField(default=True, help_text="If False, only applies to this role")
+    
+    class Meta:
+        verbose_name = 'Record Rule'
+

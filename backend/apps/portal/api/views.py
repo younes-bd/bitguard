@@ -83,13 +83,13 @@ class PortalOrderListView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         from apps.crm.domain.models import Client
-        from apps.sale.domain.models import SaleOrder
+        from apps.sales.domain.models import SalesOrder
         
         client = Client.objects.filter(contacts__user=request.user).first()
         if not client:
             return Response([])
             
-        orders = SaleOrder.objects.filter(client=client).order_by('-date_order')
+        orders = SalesOrder.objects.filter(client=client).order_by('-date_order')
         return Response([{
             'id': o.id,
             'order_number': str(o.order_number),
@@ -136,15 +136,15 @@ class PortalOrderDetailView(APIView):
     
     def get(self, request, pk):
         from apps.crm.domain.models import Client
-        from apps.sale.domain.models import SaleOrder
+        from apps.sales.domain.models import SalesOrder
         
         client = Client.objects.filter(contacts__user=request.user).first()
         if not client:
             return Response({'error': 'Client not found'}, status=404)
             
         try:
-            order = SaleOrder.objects.get(pk=pk, client=client)
-        except SaleOrder.DoesNotExist:
+            order = SalesOrder.objects.get(pk=pk, client=client)
+        except SalesOrder.DoesNotExist:
             return Response({'error': 'Order not found'}, status=404)
             
         return Response({
@@ -157,15 +157,15 @@ class PortalOrderDetailView(APIView):
 
     def patch(self, request, pk):
         from apps.crm.domain.models import Client
-        from apps.sale.domain.models import SaleOrder
+        from apps.sales.domain.models import SalesOrder
         
         client = Client.objects.filter(contacts__user=request.user).first()
         if not client:
             return Response({'error': 'Client not found'}, status=404)
             
         try:
-            order = SaleOrder.objects.get(pk=pk, client=client)
-        except SaleOrder.DoesNotExist:
+            order = SalesOrder.objects.get(pk=pk, client=client)
+        except SalesOrder.DoesNotExist:
             return Response({'error': 'Order not found'}, status=404)
             
         action = request.data.get('action')

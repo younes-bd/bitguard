@@ -43,14 +43,14 @@ export const signService = {
         return response.data?.data ?? response.data;
     },
     downloadQuote: async (id) => {
-        const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
-        const res = await reportingService.generateReport(null, 'contracts.Quote', id);
+        const { reportsService } = await import('@/apps/reports/api/reportsService');
+        const res = await reportsService.generateReport(null, 'contracts.Quote', id);
         if (res && res.file) window.open(res.file, '_blank');
         return res;
     },
     downloadContract: async (id) => {
-        const { default: reportingService } = await import('@/apps/reporting/api/reportingService');
-        const res = await reportingService.generateReport(null, 'contracts.ServiceContract', id);
+        const { reportsService } = await import('@/apps/reports/api/reportsService');
+        const res = await reportsService.generateReport(null, 'contracts.ServiceContract', id);
         if (res && res.file) window.open(res.file, '_blank');
         return res;
     },
@@ -85,7 +85,7 @@ export const signService = {
 
     // â”€â”€â”€ DOCUMENT GENERATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     downloadDocument: async (model, id) => {
-        const response = await client.post('reporting/generated/generate/', {
+        const response = await client.post('reports/generated/generate/', {
             record_model: model,
             record_id: id,
         });

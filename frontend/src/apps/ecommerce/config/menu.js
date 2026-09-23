@@ -9,17 +9,6 @@ import {
     UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle, MapPin, Utensils, Leaf, UserCheck, Star, Upload, AtSign, Webhook
 } from 'lucide-react';
 
-
-export const ecommerceManifest = {
-    techName: 'ecommerce',
-    displayName: 'eCommerce',
-    commandCenterSection: 'Website',
-    commandCenterOrder: 2,
-    hasSettings: false,
-    settingsUrl: null,
-    settingsDesc: null,
-};
-
 export const ecommerceMenu = [
         {
             title: 'eCommerce',
@@ -33,7 +22,7 @@ export const ecommerceMenu = [
             ]
         },
         {
-            title: 'Reporting',
+            title: 'Reports',
             items: [
                 { label: 'eCommerce', icon: Activity, path: '/admin/ecommerce/tracking' },
             ]

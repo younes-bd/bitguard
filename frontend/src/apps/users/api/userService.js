@@ -33,13 +33,13 @@ export const userService = {
         return response.data?.data ?? response.data;
     },
 
-    // --- Notifications ---
+    // --- Inbox ---
     getNotificationPreferences: async () => {
-        const response = await client.get('notifications/preferences/');
+        const response = await client.get('inbox/preferences/');
         return response.data?.data ?? response.data;
     },
     updateNotificationPreferences: async (data) => {
-        const response = await client.patch('notifications/preferences/', data);
+        const response = await client.patch('inbox/preferences/', data);
         return response.data?.data ?? response.data;
     },
 

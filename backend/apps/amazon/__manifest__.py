@@ -11,4 +11,4 @@
     'installable': True,
     'application': True,
     'command_center_section': 'Sales',
-    'sequence': 6}
+    'sequence': 60}

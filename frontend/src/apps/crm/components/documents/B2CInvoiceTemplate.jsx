@@ -33,7 +33,7 @@ const B2CInvoiceTemplate = ({ data }) => {
             {/* Receipt Info */}
             <div className="flex justify-between items-end mb-10 bg-slate-50 rounded-2xl p-6 border border-slate-100">
                 <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Purchased By</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Procurementd By</p>
                     <h3 className="text-xl font-bold text-slate-900">{data.client.name}</h3>
                     <p className="text-sm text-slate-600 font-medium mt-1">{data.client.email}</p>
                 </div>
@@ -101,7 +101,7 @@ const B2CInvoiceTemplate = ({ data }) => {
 
             {/* Retail Footer */}
             <div className="mt-auto pt-8 border-t border-slate-100 flex justify-between items-center break-inside-avoid">
-                <p className="text-xs text-slate-400 font-medium max-w-md">Need help with your purchase? Visit support.bitguard.com or reply to the email containing this receipt.</p>
+                <p className="text-xs text-slate-400 font-medium max-w-md">Need help with your procurement? Visit support.bitguard.com or reply to the email containing this receipt.</p>
                 <p className="text-xs font-bold text-slate-300 tracking-widest uppercase">Thank You</p>
             </div>
         </div>

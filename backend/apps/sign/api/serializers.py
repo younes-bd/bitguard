@@ -2,7 +2,7 @@ from rest_framework import serializers
 from apps.sign.domain.models import SignatureRequest
 from apps.subscriptions.domain.models import ServiceContract
 from apps.helpdesk.domain.models import SLATier, SLABreach
-from apps.sale.domain.models import SaleOrder
+from apps.sales.domain.models import SalesOrder
 
 class SLATierSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,7 +18,7 @@ class ServiceContractSerializer(serializers.ModelSerializer):
 
 class QuoteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SaleOrder
+        model = SalesOrder
         fields = '__all__'
 
 class SLABreachSerializer(serializers.ModelSerializer):
@@ -33,8 +33,8 @@ class SignatureRequestSerializer(serializers.ModelSerializer):
         model = SignatureRequest
         fields = '__all__'
 
-from apps.sale.domain.models import SaleOrderLine
+from apps.sales.domain.models import SalesOrderLine
 class QuoteLineSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SaleOrderLine
+        model = SalesOrderLine
         fields = '__all__'

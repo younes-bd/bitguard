@@ -1,6 +1,7 @@
 {
     'name': 'Timesheets',
     'technical_name': 'timesheets',
+    'odoo_equivalent': 'notifications',
     'version': '1.0.0',
     'category': 'Timesheets',
     'author': 'BitGuard',
@@ -18,7 +19,7 @@
 
     'display_name': 'Timesheets',
     'command_center_section': 'Services',
-    'sequence': 2,
+    'sequence': 120,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Timesheets Tile',

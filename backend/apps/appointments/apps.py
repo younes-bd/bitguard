@@ -8,6 +8,6 @@ class AppointmentsConfig(AppConfig):
         self._register_api_routes()
 
     def _register_api_routes(self):
-        from apps.core.api.registry import register
+        from apps.core.registry import register
         register('appointments/', 'apps.appointments.api.urls')
 

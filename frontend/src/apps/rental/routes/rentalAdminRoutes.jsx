@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import RentalDashboard from '../pages/dashboards/RentalDashboard';
+import RentalDashboard from '../pages/dashboards/RentalDashboardPage';
 
 export const rentalAdminRoutes = (
     <>

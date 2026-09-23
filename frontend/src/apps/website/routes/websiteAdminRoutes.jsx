@@ -4,21 +4,21 @@ import ModuleLayout from '@/core/layouts/ModuleLayout';
 import { websiteMenu } from '../config/menu';
 
 // Lazy loading the pages
-const CMSDashboard = React.lazy(() => import('../pages/admin/CMSDashboard'));
-const WebsiteDashboard = React.lazy(() => import('../pages/admin/WebsiteDashboard'));
-const PageEditor = React.lazy(() => import('../pages/features/PageEditor'));
+const CMSDashboardPage = React.lazy(() => import('../pages/admin/CMSDashboardPage'));
+const WebsiteDashboardPage = React.lazy(() => import('../pages/admin/WebsiteDashboardPage'));
+const PageEditorPage = React.lazy(() => import('../pages/features/PageEditorPage'));
 const InquiriesPage = React.lazy(() => import('../pages/lists/InquiriesPage'));
-const CmsSettings = React.lazy(() => import('../pages/settings/CmsSettings'));
-const LandingPagesManager = React.lazy(() => import('../pages/lists/LandingPagesManager'));
-const MediaLibrary = React.lazy(() => import('../pages/features/MediaLibrary'));
-const WebsiteAnalytics = React.lazy(() => import('../pages/admin/WebsiteAnalytics'));
+const CmsSettingsPage = React.lazy(() => import('../pages/settings/CmsSettingsPage'));
+const LandingPagesManagerPage = React.lazy(() => import('../pages/lists/LandingPagesManagerPage'));
+const MediaLibraryPage = React.lazy(() => import('../pages/features/MediaLibraryPage'));
+const WebsiteAnalyticsPage = React.lazy(() => import('../pages/admin/WebsiteAnalyticsPage'));
 
 // New Odoo-style components
-const WebsiteMenus = React.lazy(() => import('../pages/admin/WebsiteMenus'));
-const WebsiteRedirects = React.lazy(() => import('../pages/admin/WebsiteRedirects'));
-const Websites = React.lazy(() => import('../pages/admin/Websites'));
-const LiveChatChannels = React.lazy(() => import('../../livechat/pages/features/LiveChatChannels'));
-const LiveChatSettings = React.lazy(() => import('../../livechat/pages/features/LiveChatSettings'));
+const WebsiteMenusPage = React.lazy(() => import('../pages/admin/WebsiteMenusPage'));
+const WebsiteRedirectsPage = React.lazy(() => import('../pages/admin/WebsiteRedirectsPage'));
+const WebsitesPage = React.lazy(() => import('../pages/admin/WebsitesPage'));
+const LiveChatChannelsPage = React.lazy(() => import('../../messaging/pages/features/LiveChatChannelsPage'));
+const LiveChatSettingsPage = React.lazy(() => import('../../messaging/pages/features/LiveChatSettingsPage'));
 
 
 
@@ -45,7 +45,7 @@ export const websiteAdminRoutes = () => {
                             icon="Globe"
                             sections={websiteMenu}
                         >
-                            <WebsiteDashboard />
+                            <WebsiteDashboardPage />
                         </ModuleLayout>
                     }
                 />
@@ -58,7 +58,7 @@ export const websiteAdminRoutes = () => {
                             icon="Globe"
                             sections={websiteMenu}
                         >
-                            <WebsiteDashboard />
+                            <WebsiteDashboardPage />
                         </ModuleLayout>
                     }
                 />
@@ -73,7 +73,7 @@ export const websiteAdminRoutes = () => {
                             icon="FileText"
                             sections={websiteMenu}
                         >
-                            <CMSDashboard />
+                            <CMSDashboardPage />
                         </ModuleLayout>
                     }
                 />
@@ -89,7 +89,7 @@ export const websiteAdminRoutes = () => {
                             backTo="/admin/website"
                             sections={websiteMenu}
                         >
-                            <PageEditor />
+                            <PageEditorPage />
                         </ModuleLayout>
                     }
                 />
@@ -105,7 +105,7 @@ export const websiteAdminRoutes = () => {
                             backTo="/admin/website"
                             sections={websiteMenu}
                         >
-                            <PageEditor />
+                            <PageEditorPage />
                         </ModuleLayout>
                     }
                 />
@@ -135,7 +135,7 @@ export const websiteAdminRoutes = () => {
                             icon="LayoutTemplate"
                             sections={websiteMenu}
                         >
-                            <LandingPagesManager />
+                            <LandingPagesManagerPage />
                         </ModuleLayout>
                     }
                 />
@@ -150,7 +150,7 @@ export const websiteAdminRoutes = () => {
                             icon="Image"
                             sections={websiteMenu}
                         >
-                            <MediaLibrary />
+                            <MediaLibraryPage />
                         </ModuleLayout>
                     }
                 />
@@ -165,7 +165,7 @@ export const websiteAdminRoutes = () => {
                             icon="Layout"
                             sections={websiteMenu}
                         >
-                            <WebsiteMenus />
+                            <WebsiteMenusPage />
                         </ModuleLayout>
                     }
                 />
@@ -180,7 +180,7 @@ export const websiteAdminRoutes = () => {
                             icon="Settings"
                             sections={websiteMenu}
                         >
-                            <WebsiteRedirects />
+                            <WebsiteRedirectsPage />
                         </ModuleLayout>
                     }
                 />
@@ -195,7 +195,7 @@ export const websiteAdminRoutes = () => {
                             icon="Globe"
                             sections={websiteMenu}
                         >
-                            <Websites />
+                            <WebsitesPage />
                         </ModuleLayout>
                     }
                 />
@@ -210,7 +210,7 @@ export const websiteAdminRoutes = () => {
                             icon="BarChart3"
                             items={websiteMenu[0].items}
                         >
-                            <WebsiteAnalytics />
+                            <WebsiteAnalyticsPage />
                         </ModuleLayout>
                     }
                 />
@@ -225,14 +225,14 @@ export const websiteAdminRoutes = () => {
                             icon="Settings"
                             items={websiteMenu[0].items}
                         >
-                            <CmsSettings />
+                            <CmsSettingsPage />
                         </ModuleLayout>
                     }
                 />
             
                 {/* Live Chat */}
                 <Route
-                    path="/livechat/channels"
+                    path="/messaging/channels"
                     element={
                         <ModuleLayout
                             title="Live Chat Channels"
@@ -240,12 +240,12 @@ export const websiteAdminRoutes = () => {
                             icon="MessageCircle"
                             sections={websiteMenu}
                         >
-                            <LiveChatChannels />
+                            <LiveChatChannelsPage />
                         </ModuleLayout>
                     }
                 />
                 <Route
-                    path="/livechat/settings"
+                    path="/messaging/settings"
                     element={
                         <ModuleLayout
                             title="Live Chat Settings"
@@ -253,7 +253,7 @@ export const websiteAdminRoutes = () => {
                             icon="Settings"
                             sections={websiteMenu}
                         >
-                            <LiveChatSettings />
+                            <LiveChatSettingsPage />
                         </ModuleLayout>
                     }
                 />

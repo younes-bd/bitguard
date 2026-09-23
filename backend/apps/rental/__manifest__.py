@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Rental',
     'command_center_section': 'Sales',
-    'sequence': 5,
+    'sequence': 50,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Rental Tile'}

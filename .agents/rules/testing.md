@@ -19,6 +19,7 @@ Reliability is paramount in a Tier-1 ERP. Code is not considered complete until 
 *   **API Mocking:** Frontend tests must never make real HTTP requests. You must mock the `apiClient.js` wrapper or use MSW (Mock Service Worker) to intercept requests.
 *   **Behavioral Testing:** Test how the user interacts with the component (e.g., clicking buttons, typing in forms) rather than testing internal React state.
 
-## 3. Graceful Error Handling
-*   **Never Crash Silently:** All `try/catch` blocks must explicitly handle the error. On the frontend, always use `toast.error()` to inform the user.
+## 3. Graceful Error Handling & Resiliency
+*   **Never Crash Silently:** All `try/catch` blocks must explicitly handle the error. For standalone mutations (like submitting a form), use `toast.error()` to inform the user.
+*   **Parallel Data Fetching (The Promise.all Law):** When loading multiple independent datasets for a dashboard or page using `Promise.all`, you MUST attach individual `.catch()` handlers to every single promise (or use `Promise.allSettled()`). A single failed endpoint (e.g., a 404 or 403) must never be allowed to reject the master promise and crash the entire page render. The UI must degrade gracefully.
 *   **Backend Exceptions:** The backend must return standardized JSON error payloads with correct HTTP status codes (400 for validation, 401 for auth, 403 for permission/tenant violations, 404 for not found).

@@ -2,13 +2,13 @@ import os
 
 replacements = {
     "from apps.erp.api.permissions import IsERPAccessible": "from apps.accounting.api.permissions import IsERPAccessible",
-    "from apps.erp.application.services import": "from apps.accounting.application.services import",
+    "from apps.erp.services import": "from apps.accounting.services import",
     "from apps.erp.models import InternalProject": "from apps.projects.domain.models import Project as InternalProject",
     "from apps.erp.models import Invoice, Payment, Expense": "from apps.accounting.domain.models import Invoice, Payment, Expense",
     "from apps.erp.models import Invoice, Payment": "from apps.accounting.domain.models import Invoice, Payment",
     "from apps.erp.models import Invoice": "from apps.accounting.domain.models import Invoice",
-    "from apps.erp.services import InternalProjectService": "from apps.projects.application.services import ProjectService as InternalProjectService",
-    "from apps.erp.services import InvoiceService": "from apps.accounting.application.services import InvoiceService",
+    "from apps.erp.services import InternalProjectService": "from apps.projects.services import ProjectService as InternalProjectService",
+    "from apps.erp.services import InvoiceService": "from apps.accounting.services import InvoiceService",
     "('erp', 'ERP')": "('projects', 'Projects')"
 }
 

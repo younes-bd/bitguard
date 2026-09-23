@@ -7,7 +7,7 @@ const SOWTemplate = ({ data }) => {
             <div className="flex justify-between items-start border-b-2 border-slate-900 pb-8 mb-8">
                 <div>
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter">STATEMENT OF WORK</h1>
-                    <p className="text-lg text-indigo-600 font-semibold mt-2">Technical Delivery Scope</p>
+                    <p className="text-lg text-indigo-600 font-semibold mt-2">Technical Shipping Scope</p>
                 </div>
                 <div className="text-right">
                     <div className="text-3xl font-black tracking-tighter text-slate-900">BITGUARD</div>

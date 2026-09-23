@@ -16,8 +16,8 @@
     'featured': True,
     'screenshots': [],
     'display_name': 'Discuss',
-    'command_center_section': 'Productivity',
-    'sequence': 3,
+    'command_center_section': 'Discuss',
+    'sequence': 810,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Discuss Tile'}

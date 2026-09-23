@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from ..domain.models import ApprovalRequest, ApprovalStep
 from ..api.serializers import ApprovalRequestSerializer, ApprovalStepSerializer
-from ..application.services import ApprovalService
+from ..services import ApprovalService
 
 class ApprovalRequestViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ApprovalRequestSerializer

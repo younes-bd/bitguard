@@ -25,7 +25,7 @@ export default function ChatterPanel({ model, objectId, className = '' }) {
   // Activity modal state (simplified inline for now)
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [activityForm, setActivityForm] = useState({
-    activity_type: 'todo',
+    activity_type: 'tasks',
     summary: '',
     due_date: new Date().toISOString().split('T')[0]
   });
@@ -210,7 +210,7 @@ export default function ChatterPanel({ model, objectId, className = '' }) {
                 onChange={e => setActivityForm({...activityForm, activity_type: e.target.value})}
                 className="w-full bg-slate-900 border border-slate-700 rounded-md p-2 text-sm text-slate-200"
               >
-                <option value="todo">To-Do</option>
+                <option value="tasks">To-Do</option>
                 <option value="email">Email</option>
                 <option value="call">Call</option>
                 <option value="meeting">Meeting</option>

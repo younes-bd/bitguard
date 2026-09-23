@@ -11,7 +11,7 @@ from ..api.serializers import (
     CustomerProfileSerializer, OrderSerializer, ShippingSettingSerializer,
     TrackingConfigSerializer, AddOnSerializer, SubscriptionPlanSerializer, SubscriptionSerializer, StoreSettingSerializer, PartnerRequestSerializer, CartSerializer, CartItemSerializer, CouponSerializer
 )
-from ..application.services import CommerceService
+from ..services import CommerceService
 
 class StoreCustomizationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = StoreCustomization.objects.all()

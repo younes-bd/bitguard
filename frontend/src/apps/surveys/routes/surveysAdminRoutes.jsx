@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import SurveysDashboard from '../pages/dashboards/SurveysDashboard';
+import SurveysDashboard from '../pages/dashboards/SurveysDashboardPage';
 
 export const surveysAdminRoutes = (
     <React.Fragment>

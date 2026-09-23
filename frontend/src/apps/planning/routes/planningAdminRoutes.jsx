@@ -2,14 +2,14 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Pages
-import PlanningDashboard from '../pages/dashboards/PlanningDashboard';
+import PlanningDashboard from '../pages/dashboards/PlanningDashboardPage';
 // Ensure these pages exist or we will create them next
-import ScheduleByEmployee from '../pages/features/ScheduleByEmployee';
-import ScheduleByRole from '../pages/features/ScheduleByRole';
-import ScheduleByProject from '../pages/features/ScheduleByProject';
-import PlanningAnalysis from '../pages/features/PlanningAnalysis';
-import PlanningSettings from '../pages/features/PlanningSettings';
-import PlanningRoles from '../pages/features/PlanningRoles';
+import ScheduleByEmployee from '../pages/features/ScheduleByEmployeePage';
+import ScheduleByRole from '../pages/features/ScheduleByRolePage';
+import ScheduleByProject from '../pages/features/ScheduleByProjectPage';
+import PlanningAnalysis from '../pages/features/PlanningAnalysisPage';
+import PlanningSettings from '../pages/features/PlanningSettingsPage';
+import PlanningRoles from '../pages/features/PlanningRolesPage';
 
 export const planningAdminRoutes = (
     <>

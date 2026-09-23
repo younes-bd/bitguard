@@ -70,7 +70,7 @@ class PosSessionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         session.save()
         
         # General Ledger entries
-        from apps.accounting.application.services import GeneralLedgerService
+        from apps.accounting.services.accounting import GeneralLedgerService
         total_sales = sum(order.amount_total for order in session.orders.filter(state__in=['paid', 'done', 'invoiced']))
         if total_sales > 0:
             try:

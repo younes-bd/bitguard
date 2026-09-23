@@ -37,7 +37,7 @@ def refactor_app(app_path):
     # Proxy services.py
     if os.path.exists(os.path.join(app_path, 'application', 'services.py')):
         with open(os.path.join(app_path, 'services.py'), 'w') as f:
-            f.write('from .application.services import *\n')
+            f.write('from .services import *\n')
 
     # Fix relative imports in all .py files recursively inside the app
     for root, _, files in os.walk(app_path):
@@ -60,12 +60,12 @@ def refactor_app(app_path):
             # This is tricky because we don't know the exact file's depth.
             # If the file is inside api/ (rel_level=1), we want:
             # from .models -> from ..domain.models
-            # from .services -> from ..application.services
+            # from .services -> from ..services
             
             # Simple approach: let's replace exact strings for 1-level deep files.
             if root != app_path:
                 content = re.sub(r'from \.models import', r'from ..domain.models import', content)
-                content = re.sub(r'from \.services import', r'from ..application.services import', content)
+                content = re.sub(r'from \.services import', r'from ..services import', content)
                 content = re.sub(r'from \.serializers import', r'from ..api.serializers import', content)
                 content = re.sub(r'from \.exceptions import', r'from ..domain.exceptions import', content)
                 content = re.sub(r'from \.signals import', r'from ..infrastructure.signals import', content)

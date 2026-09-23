@@ -3,13 +3,13 @@ import { Bell } from 'lucide-react';
 import { useNotification } from '../../../context/NotificationContext';
 
 const NotificationBell = () => {
-    const { notifications, removeNotification } = useNotification();
+    const { inbox, removeNotification } = useNotification();
     const [isOpen, setIsOpen] = useState(false);
 
     const handleToggle = () => setIsOpen(!isOpen);
 
-    const safeNotifications = Array.isArray(notifications) ? notifications : [];
-    const unreadCount = safeNotifications.filter(n => !n.is_read).length;
+    const safeInbox = Array.isArray(inbox) ? inbox : [];
+    const unreadCount = safeInbox.filter(n => !n.is_read).length;
 
     return (
         <div className="relative">
@@ -23,16 +23,16 @@ const NotificationBell = () => {
                 )}
             </button>
 
-            {isOpen && safeNotifications.length > 0 && (
+            {isOpen && safeInbox.length > 0 && (
                 <div className="absolute right-0 top-full mt-2 w-80 bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
                     <div className="p-3 border-b border-slate-800 bg-slate-950/50">
-                        <h4 className="text-sm font-semibold text-white">Notifications</h4>
+                        <h4 className="text-sm font-semibold text-white">Inbox</h4>
                     </div>
                     <div className="max-h-64 overflow-y-auto custom-scrollbar">
-                        {safeNotifications.length === 0 ? (
-                            <div className="p-4 text-center text-slate-500 text-sm">No notifications</div>
+                        {safeInbox.length === 0 ? (
+                            <div className="p-4 text-center text-slate-500 text-sm">No inbox</div>
                         ) : (
-                            safeNotifications.map(n => (
+                            safeInbox.map(n => (
                                 <div key={n.id} className={`p-3 border-b border-slate-800 hover:bg-slate-800/50 transition-colors`}>
                                     <div className="flex justify-between items-start">
                                         <h5 className="text-sm font-medium text-slate-200">{n.title || 'Notification'}</h5>

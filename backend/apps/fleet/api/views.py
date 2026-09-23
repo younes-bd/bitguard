@@ -69,7 +69,7 @@ class VehicleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         
         # General Ledger
         if float(cost) > 0:
-            from apps.accounting.application.services import GeneralLedgerService
+            from apps.accounting.services.accounting import GeneralLedgerService
             try:
                 GeneralLedgerService.record_entry(
                     request, "Maintenance Expense", float(cost), 'debit',
@@ -95,7 +95,7 @@ class VehicleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         
         # General Ledger
         if float(cost) > 0:
-            from apps.accounting.application.services import GeneralLedgerService
+            from apps.accounting.services.accounting import GeneralLedgerService
             try:
                 GeneralLedgerService.record_entry(
                     request, "Fuel Expense", float(cost), 'debit',

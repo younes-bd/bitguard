@@ -20,7 +20,7 @@ class VendorBillService:
         # Odoo-style matching: Link to General Ledger
         # Credit Accounts Payable
         # Debit Expenses / Inventory
-        from apps.accounting.application.services import GeneralLedgerService
+        from apps.accounting.services.accounting import GeneralLedgerService
         # Simple placeholder request object for now
         class DummyRequest:
             user = None

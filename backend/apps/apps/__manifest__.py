@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Apps',
     'command_center_section': 'Administration',
-    'sequence': 2,
+    'sequence': 1020,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Apps Tile',

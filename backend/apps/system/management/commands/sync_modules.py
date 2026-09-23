@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.system.services.modules import sync_modules
+from apps.core.services.modules import sync_modules
 from apps.tenants.domain.models import Tenant
 
 class Command(BaseCommand):

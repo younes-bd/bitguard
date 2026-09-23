@@ -15,10 +15,10 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # ---------------------------------------------------------
-# Database
+# Database - TIER 1 ERP STANDARD (PostgreSQL)
 # ---------------------------------------------------------
-# Fallback to local sqlite3 if DATABASE_URL is not set (prevents crash on local)
-fallback_db = 'sqlite:///' + os.path.expanduser('~/website13_db.sqlite3')
+# Fallback to local postgres if DATABASE_URL is not set
+fallback_db = 'postgres://youness:your_secure_password@localhost:5432/bitguard_erp'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL', fallback_db),

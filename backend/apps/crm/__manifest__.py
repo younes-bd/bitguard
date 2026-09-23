@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'CRM',
     'command_center_section': 'Sales',
-    'sequence': 2,
+    'sequence': 20,
     'has_settings': True,
     'settings_url': '/admin/settings/crm',
     'settings_desc': 'Configure settings',

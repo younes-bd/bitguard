@@ -15,7 +15,7 @@ export const portalSections = [
             { label: 'My Tasks', icon: CheckSquare, path: '/portal/tasks' },
             { label: 'My Tickets', icon: LifeBuoy, path: '/portal/tickets' },
             { label: 'My Subscriptions', icon: CreditCard, path: '/portal/subscriptions' },
-            { label: 'My Purchases', icon: ShoppingCart, path: '/portal/purchase' },
+            { label: 'My Procurements', icon: ShoppingCart, path: '/portal/procurement' },
             { label: 'My Timesheets', icon: Clock, path: '/portal/timesheets' },
             { label: 'My Leads', icon: Target, path: '/portal/leads' },
             { label: 'My Assets', icon: Server, path: '/portal/assets' }

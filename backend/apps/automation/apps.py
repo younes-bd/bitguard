@@ -10,6 +10,6 @@ class AutomationConfig(AppConfig):
         import apps.automation.domain.signals
 
     def _register_api_routes(self):
-        from apps.core.api.registry import register
+        from apps.core.registry import register
         register('automation/', 'apps.automation.api.urls')
 

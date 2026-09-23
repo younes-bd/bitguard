@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Subscriptions',
     'command_center_section': 'Sales',
-    'sequence': 4,
+    'sequence': 40,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Subscriptions Tile'}

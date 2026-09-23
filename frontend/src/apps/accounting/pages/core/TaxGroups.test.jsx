@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import TaxGroups from './TaxGroups';
+import TaxGroups from './TaxGroupsPage';
 
 // Mock the accountingService
 vi.mock('../../api/accountingService', () => {

@@ -1,4 +1,4 @@
-from apps.system.domain.models import InstalledModule
+from apps.core.domain.models import InstalledModule
 from apps.users.domain.models import User
 tenant = User.objects.first().tenant
 mod = InstalledModule.objects.filter(tenant=tenant, technical_name='ai_agent').first()

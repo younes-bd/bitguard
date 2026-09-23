@@ -16,8 +16,8 @@
     'featured': True,
     'screenshots': [],
     'display_name': 'Equity',
-    'command_center_section': 'Accounting & Finance',
-    'sequence': 6,
+    'command_center_section': 'Accounting',
+    'sequence': 240,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Equity Tile'}

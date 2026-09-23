@@ -12,11 +12,12 @@ import { settingsService } from '../../apps/system/api/settingsService';
 import * as LucideIcons from 'lucide-react';
 import { useTenant } from '../context/TenantContext';
 import { useAuth } from '../hooks/useAuth';
-import NotificationBell from '../components/shared/core/NotificationBell';
+import InboxBell from '../components/shared/core/InboxBell';
 import QuickActions from '../components/shared/core/QuickActions';
 import TenantSwitcher from '../components/shared/core/TenantSwitcher';
 import CommandPalette from '../components/shared/core/CommandPalette';
 import UserAvatarDropdown from '../components/shared/core/UserAvatarDropdown';
+import LanguageSwitcher from '../components/shared/core/LanguageSwitcher';
 
 const BackendLayout = () => {
     const location = useLocation();
@@ -68,7 +69,7 @@ const BackendLayout = () => {
             
             // 2. Global Backend Search
             try {
-                const response = await client.get(`/board/search/?q=${encodeURIComponent(searchQuery)}`);
+                const response = await client.get(`/analytics/search/?q=${encodeURIComponent(searchQuery)}`);
                 if (response.data?.status === 'success' && response.data?.data) {
                     const apiResults = response.data.data.map(item => ({
                         label: item.title,
@@ -219,7 +220,8 @@ const BackendLayout = () => {
                         
                         <div className="mr-1"></div>
 
-                        <NotificationBell />
+                        <LanguageSwitcher />
+                        <InboxBell />
 
                         {/* User Dropdown (Platform Style - Blue) */}
                         <UserAvatarDropdown user={user} onLogout={handleLogout} variant="backend" />
@@ -235,3 +237,4 @@ const BackendLayout = () => {
 };
 
 export default BackendLayout;
+

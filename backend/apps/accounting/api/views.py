@@ -44,8 +44,8 @@ class InvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='generate-report')
     def generate_report(self, request, pk=None):
-        from apps.reporting.domain.models import ReportTemplate
-        from apps.reporting.services.pdf_generator import ReportingService
+        from apps.reports.domain.models import ReportTemplate
+        from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
             tenant=request.user.tenant,
@@ -260,7 +260,7 @@ class DunningWorkflowViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = DunningWorkflowSerializer
     def get_queryset(self): return DunningWorkflow.objects.filter(tenant=self.request.user.tenant)
 
-from ..application.services import FinancialReportingService, ClientPortalService
+from ..services import FinancialReportingService, ClientPortalService
 from django.utils.dateparse import parse_date
 
 class BalanceSheetView(APIView):
@@ -271,8 +271,8 @@ class BalanceSheetView(APIView):
         data = FinancialReportingService.generate_balance_sheet(request, date)
         
         if request.query_params.get('format') == 'pdf':
-            from apps.reporting.services.pdf_generator import ReportingService
-            from apps.reporting.domain.models import ReportTemplate
+            from apps.reports.services.pdf_generator import ReportingService
+            from apps.reports.domain.models import ReportTemplate
             template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Balance Sheet').first()
             if template:
                 attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
@@ -292,8 +292,8 @@ class CashFlowView(APIView):
         data = FinancialReportingService.generate_cash_flow(request, start, end)
         
         if request.query_params.get('format') == 'pdf':
-            from apps.reporting.services.pdf_generator import ReportingService
-            from apps.reporting.domain.models import ReportTemplate
+            from apps.reports.services.pdf_generator import ReportingService
+            from apps.reports.domain.models import ReportTemplate
             template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Cash Flow').first()
             if template:
                 attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
@@ -313,8 +313,8 @@ class ProfitLossView(APIView):
         data = FinancialReportingService.generate_profit_loss(request, start, end)
         
         if request.query_params.get('format') == 'pdf':
-            from apps.reporting.services.pdf_generator import ReportingService
-            from apps.reporting.domain.models import ReportTemplate
+            from apps.reports.services.pdf_generator import ReportingService
+            from apps.reports.domain.models import ReportTemplate
             template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Profit and Loss').first()
             if template:
                 attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
@@ -378,8 +378,8 @@ class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='generate-report')
     def generate_report(self, request, pk=None):
-        from apps.reporting.domain.models import ReportTemplate
-        from apps.reporting.services.pdf_generator import ReportingService
+        from apps.reports.domain.models import ReportTemplate
+        from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
             tenant=request.user.tenant,
@@ -443,7 +443,7 @@ class DunningWorkflowViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = DunningWorkflowSerializer
     def get_queryset(self): return DunningWorkflow.objects.filter(tenant=self.request.user.tenant)
 
-from ..application.services import FinancialReportingService, ClientPortalService
+from ..services import FinancialReportingService, ClientPortalService
 from django.utils.dateparse import parse_date
 
 class BalanceSheetView(APIView):
@@ -454,8 +454,8 @@ class BalanceSheetView(APIView):
         data = FinancialReportingService.generate_balance_sheet(request, date)
         
         if request.query_params.get('format') == 'pdf':
-            from apps.reporting.services.pdf_generator import ReportingService
-            from apps.reporting.domain.models import ReportTemplate
+            from apps.reports.services.pdf_generator import ReportingService
+            from apps.reports.domain.models import ReportTemplate
             template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Balance Sheet').first()
             if template:
                 attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
@@ -475,8 +475,8 @@ class CashFlowView(APIView):
         data = FinancialReportingService.generate_cash_flow(request, start, end)
         
         if request.query_params.get('format') == 'pdf':
-            from apps.reporting.services.pdf_generator import ReportingService
-            from apps.reporting.domain.models import ReportTemplate
+            from apps.reports.services.pdf_generator import ReportingService
+            from apps.reports.domain.models import ReportTemplate
             template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Cash Flow').first()
             if template:
                 attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
@@ -496,8 +496,8 @@ class ProfitLossView(APIView):
         data = FinancialReportingService.generate_profit_loss(request, start, end)
         
         if request.query_params.get('format') == 'pdf':
-            from apps.reporting.services.pdf_generator import ReportingService
-            from apps.reporting.domain.models import ReportTemplate
+            from apps.reports.services.pdf_generator import ReportingService
+            from apps.reports.domain.models import ReportTemplate
             template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Profit and Loss').first()
             if template:
                 attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
@@ -561,8 +561,8 @@ class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='generate-report')
     def generate_report(self, request, pk=None):
-        from apps.reporting.domain.models import ReportTemplate
-        from apps.reporting.services.pdf_generator import ReportingService
+        from apps.reports.domain.models import ReportTemplate
+        from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
             tenant=request.user.tenant,
@@ -607,7 +607,7 @@ class AgedReceivablesView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        from ..application.services import DashboardService
+        from ..services import DashboardService
         return Response(DashboardService.get_aged_receivables(request))
 
 class VATReportView(APIView):
@@ -616,12 +616,12 @@ class VATReportView(APIView):
     def get(self, request):
         period_start = request.query_params.get('period_start')
         period_end = request.query_params.get('period_end')
-        from ..application.services import DashboardService
+        from ..services import DashboardService
         data = DashboardService.get_vat_report(request, period_start, period_end)
         
         if request.query_params.get('format') == 'pdf':
-            from apps.reporting.domain.models import ReportTemplate
-            from apps.reporting.services.pdf_generator import ReportingService
+            from apps.reports.domain.models import ReportTemplate
+            from apps.reports.services.pdf_generator import ReportingService
             template = ReportTemplate.objects.filter(
                 tenant=request.user.tenant, 
                 name='VAT Report',
@@ -640,32 +640,32 @@ class AgedPayablesView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        from ..application.services import DashboardService
+        from ..services import DashboardService
         return Response(DashboardService.get_aged_payables(request))
 
 class DashboardStatsView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        from ..application.services import DashboardService
+        from ..services import DashboardService
         return Response({'stats': DashboardService.get_dashboard_stats(request)})
 
 class MonthlyFinancialsView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        from ..application.services import DashboardService
+        from ..services import DashboardService
         return Response(DashboardService.get_monthly_financials(request))
 
 class FinanceReportView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        from ..application.services import DashboardService
+        from ..services import DashboardService
         return Response({"status": "success", "data": DashboardService.get_finance_report(request)})
 
 class ExportInvoicesCSV(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         from django.http import HttpResponse
-        from ..application.services import DashboardService
+        from ..services import DashboardService
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="invoices_export.csv"'
         response.write(DashboardService.export_invoices_csv(request))

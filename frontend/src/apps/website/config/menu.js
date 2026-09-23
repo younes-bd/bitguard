@@ -39,17 +39,17 @@ export const websiteMenu = [
         {
             title: 'eCommerce',
             items: [
-                { label: 'Orders', icon: ShoppingCart, path: '/admin/ecommerce/orders' },
-                { label: 'Unpaid Orders', icon: CreditCard, path: '/admin/ecommerce/unpaid-orders' },
-                { label: 'Abandoned Carts', icon: Trash2, path: '/admin/ecommerce/abandoned-carts' },
-                { label: 'Products', icon: Box, path: '/admin/ecommerce/products' },
-                { label: 'eCommerce Categories', icon: Tags, path: '/admin/ecommerce/categories' },
+                { label: 'Orders', icon: ShoppingCart, path: '/admin/website/ecommerce/orders' },
+                { label: 'Unpaid Orders', icon: CreditCard, path: '/admin/website/ecommerce/unpaid-orders' },
+                { label: 'Abandoned Carts', icon: Trash2, path: '/admin/website/ecommerce/abandoned-carts' },
+                { label: 'Products', icon: Box, path: '/admin/website/ecommerce/products' },
+                { label: 'eCommerce Categories', icon: Tags, path: '/admin/website/ecommerce/categories' },
             ]
         },
         {
             title: 'Reporting',
             items: [
-                { label: 'eCommerce', icon: Activity, path: '/admin/ecommerce/tracking' },
+                { label: 'eCommerce', icon: Activity, path: '/admin/website/ecommerce/tracking' },
                 { label: 'Analytics', icon: BarChart3, path: '/admin/website/dashboards' },
             ]
         },
@@ -58,8 +58,8 @@ export const websiteMenu = [
             items: [
                 { label: 'Settings', icon: Settings, path: '/admin/website/settings' },
                 { label: 'Websites', icon: Globe, path: '/admin/website/websites' },
-                { label: 'Payment Providers', icon: CreditCard, path: '/admin/ecommerce/payment-providers' },
-                { label: 'Shipping Methods', icon: Truck, path: '/admin/ecommerce/shipping' },
+                { label: 'Payment Providers', icon: CreditCard, path: '/admin/website/ecommerce/payment-providers' },
+                { label: 'Shipping Methods', icon: Truck, path: '/admin/website/ecommerce/shipping' },
                 { label: 'Live Chat Channels', icon: MessageCircle, path: '/admin/website/livechat/channels' },
                 { label: 'Live Chat Settings', icon: Settings, path: '/admin/website/livechat/settings' },
             ]

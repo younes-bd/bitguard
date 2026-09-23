@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'SOC',
     'command_center_section': 'Administration',
-    'sequence': 3,
+    'sequence': 1030,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Soc Tile'}

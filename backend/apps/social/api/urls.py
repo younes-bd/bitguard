@@ -1,5 +1,10 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from apps.journeys.api.views import SocialPostViewSet
+
+router = DefaultRouter()
+router.register(r'posts', SocialPostViewSet, basename='socialpost')
 
 urlpatterns = [
-    # Stub routes for social
+    path('', include(router.urls)),
 ]

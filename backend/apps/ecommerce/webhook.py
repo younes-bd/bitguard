@@ -31,7 +31,7 @@ def stripe_webhook(request):
                 WorkflowEngine.transition(order, 'paid', order.user, request=request, reason="Stripe Webhook: Payment Success")
                 
                 # Emit Signal
-                from apps.core.signals import order_paid
+                from apps.ecommerce.signals import order_paid
                 order_paid.send(sender=None, order=order, request=request)
                 
                 # Assign License Key if digital
@@ -80,7 +80,7 @@ def stripe_webhook(request):
                 WorkflowEngine.transition(sub, 'active', user, request=request, reason="Stripe Webhook: Subscription Started")
                 
                 # Emit Signal
-                from apps.core.signals import order_paid
+                from apps.ecommerce.signals import order_paid
                 order_paid.send(sender=None, order=sub, request=request)
             except (User.DoesNotExist, Plan.DoesNotExist):
                 pass

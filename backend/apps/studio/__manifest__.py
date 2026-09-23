@@ -15,7 +15,7 @@
     'screenshots': [],
     'display_name': 'Studio',
     'command_center_section': 'Administration',
-    'sequence': 99,
+    'sequence': 1040,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Studio Tile'}

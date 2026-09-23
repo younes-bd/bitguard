@@ -998,7 +998,7 @@ const WebsiteLayoutInner = ({ children }) => {
                                 <Link to="/careers" className={`text-[13px] no-underline transition-colors flex items-center gap-2 ${isDark ? 'hover:text-white text-slate-400' : 'hover:text-blue-600 text-slate-500'}`}>Careers <span className="text-[9px] bg-blue-500/20 text-blue-500 px-1.5 py-0.5 rounded font-bold uppercase">Hiring</span></Link>
                                 <Link to="/security" className={`text-[13px] no-underline transition-colors ${isDark ? 'hover:text-white text-slate-400' : 'hover:text-blue-600 text-slate-500'}`}>Trust Center</Link>
                                 <Link to="/partner" className={`text-[13px] no-underline transition-colors ${isDark ? 'hover:text-white text-slate-400' : 'hover:text-blue-600 text-slate-500'}`}>Partners</Link>
-                                <Link to="/contact" className={`text-[13px] no-underline transition-colors ${isDark ? 'hover:text-white text-slate-400' : 'hover:text-blue-600 text-slate-500'}`}>Contact Sales</Link>
+                                <Link to="/contact" className={`text-[13px] no-underline transition-colors ${isDark ? 'hover:text-white text-slate-400' : 'hover:text-blue-600 text-slate-500'}`}>Contact Saless</Link>
                                 <Link to="/support" className={`text-[13px] no-underline transition-colors ${isDark ? 'hover:text-white text-slate-400' : 'hover:text-blue-600 text-slate-500'}`}>Support</Link>
                                 <Link to="/status" className={`text-[13px] no-underline transition-colors ${isDark ? 'hover:text-white text-slate-400' : 'hover:text-blue-600 text-slate-500'}`}>System Status</Link>
                             </div>

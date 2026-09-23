@@ -1,22 +1,23 @@
 import apiClient from '@/core/api/client';
 
-export const boardService = {
+export const analyticsService = {
     // ---------------------------------------------------------
     // Core Board Metrics
     // ---------------------------------------------------------
-    getMetrics: async () => {
-        const response = await apiClient.get('core/analytics/global/');
+    getMetrics: async (params) => {
+        const response = await apiClient.get('core/command-center/global/', { params });
         return response.data?.data ?? response.data ?? {};
     },
     getSystemHealth: async () => {
-        return { data: { status: 'healthy', uptime: '99.99%', api_latency: '42ms' } };
+        const response = await apiClient.get('core/command-center/system_health/');
+        return response.data?.data ?? response.data ?? {};
     },
     getMrr: async () => {
         const response = await apiClient.get('board/mrr/');
         return response.data?.data ?? response.data ?? {};
     },
     getRecentActivity: async (limit = 8) => {
-        const response = await apiClient.get(`notifications/?limit=${limit}`);
+        const response = await apiClient.get(`core/audit-logs/?limit=${limit}`);
         return response.data?.results ?? response.data ?? [];
     },
 
@@ -41,8 +42,9 @@ export const boardService = {
     
     // Fixed domain-specific aggregation views
     getFinanceReport: (params) => apiClient.get('board/finance/', { params }).then(r => r.data?.data ?? r.data),
-    getHrmReport: (params) => apiClient.get('board/hrm/', { params }).then(r => r.data?.data ?? r.data),
+    getEmployeesmReport: (params) => apiClient.get('board/hrm/', { params }).then(r => r.data?.data ?? r.data),
     getProjectsReport: (params) => apiClient.get('board/projects-report/', { params }).then(r => r.data?.data ?? r.data),
 };
 
-export default boardService;
+export default analyticsService;
+

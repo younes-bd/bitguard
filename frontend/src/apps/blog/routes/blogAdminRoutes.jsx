@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import BlogPostList from '../pages/admin/BlogPostList';
-import BlogPostEditor from '../pages/features/BlogPostEditor';
-import BlogTags from '../pages/admin/BlogTags';
-import BlogCategories from '../pages/admin/BlogCategories';
-import BlogSettings from '../pages/admin/BlogSettings';
+import BlogPostList from '../pages/admin/BlogPostListPage';
+import BlogPostEditor from '../pages/features/BlogPostEditorPage';
+import BlogTags from '../pages/admin/BlogTagsPage';
+import BlogCategories from '../pages/admin/BlogCategoriesPage';
+import BlogSettings from '../pages/admin/BlogSettingsPage';
 
 export const blogAdminRoutes = (
     <>

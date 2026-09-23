@@ -24,7 +24,7 @@ class PlanViewSet(TenantScopedMixin, viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def subscribe(self, request, pk=None):
-        from apps.subscriptions.application.services import SubscriptionService
+        from apps.subscriptions.services.subscriptions import SubscriptionService
         plan = self.get_object()
         interval = request.data.get('interval', 'monthly')
         frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
@@ -82,7 +82,7 @@ class StripeWebhookView(View):
     """
 
     def post(self, request):
-        from apps.subscriptions.application.services import SubscriptionService
+        from apps.subscriptions.services.subscriptions import SubscriptionService
         payload = request.body
         sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', '')
         webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None)

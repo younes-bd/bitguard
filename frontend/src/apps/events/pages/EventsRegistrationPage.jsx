@@ -9,7 +9,7 @@ const EventsRegistrationPage = () => {
 
   useEffect(() => {
     client.get('/events/')
-      .then(res => setData(res.data.results || res.data))
+      .then(res => setData(Array.isArray(res.data?.results || res.data) ? (res.data?.results || res.data) : []))
       .catch(e => {
         const msg = e.response?.data?.detail || 'Failed to load';
         setError(msg);

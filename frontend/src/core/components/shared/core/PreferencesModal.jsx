@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import client from '../../../api/client';
 import toast from 'react-hot-toast';
-import { SlidersHorizontal, Globe, Bell, Moon, Layout, Lock, Loader2, Mail, Smartphone, X } from 'lucide-react';
+import { SlidersHorizontal, Globe, Bell, Moon, Layout, Lock, Loader2, Inbox, Smartphone, X } from 'lucide-react';
 
 const Toggle = ({ value, onChange, disabled = false }) => (
     <button
@@ -141,15 +141,15 @@ const PreferencesModal = ({ isOpen, onClose }) => {
                     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
                         <h2 className="text-sm font-bold text-white mb-4 flex items-center gap-2 pb-3 border-b border-slate-800/50">
                             <Bell size={16} className="text-blue-500" />
-                            Notifications
+                            Inbox
                         </h2>
                         
                         <div className="space-y-1">
                             <div className="flex items-center justify-between py-2">
                                 <div className="flex items-center gap-3">
-                                    <Mail size={16} className="text-slate-500" />
+                                    <Inbox size={16} className="text-slate-500" />
                                     <div>
-                                        <p className="text-sm font-medium text-slate-200">Email Notifications</p>
+                                        <p className="text-sm font-medium text-slate-200">Email Inbox</p>
                                         <p className="text-xs text-slate-500">Receive important updates via email</p>
                                     </div>
                                 </div>
@@ -160,7 +160,7 @@ const PreferencesModal = ({ isOpen, onClose }) => {
                                 <div className="flex items-center gap-3">
                                     <Smartphone size={16} className="text-slate-500" />
                                     <div>
-                                        <p className="text-sm font-medium text-slate-200">In-App Notifications</p>
+                                        <p className="text-sm font-medium text-slate-200">In-App Inbox</p>
                                         <p className="text-xs text-slate-500">Show alerts and messages in the platform</p>
                                     </div>
                                 </div>

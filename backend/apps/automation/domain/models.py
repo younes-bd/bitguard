@@ -40,3 +40,18 @@ class AutomatedAction(TenantAwareModel):
 
     def __str__(self):
         return f"{self.name} ({self.model_name})"
+
+class WebhookEndpoint(TenantAwareModel):
+    name = models.CharField(max_length=255)
+    url = models.URLField(max_length=1024)
+    secret = models.CharField(max_length=255, blank=True, help_text="Secret for signing payload")
+    is_active = models.BooleanField(default=True)
+    events = models.JSONField(default=list, help_text="List of events to trigger this webhook")
+    
+    class Meta:
+        verbose_name = "Webhook Endpoint"
+        verbose_name_plural = "Webhook Endpoints"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name

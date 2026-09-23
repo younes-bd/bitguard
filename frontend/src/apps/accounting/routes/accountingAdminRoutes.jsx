@@ -1,48 +1,48 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import FinancialsDashboard from '../pages/dashboards/FinancialsDashboard';
-import ExpenseList from '../pages/core/ExpenseList';
-import InvoiceList from '../pages/invoices/InvoiceList';
-import InvoiceCreate from '../pages/invoices/InvoiceCreate';
-import InvoiceDetail from '../pages/invoices/InvoiceDetail';
-import InvoiceEdit from '../pages/invoices/InvoiceEdit';
+import FinancialsDashboard from '../pages/dashboards/FinancialsDashboardPage';
+import ExpenseList from '../pages/core/ExpenseListPage';
+import InvoiceList from '../pages/invoices/InvoiceListPage';
+import InvoiceCreate from '../pages/invoices/InvoiceCreatePage';
+import InvoiceDetail from '../pages/invoices/InvoiceDetailPage';
+import InvoiceEdit from '../pages/invoices/InvoiceEditPage';
 
-import BillingOverview from '../pages/billing/BillingOverview';
-import DeliveryNoteList from '../pages/billing/DeliveryNoteList';
-import DeliveryNoteCreate from '../pages/billing/DeliveryNoteCreate';
-import AgingReport from '../pages/billing/AgingReport';
-import ClientStatement from '../pages/billing/ClientStatement';
-import RecurringInvoices from '../pages/billing/RecurringInvoices';
-import TimeBilling from '../pages/billing/TimeBilling';
+import BillingOverview from '../pages/billing/BillingOverviewPage';
+import ShippingNoteList from '../pages/billing/ShippingNoteListPage';
+import ShippingNoteCreate from '../pages/billing/ShippingNoteCreatePage';
+import AgingReport from '../pages/billing/AgingReportPage';
+import ClientStatement from '../pages/billing/ClientStatementPage';
+import RecurringInvoices from '../pages/billing/RecurringInvoicesPage';
+import TimeBilling from '../pages/billing/TimeBillingPage';
 
-import ChartOfAccounts from '../pages/core/ChartOfAccounts';
-import JournalEntries from '../pages/core/JournalEntries';
-import BankingDashboard from '../pages/core/BankingDashboard';
-import FixedAssets from '../pages/core/FixedAssets';
-import DeferredRevenue from '../pages/core/DeferredRevenue';
-import BankReconciliationList from '../pages/lists/BankReconciliationList_new';
-import TaxList from '../pages/lists/TaxList';
-import BudgetManagement from '../pages/core/BudgetManagement';
+import ChartOfAccounts from '../pages/core/ChartOfAccountsPage';
+import JournalEntries from '../pages/core/JournalEntriesPage';
+import BankingDashboard from '../pages/core/BankingDashboardPage';
+import FixedAssets from '../pages/core/FixedAssetsPage';
+import DeferredRevenue from '../pages/core/DeferredRevenuePage';
+import BankReconciliationList from '../pages/lists/BankReconciliationList_newPage';
+import TaxList from '../pages/lists/TaxListPage';
+import BudgetManagement from '../pages/core/BudgetManagementPage';
 
-import BalanceSheet from '../pages/reports/BalanceSheet';
-import CashFlowStatement from '../pages/reports/CashFlowStatement';
-import ProfitLoss from '../pages/reports/ProfitLoss';
-import VATReport from '../pages/reports/VATReport';
-import BudgetReport from '../pages/reports/BudgetReport';
-import VendorBillsList from '../pages/lists/VendorBillsList';
-import AgedReceivables from '../pages/reports/AgedReceivables';
-import AgedPayables from '../pages/reports/AgedPayables';
-import Ledgers from '../pages/core/Ledgers';
-import CustomerCreditNotes from '../pages/reports/CustomerCreditNotes';
-import VendorRefunds from '../pages/reports/VendorRefunds';
-import JournalList from '../pages/lists/JournalList';
-import CustomerPayments from '../pages/core/CustomerPayments';
-import VendorPayments from '../pages/core/VendorPayments';
+import BalanceSheet from '../pages/reports/BalanceSheetPage';
+import CashFlowStatement from '../pages/reports/CashFlowStatementPage';
+import ProfitLoss from '../pages/reports/ProfitLossPage';
+import VATReport from '../pages/reports/VATReportPage';
+import BudgetReport from '../pages/reports/BudgetReportPage';
+import VendorBillsList from '../pages/lists/VendorBillsListPage';
+import AgedReceivables from '../pages/reports/AgedReceivablesPage';
+import AgedPayables from '../pages/reports/AgedPayablesPage';
+import Ledgers from '../pages/core/LedgersPage';
+import CustomerCreditNotes from '../pages/reports/CustomerCreditNotesPage';
+import VendorRefunds from '../pages/reports/VendorRefundsPage';
+import JournalList from '../pages/lists/JournalListPage';
+import CustomerPayments from '../pages/core/CustomerPaymentsPage';
+import VendorPayments from '../pages/core/VendorPaymentsPage';
 import AccountingReportPage from '../pages/reports/AccountingReportPage';
 
-import ProductList from '../../product/pages/ProductList';
-import ProductDetail from '../../product/pages/ProductDetail';
+import ProductList from '../../product/pages/ProductListPage';
+import ProductDetail from '../../product/pages/ProductDetailPage';
 
 export const accountingAdminRoutes = (
     <>

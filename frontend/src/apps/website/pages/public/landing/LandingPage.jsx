@@ -37,7 +37,7 @@ const LandingPage = () => {
 
         setNewsletterStatus({ type: 'loading', message: 'Subscribing...' });
         try {
-            await client.post('home/signups/', { email: newsletterEmail });
+            await client.post('website/signups/', { email: newsletterEmail });
             setNewsletterStatus({ type: 'success', message: 'Thanks for subscribing!' });
             setNewsletterEmail('');
             setTimeout(() => setNewsletterStatus({ type: '', message: '' }), 3000);
@@ -53,7 +53,7 @@ const LandingPage = () => {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await client.get('home/announcements/');
+                const response = await client.get('website/announcements/');
                 setAnnouncements(response.data || []);
             } catch (error) {
                 console.error("Failed to fetch announcements:", error);

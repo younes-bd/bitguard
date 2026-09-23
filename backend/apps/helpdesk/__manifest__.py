@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Helpdesk',
     'command_center_section': 'Services',
-    'sequence': 4,
+    'sequence': 140,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Helpdesk Tile'}

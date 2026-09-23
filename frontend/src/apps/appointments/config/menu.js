@@ -9,17 +9,6 @@ import {
     UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle, MapPin, Utensils, Leaf, UserCheck, Star, Upload, AtSign, Webhook
 } from 'lucide-react';
 
-
-export const appointmentsManifest = {
-    techName: 'appointments',
-    displayName: 'Appointments',
-    commandCenterSection: 'Services',
-    commandCenterOrder: 6,
-    hasSettings: false,
-    settingsUrl: null,
-    settingsDesc: null,
-};
-
 export const appointmentsMenu = [
         {
             title: 'Appointments',
@@ -29,7 +18,7 @@ export const appointmentsMenu = [
             ]
         },
         {
-            title: 'Reporting',
+            title: 'Reports',
             items: [
                 { label: 'Appointments Analysis', icon: BarChart3, path: '/admin/appointments/reports' },
             ]

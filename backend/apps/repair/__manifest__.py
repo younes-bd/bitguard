@@ -15,7 +15,7 @@
     'screenshots': [],
     'display_name': 'Repairs',
     'command_center_section': 'Manufacturing',
-    'sequence': 6,
+    'sequence': 450,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Repair Tile'}

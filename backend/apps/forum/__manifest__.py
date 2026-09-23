@@ -15,7 +15,7 @@
     'screenshots': [],
     'display_name': 'Forum',
     'command_center_section': 'Website',
-    'sequence': 4,
+    'sequence': 540,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Forum Tile'}

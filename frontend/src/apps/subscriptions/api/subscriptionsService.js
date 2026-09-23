@@ -7,7 +7,7 @@ export const subscriptionsService = {
         return response.data?.results || response.data;
     },
     getPlan: async (id) => {
-        const response = await client.get(`billing/plans/${id}/`);
+        const response = await client.get(`subscriptions/plans/${id}/`);
         return response.data;
     },
     createPlan: async (data) => {
@@ -15,11 +15,11 @@ export const subscriptionsService = {
         return response.data;
     },
     updatePlan: async (id, data) => {
-        const response = await client.patch(`billing/plans/${id}/`, data);
+        const response = await client.patch(`subscriptions/plans/${id}/`, data);
         return response.data;
     },
     deletePlan: async (id) => {
-        const response = await client.delete(`billing/plans/${id}/`);
+        const response = await client.delete(`subscriptions/plans/${id}/`);
         return response.data;
     },
 
@@ -37,15 +37,15 @@ export const subscriptionsService = {
         return response.data;
     },
     pauseSubscription: async (id) => {
-        const response = await client.post(`billing/subscriptions/${id}/pause/`);
+        const response = await client.post(`subscriptions/subscriptions/${id}/pause/`);
         return response.data;
     },
     resumeSubscription: async (id) => {
-        const response = await client.post(`billing/subscriptions/${id}/resume/`);
+        const response = await client.post(`subscriptions/subscriptions/${id}/resume/`);
         return response.data;
     },
     cancelSubscription: async (id) => {
-        const response = await client.post(`billing/subscriptions/${id}/cancel/`);
+        const response = await client.post(`subscriptions/subscriptions/${id}/cancel/`);
         return response.data;
     },
 

@@ -5,11 +5,15 @@ import { Menu, Bell, User, Search, ChevronRight, Home, Command, Grid, RefreshCw,
 import { useSidebarState } from '../hooks/useSidebarState';
 import { useAuth } from '../hooks/useAuth';
 import { useManifest } from '../hooks/useManifest';
-import { getSettingsMenu } from '../../apps/system/config/menu';
-import NotificationBell from '../components/shared/core/NotificationBell';
+import InboxBell from '../components/shared/core/InboxBell';
 import CommandPalette from '../components/shared/core/CommandPalette';
 import AppSwitcher from '../components/shared/core/AppSwitcher';
 import UserAvatarDropdown from '../components/shared/core/UserAvatarDropdown';
+
+import { getDashboardsMenu } from '../../apps/analytics/config/menu';
+// DYNAMIC SETTINGS REGISTRY
+const settingsMenus = import.meta.glob('../../apps/*/config/menu.js', { eager: true });
+
 
 // ─── Breadcrumb ───────────────────────────────────────────────────────────────
 const Breadcrumb = ({ sections }) => {
@@ -132,7 +136,7 @@ const ModuleTopBar = ({ title, onToggleSidebar, onMobileToggle }) => {
 
             {/* Right: Notification + User */}
             <div className="flex items-center gap-2 flex-shrink-0">
-                <NotificationBell />
+                <InboxBell />
 
                 <div className="h-5 w-px bg-slate-800" />
 
@@ -153,7 +157,31 @@ const ModuleLayout = ({ title, sections, items, accentColor, backLink = '/admin'
 
     // If this is the Settings module, dynamically build the menu
     if (title === 'Settings' || title?.toLowerCase() === 'settings') {
-        sections = getSettingsMenu(settingsAppEntries);
+        const systemMenu = settingsMenus['../../apps/system/config/menu.js']?.getSettingsMenu(settingsAppEntries) || [];
+        
+        let allSections = [...systemMenu];
+        
+        Object.entries(settingsMenus).forEach(([path, mod]) => {
+            if (path.includes('/system/')) return;
+            if (mod.getSettingsMenu) {
+                const appMenus = mod.getSettingsMenu();
+                appMenus.forEach(menuSection => {
+                    const existingSection = allSections.find(s => s.title === menuSection.title);
+                    if (existingSection) {
+                        existingSection.items = [...existingSection.items, ...menuSection.items];
+                    } else {
+                        allSections.push(menuSection);
+                    }
+                });
+            }
+        });
+        
+        sections = allSections;
+    }
+    
+    // If this is the Analytics module, dynamically build the menu
+    if (title === 'Analytics' || title?.toLowerCase() === 'analytics') {
+        sections = getDashboardsMenu(Array.from(installedSet).map(name => ({ technical_name: name })));
     }
     
     // If this is the Apps module, dynamically build the menu based on manifestData
@@ -177,12 +205,12 @@ const ModuleLayout = ({ title, sections, items, accentColor, backLink = '/admin'
                 'Inventory': Truck,
                 'Manufacturing': Wrench,
                 'Website': Globe,
-                'Marketing': Megaphone,
+                'Journeys': Megaphone,
                 'Human Resources': Users,
                 'Productivity': Activity,
                 'Administration': Settings,
                 'Security': Shield,
-                'Discuss': MessageSquare,
+                'Chat': MessageSquare,
                 'Technical': Code,
                 'Other': List
             };
@@ -271,3 +299,4 @@ const ModuleLayout = ({ title, sections, items, accentColor, backLink = '/admin'
 };
 
 export default ModuleLayout;
+

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import WhatsAppDashboard from '../pages/dashboards/WhatsAppDashboard';
+import WhatsAppDashboard from '../pages/dashboards/WhatsAppDashboardPage';
 
 export const whatsappAdminRoutes = (
     <React.Fragment>

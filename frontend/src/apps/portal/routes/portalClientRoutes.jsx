@@ -3,29 +3,29 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import PortalLayout from '../layouts/PortalLayout';
 
 // Dashboards
-import ClientPortalDashboard from '../pages/client/dashboards/ClientPortalDashboard';
+import ClientPortalDashboard from '../pages/client/dashboards/ClientPortalDashboardPage';
 
 // Lists
-import PortalInvoices from '../pages/client/lists/PortalInvoices';
-import PortalTickets from '../pages/client/lists/PortalTickets';
-import PortalOrders from '../pages/client/lists/PortalOrders';
-import PortalProjects from '../pages/client/lists/PortalProjects';
-import PortalContracts from '../pages/client/lists/PortalContracts';
-import PortalSubscriptions from '../pages/client/lists/PortalSubscriptions';
-import PortalAssets from '../pages/client/lists/PortalAssets';
-import PortalQuotes from '../pages/client/lists/PortalQuotes';
-import PortalTasks from '../pages/client/lists/PortalTasks';
-import PortalTimesheets from '../pages/client/lists/PortalTimesheets';
-import PortalPurchases from '../pages/client/lists/PortalPurchases';
-import PortalLeads from '../pages/client/lists/PortalLeads';
+import PortalInvoices from '../pages/client/lists/PortalInvoicesPage';
+import PortalTickets from '../pages/client/lists/PortalTicketsPage';
+import PortalOrders from '../pages/client/lists/PortalOrdersPage';
+import PortalProjects from '../pages/client/lists/PortalProjectsPage';
+import PortalContracts from '../pages/client/lists/PortalContractsPage';
+import PortalSubscriptions from '../pages/client/lists/PortalSubscriptionsPage';
+import PortalAssets from '../pages/client/lists/PortalAssetsPage';
+import PortalQuotes from '../pages/client/lists/PortalQuotesPage';
+import PortalTasks from '../pages/client/lists/PortalTasksPage';
+import PortalTimesheets from '../pages/client/lists/PortalTimesheetsPage';
+import PortalProcurements from '../pages/client/lists/PortalProcurementsPage';
+import PortalLeads from '../pages/client/lists/PortalLeadsPage';
 
 // Details
-import ClientPortalInvoice from '../pages/client/details/ClientPortalInvoice';
-import PortalInvoiceDetail from '../pages/client/details/PortalInvoiceDetail';
-import PortalTicketDetail from '../pages/client/details/PortalTicketDetail';
+import ClientPortalInvoice from '../pages/client/details/ClientPortalInvoicePage';
+import PortalInvoiceDetail from '../pages/client/details/PortalInvoiceDetailPage';
+import PortalTicketDetail from '../pages/client/details/PortalTicketDetailPage';
 
 // Settings & Account
-import PortalAccountDetails from '../pages/client/details/PortalAccountDetails';
+import PortalAccountDetails from '../pages/client/details/PortalAccountDetailsPage';
 
 export const portalClientRoutes = () => {
     return (
@@ -48,7 +48,7 @@ export const portalClientRoutes = () => {
                 <Route path="quotes" element={<PortalQuotes />} />
                 <Route path="tasks" element={<PortalTasks />} />
                 <Route path="timesheets" element={<PortalTimesheets />} />
-                <Route path="purchase" element={<PortalPurchases />} />
+                <Route path="procurement" element={<PortalProcurements />} />
                 <Route path="leads" element={<PortalLeads />} />
                 <Route path="account" element={<PortalAccountDetails />} />
                 <Route path="*" element={<Navigate to="/portal" replace />} />

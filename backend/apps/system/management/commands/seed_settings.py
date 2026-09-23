@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.system.domain.models import SystemSetting
+from apps.core.domain.models import SystemParameter
 
 DEFAULTS = [
     # Accounting
@@ -23,11 +23,11 @@ DEFAULTS = [
 ]
 
 class Command(BaseCommand):
-    help = 'Seed default ERP module settings into SystemSetting'
+    help = 'Seed default ERP module settings into SystemParameter'
     
     def handle(self, *args, **options):
         for s in DEFAULTS:
-            obj, created = SystemSetting.objects.get_or_create(
+            obj, created = SystemParameter.objects.get_or_create(
                 key=s['key'], tenant=None,
                 defaults={'value': s['value'], 'setting_type': s['setting_type']}
             )

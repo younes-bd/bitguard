@@ -77,7 +77,7 @@ class Command(BaseCommand):
         user_ct = ContentType.objects.get(app_label='users', model='user')
         tenant_ct = ContentType.objects.get(app_label='tenants', model='tenant')
         try:
-            setting_ct = ContentType.objects.get(app_label='system', model='systemsetting')
+            setting_ct = ContentType.objects.get(app_label='core', model='systemparameter')
         except ContentType.DoesNotExist:
             setting_ct = None
 

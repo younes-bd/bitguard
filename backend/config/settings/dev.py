@@ -1,33 +1,22 @@
-from .base import *
-
-DEBUG = True
-
-# Database - ALWAYS stored on the native Linux filesystem to avoid
-# WSL /mnt/c/ disk I/O errors. This path works regardless of which
-# directory you run manage.py from.
 import os
 from .base import *
 
 DEBUG = True
 
-# Database - ALWAYS stored on the native Linux filesystem to avoid
-# WSL /mnt/c/ disk I/O errors. This path works regardless of which
-# directory you run manage.py from.
-import os
-
-# Use a robust path resolution that works across WSL and Windows
-_NATIVE_DB = os.path.expanduser('~/website13_db.sqlite3')
-
-_CUSTOM_DB = os.environ.get('CUSTOM_DB_PATH')
-NAME = _CUSTOM_DB if _CUSTOM_DB else _NATIVE_DB
+# ---------------------------------------------------------
+# Database - TIER 1 ERP STANDARD (PostgreSQL)
+# ---------------------------------------------------------
+# Switched from SQLite to PostgreSQL to ensure Dev/Prod Parity
+# and prevent schema migration crashes.
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': NAME,
-        'OPTIONS': {
-            'timeout': 30,
-        }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'bitguard',
+        'USER': 'youness',
+        'PASSWORD': 'admin',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 

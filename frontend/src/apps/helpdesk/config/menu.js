@@ -9,17 +9,6 @@ import {
     UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle, MapPin, Utensils, Leaf, UserCheck, Star, Upload, AtSign, Webhook
 } from 'lucide-react';
 
-
-export const helpdeskManifest = {
-    techName: 'helpdesk',
-    displayName: 'Helpdesk',
-    commandCenterSection: 'Services',
-    commandCenterOrder: 4,
-    hasSettings: false,
-    settingsUrl: null,
-    settingsDesc: null,
-};
-
 export const helpdeskMenu = [
         {
             title: 'Helpdesk',
@@ -30,11 +19,11 @@ export const helpdeskMenu = [
             ]
         },
         {
-            title: 'Reporting',
+            title: 'Reports',
             items: [
                 { label: 'Tickets Analysis', icon: BarChart3, path: '/admin/helpdesk/reports/tickets' },
                 { label: 'SLA Status Analysis', icon: ShieldCheck, path: '/admin/helpdesk/reports/sla' },
-                { label: 'Live Chat', icon: MessageCircle, path: '/admin/helpdesk/livechat' },
+                { label: 'Live Chat', icon: MessageCircle, path: '/admin/helpdesk/messaging' },
             ]
         },
         {
@@ -46,7 +35,7 @@ export const helpdeskMenu = [
                 { label: 'Stages', icon: Layers, path: '/admin/helpdesk/stages' },
                 { label: 'Ticket Types', icon: Tag, path: '/admin/helpdesk/types' },
                 { label: 'Tags', icon: Tag, path: '/admin/helpdesk/tags' },
-                { label: 'Visitors', icon: Compass, path: '/admin/helpdesk/livechat/visitors' },
+                { label: 'Visitors', icon: Compass, path: '/admin/helpdesk/messaging/visitors' },
             ]
         }
     ];

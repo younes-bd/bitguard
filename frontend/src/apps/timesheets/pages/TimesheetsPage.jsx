@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import client from '@/core/api/client';
+import { timesheetsService } from '../api/timesheetsService';
 import { toast } from 'react-hot-toast';
 
 const TimesheetsPage = () => {
@@ -8,8 +8,8 @@ const TimesheetsPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    client.get('/timesheets/')
-      .then(res => setData(res.data.results || res.data))
+    timesheetsService.getItems()
+      .then(res => setData(res.data?.results || res.data || res))
       .catch(e => {
         const msg = e.response?.data?.detail || 'Failed to load';
         setError(msg);

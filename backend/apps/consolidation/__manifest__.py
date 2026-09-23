@@ -14,8 +14,8 @@
     'url': '/admin/consolidation',
     'screenshots': [],
     'display_name': 'Consolidation',
-    'command_center_section': 'Accounting & Finance',
-    'sequence': 3,
+    'command_center_section': 'Accounting',
+    'sequence': 230,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Consolidation Tile'}

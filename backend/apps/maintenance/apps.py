@@ -11,6 +11,6 @@ class ItamConfig(AppConfig):
         import apps.maintenance.infrastructure.signals
 
     def _register_api_routes(self):
-        from apps.core.api.registry import register
+        from apps.core.registry import register
         register('maintenance/', 'apps.maintenance.api.urls')
 

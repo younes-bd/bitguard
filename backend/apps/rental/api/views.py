@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from apps.sale.domain.models import SaleOrder, SaleOrderLine
+from apps.sales.domain.models import SalesOrder, SalesOrderLine
 from .serializers import RentalOrderSerializer, RentalOrderLineSerializer
 
 class StandardPagination(PageNumberPagination):
@@ -21,8 +21,8 @@ class RentalOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     filterset_fields = ['status']
 
     def get_queryset(self):
-        # We proxy to SaleOrder but only return ones flagged as rental orders
-        return SaleOrder.objects.filter(
+        # We proxy to SalesOrder but only return ones flagged as rental orders
+        return SalesOrder.objects.filter(
             tenant=self.request.user.tenant, 
             is_rental_order=True,
             is_deleted=False
@@ -40,8 +40,8 @@ class RentalOrderLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # We proxy to SaleOrderLine but only return rental lines
-        return SaleOrderLine.objects.filter(
+        # We proxy to SalesOrderLine but only return rental lines
+        return SalesOrderLine.objects.filter(
             order__tenant=self.request.user.tenant, 
             is_rental=True,
             is_deleted=False

@@ -1,6 +1,7 @@
 {
     'name': 'Users',
     'technical_name': 'users',
+    'odoo_equivalent': 'notifications',
     'version': '1.0.0',
     'category': 'Technical',
     'author': 'BitGuard',

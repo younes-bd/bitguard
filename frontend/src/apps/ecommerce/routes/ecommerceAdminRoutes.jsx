@@ -1,25 +1,25 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 
-import EcommerceDashboard from '../pages/admin/EcommerceDashboard';
-import StoreCustomization from '../pages/settings/StoreCustomization';
-import CategoryManagement from '../pages/admin/CategoryManagement';
-import StoreProducts from '../pages/admin/StoreProducts';
-import StoreOrders from '../pages/admin/StoreOrders';
-import CustomerManagement from '../pages/admin/CustomerManagement';
-import ShippingSettings from '../pages/settings/ShippingSettings';
-import LandingPages from '../pages/features/LandingPages';
-import PixelTracking from '../pages/features/PixelTracking';
-import AddOnManagement from '../pages/settings/AddOnManagement';
-import SubscriptionManagement from '../pages/admin/SubscriptionManagement';
-import StoreSettings from '../pages/admin/StoreSettings';
-import ServiceCatalog from '../pages/public/ServiceCatalog';
+import EcommerceDashboard from '../pages/admin/EcommerceDashboardPage';
+import StoreCustomization from '../pages/settings/StoreCustomizationPage';
+import CategoryManagement from '../pages/admin/CategoryManagementPage';
+import StoreProducts from '../pages/admin/StoreProductsPage';
+import StoreOrders from '../pages/admin/StoreOrdersPage';
+import CustomerManagement from '../pages/admin/CustomerManagementPage';
+import ShippingSettings from '../pages/settings/ShippingSettingsPage';
+import LandingPages from '../pages/features/LandingPagesPage';
+import PixelTracking from '../pages/features/PixelTrackingPage';
+import AddOnManagement from '../pages/settings/AddOnManagementPage';
+import SubscriptionManagement from '../pages/admin/SubscriptionManagementPage';
+import StoreSettings from '../pages/admin/StoreSettingsPage';
+import ServiceCatalog from '../pages/public/ServiceCatalogPage';
 
 // Odoo-style components
-import UnpaidOrders from '../pages/admin/UnpaidOrders';
-import AbandonedCarts from '../pages/admin/AbandonedCarts';
-import PaymentProviders from '../pages/admin/PaymentProviders';
-import ShippingMethods from '../pages/admin/ShippingMethods';
+import UnpaidOrders from '../pages/admin/UnpaidOrdersPage';
+import AbandonedCarts from '../pages/admin/AbandonedCartsPage';
+import PaymentProviders from '../pages/admin/PaymentProvidersPage';
+import ShippingMethods from '../pages/admin/ShippingMethodsPage';
 
 export const ecommerceAdminRoutes = (
     <>

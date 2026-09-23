@@ -7,9 +7,9 @@ from apps.tenants.domain.models import Tenant
 from apps.crm.domain.models import Client
 from apps.core.domain.models import Partner
 from apps.accounting.domain.models import Invoice, InvoiceItem
-from apps.purchase.domain.models import PurchaseOrder, PurchaseOrderLine, Vendor
-from apps.delivery.domain.models import DeliveryNote
-from apps.reporting.domain.models import ReportTemplate, ReportEngineSettings
+from apps.procurement.domain.models import PurchaseOrder, PurchaseOrderLine, Vendor
+from apps.shipping.domain.models import DeliveryNote
+from apps.reports.domain.models import ReportTemplate, ReportEngineSettings
 
 class Command(BaseCommand):
     help = 'Seeds the database with enterprise documents and Odoo-style reporting templates'
@@ -89,7 +89,7 @@ class Command(BaseCommand):
                 tenant=tenant,
                 name='Standard Purchase Order',
                 defaults={
-                    'model': 'purchase.PurchaseOrder',
+                    'model': 'procurement.PurchaseOrder',
                     'html_content': self.get_po_html(),
                     'css_content': self.get_shared_css(),
                     'is_active': True

@@ -1,4 +1,4 @@
-from .application.services import *
+from .services.maintenance import *
 
 class MaintenanceService:
     @staticmethod

@@ -1,5 +1,6 @@
 {'name': 'VoIP',
     'technical_name': 'voip',
+    'odoo_equivalent': 'notifications',
     'version': '1.0.0',
     'summary': 'Integrated SIP telephony.',
     'description': 'VoIP for BitGuard ERP',
@@ -14,8 +15,8 @@
     'url': '/admin/voip',
     'screenshots': [],
     'display_name': 'VoIP',
-    'command_center_section': 'Productivity',
-    'sequence': 8,
+    'command_center_section': 'Discuss',
+    'sequence': 820,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Voip Tile'}

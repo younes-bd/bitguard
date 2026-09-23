@@ -15,7 +15,7 @@
     'screenshots': [],
     'display_name': 'Barcode',
     'command_center_section': 'Inventory',
-    'sequence': 3,
+    'sequence': 330,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Barcode Tile'}

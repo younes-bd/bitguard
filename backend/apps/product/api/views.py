@@ -93,7 +93,7 @@ class ProductViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         success_url = request.data.get('success_url') or request.build_absolute_uri('/')
         cancel_url = request.data.get('cancel_url') or request.build_absolute_uri('/')
         try:
-            from apps.ecommerce.application.services import CommerceService
+            from apps.ecommerce.services.ecommerce import CommerceService
             checkout_url = CommerceService.create_checkout_session(
                 user=request.user, product=product,
                 success_url=success_url, cancel_url=cancel_url, request=request

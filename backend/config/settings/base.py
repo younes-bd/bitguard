@@ -34,7 +34,7 @@ CORE_APPS = [
     'apps.tenants',
     'apps.auth',
     'apps.system',
-    'apps.notifications',
+    'apps.inbox',
     'api',
 ]
 
@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'taggit',
-    'django_celery_beat',
+    # 'django_celery_beat',
 ] + CORE_APPS + DYNAMIC_APPS
 
 # Django Channels — WebSocket layer (install: pip install channels daphne)
@@ -242,6 +242,7 @@ if importlib.util.find_spec('daphne') and importlib.util.find_spec('channels'):
         }
     }
 
-from celery.schedules import crontab
+# from celery.schedules import crontab
 # CELERY_BEAT_SCHEDULE is now managed via the database using django_celery_beat
+
 

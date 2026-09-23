@@ -18,20 +18,20 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Technical**: `auth`, `automation`, `core`, `tenants`
 
 ### Layer 2: Hidden UI / Master Data
-- **Technical**: `approvals`, `notifications`, `portal`, `reporting`, `users`
-- **Inventory**: `delivery`, `product`
+- **Technical**: `approvals`, `notifications`, `portal`, `reports`, `users`
+- **Inventory**: `shipping`, `product`
 
 ### Layer 3: Primary Business Applications
 - **Administration**: `apps`, `system`
-- **Discuss**: `discuss`, `livechat`, `voip`
-- **Finance**: `accounting`, `consolidation`, `board`, `documents`, `esg`, `equity`, `hr_expense`, `invoicing`, `sign`, `spreadsheet`
-- **Human Resources**: `hr_appraisal`, `hr_attendance`, `hr`, `fleet`, `lunch`, `hr_payroll`, `hr_recruitment`, `referrals`, `hr_holidays`
-- **Inventory & MRP**: `barcode`, `stock`, `iot`, `maintenance`, `mrp`, `mrp_plm`, `purchase`, `quality_control`, `repair`
-- **Marketing**: `mass_mailing`, `events`, `marketing`, `sms`, `social`, `surveys`
-- **Sales**: `crm`, `pos`, `rental`, `sale`, `subscriptions`
-- **Services**: `appointments`, `calendar`, `field_service`, `helpdesk`, `planning`, `projects`, `timesheets`
+- **Discuss**: `discuss`, `messaging`, `voip`
+- **Finance**: `accounting`, `consolidation`, `board`, `documents`, `esg`, `equity`, `expenses`, `invoicing`, `sign`, `spreadsheet`
+- **Human Resources**: `performance`, `timeclock`, `employees`, `fleet`, `lunch`, `payroll`, `recruiting`, `referrals`, `timeoff`
+- **Inventory & MRP**: `barcode`, `inventory`, `iot`, `maintenance`, `manufacturing`, `mrp_plm`, `procurement`, `quality`, `repair`
+- **Marketing**: `mass_mailing`, `events`, `journeys`, `sms`, `social`, `surveys`
+- **Sales**: `crm`, `pos`, `rental`, `sales`, `subscriptions`
+- **Services**: `appointments`, `calendar`, `dispatch`, `helpdesk`, `planning`, `projects`, `timesheets`
 - **Technical**: `studio`
-- **Website**: `blog`, `forum`, `knowledge`, `website`, `ecommerce`, `elearning`
+- **Website**: `blog`, `forum`, `knowledge`, `website`, `ecommerce`, `learning`
 
 ### Layer 4: External Integrations
 - **Discuss**: `whatsapp`
@@ -99,14 +99,14 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/approvals`
 
-### 📦 Delivery (`delivery`)
+### 📦 Delivery (`shipping`)
 > Delivery orders, shipping methods, and carrier integration.
 
 - **Odoo App Category:** `Inventory`
 - **Command Center Pillar:** `N/A`
 - **Is Application (Has Dashboard Tile?):** `False ❌`
 - **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `stock`
+- **Dependencies (Depends Array):** `inventory`
 - **Frontend URL Routing:** `/admin/delivery`
 
 ### 📦 Notifications (`notifications`)
@@ -139,7 +139,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/product`
 
-### 📦 Reporting (`reporting`)
+### 📦 Reporting (`reports`)
 > PDF report templates and print formats.
 
 - **Odoo App Category:** `Technical`
@@ -192,7 +192,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/discuss`
 
-### 📦 Live Chat (`livechat`)
+### 📦 Live Chat (`messaging`)
 > Engage with website visitors in real-time.
 
 - **Odoo App Category:** `Discuss`
@@ -272,14 +272,14 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/equity`
 
-### 📦 Expenses (`hr_expense`)
+### 📦 Expenses (`expenses`)
 > Submit and approve employee expense reports.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Finance`
 - **Is Application (Has Dashboard Tile?):** `True ✅`
 - **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, hr, accounting`
+- **Dependencies (Depends Array):** `system, employees, accounting`
 - **Frontend URL Routing:** `/admin/expenses`
 
 ### 📦 Invoicing (`invoicing`)
@@ -312,7 +312,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/spreadsheet`
 
-### 📦 Appraisals (`hr_appraisal`)
+### 📦 Appraisals (`performance`)
 > Employee performance appraisals and 360-degree feedback.
 
 - **Odoo App Category:** `Human Resources`
@@ -322,7 +322,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system, hr`
 - **Frontend URL Routing:** `/admin/appraisals`
 
-### 📦 Attendances (`hr_attendance`)
+### 📦 Attendances (`timeclock`)
 > Track employee attendance, check-ins, and working hours.
 
 - **Odoo App Category:** `Human Resources`
@@ -332,7 +332,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system, hr`
 - **Frontend URL Routing:** `/admin/hr-attendance`
 
-### 📦 Employees (`hr`)
+### 📦 Employees (`employees`)
 > Employee records, contracts, org chart, and HR management.
 
 - **Odoo App Category:** `Human Resources`
@@ -362,17 +362,17 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/lunch`
 
-### 📦 Payroll (`hr_payroll`)
+### 📦 Payroll (`payroll`)
 > Process payroll, compute slips, and manage payroll batches.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Human Resources`
 - **Is Application (Has Dashboard Tile?):** `True ✅`
 - **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, hr, accounting`
+- **Dependencies (Depends Array):** `system, employees, accounting`
 - **Frontend URL Routing:** `/admin/payroll`
 
-### 📦 Recruitment (`hr_recruitment`)
+### 📦 Recruitment (`recruiting`)
 > Post job positions, manage applicants, and run recruitment pipelines.
 
 - **Odoo App Category:** `Human Resources`
@@ -392,7 +392,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/referrals`
 
-### 📦 Time Off (`hr_holidays`)
+### 📦 Time Off (`timeoff`)
 > Manage time-off requests, leave types, and allocation.
 
 - **Odoo App Category:** `Human Resources`
@@ -412,8 +412,8 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/barcode`
 
-### 📦 Inventory (`stock`)
-> Inventory management with warehouses, transfers, and stock valuation.
+### 📦 Inventory (`inventory`)
+> Inventory management with warehouses, transfers, and inventory valuation.
 
 - **Odoo App Category:** `Inventory`
 - **Command Center Pillar:** `Inventory & MRP`
@@ -442,7 +442,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/maintenance`
 
-### 📦 Manufacturing (`mrp`)
+### 📦 Manufacturing (`manufacturing`)
 > Manufacturing orders, bills of materials, and work center scheduling.
 
 - **Odoo App Category:** `Manufacturing`
@@ -462,8 +462,8 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/mrp-plm`
 
-### 📦 Purchase (`purchase`)
-> Manage purchase orders, RFQs, and vendor bills.
+### 📦 Purchase (`procurement`)
+> Manage procurement orders, RFQs, and vendor bills.
 
 - **Odoo App Category:** `Purchase`
 - **Command Center Pillar:** `Inventory & MRP`
@@ -472,7 +472,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system, accounting`
 - **Frontend URL Routing:** `/admin/purchase`
 
-### 📦 Quality (`quality_control`)
+### 📦 Quality (`quality`)
 > Quality checks, control points, and failure analysis.
 
 - **Odoo App Category:** `Quality`
@@ -512,7 +512,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/events`
 
-### 📦 Marketing (`marketing`)
+### 📦 Marketing (`journeys`)
 > Email campaigns, automation, analytics, and contact management.
 
 - **Odoo App Category:** `Marketing`
@@ -523,13 +523,13 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Frontend URL Routing:** `/admin/marketing`
 
 ### 📦 SMS Marketing (`sms`)
-> Send SMS marketing campaigns.
+> Send SMS journeys campaigns.
 
 - **Odoo App Category:** `SMS`
 - **Command Center Pillar:** `Marketing`
 - **Is Application (Has Dashboard Tile?):** `True ✅`
 - **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `marketing`
+- **Dependencies (Depends Array):** `journeys`
 - **Frontend URL Routing:** `/admin/sms`
 
 ### 📦 Social (`social`)
@@ -582,7 +582,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/rental`
 
-### 📦 Sales (`sale`)
+### 📦 Sales (`sales`)
 > Manage sales orders, quotations, and customer transactions.
 
 - **Odoo App Category:** `Sales`
@@ -622,7 +622,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/calendar`
 
-### 📦 Field Service (`field_service`)
+### 📦 Field Service (`dispatch`)
 > Schedule field workers, manage on-site tasks and dispatching.
 
 - **Odoo App Category:** `Field Service`
@@ -732,7 +732,7 @@ This document provides a 100% exhaustive, deeply detailed audit of all modules i
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/ecommerce`
 
-### 📦 eLearning (`elearning`)
+### 📦 eLearning (`learning`)
 > Online courses, slides, quizzes, and learning management.
 
 - **Odoo App Category:** `eLearning`

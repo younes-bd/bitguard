@@ -25,7 +25,7 @@ Foundational utilities shared by many different business apps (e.g., `users`, `n
 * **Why:** The admin needs to manage users and settings (hence the API), but these tools are embedded inside Settings pages or dropdowns rather than getting their own primary workspace tile.
 
 ### 3. Business Plugins (The Apps)
-The heavyweights. These are 100% strictly encapsulated business tools (`crm`, `hr`, `accounting`).
+The heavyweights. These are 100% strictly encapsulated business tools (`crm`, `employees`, `accounting`).
 * **API Rule:** **DOES** expose REST APIs.
 * **Dashboard Rule:** **DOES** have Command Center tiles.
 * **Why:** These are the primary workspaces for end-users. They require both data transmission (API) and a dedicated frontend dashboard.
@@ -52,7 +52,7 @@ Bridges to external third-party systems (`payments`, `whatsapp`, `ai_agent`, `so
 | | | | |
 | **`crm`** | Layer 3 (Business App) | ✅ Yes | ✅ Yes (Sales Pillar) |
 | **`accounting`** | Layer 3 (Business App) | ✅ Yes | ✅ Yes (Finance Pillar) |
-| **`hr`** | Layer 3 (Business App) | ✅ Yes | ✅ Yes (HR Pillar) |
+| **`employees`** | Layer 3 (Business App) | ✅ Yes | ✅ Yes (HR Pillar) |
 | *(All other 35+ Apps)* | Layer 3 (Business App) | ✅ Yes | ✅ Yes |
 | | | | |
 | **`whatsapp`** | Layer 4 (Integration) | ✅ Yes (Webhooks) | ❌ No |

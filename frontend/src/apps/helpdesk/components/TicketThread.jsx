@@ -41,7 +41,7 @@ const TicketThread = ({ ticketId, onStatusChange }) => {
             setNewMessage('');
             await fetchTicket();
         } catch (error) {
-            toast.error("Message delivery failed");
+            toast.error("Message shipping failed");
         } finally {
             setSending(false);
         }

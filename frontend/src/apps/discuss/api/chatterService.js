@@ -81,7 +81,7 @@ const deleteMessage = (messageId) =>
  * @param {object} payload
  * @param {string} payload.content_type   - ContentType ID (int)
  * @param {string} payload.object_id      - UUID string
- * @param {string} payload.activity_type  - 'call' | 'email' | 'meeting' | 'todo' | 'upload' | 'custom'
+ * @param {string} payload.activity_type  - 'call' | 'email' | 'meeting' | 'tasks' | 'upload' | 'custom'
  * @param {string} payload.due_date       - ISO date string 'YYYY-MM-DD'
  * @param {string} [payload.summary]      - Short description
  * @param {string} [payload.note]         - Detailed note
@@ -123,7 +123,7 @@ const deleteActivity = (activityId) =>
 // ── Followers ────────────────────────────────────────────────────────────────
 
 /**
- * Follow a record (subscribe to notifications).
+ * Follow a record (subscribe to inbox).
  *
  * @param {number} contentTypeId  - Django ContentType ID
  * @param {string} objectId       - UUID of the record

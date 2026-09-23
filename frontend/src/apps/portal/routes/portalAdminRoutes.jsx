@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import PortalDashboard from '../pages/admin/dashboards/PortalDashboard';
-import PortalAccessManager from '../pages/admin/lists/PortalAccessManager';
-import PortalShareManager from '../pages/admin/lists/PortalShareManager';
-import PortalClientView from '../pages/admin/details/PortalClientView';
+import PortalDashboard from '../pages/admin/dashboards/PortalDashboardPage';
+import PortalAccessManager from '../pages/admin/lists/PortalAccessManagerPage';
+import PortalShareManager from '../pages/admin/lists/PortalShareManagerPage';
+import PortalClientView from '../pages/admin/details/PortalClientViewPage';
 
 export const portalAdminRoutes = (
     <React.Fragment>

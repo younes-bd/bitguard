@@ -18,7 +18,7 @@
 
     'display_name': 'Project',
     'command_center_section': 'Services',
-    'sequence': 1,
+    'sequence': 110,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Projects Tile',

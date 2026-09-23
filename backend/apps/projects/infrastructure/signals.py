@@ -1,33 +1,27 @@
+from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.apps import apps
+from django.db import transaction
+import logging
+logger = logging.getLogger(__name__)
 
-try:
-    from apps.sale.infrastructure.signals import sale_order_confirmed_signal
-    @receiver(sale_order_confirmed_signal)
-    def create_project_tasks_on_sale(sender, instance, **kwargs):
-        from apps.projects.domain.models import Project, Task
-        project = None
-        for line in instance.lines.all():
-            if line.product and getattr(line.product, 'product_type', '') in ['service', 'subscription', 'service_bundle']:
-                if not project:
-                    project, _ = Project.objects.get_or_create(
-                        tenant=instance.tenant,
-                        name=f"{instance.order_number} - {instance.client.name}",
-                        defaults={
-                            'client': instance.client,
-                            'project_type': 'client',
-                            'status': 'planning'
-                        }
-                    )
-                
-                Task.objects.get_or_create(
+@receiver(post_save, sender='crm.Deal')
+def handle_deal_won(sender, instance, created, **kwargs):
+    if instance.stage == 'won':
+        Project = apps.get_model('projects', 'Project')
+        try:
+            with transaction.atomic():
+                project, created_proj = Project.objects.get_or_create(
                     tenant=instance.tenant,
-                    project=project,
-                    title=f"{line.product.name}",
+                    client=instance.client,
+                    name=f"Project: {instance.title}",
                     defaults={
-                        'description': getattr(line, 'name', line.product.name),
-                        'status': 'todo',
-                        'estimated_hours': line.product_uom_qty
+                        'status': 'planning',
+                        'description': f"Auto-created from Deal {instance.id}",
+                        'budget': instance.amount or 0,
                     }
                 )
-except ImportError:
-    pass
+                if created_proj:
+                    logger.info(f"Created Project from Deal {instance.id}")
+        except Exception as e:
+            logger.warning(f"Signal handle_deal_won skipped for Deal {instance.id}: {e}")

@@ -16,7 +16,7 @@
     'screenshots': [],
     'display_name': 'Knowledge',
     'command_center_section': 'Productivity',
-    'sequence': 6,
+    'sequence': 930,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Knowledge Tile'}

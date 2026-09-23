@@ -9,17 +9,6 @@ import {
     UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle, MapPin, Utensils, Leaf, UserCheck, Star, Upload, AtSign, Webhook
 } from 'lucide-react';
 
-
-export const posManifest = {
-    techName: 'pos',
-    displayName: 'Point of Sale',
-    commandCenterSection: 'Sales',
-    commandCenterOrder: 3,
-    hasSettings: true,
-    settingsUrl: '/admin/settings/pos',
-    settingsDesc: 'Configure settings',
-};
-
 export const posMenu = [
         {
             title: 'Dashboard',
@@ -45,7 +34,7 @@ export const posMenu = [
             ]
         },
         {
-            title: 'Reporting',
+            title: 'Reports',
             items: [
                 { label: 'Orders', icon: ShoppingBag, path: '/admin/pos/reports' },
                 { label: 'Sales Details', icon: Activity, path: '/admin/pos/sales-details' },

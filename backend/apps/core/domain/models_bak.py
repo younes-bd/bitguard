@@ -66,7 +66,7 @@ class TenantAwareModel(BaseModel):
 # - Identity -> apps.users
 # - Identity Access (RBAC) -> apps.auth
 # - Tenancy -> apps.tenants
-# - Notifications -> apps.notifications
+# - Notifications -> apps.inbox
 
 class AuditTrail(TenantAwareModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_trails')

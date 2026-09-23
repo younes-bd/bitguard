@@ -9,7 +9,6 @@ class SignConfig(AppConfig):
         self._register_api_routes()
 
     def _register_api_routes(self):
-        from apps.core.api.registry import register
+        from apps.core.registry import register
         register('sign/', 'apps.sign.api.urls')
-        register('contracts/', 'apps.sign.api.urls')
 

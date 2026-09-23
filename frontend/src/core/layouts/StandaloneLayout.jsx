@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import { Menu, Search, ChevronRight, Home, Command } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import NotificationBell from '../components/shared/core/NotificationBell';
+import InboxBell from '../components/shared/core/InboxBell';
 import CommandPalette from '../components/shared/core/CommandPalette';
 import AppSwitcher from '../components/shared/core/AppSwitcher';
 import UserAvatarDropdown from '../components/shared/core/UserAvatarDropdown';
@@ -46,7 +46,7 @@ const StandaloneTopBar = ({ title }) => {
 
             {/* Right: Notification + User */}
             <div className="flex items-center gap-2 flex-shrink-0">
-                <NotificationBell />
+                <InboxBell />
 
                 <div className="h-5 w-px bg-slate-800" />
 
@@ -78,3 +78,4 @@ const StandaloneLayout = ({ title }) => {
 };
 
 export default StandaloneLayout;
+

@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.conf import settings
-from .base import BaseService
+from .core import BaseService
 
 class ControlService(BaseService):
     """

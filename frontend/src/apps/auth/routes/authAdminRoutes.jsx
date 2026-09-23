@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import Login from '../pages/public/Login';
-import Register from '../pages/public/Register';
-import ForgotPassword from '../pages/public/ForgotPassword';
-import SetPassword from '../pages/SetPassword';
+import Login from '../pages/public/LoginPage';
+import Register from '../pages/public/RegisterPage';
+import ForgotPassword from '../pages/public/ForgotPasswordPage';
+import SetPassword from '../pages/SetPasswordPage';
 import AuthLayout from '../../../core/layouts/AuthLayout';
 
 export const authAdminRoutes = (

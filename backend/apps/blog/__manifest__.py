@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Blog',
     'command_center_section': 'Website',
-    'sequence': 5,
+    'sequence': 550,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Blog Tile'}

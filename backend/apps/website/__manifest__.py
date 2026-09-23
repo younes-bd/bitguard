@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Website',
     'command_center_section': 'Website',
-    'sequence': 1,
+    'sequence': 510,
     'has_settings': True,
     'settings_url': '/admin/settings/website',
     'settings_desc': 'Configure settings',

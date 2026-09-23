@@ -1,2 +1,2 @@
-export { default as WhatsAppDashboard } from './pages/dashboards/WhatsAppDashboard';
+export { default as WhatsAppDashboard } from './pages/dashboards/WhatsAppDashboardPage';
 export { whatsapp } from './api/whatsappService';

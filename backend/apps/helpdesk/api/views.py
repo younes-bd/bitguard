@@ -16,7 +16,7 @@ from ..api.serializers import (
     TicketSerializer, TicketMessageSerializer, KnowledgeArticleSerializer,
     HelpdeskTeamSerializer, HelpdeskStageSerializer, HelpdeskTagSerializer, SlaPolicySerializer
 )
-from ..application.services import TicketService, TicketMessageService
+from ..services import TicketService, TicketMessageService
 
 
 class TicketViewSet(TenantScopedMixin, viewsets.ModelViewSet):

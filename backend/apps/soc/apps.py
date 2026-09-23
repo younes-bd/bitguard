@@ -9,6 +9,6 @@ class SocConfig(AppConfig):
         import apps.soc.infrastructure.signals
 
     def _register_api_routes(self):
-        from apps.core.api.registry import register
+        from apps.core.registry import register
         register('soc/', 'apps.soc.api.urls')
 

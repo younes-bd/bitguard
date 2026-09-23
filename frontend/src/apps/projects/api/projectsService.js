@@ -42,7 +42,7 @@ export const projectsService = {
 
     // â”€â”€â”€ DOCUMENT GENERATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     downloadDocument: async (model, id) => {
-        const response = await client.post('reporting/generated/generate/', {
+        const response = await client.post('reports/generated/generate/', {
             record_model: model,
             record_id: id,
         });

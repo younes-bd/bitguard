@@ -20,8 +20,8 @@ You are working on BitGuard ERP, a full-stack ERP application built with:
 Backend: Django REST Framework (DRF), PostgreSQL, multi-tenant architecture
 Frontend: React 18, Vite, Tailwind CSS, Lucide React icons, React Router v6
 Architecture: Modular ERP inspired by Odoo — each feature is a "module" (app) with a __manifest__.py, a Django app, and a React app
-The codebase structure for each module follows this pattern:
 
+The codebase structure for each module follows this pattern:
 
 backend/apps/<module_name>/
   __manifest__.py          ← module metadata
@@ -36,26 +36,10 @@ frontend/src/apps/<module_name>/
   routes/<name>AdminRoutes.jsx  ← React Router route definitions
 CONTEXT
 
-You are working on a production-ready multi-tenant ERP system built in Django (DRF backend) + React (Vite frontend), following Domain-Driven Design (DDD) architecture. The system is architecturally equivalent to Odoo Enterprise.
 
-The PDF engine is already fully working: apps/reporting/services/pdf_generator.py (WeasyPrint), ReportTemplate model (stores html_content + css_content as Jinja2/Django templates), and ReportingService.generate_pdf(template, record) as the unified generation method. Every module that needs PDF generation already has the backend viewset @action plumbing and frontend Download/Print buttons — BUT the actual HTML/CSS html_content of every seeded template is either empty or a minimal placeholder.
+Email: contact@bitguard.tech
+Password: youness
 
-Your job is to bring this ERP document suite to full Odoo-standard production quality across three tracks:
-
-Write every HTML/CSS report template (Jinja2/Django syntax, WeasyPrint-compatible)
-Implement the four missing backend document actions
-Fix the four frontend gaps
-The tenant's branding variables are always available in every template context as {{ company_name }}, {{ company_logo_url }}, {{ company_address }}, {{ company_vat }}, {{ company_phone }}, {{ company_email }}, {{ primary_color }}.
-
-Includes:
-- Django backend with server-rendered templates (dark cyber theme), models, serializers, API endpoints and admin.
-- React frontend in /frontend that consumes APIs: products, auth tokens, dashboard.
-- Stripe checkout redirect, webhook placeholder, secure download endpoint.
-- JWT auth via SimpleJWT.
-
-Email: admin@bitguard.tech
-Password: admin
-follo AI_INSTRUCTIONS.md
 
 Quick start:
 # 1. Remove the broken environment
@@ -68,6 +52,7 @@ python3 -m venv venv --clear
 source venv/bin/activate
 
 # 4. Upgrade pip and install all requirements
+\\wsl$\
 pip install --upgrade pip
 pip install -r requirements.txt
 1) cd backend
@@ -81,17 +66,16 @@ pip install -r requirements.txt
 9) python3 manage.py data.py
 10) python3 manage.py runserver
 python manage.py check                  # No system check errors
+python manage.py shell
+python manage.py remove_stale_contenttypes --noinput
 pytest apps/erp apps/scm apps/accounting
 python manage.py makemigrations --check # No unmigrated model changes
+python manage.py showmigrations system
 python manage.py test apps.erp          # All ERP tests pass
 11) Frontend: cd frontend; npm install; npm start npm run dev
 celery -A config worker -l info 
 celery -A config beat -l info
 python manage.py test apps.crm.tests
-python manage.py test apps.accounting.tests
-python manage.py test apps.projects.tests
-python manage.py test apps.scm.tests
-python manage.py test apps.hrm.tests
 python manage.py sync_modules
 cd backend
 ./venv/bin/python manage.py shell
@@ -103,6 +87,20 @@ git status
 git add .
 git commit -am "Update: Describe what you changed here"
 git push origin main
+
+postgresql
+
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo service postgresql start
+sudo -u postgres psql -c "CREATE DATABASE bitguard;"
+sudo -u postgres psql -c "CREATE USER youness WITH PASSWORD 'admin';"
+sudo -u postgres psql -c "ALTER ROLE youness SET client_encoding TO 'utf8';"
+sudo -u postgres psql -c "ALTER ROLE youness SET default_transaction_isolation TO 'read committed';"
+sudo -u postgres psql -c "ALTER ROLE youness SET timezone TO 'UTC';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE bitguard TO youness;"
+pip install psycopg2-binary
+
 
 curl -fsSL https://claude.ai/install.sh | bash
 1) irm https://claude.ai/install.ps1 | iex (Windows) or curl -fsSL https://claude.ai/install.sh | bash (Linux/macOS)
@@ -192,29 +190,6 @@ backend/ (or bitguard/)  # Django project root
 1. New Frontend Folder Architecture (frontend/src/apps/)
 We will create a new src/apps/ directory to mirror the exact modules present in the backend/apps/ folder. This ensures 1:1 parity across the entire stack. Each frontend app will encapsulate its own pages/, components/, api/, and routes/.
 
-auth/: Login, Register, Forgot Password, and IAM (Identity) pages.
-users/: Account settings, Personal Info, People/Profiles.
-crm/: Customers, Leads, Deals, Activities.
-erp/: Finance, Tasks, Invoices, Billing, HRM, SCM.
-soc/: Alerts, Incidents, Threat Intelligence.
-store/: Product Catalog, Orders, Store Settings.
-website/: Landing Page, About, Contact, Services (formerly home).
-dashboard/: Enterprise Admin Panel, Command Center, Logs (formerly admin).
-
-API Routes:
-/api/store/        ← Commerce
-/api/billing/      ← Subscriptions, Plans
-/api/erp/          ← Invoices, Projects
-/api/crm/          ← Pipeline, Clients, Deals
-/api/contracts/    ← SLA, Quotes, Contracts
-/api/support/      ← Tickets
-/api/security/     ← SOC + Security Platform
-/api/hrm/          ← Employees, Leave, Time
-/api/scm/          ← Vendors, Inventory, POs
-/api/auth/         ← JWT, Password Reset
-/api/tenants/      ← Multi-tenancy
-/api/dashboard/    ← BFF Command Center
-/api/marketing/    ← Campaigns
 
 "Run /scaffold-module for a new Support app"
 "Run /scaffold-module for a new Marketing Campaign App"
@@ -308,3 +283,20 @@ E-sign
 
 
 "Act as a Senior Tier-1 ERP Architect. Audit my codebase for Domain Leakage, Separation of Concerns (SoC) violations, and Architectural Inversions. Specifically, verify that downstream business plugins are perfectly encapsulated and are not accidentally hosting global dispatchers, system infrastructure, or cross-module orchestrators that rightfully belong in the core or system modules
+
+
+
+Layer 3 — Business Plugins (application: True) ✅
+All 61 business plugin modules are correctly classified with application: True. Sections are now correct after this session's pillar fix:
+
+Administration: system(1), apps(2), soc(3), studio(99), agents(98)
+Sales: sales(1), crm(2), pos(3), subscriptions(4), rental(5), amazon(6)
+Services: projects(1), timesheets(2), dispatch(3), helpdesk(4), planning(5), appointments(6)
+Accounting: accounting(1), invoicing(2), consolidation(3), documents(3⚠), sign(4⚠), spreadsheet(4⚠), esg(5), equity(6), expenses(7)
+Inventory: inventory(1), procurement(2), barcode(3)
+Manufacturing: manufacturing(1), production(2), maintenance(4), quality(5), repair(6), iot(7)
+Website: website(1), ecommerce(2), learning(3), forum(4), blog(5)
+Marketing: campaigns(1⚠), journeys(1⚠), sms(2), events(3), social(4⚠), surveys(4⚠)
+Human Resources: employees(1), recruiting(2), timeoff(3), timeclock(4), frontdesk(5), payroll(6), performance(8), referrals(8), fleet(10), lunch(11)
+Discuss: discuss(3), voip(8), messaging(6), whatsapp(3)
+Productivity: tasks(2), approvals(5), knowledge(6), calendar(7), analytics(5)

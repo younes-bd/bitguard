@@ -1,5 +1,6 @@
+from apps.users.domain.models import RecordRule
 from rest_framework import serializers
-from ..domain.models import User, Role, SecurityPolicy, RolePermission, RecordRule
+from ..domain.models import User, Role, SecurityPolicy, RolePermission
 from django.contrib.contenttypes.models import ContentType
 from apps.core.domain.models import Partner
 
@@ -23,18 +24,6 @@ class RolePermissionSerializer(serializers.ModelSerializer):
         model = RolePermission
         fields = ['id', 'role', 'content_type', 'model_name', 'app_label', 'can_read', 'can_write', 'can_create', 'can_delete']
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
-
-class ContentTypeSerializer(serializers.ModelSerializer):
-    label = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = ContentType
-        fields = ['id', 'app_label', 'model', 'label']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
-        
-    def get_label(self, obj):
-        return obj.model.replace('_', ' ').title()
-
 
 class PartnerProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -176,6 +165,7 @@ class SecurityPolicySerializer(serializers.ModelSerializer):
         model = SecurityPolicy
         fields = ['id', 'tenant', 'password_complexity', 'session_timeout', 'mfa_required', 'api_key_rotation', 'ip_whitelist', 'failed_login_lock', 'lock_duration', 'concurrent_sessions']
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+
 
 class RecordRuleSerializer(serializers.ModelSerializer):
     role_name = serializers.CharField(source='role.name', read_only=True)

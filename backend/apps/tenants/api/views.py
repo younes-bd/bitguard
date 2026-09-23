@@ -11,7 +11,9 @@ from django.conf import settings
 class TenantViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = TenantSerializer
     def get_permissions(self):
-        if self.action in ['retrieve', 'update', 'partial_update', 'my_company']:
+        if self.action in ['public_info']:
+            return []
+        if self.action in ['retrieve', 'update', 'partial_update', 'my_company', 'current']:
             return [IsAuthenticated()]
         return [IsAuthenticated(), HasRole(['SUPER_ADMIN'])]
 
@@ -109,6 +111,15 @@ class TenantViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         serializer.save()
         return standard_response(True, "Company profile updated", serializer.data)
 
+    @action(detail=False, methods=['get'], url_path='current', permission_classes=[IsAuthenticated])
+    def current(self, request):
+        """Returns the active tenant for the current session. Alias used by the frontend."""
+        from rest_framework.response import Response
+        tenant = getattr(request, 'tenant', None)
+        if not tenant:
+            return Response({'detail': 'No active tenant found for this session.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(tenant)
+        return standard_response(True, "Current tenant retrieved", serializer.data)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

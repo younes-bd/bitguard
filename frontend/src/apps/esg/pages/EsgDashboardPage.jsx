@@ -8,8 +8,11 @@ const EsgDashboardPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    client.get('/esg/')
-      .then(res => setData(res.data.results || res.data))
+    client.get('/esg/esg-metrics/')
+      .then(res => {
+        const responseData = res.data?.results || res.data;
+        setData(Array.isArray(responseData) ? responseData : []);
+      })
       .catch(e => {
         const msg = e.response?.data?.detail || 'Failed to load';
         setError(msg);

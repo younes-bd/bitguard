@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import FleetDashboard from '../pages/dashboards/FleetDashboard';
+import FleetDashboard from '../pages/dashboards/FleetDashboardPage';
 
 export const fleetAdminRoutes = (
     <>

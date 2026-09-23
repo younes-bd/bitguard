@@ -10,8 +10,8 @@
     'application': True,
     'featured': False,
     'display_name': 'Sign',
-    'command_center_section': 'Productivity',
-    'sequence': 4,
+    'command_center_section': 'Accounting',
+    'sequence': 260,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Sign Tile'}

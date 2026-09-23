@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import { Route } from 'react-router-dom';
-import ProductCatalog from '../pages/public/ProductCatalog';
-import ProductDetail from '../pages/public/ProductDetail';
-import Checkout from '../pages/public/Checkout';
+import ProductCatalog from '../pages/public/ProductCatalogPage';
+import ProductDetail from '../pages/public/ProductDetailPage';
+import Checkout from '../pages/public/CheckoutPage';
 import WebsiteLayout from '@/core/layouts/WebsiteLayout';
 
 export const ecommercePublicRoutes = (

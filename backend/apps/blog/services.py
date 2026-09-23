@@ -1,1 +1,1 @@
-from .application.services import *
+from .services.blog import *

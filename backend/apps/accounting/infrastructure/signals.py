@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from apps.accounting.domain.models import Invoice, Payment
-from apps.notifications.application.services import NotificationService
+from apps.inbox.services.inbox import NotificationService
 
 User = get_user_model()
 

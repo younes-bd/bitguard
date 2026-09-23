@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .domain.models import User, Role, SecurityPolicy, ApiKey
+from .domain.models import User, Role, SecurityPolicy, PersonalAccessToken
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -17,8 +17,8 @@ class SecurityPolicyAdmin(admin.ModelAdmin):
     list_display = ('password_complexity', 'mfa_required', 'session_timeout')
     list_filter = ('mfa_required', 'password_complexity')
 
-@admin.register(ApiKey)
-class ApiKeyAdmin(admin.ModelAdmin):
+@admin.register(PersonalAccessToken)
+class PersonalAccessTokenAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'created_at', 'last_used')
     list_filter = ('created_at',)
     search_fields = ('name', 'user__email')

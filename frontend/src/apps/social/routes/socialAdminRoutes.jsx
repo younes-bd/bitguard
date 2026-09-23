@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import SocialDashboard from '../pages/dashboards/SocialDashboard';
+import SocialDashboard from '../pages/dashboards/SocialDashboardPage';
 
 export const socialAdminRoutes = (
     <React.Fragment>

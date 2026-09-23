@@ -44,7 +44,7 @@ class Command(BaseCommand):
         self.stdout.write("Creating Action 3: Expiring HR Contracts...")
         ScheduledAction.objects.create(
             name="Check Expiring Contracts",
-            model_name="hr.EmployeeContract",
+            model_name="employees.EmployeeContract",
             method_name="check_expiring_contracts",
             interval_number=1,
             interval_type="days",

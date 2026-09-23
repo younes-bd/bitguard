@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import KnowledgeDashboard from '../pages/dashboards/KnowledgeDashboard';
+import KnowledgeDashboard from '../pages/dashboards/KnowledgeDashboardPage';
 
 export const knowledgeAdminRoutes = (
     <React.Fragment>

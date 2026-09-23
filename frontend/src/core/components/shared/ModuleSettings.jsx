@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Save, Bell, Shield, Globe, Database, Mail, Clock } from 'lucide-react';
+import { Settings, Save, Bell, Shield, Globe, Database, Inbox, Clock } from 'lucide-react';
 
 const COLOR_MAP = {
     blue: { text: 'text-blue-400', bgHover: 'hover:bg-blue-500', bg: 'bg-blue-600' },
@@ -39,7 +39,7 @@ const Toggle = ({ on, onChange }) => {
 const ModuleSettings = ({ moduleName = 'Module', accentColor = 'blue', onSave }) => {
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({
-        emailNotifications: true,
+        emailInbox: true,
         autoRefresh: false,
         publicApi: true,
         twoFactor: false,
@@ -88,8 +88,8 @@ const ModuleSettings = ({ moduleName = 'Module', accentColor = 'blue', onSave })
 
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
                 <h3 className="text-white font-semibold mb-4 text-lg">General</h3>
-                <SettingRow icon={Bell} title="Email Notifications" description="Receive email alerts for important events in this module">
-                    <Toggle on={settings.emailNotifications} onChange={v => setSettings({...settings, emailNotifications: v})} />
+                <SettingRow icon={Bell} title="Email Inbox" description="Receive email alerts for important events in this module">
+                    <Toggle on={settings.emailInbox} onChange={v => setSettings({...settings, emailInbox: v})} />
                 </SettingRow>
                 <SettingRow icon={Clock} title="Auto-refresh Dashboard" description="Automatically refresh KPIs and data tables every 60 seconds">
                     <Toggle on={settings.autoRefresh} onChange={v => setSettings({...settings, autoRefresh: v})} />
@@ -115,7 +115,7 @@ const ModuleSettings = ({ moduleName = 'Module', accentColor = 'blue', onSave })
                         <option>3 Years</option>
                     </select>
                 </SettingRow>
-                <SettingRow icon={Mail} title="Audit Trail Notifications" description="Send a daily digest of all changes to module administrators">
+                <SettingRow icon={Inbox} title="Audit Trail Inbox" description="Send a daily digest of all changes to module administrators">
                     <Toggle on={settings.auditTrail} onChange={v => setSettings({...settings, auditTrail: v})} />
                 </SettingRow>
             </div>

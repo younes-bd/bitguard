@@ -1,0 +1,7 @@
+with open('.agents/rules/architecture.md', 'a', encoding='utf-8') as f:
+    f.write('\n\n## 24. Explicit Push-Registries (Anti-Magic File Crawling)\n')
+    f.write('**The Problem:** Developers often attempt to achieve modularity by making the Kernel "crawl" the filesystem (using `importlib` and `try/except ImportError`) to find dynamically named files (like `services/kpi.py` or `integrations/export.py`) in downstream apps. This creates hidden, implicit contracts, causes unnecessary filesystem I/O at runtime, and makes debugging extremely difficult.\n\n')
+    f.write('**The Rule:** The Kernel (`core`, `system`, etc.) is STRICTLY FORBIDDEN from executing filesystem crawling or using "Duck Typing" imports to discover module capabilities. You must use an **Explicit Push-Registry**.\n')
+    f.write('* **The Kernel:** Defines a Singleton registry in its root directory (e.g., `apps/core/registry.py`). It does zero discovery work.\n')
+    f.write("* **Downstream Apps:** Explicitly \"push\" their capabilities into the Kernel's registry during the Django boot phase, exclusively inside their `apps.py` `ready()` method (e.g., `kpi_registry.register('accounting', get_kpis)`).\n\n")
+    f.write("**Why:** This mathematically enforces the Dependency Inversion Principle. It shifts the responsibility from the Core (which shouldn't know about downstream apps) to the downstream apps (which know exactly what they provide). It also guarantees lightning-fast, O(1) memory lookups for global APIs like the Command Center instead of slow filesystem polling.\n")

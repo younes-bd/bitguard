@@ -19,7 +19,7 @@ from ..api.serializers import (
     NetworkEventSerializer, CloudIntegrationSerializer, RemoteSessionSerializer,
     ComplianceFrameworkSerializer, ComplianceControlSerializer
 )
-from ..application.services import (
+from ..services import (
     AlertService, IncidentService, ThreatIntelligenceService, LogAnalysisService,
     WorkspaceService, ManagedEndpointService, CloudAppService, SystemMonitorService,
     NetworkEventService, CloudIntegrationService, RemoteSessionService,

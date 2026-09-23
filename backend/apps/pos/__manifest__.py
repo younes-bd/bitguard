@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Point of Sale',
     'command_center_section': 'Sales',
-    'sequence': 3,
+    'sequence': 30,
     'has_settings': True,
     'settings_url': '/admin/settings/pos',
     'settings_desc': 'Configure settings',

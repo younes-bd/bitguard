@@ -13,13 +13,13 @@ Instead, register your routes in your module's `apps.py`:
 
     class MyNewAppConfig(AppConfig):
         def ready(self):
-            from apps.core.api.registry import register
+            from apps.core.registry import register
             register('my_new_app/', 'apps.my_new_app.api.urls')
 
 Architecture Rule #5 — Registry-Driven Plug-and-Play (Backend Global Registry Pattern)
 """
 from django.urls import path, include
-from apps.core.api.registry import get_registered_routes
+from apps.core.registry import get_registered_routes
 
 # The master router reads the registry. Nothing else.
 # Apps register themselves in their own apps.py ready() method.
@@ -27,4 +27,5 @@ urlpatterns = [
     path(route['prefix'], include(route['module']))
     for route in get_registered_routes()
 ]
+
 

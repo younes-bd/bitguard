@@ -6,13 +6,13 @@ const discussService = {
   postMessage: (data) => apiClient.post('/discuss/messages/', data).then(r => r.data),
   createChannel: (data) => apiClient.post('/discuss/channels/', data).then(r => r.data),
   getCalendarEvents: (params) => apiClient.get('/discuss/calendarevents/', { params }).then(r => r.data),
-  getLiveChatSessions: (params) => apiClient.get('/api/discuss/livechatsessions/', { params }).then(r => r.data),
+  getLiveChatSessions: (params) => apiClient.get('/api/discuss/messagingsessions/', { params }).then(r => r.data),
   getWhatsAppMessages: (params) => apiClient.get('/api/discuss/whatsappmessages/', { params }).then(r => r.data),
   // LiveChat Configuration
-  getLiveChatChannels: () => apiClient.get('/api/discuss/livechat/').then(r => r.data),
-  createLiveChatChannel: (data) => apiClient.post('/api/discuss/livechat/', data).then(r => r.data),
-  updateLiveChatChannel: (id, data) => apiClient.patch(`/api/discuss/livechat/${id}/`, data).then(r => r.data),
-  deleteLiveChatChannel: (id) => apiClient.delete(`/api/discuss/livechat/${id}/`).then(r => r.data),
+  getLiveChatChannels: () => apiClient.get('/api/discuss/messaging/').then(r => r.data),
+  createLiveChatChannel: (data) => apiClient.post('/api/discuss/messaging/', data).then(r => r.data),
+  updateLiveChatChannel: (id, data) => apiClient.patch(`/api/discuss/messaging/${id}/`, data).then(r => r.data),
+  deleteLiveChatChannel: (id) => apiClient.delete(`/api/discuss/messaging/${id}/`).then(r => r.data),
 };
 
 export default discussService;

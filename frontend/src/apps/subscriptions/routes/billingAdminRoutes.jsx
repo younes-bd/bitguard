@@ -1,12 +1,12 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 import BillingAdminPage from '../pages/dashboards/BillingAdminPage';
-import PlansList from '../pages/lists/PlansList';
-import InvoicesList from '../pages/lists/InvoicesList';
-import BillingSettings from '../pages/settings/BillingSettings';
-import BillingSuccess from '../pages/features/BillingSuccess';
-import BillingCancel from '../pages/features/BillingCancel';
-import DunningManager from '../pages/lists/DunningManager';
+import PlansList from '../pages/lists/PlansListPage';
+import InvoicesList from '../pages/lists/InvoicesListPage';
+import BillingSettings from '../pages/settings/BillingSettingsPage';
+import BillingSuccess from '../pages/features/BillingSuccessPage';
+import BillingCancel from '../pages/features/BillingCancelPage';
+import DunningManager from '../pages/lists/DunningManagerPage';
 
 export const billingAdminRoutes = (
     <React.Fragment>

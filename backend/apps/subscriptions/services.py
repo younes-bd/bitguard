@@ -1,4 +1,4 @@
-from .application.services import *
+from .services.subscriptions import *
 
 
     @staticmethod

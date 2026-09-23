@@ -1,28 +1,31 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.soc.domain.models import Alert
+from django.apps import apps
+import logging
+logger = logging.getLogger(__name__)
 
-@receiver(post_save, sender=Alert)
-def escalate_alert_to_incident(sender, instance, created, **kwargs):
-    """
-    Escalates high/critical severity alerts to an Incident in ITSM/Support automatically.
-    """
-    if created and instance.severity in ['high', 'critical']:
-        from apps.soc.domain.models import Incident
-        from apps.helpdesk.domain.models import Ticket
-        
-        incident = Incident.objects.create(
+@receiver(post_save, sender='subscriptions.servicecontract')
+def handle_contract_created(sender, instance, created, **kwargs):
+    if created:
+        Workspace = apps.get_model('soc', 'Workspace')
+        Workspace.objects.get_or_create(
             tenant=instance.tenant,
-            title=f"Auto-Incident: {instance.title}",
-            description=instance.description,
-            status='open'
+            defaults={
+                'name': f"SOC Workspace: {instance.client.name}",
+                'is_active': True
+            }
         )
-        incident.alerts.add(instance)
-        
-        Ticket.objects.create(
+        logger.info(f"Created SOC Workspace for Contract {instance.id}")
+
+@receiver(post_save, sender='helpdesk.slabreach')
+def handle_sla_breach(sender, instance, created, **kwargs):
+    if created:
+        Alert = apps.get_model('soc', 'Alert')
+        Alert.objects.create(
             tenant=instance.tenant,
-            title=f"SECURITY ALERT: {instance.title}",
-            description=f"Source: {instance.source}\nSeverity: {instance.severity}\n\n{instance.description}",
-            status='open',
-            priority='critical',
+            title=f"SLA Breach: {instance.get_breach_type_display()}",
+            description=f"A breach occurred on contract {instance.contract} for ticket {instance.ticket_id}.",
+            severity='high',
+            source='SLA_MONITOR'
         )
+        logger.info(f"Created SOC Alert for SLA Breach {instance.id}")

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import ContractList from '../pages/lists/ContractList';
+import ContractList from '../pages/lists/ContractListPage';
 import SlaBreachesPage from '../pages/dashboards/SlaBreachesPage';
-import SignSettings from '../pages/settings/SignSettings';
-import SignDashboard from '../pages/dashboards/SignDashboard';
-import ContractDetail from '../pages/details/ContractDetail';
-import SlaManager from '../pages/lists/SlaManager';
+import SignSettings from '../pages/settings/SignSettingsPage';
+import SignDashboard from '../pages/dashboards/SignDashboardPage';
+import ContractDetail from '../pages/details/ContractDetailPage';
+import SlaManager from '../pages/lists/SlaManagerPage';
 
 export const signAdminRoutes = (
     <>

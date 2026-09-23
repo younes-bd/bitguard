@@ -1,0 +1,15 @@
+from apps.core.validators import validate_document_file
+from django.db import models
+from django.conf import settings
+from apps.core.domain.models import BaseModel, TenantAwareModel
+
+
+class Project(TenantAwareModel):
+    """
+    Dedicated Project Management model Ã¢â‚¬â€ separate from ERP InternalProject.
+    Represents a client-facing or internal service engagement.
+    """
+    STATUS_CHOICES = [
+        ('backlog', 'Backlog'),
+        ('planning', 'Planning'),
+        ('active', '

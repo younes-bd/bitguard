@@ -16,7 +16,7 @@
     'screenshots': [],
     'display_name': 'Calendar',
     'command_center_section': 'Productivity',
-    'sequence': 7,
+    'sequence': 940,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Calendar Tile'}

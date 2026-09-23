@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import SmsDashboard from '../pages/dashboards/SmsDashboard';
+import SmsDashboard from '../pages/dashboards/SmsDashboardPage';
 
 export const smsAdminRoutes = (
     <React.Fragment>

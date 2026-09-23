@@ -1,0 +1,13 @@
+from django.apps import AppConfig
+
+class AnalyticsConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.analytics'
+
+    def ready(self):
+        self._register_api_routes()
+
+    def _register_api_routes(self):
+        from apps.core.registry import register
+        register('analytics/', 'apps.analytics.api.urls')
+

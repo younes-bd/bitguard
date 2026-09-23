@@ -3,7 +3,7 @@ Security Audit Service — Charter §11 Compliance Tracking.
 Monitors platform activity against the BitGuard Enterprise Charter.
 """
 from django.utils import timezone
-from apps.core.services.base import BaseService
+from apps.core.services.core import BaseService
 from apps.core.services.audit import AuditService
 from apps.core.domain.models import AuditTrail
 

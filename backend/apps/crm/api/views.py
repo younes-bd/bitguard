@@ -15,7 +15,7 @@ from ..api.serializers import (
     DealSerializer, ActivitySerializer, CrmStageSerializer,
     CrmSalesTeamSerializer, LostReasonSerializer, CrmTagSerializer
 )
-from ..application.services import ClientService, ContactService, LeadService, DealService, ActivityService
+from ..services import ClientService, ContactService, LeadService, DealService, ActivityService
 
 
 from apps.core.api.mixins import ReportGenerateMixin
@@ -52,8 +52,8 @@ class ClientViewSet(ReportGenerateMixin, TenantScopedMixin, viewsets.ModelViewSe
     @action(detail=True, methods=['get'], url_path='statement')
     def statement(self, request, pk=None):
         from django.apps import apps
-        from apps.reporting.domain.models import ReportTemplate
-        from apps.reporting.services.pdf_generator import ReportingService
+        from apps.reports.domain.models import ReportTemplate
+        from apps.reports.services.pdf_generator import ReportingService
         client = self.get_object()
         period_start = request.query_params.get('period_start')
         period_end = request.query_params.get('period_end')
@@ -154,25 +154,25 @@ class LeadViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='convert-to-sale')
     def convert_to_sale(self, request, pk=None):
         lead = self.get_object()
-        from apps.sale.domain.models import SaleOrder
-        from apps.sale.api.serializers import SaleOrderSerializer
+        from apps.sales.domain.models import SalesOrder
+        from apps.sales.api.serializers import SalesOrderSerializer
         from django.utils import timezone
         
         client_ref = lead.contact.client if lead.contact else None
         if not client_ref:
             return Response({'error': 'Lead must be associated with a client to convert to sale.'}, status=status.HTTP_400_BAD_REQUEST)
             
-        order = SaleOrder.objects.create(
+        order = SalesOrder.objects.create(
             tenant=lead.tenant,
             client=client_ref,
             status='draft',
-            order_number=f"SO-{timezone.now().year}-{SaleOrder.objects.filter(tenant=lead.tenant).count()+1:04d}",
+            order_number=f"SO-{timezone.now().year}-{SalesOrder.objects.filter(tenant=lead.tenant).count()+1:04d}",
             date_order=timezone.now().date(),
             created_by=request.user,
         )
         lead.status = 'converted'
         lead.save()
-        return Response(SaleOrderSerializer(order).data, status=status.HTTP_201_CREATED)
+        return Response(SalesOrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
     def convert(self, request, pk=None):
@@ -208,24 +208,24 @@ class DealViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='convert-to-sale')
     def convert_to_sale(self, request, pk=None):
         deal = self.get_object()
-        from apps.sale.domain.models import SaleOrder
-        from apps.sale.api.serializers import SaleOrderSerializer
+        from apps.sales.domain.models import SalesOrder
+        from apps.sales.api.serializers import SalesOrderSerializer
         from django.utils import timezone
         
         if not deal.client:
             return Response({'error': 'Deal must be associated with a client to convert to sale.'}, status=status.HTTP_400_BAD_REQUEST)
             
-        order = SaleOrder.objects.create(
+        order = SalesOrder.objects.create(
             tenant=deal.tenant,
             client=deal.client,
             status='draft',
-            order_number=f"SO-{timezone.now().year}-{SaleOrder.objects.filter(tenant=deal.tenant).count()+1:04d}",
+            order_number=f"SO-{timezone.now().year}-{SalesOrder.objects.filter(tenant=deal.tenant).count()+1:04d}",
             date_order=timezone.now().date(),
             created_by=request.user,
         )
         deal.stage = 'won'
         deal.save()
-        return Response(SaleOrderSerializer(order).data, status=status.HTTP_201_CREATED)
+        return Response(SalesOrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'], url_path='set-stage')
     def set_stage(self, request, pk=None):

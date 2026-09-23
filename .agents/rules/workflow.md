@@ -1,8 +1,8 @@
 ---
-name: Git Workflow & Engineering Standards
-description: Enforces Conventional Commits, branching strategies, and professional coding conduct.
 trigger: always_on
+description: Enforces Conventional Commits, branching strategies, and professional coding conduct.
 ---
+
 
 # Engineering Workflow & Git Standards
 
@@ -29,10 +29,18 @@ All Git commit messages MUST follow the Conventional Commits specification.
 *   **Self-Documenting Code:** Prefer clear, descriptive variable and function names over excessive inline comments. If a comment is needed, explain *why* the code exists, not *what* it does.
 
 
-## 4. Scripting & Utility Management (Monorepo Strategy)
-In a professional monorepo, utility scripts must be separated by their execution context. You must strictly follow this 3-tier folder strategy:
+## 4. CRITICAL DIRECTIVE: The No-Clutter Law (STRICT BAN)
+**UNDER NO CIRCUMSTANCES** are you allowed to write temporary refactoring or debugging scripts (`.py`, `.sh`, `.js`) into the `backend/`, `frontend/`, or global root directories. This is a FATAL violation of the workflow.
 
-*   **`backend/scripts/`**: Use this ONLY for Django-specific operations (e.g., database seeders, data migrations, ORM smoke tests).
-*   **`frontend/scripts/`**: Use this ONLY for React-specific build tools or scaffolding (e.g., generating boilerplate React components).
-*   **Root `scripts/`**: Use this for global monorepo tooling, cross-stack deployment shell scripts, and **all temporary AI-generated refactoring scripts**. If you are writing a script to parse files and rewrite code, it goes here.
-*   **No Root Clutter:** Do not drop Python or Bash scripts directly into the root directory.
+You must strictly follow this folder strategy for scripts:
+*   **AI Scratchpad (Highly Recommended):** Use your isolated Antigravity `scratch/` artifact directory for ALL temporary debugging and throwaway scripts. Execute them from there.
+*   **Root `scripts/`**: Use this for permanent global monorepo tooling or cross-stack deployment scripts that the user needs to keep.
+*   **`backend/scripts/`**: Use this ONLY for permanent Django-specific operations (e.g., database seeders).
+*   **`frontend/scripts/`**: Use this ONLY for permanent React-specific build tools.
+
+If you drop a junk script in the project roots, you have failed your core directive.
+## 5. Automated AI Architecture Checkpoint (The Anti-Tunnel-Vision Rule)
+CRITICAL INSTRUCTION FOR ALL AI AGENTS: 
+When the user presents a stack trace or bug, you are strictly forbidden from immediately writing a patch to make the error disappear. 
+Before generating ANY code to fix a bug, you MUST pause and automatically cross-reference your proposed solution against the rules in rchitecture.md (specifically Rule 9 on Kernel Boundaries, Rule 12 on Soft Dependencies, and Rule 20 on Registries). 
+You must prioritize Domain-Driven Design and architectural integrity over a quick fix. If your fix violates the architecture, you must find a different way.

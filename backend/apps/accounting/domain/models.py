@@ -77,7 +77,7 @@ class TaxConfig(TenantAwareModel):
         return f"{self.name} ({self.rate}%)"
 
 class Invoice(TenantAwareModel):
-    sale_order = models.ForeignKey('sale.SaleOrder', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
+    sale_order = models.ForeignKey('sales.SalesOrder', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
     TYPE_CHOICES = [
         ('standard', 'Standard Invoice'),
         ('proforma', 'Proforma Invoice'),
@@ -532,13 +532,13 @@ class VendorBill(TenantAwareModel):
         ('cancelled', 'Cancelled')
     ]
     vendor = models.ForeignKey(
-        'purchase.Vendor',
+        'procurement.Vendor',
         on_delete=models.CASCADE,
         related_name='vendor_bills',
         null=True, blank=True
     )
     purchase_order = models.ForeignKey(
-        'purchase.PurchaseOrder',
+        'procurement.PurchaseOrder',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

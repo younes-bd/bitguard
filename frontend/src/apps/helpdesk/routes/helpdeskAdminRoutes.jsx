@@ -1,28 +1,28 @@
 import { Route } from 'react-router-dom';
-import HelpdeskDashboard from '../pages/dashboards/HelpdeskDashboard';
-import SlaBreachLog from '../pages/lists/SlaBreachLog';
-import EscalationList from '../pages/lists/EscalationList';
-import KnowledgeBase from '../pages/features/KnowledgeBase';
-import TicketList from '../pages/lists/TicketList';
-import TicketDetails from '../pages/details/TicketDetails';
-import TicketCreate from '../pages/features/TicketCreate';
-import TicketDetail from '../pages/details/TicketDetail';
-import CustomerTickets from '../pages/lists/CustomerTickets';
-import SlaLiveDashboard from '../pages/dashboards/SlaLiveDashboard';
-import LiveChatDashboard from '../../livechat/pages/dashboards/LiveChatDashboard';
-import Visitors from '../../livechat/pages/features/Visitors';
+import HelpdeskDashboard from '../pages/dashboards/HelpdeskDashboardPage';
+import SlaBreachLog from '../pages/lists/SlaBreachLogPage';
+import EscalationList from '../pages/lists/EscalationListPage';
+import KnowledgeBase from '../pages/features/KnowledgeBasePage';
+import TicketList from '../pages/lists/TicketListPage';
+import TicketDetails from '../pages/details/TicketDetailsPage';
+import TicketCreate from '../pages/features/TicketCreatePage';
+import TicketDetail from '../pages/details/TicketDetailPage';
+import CustomerTickets from '../pages/lists/CustomerTicketsPage';
+import SlaLiveDashboard from '../pages/dashboards/SlaLiveDashboardPage';
+import LiveChatDashboard from '../../messaging/pages/dashboards/LiveChatDashboardPage';
+import Visitors from '../../messaging/pages/features/VisitorsPage';
 
 // Configuration
-import HelpdeskSettings from '../pages/settings/HelpdeskSettings';
-import HelpdeskTeams from '../pages/settings/HelpdeskTeams';
-import SlaPolicies from '../pages/settings/SlaPolicies';
-import HelpdeskStages from '../pages/settings/HelpdeskStages';
-import TicketTypes from '../pages/settings/TicketTypes';
-import TicketTags from '../pages/settings/TicketTags';
+import HelpdeskSettings from '../pages/settings/HelpdeskSettingsPage';
+import HelpdeskTeams from '../pages/settings/HelpdeskTeamsPage';
+import SlaPolicies from '../pages/settings/SlaPoliciesPage';
+import HelpdeskStages from '../pages/settings/HelpdeskStagesPage';
+import TicketTypes from '../pages/settings/TicketTypesPage';
+import TicketTags from '../pages/settings/TicketTagsPage';
 
 // Reports
-import TicketsAnalysis from '../pages/dashboards/TicketsAnalysis';
-import SlaStatusAnalysis from '../pages/dashboards/SlaStatusAnalysis';
+import TicketsAnalysis from '../pages/dashboards/TicketsAnalysisPage';
+import SlaStatusAnalysis from '../pages/dashboards/SlaStatusAnalysisPage';
 
 export const helpdeskAdminRoutes = (
     <>
@@ -32,8 +32,8 @@ export const helpdeskAdminRoutes = (
         <Route path="tickets/:id" element={<TicketDetail />} />
         <Route path="my-tickets" element={<CustomerTickets />} />
 
-        <Route path="livechat" element={<LiveChatDashboard />} />
-        <Route path="livechat/visitors" element={<Visitors />} />
+        <Route path="messaging" element={<LiveChatDashboard />} />
+        <Route path="messaging/visitors" element={<Visitors />} />
 
         {/* Reports */}
         <Route path="reports/tickets" element={<TicketsAnalysis />} />

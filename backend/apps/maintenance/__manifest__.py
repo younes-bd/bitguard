@@ -17,7 +17,7 @@
     'screenshots': [],
     'display_name': 'Maintenance',
     'command_center_section': 'Manufacturing',
-    'sequence': 4,
+    'sequence': 430,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Maintenance Tile'}

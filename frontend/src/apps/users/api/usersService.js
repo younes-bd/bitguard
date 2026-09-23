@@ -1,4 +1,4 @@
-﻿import client from '@/core/api/client';
+import client from '@/core/api/client';
 
 export const usersService = {
     // --- Identity (Users) ---
@@ -32,6 +32,20 @@ export const usersService = {
         return response.data?.data ?? response.data;
     },
 
+    // --- Phase 6 additional Identity ---
+    inviteUser: async (data) => {
+        const response = await client.post('users/invite/', data);
+        return response.data?.data ?? response.data;
+    },
+    resendInvitation: async (id) => {
+        const response = await client.post(`users/invitations/${id}/resend/`);
+        return response.data?.data ?? response.data;
+    },
+    resetPassword: async (id) => {
+        const response = await client.post(`users/${id}/reset_password/`);
+        return response.data?.data ?? response.data;
+    },
+
     // --- Tenancy ---
     getTenants: async (params = {}) => {
         const response = await client.get('tenants/', { params });
@@ -41,7 +55,7 @@ export const usersService = {
     // --- Access (Roles) ---
     getRoles: async () => {
         const response = await client.get('users/roles/');
-        return response.data?.data?.roles ?? response.data;
+        return response.data?.data?.roles ?? response.data?.data ?? response.data?.results ?? response.data ?? [];
     },
     createRole: async (roleData) => {
         const response = await client.post('users/roles/', roleData);
@@ -55,10 +69,38 @@ export const usersService = {
         const response = await client.delete(`users/roles/${id}/`);
         return response.data?.data ?? response.data;
     },
+    getRoleUsers: async (id) => {
+        const response = await client.get(`users/roles/${id}/users/`);
+        return response.data?.data ?? response.data;
+    },
+    assignUsersToRole: async (id, data) => {
+        const response = await client.post(`users/roles/${id}/assign_users/`, data);
+        return response.data?.data ?? response.data;
+    },
 
     // --- Access (Permissions) ---
     getPermissions: async () => {
         const response = await client.get('users/roles/permissions/');
+        return response.data?.data ?? response.data;
+    },
+    getContentTypes: async () => {
+        const response = await client.get('core/content-types/');
+        return response.data?.data ?? response.data;
+    },
+    getRolePermissionsMatrix: async () => {
+        const response = await client.get('users/role-permissions/matrix/');
+        return response.data?.data ?? response.data;
+    },
+    getRolePermissions: async (params = {}) => {
+        const response = await client.get('users/role-permissions/', { params });
+        return response.data?.data ?? response.data?.results ?? response.data ?? [];
+    },
+    createRolePermission: async (data) => {
+        const response = await client.post('users/role-permissions/', data);
+        return response.data?.data ?? response.data;
+    },
+    updateRolePermission: async (id, data) => {
+        const response = await client.patch(`users/role-permissions/${id}/`, data);
         return response.data?.data ?? response.data;
     },
 
@@ -68,7 +110,7 @@ export const usersService = {
     },
 
     getAuditLogs: async (params = {}) => {
-        const response = await client.get('system/audit-logs/', { params });
+        const response = await client.get('core/audit-logs/', { params });
         return response.data?.data?.results ?? response.data?.results ?? response.data ?? [];
     },
 
@@ -93,16 +135,16 @@ export const usersService = {
     },
 
     // --- API Keys ---
-    getApiKeys: async () => {
-        const response = await client.get('users/api_keys/');
+    getPersonalAccessTokens: async () => {
+        const response = await client.get('users/personal_access_tokens/');
         return response.data?.data ?? response.data;
     },
-    createApiKey: async (name) => {
-        const response = await client.post('users/api_keys/', { name });
+    createPersonalAccessToken: async (name) => {
+        const response = await client.post('users/personal_access_tokens/', { name });
         return response.data?.data ?? response.data;
     },
-    revokeApiKey: async (keyId) => {
-        const response = await client.delete(`users/api_keys/${keyId}/`);
+    revokePersonalAccessToken: async (keyId) => {
+        const response = await client.delete(`users/personal_access_tokens/${keyId}/`);
         return response.data;
     },
 
@@ -147,3 +189,4 @@ export const usersService = {
         return response.data?.data ?? response.data;
     }
 };
+

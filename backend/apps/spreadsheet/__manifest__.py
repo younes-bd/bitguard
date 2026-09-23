@@ -15,8 +15,8 @@
     'featured': False,
     'screenshots': [],
     'display_name': 'Spreadsheet',
-    'command_center_section': 'Accounting & Finance',
-    'sequence': 4,
+    'command_center_section': 'Accounting',
+    'sequence': 290,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Spreadsheet Tile'}

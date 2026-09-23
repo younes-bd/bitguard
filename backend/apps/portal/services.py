@@ -1,7 +1,7 @@
 from apps.crm.domain.models import Client
 from apps.accounting.domain.models import Invoice
 from apps.helpdesk.domain.models import Ticket
-from apps.sale.domain.models import SaleOrder
+from apps.sales.domain.models import SalesOrder
 from apps.projects.domain.models import Project
 from apps.subscriptions.domain.models import ServiceContract, Subscription
 from apps.maintenance.domain.models import Asset
@@ -15,7 +15,7 @@ class PortalDashboardService:
             
         invoices = Invoice.objects.filter(client=client).order_by('-issue_date')
         tickets = Ticket.objects.filter(created_by=user).order_by('-created_at')
-        orders = SaleOrder.objects.filter(client=client).order_by('-date_order')
+        orders = SalesOrder.objects.filter(client=client).order_by('-date_order')
         projects = Project.objects.filter(client=client).order_by('-created_at')
         contracts = ServiceContract.objects.filter(client=client).order_by('-start_date')
         subscriptions = Subscription.objects.filter(user=user).order_by('-created_at')

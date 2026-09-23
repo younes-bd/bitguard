@@ -2,12 +2,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CommandCenter from './CommandCenter';
-import { boardService } from '../../api/boardService';
+import { analyticsService } from '../../api/analyticsService';
 import React from 'react';
 
 // Mock the dashboard service
-vi.mock('../../api/boardService', () => ({
-    boardService: {
+vi.mock('../../api/analyticsService', () => ({
+    analyticsService: {
         getMetrics: vi.fn(),
         getSystemHealth: vi.fn(),
         getRecentActivity: vi.fn()
@@ -47,7 +47,7 @@ describe('CommandCenter Dashboard', () => {
         contracts: { sla_breaches: 1 },
         erp: { overdue_invoices: 4 },
         approvals: { pending: 5 },
-        inventory: { low_stock_items: 12 }, purchase: { pending_orders: 5 },
+        inventory: { low_stock_items: 12 }, procurement: { pending_orders: 5 },
         services: { high_risk: 1 },
         hrm: { expiring_certifications: 3 },
         documents: { expiring_soon: 2 },
@@ -59,9 +59,9 @@ describe('CommandCenter Dashboard', () => {
     });
 
     it('renders the loading state initially', () => {
-        boardService.getMetrics.mockReturnValue(new Promise(() => {})); // pending promise
-        boardService.getSystemHealth.mockReturnValue(new Promise(() => {}));
-        boardService.getRecentActivity.mockReturnValue(new Promise(() => {}));
+        analyticsService.getMetrics.mockReturnValue(new Promise(() => {})); // pending promise
+        analyticsService.getSystemHealth.mockReturnValue(new Promise(() => {}));
+        analyticsService.getRecentActivity.mockReturnValue(new Promise(() => {}));
         render(
             <BrowserRouter>
                 <CommandCenter />
@@ -71,9 +71,9 @@ describe('CommandCenter Dashboard', () => {
     });
 
     it('renders the dashboard with KPI cards and Needs Attention widgets', async () => {
-        boardService.getMetrics.mockResolvedValue(mockMetrics);
-        boardService.getSystemHealth.mockResolvedValue({ status: 'healthy', active_nodes: 5, load_avg: '0.45' });
-        boardService.getRecentActivity.mockResolvedValue([]);
+        analyticsService.getMetrics.mockResolvedValue(mockMetrics);
+        analyticsService.getSystemHealth.mockResolvedValue({ status: 'healthy', active_nodes: 5, load_avg: '0.45' });
+        analyticsService.getRecentActivity.mockResolvedValue([]);
         
         render(
             <BrowserRouter>
@@ -103,9 +103,9 @@ describe('CommandCenter Dashboard', () => {
     });
 
     it('handles API errors gracefully', async () => {
-        boardService.getMetrics.mockRejectedValue(new Error('Failed to fetch metrics'));
-        boardService.getSystemHealth.mockResolvedValue({});
-        boardService.getRecentActivity.mockResolvedValue([]);
+        analyticsService.getMetrics.mockRejectedValue(new Error('Failed to fetch metrics'));
+        analyticsService.getSystemHealth.mockResolvedValue({});
+        analyticsService.getRecentActivity.mockResolvedValue([]);
         
         render(
             <BrowserRouter>

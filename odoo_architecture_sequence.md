@@ -94,8 +94,8 @@ Below is the exact, standard Odoo architecture, ordered precisely by Pillar sequ
 
 ## 10. Administration (Sequence: 100)
 *System configuration and master controls.*
-1. **Settings** (`base`) - The master configuration gateway.
-2. **Apps** (`base`) - The App Store / installer.
+1. **Settings** (`system`) - The master configuration gateway.
+2. **Apps** (`apps`) - The App Store / installer.
 3. **Security Operations Center** (`soc`) - Threat monitoring, audit logs, and AI security agents.
 4. **Studio** (`web_studio`) - No-code customization engine.
 
@@ -122,6 +122,6 @@ Below is the exact, standard Odoo architecture, ordered precisely by Pillar sequ
 ### Hidden / Technical Kernel (Sequence: 999)
 *These modules operate in the background and are deliberately excluded from standard dashboards to protect system integrity. They are the absolute foundation of the ERP.*
 * **Core** (`core`) - Abstract base models and global routing.
-* **System** (`system`) - System registries and global settings structure.
 * **Auth** (`auth`) - Security gateways, JWT, and login logic.
 * **Tenants** (`tenants`) - Multi-SaaS isolation and data segregation.
+* **Automation** (`automation`) - Background scheduled actions and webhooks.

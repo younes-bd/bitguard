@@ -12,7 +12,7 @@
 
     'display_name': 'Referrals',
     'command_center_section': 'Human Resources',
-    'sequence': 8,
+    'sequence': 780,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Referrals Tile',
