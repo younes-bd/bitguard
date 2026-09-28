@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { sectionService } from '../../../core/api/sectionService';
+import { moduleService } from '../../../core/api/moduleService';
 import client from '../../../../core/api/client';
-import { coreService } from '../../../core/api/coreService';
+
 import toast from 'react-hot-toast';
 import { useManifest } from '../../../../core/hooks/useManifest';
 import { GripVertical, Save, RefreshCw, ChevronDown, ChevronRight, Box } from 'lucide-react';
@@ -22,8 +24,8 @@ const MenuSequenceEditorPage = () => {
         setLoading(true);
         try {
             const [sectionsRes, modulesRes] = await Promise.all([
-                coreService.getSections(),
-                coreService.getModules({ limit: 200 })
+                sectionService.getSections(),
+                moduleService.getModules({ limit: 200 })
             ]);
             
             // Handle Sections
@@ -76,14 +78,14 @@ const MenuSequenceEditorPage = () => {
             // 1. Update Sections
             sections.forEach((section, index) => {
                 const newSequence = (index + 1) * 10;
-                promises.push(coreService.updateSection(section.id, { sequence: newSequence }));
+                promises.push(sectionService.updateSection(section.id, { sequence: newSequence }));
             });
 
             // 2. Update Modules
             Object.values(modulesMap).forEach(modArray => {
                 modArray.forEach((mod, index) => {
                     const newSequence = (index + 1) * 10;
-                    promises.push(coreService.updateModule(mod.id, { sequence: newSequence }));
+                    promises.push(moduleService.updateModule(mod.id, { sequence: newSequence }));
                 });
             });
 

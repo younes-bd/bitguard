@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Search, Loader2, Download, PackageOpen, Ban } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { accountingService } from '../../api/accountingService';
+import { paymentService } from '../../api/paymentService';
 
 export default function VendorPaymentsPage() {
     const [payments, setPayments] = useState([]);
@@ -15,7 +15,7 @@ export default function VendorPaymentsPage() {
     const loadPayments = async () => {
         setLoading(true);
         try {
-            const data = await accountingService.getPayments({ type: 'outbound' });
+            const data = await paymentService.getPayments({ type: 'outbound' });
             setPayments(data?.results || data || []);
         } catch (error) {
             toast.error('Failed to load vendor payments');
@@ -28,7 +28,7 @@ export default function VendorPaymentsPage() {
     const handleVoid = async (id) => {
         if (!confirm('Are you sure you want to void this payment?')) return;
         try {
-            await accountingService.voidPayment(id);
+            await paymentService.voidPayment(id);
             toast.success('Payment voided');
             loadPayments();
         } catch (error) {

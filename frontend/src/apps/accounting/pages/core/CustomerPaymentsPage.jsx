@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Search, Loader2, Download, PackageOpen, Plus, Ban } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { accountingService } from '../../api/accountingService';
+import { paymentService } from '../../api/paymentService';
 import PaymentForm from '../billing/PaymentFormPage';
 
 export default function CustomerPaymentsPage() {
@@ -17,7 +17,7 @@ export default function CustomerPaymentsPage() {
     const loadPayments = async () => {
         setLoading(true);
         try {
-            const data = await accountingService.getPayments({ type: 'inbound' });
+            const data = await paymentService.getPayments({ type: 'inbound' });
             setPayments(data?.results || data || []);
         } catch (error) {
             toast.error('Failed to load customer payments');
@@ -30,7 +30,7 @@ export default function CustomerPaymentsPage() {
     const handleVoid = async (id) => {
         if (!confirm('Are you sure you want to void this payment?')) return;
         try {
-            await accountingService.voidPayment(id);
+            await paymentService.voidPayment(id);
             toast.success('Payment voided');
             loadPayments();
         } catch (error) {

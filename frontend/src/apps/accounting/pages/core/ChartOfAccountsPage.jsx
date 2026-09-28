@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Search, Plus, Filter, Activity, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { accountService } from '../../api/accountService';
 import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
@@ -21,7 +22,7 @@ const ChartOfAccountsPage = () => {
 
     const fetchAccounts = async () => {
             try {
-                const data = await accountingService.getAccounts();
+                const data = await accountService.getAccounts();
                 setAccounts(data || []);
             } catch (err) {
                 console.error("Failed to fetch accounts", err);

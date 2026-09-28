@@ -9,10 +9,26 @@ export const settingsService = {
   uninstallModule: (id) => apiClient.post(`core/modules/${id}/uninstall/`),
   upgradeModule: (id) => apiClient.post(`core/modules/${id}/upgrade/`),
 
-  // System Settings (now System Parameters in core)
+  // System Settings
   getSettings: () => apiClient.get('core/parameters/'),
   updateSetting: (id, data) => apiClient.patch(`core/parameters/${id}/`, data),
   deleteSetting: (id) => apiClient.delete(`core/parameters/${id}/`),
+  getSystemStatus: async () => {
+    try {
+      const res = await apiClient.get('core/command-center/system_health/');
+      return { 
+        systems: [
+          { name: 'API Server', status: 'Operational', uptime: res.data.api_uptime || '100%' },
+          { name: 'Database', status: 'Operational', load: res.data.db_load || 'Normal' }
+        ], 
+        incidents: [], 
+        overallStatus: 'Operational',
+        active_sessions: res.data.active_sessions || 0
+      };
+    } catch (err) {
+      return { systems: [], incidents: [], overallStatus: 'Degraded' };
+    }
+  },
 
   // Scheduled Actions
   getScheduledActions: () => apiClient.get('core/scheduled-actions/'),
@@ -29,73 +45,6 @@ export const settingsService = {
   deleteLanguage: (id) => apiClient.delete(`core/languages/${id}/`),
   setDefaultLanguage: (id) => apiClient.post(`core/languages/${id}/set_default/`),
 
-  // Sequences (Document Numbering)
-  getSequences: (params) => apiClient.get('core/sequences/', { params }),
-  getSequence: (id) => apiClient.get(`core/sequences/${id}/`),
-  createSequence: (data) => apiClient.post('core/sequences/', data),
-  updateSequence: (id, data) => apiClient.put(`core/sequences/${id}/`, data),
-  deleteSequence: (id) => apiClient.delete(`core/sequences/${id}/`),
-
-  // User Groups (Roles)
-  getUserGroups: () => apiClient.get('users/roles/'),
-  createUserGroup: (data) => apiClient.post('users/roles/', data),
-  updateUserGroup: (id, data) => apiClient.patch(`users/roles/${id}/`, data),
-  deleteUserGroup: (id) => apiClient.delete(`users/roles/${id}/`),
-
-  // Access Rights (Role Permissions)
-  getAccessRights: (params) => apiClient.get('users/role-permissions/', { params }),
-  getContentTypes: () => apiClient.get('core/content-types/'),
-  createAccessRight: (data) => apiClient.post('users/role-permissions/', data),
-  updateAccessRight: (id, data) => apiClient.patch(`users/role-permissions/${id}/`, data),
-  deleteAccessRight: (id) => apiClient.delete(`users/role-permissions/${id}/`),
-
-  // Record Rules
-  getRecordRules: (params) => apiClient.get('users/record-rules/', { params }),
-  createRecordRule: (data) => apiClient.post('users/record-rules/', data),
-  updateRecordRule: (id, data) => apiClient.patch(`users/record-rules/${id}/`, data),
-  deleteRecordRule: (id) => apiClient.delete(`users/record-rules/${id}/`),
-
-  // Automated Actions (base.automation equivalent)
-  getAutomatedActions: (params) => apiClient.get('automation/actions/', { params }),
-  getAutomatedAction: (id) => apiClient.get(`automation/actions/${id}/`),
-  createAutomatedAction: (data) => apiClient.post('automation/actions/', data),
-  updateAutomatedAction: (id, data) => apiClient.put(`automation/actions/${id}/`, data),
-  deleteAutomatedAction: (id) => apiClient.delete(`automation/actions/${id}/`),
-  toggleAutomatedAction: (id, isActive) => apiClient.patch(`automation/actions/${id}/`, { is_active: isActive }),
-  runAutomatedAction: (id) => apiClient.post(`automation/actions/${id}/run/`),
-  
-  // Reports
-  getReports: (params) => apiClient.get('reports/generated/', { params }),
-
-  // Tenants & Company
-  getMyCompany: () => apiClient.get('tenants/my-company/'),
-  updateMyCompany: (data) => apiClient.patch('tenants/my-company/', data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
-
-  // Advanced System Actions (These might be defunct but left for UI safety)
-  batchUpdateSettings: (data) => apiClient.post('core/parameters/batch_update/', data),
-  createSetting: (data) => apiClient.post('core/parameters/', data),
-  triggerBackup: () => apiClient.post('core/database-backups/trigger/'),
-  pruneAuditLogs: (days) => apiClient.post('core/parameters/prune/', { days }),
-  clearCache: () => apiClient.post('core/parameters/clear_cache/'),
-  getSystemMetrics: () => apiClient.get('core/parameters/metrics/'),
-  getServerLogs: () => apiClient.get('core/parameters/server_logs/'),
-
-  // API Keys (Integration Keys)
-  getIntegrationKeys: () => apiClient.get('system/integration-keys/'),
-  createIntegrationKey: (data) => apiClient.post('system/integration-keys/', data),
-  deleteIntegrationKey: (id) => apiClient.delete(`system/integration-keys/${id}/`),
-
-  // Webhooks
-  getWebhooks: () => apiClient.get('automation/webhook-endpoints/'),
-  createWebhook: (data) => apiClient.post('automation/webhook-endpoints/', data),
-  deleteWebhook: (id) => apiClient.delete(`automation/webhook-endpoints/${id}/`),
-  testWebhook: (id) => apiClient.post(`automation/webhook-endpoints/${id}/test/`),
-
-  // Backups
-  getBackups: () => apiClient.get('core/database-backups/'),
-
   // Audit Logs
   getAuditLogs: (params) => apiClient.get('core/audit-logs/', { params }),
   exportAuditLogs: (params) => apiClient.get('core/audit-logs/?export=csv', { params }),
@@ -103,7 +52,27 @@ export const settingsService = {
   // Email Config
   getEmailConfig: () => apiClient.get('system/email-config/'),
   updateEmailConfig: (data) => apiClient.post('system/email-config/', data),
-  testEmailConfig: (data) => apiClient.post('system/email-config/test/', data)
+  testEmailConfig: (data) => apiClient.post('system/email-config/test/', data),
+
+  // Integration Keys
+  getIntegrationKeys: () => apiClient.get('system/integration-keys/'),
+  createIntegrationKey: (data) => apiClient.post('system/integration-keys/', data),
+  deleteIntegrationKey: (id) => apiClient.delete(`system/integration-keys/${id}/`),
+
+  // Backups
+  getBackups: () => apiClient.get('core/database-backups/'),
+
+  // SOC (Security Operations Center) - Forward compatibility
+  getSystemMonitors: (params) => apiClient.get('soc/monitors/', { params }),
+  getNetworkEvents: (params) => apiClient.get('soc/network-events/', { params }),
+  getEndpoints: (params) => apiClient.get('soc/endpoints/', { params }),
+  isolateEndpoint: (id) => apiClient.post(`soc/endpoints/${id}/isolate/`),
+  getRemoteSessions: (params) => apiClient.get('soc/remote-sessions/', { params }),
+  createRemoteSession: (data) => apiClient.post('soc/remote-sessions/', data),
+  getLogs: (params) => apiClient.get('soc/logs/', { params }),
+  getWorkspaces: (params) => apiClient.get('soc/workspaces/', { params }),
+  createWorkspace: (data) => apiClient.post('soc/workspaces/', data),
+  deleteWorkspace: (id) => apiClient.delete(`soc/workspaces/${id}/`)
 };
 
 export const getDocumentConfig = async () => {

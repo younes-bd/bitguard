@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FileSpreadsheet, Plus, CheckCircle2, ChevronRight, Activity, Download } from 'lucide-react';
+import { accountService } from '../../api/accountService';
 import { accountingService } from '../../api/accountingService';
+import { journalService } from '../../api/journalService';
 import reportsService from '@/apps/reports/api/reportsService';
 import { toast } from 'react-hot-toast';
 
@@ -26,8 +28,8 @@ const JournalEntriesPage = () => {
         const fetchData = async () => {
             try {
                 const [entriesData, accountsData] = await Promise.all([
-                    accountingService.getJournalEntries(),
-                    accountingService.getAccounts()
+                    journalService.getJournalEntries(),
+                    accountService.getAccounts()
                 ]);
                 setEntries(Array.isArray(entriesData) ? entriesData : (entriesData?.results || entriesData?.data || []));
                 setAccounts(Array.isArray(accountsData) ? accountsData : (accountsData?.results || accountsData?.data || []));
@@ -91,7 +93,7 @@ const JournalEntriesPage = () => {
                     { account: '', debit: '', credit: '', description: '' }
                 ]
             });
-            const data = await accountingService.getJournalEntries();
+            const data = await journalService.getJournalEntries();
             setEntries(data || []);
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to create journal entry");

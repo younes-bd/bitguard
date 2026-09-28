@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Settings, Save, Bell, Shield, Globe, Database, Mail, Clock, LifeBuoy, Users, Zap, AlertTriangle, Loader2 } from 'lucide-react';
-import { settingsService } from '../../../system/api/settingsService';
+import { parameterService } from '../../../core/api/parameterService';
+
 import { toast } from 'react-hot-toast';
 
 const SettingRow = ({ icon: Icon, title, description, children }) => (
@@ -35,7 +36,7 @@ const SupportSettingsPage = () => {
 
     useEffect(() => {
         setLoading(true);
-        settingsService.getSettings()
+        parameterService.getSettings()
             .then(res => {
                 const apiSettings = res.data?.results || res.data || [];
                 const mapped = { ...settings };
@@ -56,7 +57,7 @@ const SupportSettingsPage = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await settingsService.batchUpdateSettings(settings);
+            await parameterService.batchUpdateSettings(settings);
             toast.success('Support settings synchronized successfully');
         } catch (err) {
             console.error('Failed to save settings:', err);

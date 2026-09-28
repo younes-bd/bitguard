@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { databaseBackupService } from '../../../core/api/databaseBackupService';
 import { settingsService } from '../../api/settingsService';
 import { Database, Plus, Loader2, Download, Trash2, Search, Play } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -12,7 +13,7 @@ const BackupsListPage = () => {
     const loadBackups = async () => {
         setLoading(true);
         try {
-            const res = await settingsService.getBackups();
+            const res = await databaseBackupService.getBackups();
             setBackups(Array.isArray(res.data) ? res.data : (res.data?.results || []));
         } catch (err) {
             toast.error("Failed to load backups");
@@ -26,7 +27,7 @@ const BackupsListPage = () => {
     const handleTrigger = async () => {
         setTriggering(true);
         try {
-            await settingsService.triggerBackup();
+            await databaseBackupService.triggerBackup();
             toast.success("Backup triggered successfully");
             loadBackups();
         } catch (err) {

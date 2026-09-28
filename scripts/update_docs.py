@@ -30,7 +30,6 @@ replacements = {
 
 files_to_update = [
     'SYSTEM_ARCHITECTURE_MAP.md',
-    'TIER1_ERP_ARCHITECTURE_MAP.md',
     '.agents/rules/architecture.md'
 ]
 

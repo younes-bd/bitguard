@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { accountingService } from '../../../accounting/api/accountingService';
+import { creditNoteService } from '../../../accounting/api/creditNoteService';
+import { invoiceService } from '../../../accounting/api/invoiceService';
 import { crmService } from '../../../crm/api/crmService';
 import { toast } from 'react-hot-toast';
 import { Save, ArrowLeft, FileMinus, AlertTriangle } from 'lucide-react';
@@ -35,7 +36,7 @@ const CreditNoteCreatePage = () => {
 
   useEffect(() => {
     if (formData.client) {
-      accountingService.getInvoices({ client: formData.client }).then(data => {
+      invoiceService.getInvoices({ client: formData.client }).then(data => {
         setInvoices(Array.isArray(data) ? data : data?.results || []);
       }).catch(() => {});
     }
@@ -51,7 +52,7 @@ const CreditNoteCreatePage = () => {
     }
     setLoading(true);
     try {
-      await accountingService.createCreditNote({
+      await creditNoteService.createCreditNote({
         ...formData,
         invoice: formData.invoice || null,
         amount: Number(formData.amount),

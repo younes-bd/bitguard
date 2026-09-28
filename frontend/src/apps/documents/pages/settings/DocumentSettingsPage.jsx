@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
 import { Settings, Save, Loader2, ToggleLeft, ToggleRight } from 'lucide-react';
-import { settingsService } from '../../../system/api/settingsService';
+
 
 const DocumentSettingsPage = () => {
     const [settings, setSettings] = useState({
@@ -17,7 +18,7 @@ const DocumentSettingsPage = () => {
 
     useEffect(() => {
         setLoading(true);
-        settingsService.getSettings()
+        parameterService.getSettings()
             .then(res => {
                 const apiSettings = res.data?.results || res.data || [];
                 const mapped = { ...settings };
@@ -38,7 +39,7 @@ const DocumentSettingsPage = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await settingsService.batchUpdateSettings(settings);
+            await parameterService.batchUpdateSettings(settings);
             alert('Document settings updated successfully.');
         } catch (err) {
             console.error('Failed to save settings:', err);

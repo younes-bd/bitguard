@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FileText, ArrowLeft, Download, Building2, Calendar, DollarSign, Activity } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { clientStatementService } from '../../api/clientStatementService';
 import { crmService } from '../../../crm/api/crmService';
 
 const ClientStatementPage = () => {
@@ -15,7 +15,7 @@ const ClientStatementPage = () => {
         const fetchData = async () => {
             try {
                 // In a real app we might fetch client details separately or they come with the statement
-                const stmtData = await accountingService.getClientStatement(clientId);
+                const stmtData = await clientStatementService.getClientStatement(clientId);
                 setStatement(stmtData);
                 // Fake client details for display if not fully populated in statement
                 setClient({ id: clientId, name: stmtData?.client_name || 'Client', company: stmtData?.client_name || 'Company' });

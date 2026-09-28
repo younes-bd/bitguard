@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
+import { moduleService } from '../../../core/api/moduleService';
 import { CreditCard, Save, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useManifest } from '../../../../core/hooks/useManifest';
-import { settingsService } from '../../../system/api/settingsService';
+
 
 export default function PaymentsSettingsPage() {
     const { manifestData, refreshManifest } = useManifest();
@@ -13,7 +15,7 @@ export default function PaymentsSettingsPage() {
             const module = manifestData?.find(m => m.technical_name === 'payments');
             if (module && !module.is_installed) {
                 try {
-                    await settingsService.installModule(module.id);
+                    await moduleService.installModule(module.id);
                     await refreshManifest();
                     toast.success('Payments module auto-installed in the background');
                 } catch (error) {
@@ -35,7 +37,7 @@ export default function PaymentsSettingsPage() {
 
     const loadSettings = async () => {
         try {
-            const res = await settingsService.getSettings();
+            const res = await parameterService.getSettings();
             const data = res.data?.results || res.data || [];
             
             const current = { ...providers };
@@ -70,7 +72,7 @@ export default function PaymentsSettingsPage() {
                 paypal_secret: providers.paypal.secret
             };
             
-            await settingsService.batchUpdateSettings(payload);
+            await parameterService.batchUpdateSettings(payload);
             toast.success('Payment settings saved successfully');
         } catch (error) {
             toast.error('Failed to save settings');

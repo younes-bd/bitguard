@@ -60,19 +60,24 @@ const BackendRoutesInner = () => {
                 const RoutesComponent = module[exportName];
                 if (!RoutesComponent) return null;
 
-                const menuPath = `../../apps/${appName}/config/menu.js`;
-                const moduleMenuObj = menuConfigs[menuPath];
-                let moduleMenu = [];
-
-                if (moduleMenuObj) {
-                    const menuKey = Object.keys(moduleMenuObj).find(k => k.endsWith('Menu') && Array.isArray(moduleMenuObj[k]));
-                    if (menuKey) moduleMenu = moduleMenuObj[menuKey];
-                }
-
                 // Odoo 17 standard: resolve display title from the DB (InstalledModule.display_name),
                 // falling back to InstalledModule.name, then to a formatted folder name.
                 const dbModule = manifestData.find(m => m.technical_name === appName);
                 const moduleTitle = dbModule?.display_name || dbModule?.name || formatTitle(appName);
+
+                const menuPath = `../../apps/${appName}/config/menu.js`;
+                const moduleMenuObj = menuConfigs[menuPath];
+                let moduleMenu = [];
+
+                if (appName === 'system') {
+                    // API-Driven Injection: Pass the live manifest to the system settings builder
+                    if (moduleMenuObj && moduleMenuObj.getSettingsMenu) {
+                        moduleMenu = moduleMenuObj.getSettingsMenu(manifestData);
+                    }
+                } else if (moduleMenuObj) {
+                    const menuKey = Object.keys(moduleMenuObj).find(k => k.endsWith('Menu') && Array.isArray(moduleMenuObj[k]));
+                    if (menuKey) moduleMenu = moduleMenuObj[menuKey];
+                }
 
                 // Map the internal 'system' folder to the 'settings' URL path for UX
                 const routePath = appName === 'system' ? 'settings' : appName;

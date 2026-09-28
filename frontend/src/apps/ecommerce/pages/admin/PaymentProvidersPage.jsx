@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
 import { CreditCard, Save, Loader2, LayoutDashboard, Shield, ShieldAlert, Key } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { settingsService } from '../../../system/api/settingsService';
+
 
 export default function PaymentProvidersPage() {
     const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ export default function PaymentProvidersPage() {
 
     const loadSettings = async () => {
         try {
-            const res = await settingsService.getSettings();
+            const res = await parameterService.getSettings();
             const data = res.data?.results || res.data || [];
             
             const current = { ...providers };
@@ -60,7 +61,7 @@ export default function PaymentProvidersPage() {
                 payload.paypal_enabled = enabled ? 'true' : 'false';
             }
             
-            await settingsService.batchUpdateSettings(payload);
+            await parameterService.batchUpdateSettings(payload);
             setProviders(p => ({
                 ...p,
                 [provider]: { ...p[provider], enabled }

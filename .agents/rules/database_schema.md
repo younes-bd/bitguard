@@ -24,7 +24,7 @@ This document outlines the core database models and security mechanisms.
 *   Represents a distinct company or organization using the ERP.
 *   **Crucial Fields:** `name`, `subdomain`, `is_active`.
 
-### 3. Module Registry (`apps.system.domain.models.InstalledModule`)
+### 3. Module Registry (`apps.core.domain.models.InstalledModule`)
 *   Tracks which apps are installed for which tenant.
 *   **Crucial Fields:** `technical_name` (String, e.g., 'sales', 'accounting'), `is_installed` (Boolean), `version`.
 

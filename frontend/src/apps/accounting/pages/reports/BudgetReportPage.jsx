@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, AlertTriangle, CheckCircle2, TrendingUp } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { expenseService } from '../../../expenses/api/expenseService';
+import { budgetService } from '../../api/budgetService';
 import { toast } from 'react-hot-toast';
 
 const BudgetReportPage = () => {
@@ -12,8 +13,8 @@ const BudgetReportPage = () => {
         const fetchData = async () => {
             try {
                 const [budgetData, expenseData] = await Promise.all([
-                    accountingService.getBudgets(),
-                    accountingService.getExpenses(),
+                    budgetService.getBudgets(),
+                    expenseService.getExpenses(),
                 ]);
                 setBudgets(Array.isArray(budgetData) ? budgetData : budgetData?.results || []);
                 setExpenses(Array.isArray(expenseData) ? expenseData : expenseData?.results || []);

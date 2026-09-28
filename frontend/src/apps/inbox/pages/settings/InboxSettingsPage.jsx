@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
 import { Bell, Save, Loader2, Smartphone, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { settingsService } from '@/apps/system/api/settingsService';
+
 
 export default function InboxSettingsPage() {
     const [loading, setLoading] = useState(true);
@@ -23,7 +24,7 @@ export default function InboxSettingsPage() {
 
     const loadSettings = async () => {
         try {
-            const res = await settingsService.getSettings();
+            const res = await parameterService.getSettings();
             const data = res.data?.results || res.data || [];
             
             // Map settings array to object
@@ -52,7 +53,7 @@ export default function InboxSettingsPage() {
                 payload[key] = typeof settings[key] === 'boolean' ? (settings[key] ? 'true' : 'false') : settings[key];
             });
             
-            await settingsService.batchUpdateSettings(payload);
+            await parameterService.batchUpdateSettings(payload);
             toast.success('Notification settings saved successfully');
         } catch (error) {
             console.error(error);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Filter, FileText, CheckCircle, XCircle, ArrowUpRight, DollarSign } from 'lucide-react';
+import { vendorBillService } from '../../api/vendorBillService';
 import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
@@ -16,7 +17,7 @@ const VendorBillsListPage = () => {
     const fetchBills = async () => {
         setLoading(true);
         try {
-            const data = await accountingService.getVendorBills();
+            const data = await vendorBillService.getVendorBills();
             setBills(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to fetch vendor bills:", error);
@@ -29,13 +30,13 @@ const VendorBillsListPage = () => {
     const handleAction = async (id, action) => {
         try {
             if (action === 'approve') {
-                await accountingService.updateVendorBill(id, { status: 'approved' });
+                await vendorBillService.updateVendorBill(id, { status: 'approved' });
                 toast.success('Bill Approved');
             } else if (action === 'pay') {
                 await accountingService.payVendorBill(id);
                 toast.success('Bill Paid');
             } else if (action === 'cancel') {
-                await accountingService.updateVendorBill(id, { status: 'cancelled' });
+                await vendorBillService.updateVendorBill(id, { status: 'cancelled' });
                 toast.success('Bill Cancelled');
             }
             fetchBills();

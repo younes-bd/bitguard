@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
 import { settingsService } from '../../api/settingsService';
 import toast from 'react-hot-toast';
 import { FileText, Save, Loader2 } from 'lucide-react';
@@ -15,7 +16,7 @@ export default function DocumentLayoutsPage() {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await settingsService.getSettings();
+                const res = await parameterService.getSettings();
                 const settings = Array.isArray(res.data) ? res.data : (res.data?.results || []);
                 
                 const header = settings.find(s => s.key === 'document_header')?.value || '';
@@ -36,7 +37,7 @@ export default function DocumentLayoutsPage() {
         e.preventDefault();
         setSaving(true);
         try {
-            await settingsService.batchUpdateSettings({ settings: formData });
+            await parameterService.batchUpdateSettings({ settings: formData });
             toast.success('Document layouts saved');
         } catch (err) {
             toast.error('Failed to save document layouts');

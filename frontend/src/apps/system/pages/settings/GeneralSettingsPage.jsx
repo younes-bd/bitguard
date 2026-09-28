@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
+import { companyService } from '../../../core/api/companyService';
+import { coreService } from '../../../core/api/coreService';
+import { currencyService } from '../../../core/api/currencyService';
+import { databaseBackupService } from '../../../core/api/databaseBackupService';
 import { Link } from 'react-router-dom';
 import {
     Building2, Save, Loader2, Upload, Shield,
-    Database, Terminal, X, Key
+    Database, Terminal, X, Key, Server, FileText, Globe
 } from 'lucide-react';
-import { coreService } from '../../../core/api/coreService';
+
 import { settingsService } from '../../api/settingsService';
 import toast from 'react-hot-toast';
 
 export default function GeneralSettingsPage() {
     const [company, setCompany] = useState(null);
-    const [settings, setSettings] = useState([]);
     const [configOptions, setConfigOptions] = useState(null);
+    const [currencies, setCurrencies] = useState([]);
+    const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     
@@ -45,29 +52,51 @@ export default function GeneralSettingsPage() {
         loadAll();
     }, []);
 
+    const fetchStates = async (countryId) => {
+        if (!countryId) {
+            setStates([]);
+            return;
+        }
+        try {
+            const res = await coreService.getStates(countryId);
+            setStates(res.data?.results || res.data || []);
+        } catch (e) {
+            // silent catch or toast
+        }
+    };
+
+    const handleCountryChange = async (e) => {
+        const newCountryId = e.target.value;
+        setCompanyForm({ ...companyForm, country: newCountryId, state: '' });
+        fetchStates(newCountryId);
+    };
+
     const loadAll = async () => {
         setLoading(true);
         try {
-            const [companyRes, settingsRes, configRes] = await Promise.all([
-                settingsService.getMyCompany().catch(e => { console.error('Company load error:', e); return { data: {} }; }),
-                settingsService.getSettings().catch(e => { console.error('Settings load error:', e); return { data: [] }; }),
-                coreService.getConfigOptions().catch(e => { console.error('Config load error:', e); return { data: null }; })
+            const [companyRes, configRes, currencyRes, countryRes] = await Promise.all([
+                companyService.getMyCompany().catch(e => { return { data: {} }; }),
+                coreService.getConfigOptions().catch(e => { return { data: null }; }),
+                currencyService.getAll().catch(e => { return { data: { results: [] } }; }),
+                coreService.getCountries().catch(e => { return { data: { results: [] } }; })
             ]);
             const c = companyRes.data?.data || companyRes.data || {};
-            const s = settingsRes.data?.results || settingsRes.data?.data || settingsRes.data || [];
+            const curr = currencyRes.data?.results || currencyRes.data || [];
+            const cntry = countryRes.data?.results || countryRes.data || [];
+            
             setConfigOptions(configRes.data);
+            setCurrencies(curr);
+            setCountries(cntry);
             setCompany(c);
             setCompanyForm({
                 name: c.name || '',
                 phone: c.phone || '',
                 email: c.email || '',
                 website: c.website || '',
-                street: c.street || '',
-                city: c.city || '',
-                country: c.country || '',
                 timezone: c.timezone || 'UTC',
                 language: c.language || 'en',
-                currency: c.currency || 'USD',
+                default_currency: c.default_currency || '',
+                vat: c.vat || '',
                 multi_company: c.multi_company || false,
                 twitter: c.twitter || '',
                 linkedin: c.linkedin || '',
@@ -75,12 +104,21 @@ export default function GeneralSettingsPage() {
                 font: c.font || 'Inter',
                 header_text: c.header_text || '',
                 footer_text: c.footer_text || '',
+                street: c.street || '',
+                street2: c.street2 || '',
+                city: c.city || '',
+                state: c.state || '',
+                zip_code: c.zip_code || '',
+                country: c.country || '',
             });
             setLogoPreview(c.logo || null);
             setFaviconPreview(c.favicon || null);
-            setSettings(Array.isArray(s) ? s : []);
+
+            if (c.country) {
+                fetchStates(c.country);
+            }
         } catch (err) {
-            console.error(err);
+            toast.error('Failed to load settings');
         } finally {
             setLoading(false);
         }
@@ -109,7 +147,7 @@ export default function GeneralSettingsPage() {
             Object.entries(companyForm).forEach(([k, v]) => { if (v !== undefined) formData.append(k, v); });
             if (logoFile) formData.append('logo', logoFile);
             if (faviconFile) formData.append('favicon', faviconFile);
-            await settingsService.updateMyCompany(formData);
+            await companyService.updateMyCompany(formData);
             toast.success('Company settings saved');
             setLogoFile(null);
             setFaviconFile(null);
@@ -117,6 +155,7 @@ export default function GeneralSettingsPage() {
             await loadAll();
         } catch (err) {
             toast.error('Failed to save company settings');
+        } finally {
             setSaving(false);
         }
     };
@@ -127,30 +166,17 @@ export default function GeneralSettingsPage() {
         loadAll(); // Revert back to original server state
     };
 
-    const getSettingByKey = (key) => settings.find(s => s.key === key);
-
-    const handleToggleSetting = async (key, currentValue) => {
-        const newVal = currentValue === 'true' ? 'false' : 'true';
-        try {
-            await settingsService.batchUpdateSettings({ [key]: newVal });
-            setSettings(prev => prev.map(s => s.key === key ? { ...s, value: newVal } : s));
-            toast.success('Setting updated');
-        } catch {
-            toast.error('Failed to update setting');
-        }
-    };
-
     const handleRetentionAction = async (action) => {
         setSaving(true);
         try {
             if (action === 'backup') {
-                await settingsService.triggerBackup();
+                await databaseBackupService.triggerBackup();
                 toast.success('Backup triggered successfully');
             } else if (action === 'prune') {
-                await settingsService.pruneAuditLogs(90);
+                await parameterService.pruneAuditLogs(90);
                 toast.success('Audit logs older than 90 days pruned');
             } else if (action === 'cache') {
-                await settingsService.clearCache();
+                await parameterService.clearCache();
                 toast.success('Cache cleared successfully');
             }
         } catch {
@@ -163,7 +189,7 @@ export default function GeneralSettingsPage() {
     if (loading) {
         return (
             <div className="flex justify-center p-12">
-                <Loader2 className="animate-spin text-purple-500 w-8 h-8" />
+                <Loader2 className="animate-spin text-blue-500 w-8 h-8" />
             </div>
         );
     }
@@ -277,6 +303,7 @@ export default function GeneralSettingsPage() {
 
                         {/* Block: Address */}
                         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+                            <h3 className="font-semibold text-white">Address & Identity</h3>
                             <div>
                                 <label className="block text-sm font-medium text-slate-400 mb-1">Street</label>
                                 <input
@@ -284,6 +311,15 @@ export default function GeneralSettingsPage() {
                                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                                     value={companyForm.street}
                                     onChange={e => setCompanyForm({ ...companyForm, street: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-400 mb-1">Street 2</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                    value={companyForm.street2}
+                                    onChange={e => setCompanyForm({ ...companyForm, street2: e.target.value })}
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -297,16 +333,55 @@ export default function GeneralSettingsPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-400 mb-1">Country</label>
-                                    <input
-                                        type="text"
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">State / Province</label>
+                                    <select
                                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                                        value={companyForm.country}
-                                        onChange={e => setCompanyForm({ ...companyForm, country: e.target.value })}
-                                    />
+                                        value={companyForm.state || ''}
+                                        onChange={e => setCompanyForm({ ...companyForm, state: e.target.value })}
+                                        disabled={!companyForm.country}
+                                    >
+                                        <option value="">Select State</option>
+                                        {states.map(s => (
+                                            <option key={s.id} value={s.id}>{s.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">ZIP / Postal Code</label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                        value={companyForm.zip_code}
+                                        onChange={e => setCompanyForm({ ...companyForm, zip_code: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">Country</label>
+                                    <select
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                        value={companyForm.country || ''}
+                                        onChange={handleCountryChange}
+                                    >
+                                        <option value="">Select Country</option>
+                                        {countries.map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-400 mb-1">VAT / Tax ID</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                    value={companyForm.vat}
+                                    onChange={e => setCompanyForm({ ...companyForm, vat: e.target.value })}
+                                    placeholder="e.g. GB123456789"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-400 mb-1">Timezone</label>
                                     <select
@@ -314,24 +389,62 @@ export default function GeneralSettingsPage() {
                                         value={companyForm.timezone}
                                         onChange={e => setCompanyForm({ ...companyForm, timezone: e.target.value })}
                                     >
-                                        <option value="UTC">UTC</option>
-                                        <option value="America/New_York">America/New_York</option>
-                                        <option value="Europe/Paris">Europe/Paris</option>
-                                        <option value="Asia/Tokyo">Asia/Tokyo</option>
+                                        {configOptions?.timezones?.map(tz => (
+                                            <option key={tz} value={tz}>{tz}</option>
+                                        )) || (
+                                            <>
+                                                <option value="UTC">UTC</option>
+                                                <option value="America/New_York">America/New_York</option>
+                                                <option value="Europe/Paris">Europe/Paris</option>
+                                            </>
+                                        )}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-400 mb-1">Currency</label>
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">Default Currency</label>
                                     <select
                                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                                        value={companyForm.currency}
-                                        onChange={e => setCompanyForm({ ...companyForm, currency: e.target.value })}
+                                        value={companyForm.default_currency}
+                                        onChange={e => setCompanyForm({ ...companyForm, default_currency: e.target.value })}
                                     >
-                                        <option value="USD">USD ($)</option>
-                                        <option value="EUR">EUR (€)</option>
-                                        <option value="GBP">GBP (£)</option>
-                                        <option value="JPY">JPY (¥)</option>
+                                        <option value="">-- Select Currency --</option>
+                                        {currencies.map(curr => (
+                                            <option key={curr.id} value={curr.id}>
+                                                {curr.name} ({curr.symbol})
+                                            </option>
+                                        ))}
                                     </select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">Language</label>
+                                    <select
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                        value={companyForm.language}
+                                        onChange={e => setCompanyForm({ ...companyForm, language: e.target.value })}
+                                    >
+                                        <option value="en">English</option>
+                                        <option value="fr">French</option>
+                                        <option value="es">Spanish</option>
+                                        <option value="de">German</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-400 mb-1">Multi-Company Setup</label>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <div className="relative">
+                                            <input 
+                                                type="checkbox" 
+                                                className="sr-only" 
+                                                checked={companyForm.multi_company}
+                                                onChange={e => setCompanyForm({ ...companyForm, multi_company: e.target.checked })}
+                                            />
+                                            <div className={`w-10 h-5 rounded-full transition-colors cursor-pointer ${companyForm.multi_company ? 'bg-blue-600' : 'bg-slate-700'}`} onClick={() => setCompanyForm({ ...companyForm, multi_company: !companyForm.multi_company })}></div>
+                                            <div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform pointer-events-none ${companyForm.multi_company ? 'translate-x-5' : ''}`}></div>
+                                        </div>
+                                        <span className="text-sm text-slate-300">Enable Sub-Tenants</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -346,8 +459,14 @@ export default function GeneralSettingsPage() {
                                     value={companyForm.paper_format}
                                     onChange={e => setCompanyForm({ ...companyForm, paper_format: e.target.value })}
                                 >
-                                    <option value="A4">A4</option>
-                                    <option value="Letter">US Letter</option>
+                                    {configOptions?.paper_formats?.map(pf => (
+                                        <option key={pf.id} value={pf.id}>{pf.name}</option>
+                                    )) || (
+                                        <>
+                                            <option value="A4">A4</option>
+                                            <option value="Letter">US Letter</option>
+                                        </>
+                                    )}
                                 </select>
                             </div>
                             <div>
@@ -466,6 +585,54 @@ export default function GeneralSettingsPage() {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Section: Multi-Company */}
+                <div>
+                    <h2 className="text-xl font-bold text-white mb-4">Multi-Company</h2>
+                    <div className="flex items-start gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900">
+                        <div className="relative mt-0.5" onClick={() => setCompanyForm({...companyForm, multi_company: !companyForm.multi_company})}>
+                            <div className={`w-10 h-5 rounded-full transition-colors ${companyForm.multi_company ? 'bg-blue-600' : 'bg-slate-700'}`}></div>
+                            <div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform ${companyForm.multi_company ? 'translate-x-5' : ''}`}></div>
+                        </div>
+                        <div>
+                            <p className="font-semibold text-slate-200 cursor-pointer" onClick={() => setCompanyForm({...companyForm, multi_company: !companyForm.multi_company})}>Allow Multi-Company</p>
+                            <p className="text-sm text-slate-500">Enable users to switch between multiple company contexts without logging out.</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Section: Discuss & Email */}
+                <div>
+                    <h2 className="text-xl font-bold text-white mb-4">Discuss & Email</h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <Link to="/admin/settings/outgoing-mail" className="flex items-start gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900 hover:border-blue-500 transition-colors">
+                            <Server className="w-5 h-5 text-blue-500 mt-0.5" />
+                            <div>
+                                <p className="font-semibold text-slate-200">Outgoing Mail Servers</p>
+                                <p className="text-sm text-slate-500">Configure SMTP servers for sending system emails</p>
+                            </div>
+                        </Link>
+                        <Link to="/admin/settings/email-templates" className="flex items-start gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900 hover:border-blue-500 transition-colors">
+                            <FileText className="w-5 h-5 text-blue-500 mt-0.5" />
+                            <div>
+                                <p className="font-semibold text-slate-200">Email Templates</p>
+                                <p className="text-sm text-slate-500">Create and manage automated email notification templates</p>
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Section: Customer Portal */}
+                <div>
+                    <h2 className="text-xl font-bold text-white mb-4">Customer Portal</h2>
+                    <Link to="/admin/settings/portal" className="flex items-start gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900 hover:border-blue-500 transition-colors">
+                        <Globe className="w-5 h-5 text-blue-500 mt-0.5" />
+                        <div>
+                            <p className="font-semibold text-slate-200">Customer Portal</p>
+                            <p className="text-sm text-slate-500">Allow customers to access their orders, invoices, and support tickets via a self-service portal</p>
+                        </div>
+                    </Link>
                 </div>
 
             </div>

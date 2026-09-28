@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Clock, FileText, Plus, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { accountingService } from '../../api/accountingService';
+import { invoiceService } from '../../api/invoiceService';
 import toast from 'react-hot-toast';
 
 export default function TimeBillingPage() {
@@ -59,7 +60,7 @@ export default function TimeBillingPage() {
                 unit_price: l.hourly_rate || 0,
                 amount: (l.hours || 0) * (l.hourly_rate || 0),
             }));
-            await accountingService.createInvoice({ client: project?.client || null, project: selectedProject, line_items: lineItems });
+            await invoiceService.createInvoice({ client: project?.client || null, project: selectedProject, line_items: lineItems });
             await Promise.allSettled(selectedLogs.map(l => accountingService.updateTimeLog(l.id, { invoiced: true })));
             toast.success('Invoice created!');
             navigate('/admin/accounting/invoices');

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { accountingService } from '../../api/accountingService';
+import { invoiceService } from '../../api/invoiceService';
 import { projectsService } from '../../../projects/api/projectsService';
 import { crmService } from '../../../crm/api/crmService';
 import { signService } from '../../../sign/api/signService';
@@ -47,7 +47,7 @@ const InvoiceEditPage = () => {
                     projectsService.getProjects(),
                     signService.getContracts(),
                     ecommerceService.getProducts(),
-                    accountingService.getInvoice(id)
+                    invoiceService.getInvoice(id)
                 ]);
                 setClients(Array.isArray(clientsRes) ? clientsRes : clientsRes.results || []);
                 setProjects(Array.isArray(projectsRes) ? projectsRes : projectsRes.results || []);
@@ -203,7 +203,7 @@ const InvoiceEditPage = () => {
                 ...formData,
                 items: formData.items.map(({ _isContractItem, _isProjectItem, ...item }) => item)
             };
-            await accountingService.updateInvoice(id, payload);
+            await invoiceService.updateInvoice(id, payload);
             toast.success('Invoice updated successfully!');
             navigate('/admin/accounting/invoices');
         } catch (error) {

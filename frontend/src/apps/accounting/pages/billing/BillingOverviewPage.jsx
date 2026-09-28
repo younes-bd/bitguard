@@ -6,6 +6,7 @@ import {
     BarChart2, CreditCard, Activity
 } from 'lucide-react';
 import { accountingService } from '../../api/accountingService';
+import { invoiceService } from '../../api/invoiceService';
 import { toast } from 'react-hot-toast';
 
 const BillingOverviewPage = () => {
@@ -19,7 +20,7 @@ const BillingOverviewPage = () => {
             try {
                 const [dashData, invoiceData] = await Promise.all([
                     accountingService.getDashboardStats(),
-                    accountingService.getInvoices({ ordering: '-created_at', page_size: 5 }),
+                    invoiceService.getInvoices({ ordering: '-created_at', page_size: 5 }),
                 ]);
                 setStats(dashData);
                 const results = Array.isArray(invoiceData) ? invoiceData : invoiceData?.results || [];

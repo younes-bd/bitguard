@@ -1,7 +1,7 @@
 import client from '@/core/api/client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { accountingService } from '../../../accounting/api/accountingService';
+import { invoiceService } from '../../../accounting/api/invoiceService';
 import { toast } from 'react-hot-toast';
 import { ArrowLeft, Download, Inbox, FileCheck, FileText, ThumbsDown, RefreshCw } from 'lucide-react';
 
@@ -35,7 +35,7 @@ const QuotationDetailPage = () => {
 
   const fetch = async () => {
     try {
-      const data = await accountingService.getInvoice(id);
+      const data = await invoiceService.getInvoice(id);
       setQuotation(data);
     } catch (e) {
       const message = e.response?.data?.detail || e.message || 'An unexpected error occurred';
@@ -73,13 +73,13 @@ const QuotationDetailPage = () => {
           {isActive && (
             <>
               <button
-                onClick={() => handleAction(() => accountingService.convertQuotationToInvoice(id), 'Converted to Invoice!')}
+                onClick={() => handleAction(() => invoiceService.convertQuotationToInvoice(id), 'Converted to Invoice!')}
                 disabled={actionLoading}
                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 text-white rounded-xl font-medium transition-all shadow-lg shadow-emerald-500/10">
                 {actionLoading ? <RefreshCw size={16} className="animate-spin" /> : <FileText size={16} />} Convert to Invoice
               </button>
               <button
-                onClick={() => handleAction(() => accountingService.declineQuotation(id), 'Quotation declined.')}
+                onClick={() => handleAction(() => invoiceService.declineQuotation(id), 'Quotation declined.')}
                 disabled={actionLoading}
                 className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-red-900/50 text-slate-300 hover:text-red-400 rounded-xl transition-all border border-slate-700">
                 <ThumbsDown size={16} /> Decline
@@ -102,7 +102,7 @@ const QuotationDetailPage = () => {
             <Download size={16} /> Download PDF
           </button>
           <button
-            onClick={() => handleAction(() => accountingService.sendInvoiceToClient(id), 'Quotation dispatched to client!')}
+            onClick={() => handleAction(() => invoiceService.sendInvoiceToClient(id), 'Quotation dispatched to client!')}
             disabled={actionLoading}
             className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-900 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/20">
             <Inbox size={16} /> Send to Client

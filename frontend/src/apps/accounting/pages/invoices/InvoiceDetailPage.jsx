@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { accountingService } from '../../api/accountingService';
+import { paymentService } from '../../api/paymentService';
+import { invoiceService } from '../../api/invoiceService';
 import reportsService from '@/apps/reports/api/reportsService';
 import {
     ArrowLeft, Printer, Download, Mail,
@@ -36,7 +37,7 @@ const InvoiceDetailPage = () => {
     const handleRecordPayment = async (data) => {
         setActionLoading(true);
         try {
-            await accountingService.createPayment({
+            await paymentService.createPayment({
                 ...data,
                 invoice: invoice.id,
             });
@@ -52,7 +53,7 @@ const InvoiceDetailPage = () => {
 
     const fetchInvoice = async () => {
         try {
-            const data = await accountingService.getInvoice(id);
+            const data = await invoiceService.getInvoice(id);
             setInvoice(data);
         } catch (error) {
             console.error("Failed to load invoice", error);
@@ -70,7 +71,7 @@ const InvoiceDetailPage = () => {
         
         setActionLoading(true);
         try {
-            await accountingService.updateInvoice(id, { type: 'standard', status: 'sent' });
+            await invoiceService.updateInvoice(id, { type: 'standard', status: 'sent' });
             await fetchInvoice();
         } catch (error) {
             console.error("Conversion failed", error);
@@ -197,7 +198,7 @@ const InvoiceDetailPage = () => {
                         onClick={async () => {
                             setActionLoading(true);
                             try {
-                                await accountingService.downloadInvoice(id);
+                                await invoiceService.downloadInvoice(id);
                             } catch (e) {
                                 alert("Failed to download PDF.");
                             } finally {
@@ -226,7 +227,7 @@ const InvoiceDetailPage = () => {
                         onClick={async () => {
                             setActionLoading(true);
                             try {
-                                await accountingService.sendInvoiceToClient(id);
+                                await invoiceService.sendInvoiceToClient(id);
                                 alert("Invoice dispatched successfully!");
                             } catch (e) {
                                 alert("Failed to dispatch invoice.");

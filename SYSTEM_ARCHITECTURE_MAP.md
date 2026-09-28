@@ -1,797 +1,827 @@
-# Deep Tier-1 ERP Architecture Map (Odoo Standard)
+# BitGuard ERP — System Architecture Map
 
-This document provides a 100% exhaustive, deeply detailed audit of all modules in the BitGuard ERP system. It classifies every module based on its frontend requirements, installability, and exact Odoo-equivalent properties.
+This document is the **definitive, authoritative registry** of every module in the BitGuard ERP system. It classifies every module according to the adopted **4-Layer Headless ERP Model** (aligned with Odoo 17 `application`/`installable` flags). All AI agents MUST consult this file before making architectural decisions.
 
-## Architectural Layers Defined
+## Architectural Layers Defined (4-Layer Headless ERP Model)
 
-1. **Layer 1: Headless Kernel (OS)**: Invisible core routing, security, and multi-tenancy engines. `application: False`
-2. **Layer 2: Hidden UI / Master Data**: Base data models (Users, Products) managed from within other apps. `application: False`
-3. **Layer 3: Primary Business Apps**: Heavyweight domains with top-level Command Center tiles. `application: True`
-4. **Layer 4: External Integrations**: API bridges to external platforms (Stripe, WhatsApp, etc.).
+1. **Layer 1: Kernel (Non-Optional Foundation)**: Zero standalone UI. Non-removable. Every other module depends on it transitively. Equivalent to Odoo's `base` module. `application: False`. These modules do NOT inject into the Settings sidebar.
+
+2. **Layer 2: Platform Services (Shared Infrastructure with Admin UI)**: Cross-cutting shared services with admin-only configuration UI accessible through Settings only. No Command Center tile. `application: False`. These modules MUST export a static `settingsMenu` array from `config/menu.js`.
+
+3. **Layer 3: Business Applications (Standalone Apps)**: Full-featured business modules with a Command Center tile, standalone navigation, and dedicated settings page. `application: True`. These modules MUST NEVER export a static `settingsMenu`.
+
+4. **Layer 4: External Integrations (Third-Party Connectors)**: Modules that bridge to external third-party platforms or services.
 
 ---
 
-## ⚡ Quick Summary (Bird's-Eye View)
-*A rapid lookup of all modules grouped by their Architectural Layer and Category.*
+## Quick Summary (Bird's-Eye View)
 
-### Layer 1: Headless / Kernel
-- **Technical**: `auth`, `automation`, `core`, `tenants`
+### Layer 1: Kernel
+- **Technical**: `auth`, `core`, `tenants`
 
-### Layer 2: Hidden UI / Master Data
-- **Technical**: `approvals`, `notifications`, `portal`, `reports`, `users`
-- **Inventory**: `shipping`, `product`
+### Layer 2: Platform Services
+- **Technical**: `apps`,`system`, `users`, `inbox`, `portal`, `automation`, `reports`,  
+- **Inventory**: `product`, `shipping`
 
-### Layer 3: Primary Business Applications
-- **Administration**: `apps`, `system`
-- **Discuss**: `discuss`, `messaging`, `voip`
-- **Finance**: `accounting`, `consolidation`, `board`, `documents`, `esg`, `equity`, `expenses`, `invoicing`, `sign`, `spreadsheet`
-- **Human Resources**: `performance`, `timeclock`, `employees`, `fleet`, `lunch`, `payroll`, `recruiting`, `referrals`, `timeoff`
-- **Inventory & MRP**: `barcode`, `inventory`, `iot`, `maintenance`, `manufacturing`, `mrp_plm`, `procurement`, `quality`, `repair`
-- **Marketing**: `mass_mailing`, `events`, `journeys`, `sms`, `social`, `surveys`
+### Layer 3: Business Applications
 - **Sales**: `crm`, `pos`, `rental`, `sales`, `subscriptions`
-- **Services**: `appointments`, `calendar`, `dispatch`, `helpdesk`, `planning`, `projects`, `timesheets`
-- **Technical**: `studio`
-- **Website**: `blog`, `forum`, `knowledge`, `website`, `ecommerce`, `learning`
+- **Services**: `appointments`, `dispatch`, `helpdesk`, `planning`, `projects`, `timesheets`
+- **Accounting & Finance**: `accounting`, `consolidation`, `equity`, `esg`, `expenses`, `invoicing`
+- **Inventory**: `barcode`, `inventory`, `procurement`
+- **Manufacturing**: `iot`, `maintenance`, `manufacturing`, `production`, `quality`, `repair`
+- **Human Resources**: `employees`, `fleet`, `frontdesk`, `lunch`, `payroll`, `performance`, `recruiting`, `referrals`, `timeclock`, `timeoff`
+- **Marketing**: `campaigns`, `events`, `journeys`, `sms`, `social`, `surveys`
+- **Website**: `blog`, `ecommerce`, `forum`, `learning`, `website`
+- **Productivity**: `agents`, `analytics`, `approvals`, `calendar`, `discuss`, `documents`, `knowledge`, `messaging`, `sign`, `soc`, `spreadsheet`, `tasks`, `voip`, `whatsapp`
+- **Customization**: `studio`
 
 ### Layer 4: External Integrations
-- **Discuss**: `whatsapp`
-- **Security**: `soc`
-- **Technical**: `ai_agent`, `ai_engine`
-- **Accounting**: `payments`
+- **Commerce**: `amazon`
+- **Finance**: `payments`
+- **Technical**: `ai_engine`
 
 ---
 
-## 🔍 Exhaustive Module Details
+## Layer 1: Kernel (Non-Optional Foundation)
 
-
-## Layer 1: Headless / Kernel
-
-### 📦 Authentication (`auth`)
-> Module for Auth
+### Authentication (`auth`)
+> Authentication primitives, JWT, login/logout engine.
 
 - **Odoo App Category:** `Technical`
 - **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/auth`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `False (non-removable)`
+- **Dependencies (Depends Array):** `tenants`
+- **Frontend URL Routing:** Headless / No direct URL
 
-### 📦 Automation (`automation`)
-> Rules and automations engine
-
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core, system`
-- **Frontend URL Routing:** `/admin/automation`
-
-### 📦 Core (`core`)
-> Module for Core
+### Core (`core`)
+> The ERP kernel. Provides TenantAwareModel, BaseModel, InstalledModule, CommandCenterSection, SystemParameter, DatabaseBackup, ChatterMixin.
 
 - **Odoo App Category:** `Technical`
 - **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/core`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `False (non-removable)`
+- **Dependencies (Depends Array):** `tenants, auth`
+- **Frontend URL Routing:** Headless / No direct URL
 
-### 📦 Multi-Tenancy (`tenants`)
-> Module for Tenants
-
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/tenants`
-
-
-## Layer 2: Hidden UI / Master Data
-
-### 📦 Approvals (`approvals`)
-> Configurable approval workflows for any business process.
+### Multi-Tenancy (`tenants`)
+> Absolute root. Multi-tenancy isolation engine, tenant model, and row-level security primitives.
 
 - **Odoo App Category:** `Technical`
 - **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/approvals`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `False (absolute root, non-removable)`
+- **Dependencies (Depends Array):** `None (Absolute root)`
+- **Frontend URL Routing:** Headless / No direct URL
 
-### 📦 Delivery (`shipping`)
-> Delivery orders, shipping methods, and carrier integration.
 
-- **Odoo App Category:** `Inventory`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `inventory`
-- **Frontend URL Routing:** `/admin/delivery`
+## Layer 2: Platform Services (Shared Infrastructure with Admin UI)
 
-### 📦 Notifications (`notifications`)
-> Module for Notifications
+### Approvals (`approvals`)
+> Configurable approval workflow engine. Injects approval gates into HR, Finance, Procurement.
 
 - **Odoo App Category:** `Technical`
 - **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/notifications`
-
-### 📦 Portal (`portal`)
-> Customer and vendor portal for self-service access.
-
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/portal`
-
-### 📦 Product (`product`)
-> Manage product
-
-- **Odoo App Category:** `Inventory`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
-- **Frontend URL Routing:** `/admin/product`
+- **Frontend URL Routing:** `/admin/settings/approvals` (Settings only)
 
-### 📦 Reporting (`reports`)
-> PDF report templates and print formats.
-
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/reporting`
-
-### 📦 Users (`users`)
-> User management, roles, permissions, and access control.
+### Automation (`automation`)
+> Scheduled Actions, Automated Actions, and Webhooks engine. Background task execution and event-driven automation for all business apps.
 
 - **Odoo App Category:** `Technical`
 - **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `False ❌`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/users`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/settings/scheduled-actions` (Settings only)
 
+### Inbox (`inbox`)
+> Mail platform service. Manages Outgoing/Incoming Mail Servers, Email Templates, Mail Aliases. Odoo equivalent: `mail` + `fetchmail`.
 
-## Layer 3: Primary Business Applications
+- **Odoo App Category:** `Technical`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/settings/outgoing-mail` (Settings only)
 
-### 📦 Apps (`apps`)
-> App Store and Module Installer
+### Portal (`portal`)
+> Customer and vendor portal service. Self-service access layer for clients.
+
+- **Odoo App Category:** `Technical`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/settings/portal` (Settings only)
+
+### Product (`product`)
+> Product master data service. Shared product catalog consumed by Sales, Inventory, Manufacturing, and Accounting.
+
+- **Odoo App Category:** `Inventory`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** Used internally by Inventory and Sales apps.
+
+### Reporting (`reports`)
+> PDF report templates and print format engine. Shared reporting infrastructure consumed by all business apps.
+
+- **Odoo App Category:** `Technical`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/settings/reports` (Settings only)
+
+### Settings (`system`)
+> Global ERP settings, system parameters, audit logs, integration keys, backup management, localization, and Module Registry UI. Equivalent to Odoo `base_setup`.
 
 - **Odoo App Category:** `Administration`
-- **Command Center Pillar:** `Administration`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/apps`
-
-### 📦 Settings (`system`)
-> System settings, configurations, and administration tools.
-
-- **Odoo App Category:** `Administration`
-- **Command Center Pillar:** `Administration`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `None`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `False (non-removable, always present)`
+- **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/settings`
 
-### 📦 Discuss (`discuss`)
+### Delivery (`shipping`)
+> Delivery orders, shipping methods, and carrier integration. Backend-only service.
+
+- **Odoo App Category:** `Inventory`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `inventory`
+- **Frontend URL Routing:** Backend-only. No standalone frontend app. UI surfaced within `/admin/stock`.
+
+### Users (`users`)
+> User management, roles, permissions, access rights, record rules, active sessions, and security policies. Platform-level IAM service.
+
+- **Odoo App Category:** `Technical`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `False (non-removable)`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/settings/users` (Settings only)
+
+
+### Apps (`apps`)
+> App Store and Module Installer. Manage installed modules per tenant.
+
+- **Odoo App Category:** `Administration`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, system`
+- **Frontend URL Routing:** `/admin/apps`
+
+## Layer 3: Business Applications (Standalone Apps)
+
+### Discuss (`discuss`)
 > Internal messaging, group channels, and direct messaging.
 
 - **Odoo App Category:** `Discuss`
-- **Command Center Pillar:** `Discuss`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
+- **Command Center Pillar:** `Productivity`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, inbox`
 - **Frontend URL Routing:** `/admin/discuss`
 
-### 📦 Live Chat (`messaging`)
-> Engage with website visitors in real-time.
+### VoIP (`voip`)
+> VoIP calling integration.
 
 - **Odoo App Category:** `Discuss`
-- **Command Center Pillar:** `Discuss`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core`
-- **Frontend URL Routing:** `/admin/livechat`
-
-### 📦 VoIP (`voip`)
-> VoIP Module
-
-- **Odoo App Category:** `Discuss`
-- **Command Center Pillar:** `Discuss`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Command Center Pillar:** `Productivity`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/voip`
 
-### 📦 Accounting (`accounting`)
+### Accounting (`accounting`)
 > Full-featured accounting with invoicing, payments, and financial reporting.
 
 - **Odoo App Category:** `Accounting`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/accounting`
 
-### 📦 Consolidation (`consolidation`)
-> Consolidation Module
-
-- **Odoo App Category:** `Accounting`
-- **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core, system`
-- **Frontend URL Routing:** `/admin/consolidation`
-
-### 📦 Dashboards (`board`)
-> Executive dashboard with KPIs, metrics, and business intelligence.
+### Analytics (`analytics`)
+> Executive dashboard with KPIs, metrics, and business intelligence. Odoo equivalent: `board`.
 
 - **Odoo App Category:** `Productivity`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/board/analytics`
+- **Frontend URL Routing:** `/admin/analytics`
 
-### 📦 Documents (`documents`)
+### Consolidation (`consolidation`)
+> Multi-company financial consolidation.
+
+- **Odoo App Category:** `Accounting`
+- **Command Center Pillar:** `Finance`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, system`
+- **Frontend URL Routing:** `/admin/consolidation`
+
+### Documents (`documents`)
 > Document storage, sharing, versioning, and e-signature requests.
 
 - **Odoo App Category:** `Documents`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/documents`
 
-### 📦 ESG Reporting (`esg`)
+### ESG Reporting (`esg`)
 > Track environmental, social, and governance metrics.
 
 - **Odoo App Category:** `Accounting`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/esg`
 
-### 📦 Equity (`equity`)
-> Equity and cap table management for startups.
+### Equity (`equity`)
+> Equity and cap table management.
 
 - **Odoo App Category:** `Accounting`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/equity`
 
-### 📦 Expenses (`expenses`)
+### Expenses (`expenses`)
 > Submit and approve employee expense reports.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system, employees, accounting`
 - **Frontend URL Routing:** `/admin/expenses`
 
-### 📦 Invoicing (`invoicing`)
-> Invoicing Module
+### Invoicing (`invoicing`)
+> Standalone invoicing without full accounting suite.
 
 - **Odoo App Category:** `Accounting`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/invoicing`
 
-### 📦 Sign (`sign`)
+### Sign (`sign`)
 > Send and sign documents electronically.
 
 - **Odoo App Category:** `Sign`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/sign`
 
-### 📦 Spreadsheet (`spreadsheet`)
+### Spreadsheet (`spreadsheet`)
 > Integrated spreadsheet editor.
 
 - **Odoo App Category:** `Accounting`
 - **Command Center Pillar:** `Finance`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/spreadsheet`
 
-### 📦 Appraisals (`performance`)
-> Employee performance appraisals and 360-degree feedback.
-
-- **Odoo App Category:** `Human Resources`
-- **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, hr`
-- **Frontend URL Routing:** `/admin/appraisals`
-
-### 📦 Attendances (`timeclock`)
-> Track employee attendance, check-ins, and working hours.
-
-- **Odoo App Category:** `Human Resources`
-- **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, hr`
-- **Frontend URL Routing:** `/admin/hr-attendance`
-
-### 📦 Employees (`employees`)
+### Employees (`employees`)
 > Employee records, contracts, org chart, and HR management.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/hr`
 
-### 📦 Fleet (`fleet`)
+### Fleet (`fleet`)
 > Fleet management, vehicle records, fuel logs, and contracts.
 
 - **Odoo App Category:** `Fleet`
 - **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/fleet`
 
-### 📦 Lunch (`lunch`)
-> Lunch Module
+### Front Desk (`frontdesk`)
+> Visitor and guest reception management. Check-in kiosk and visitor logging.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, employees`
+- **Frontend URL Routing:** `/admin/frontdesk`
+
+### Lunch (`lunch`)
+> Employee lunch ordering and subsidy management.
+
+- **Odoo App Category:** `Human Resources`
+- **Command Center Pillar:** `Human Resources`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/lunch`
 
-### 📦 Payroll (`payroll`)
+### Payroll (`payroll`)
 > Process payroll, compute slips, and manage payroll batches.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system, employees, accounting`
 - **Frontend URL Routing:** `/admin/payroll`
 
-### 📦 Recruitment (`recruiting`)
+### Appraisals (`performance`)
+> Employee performance appraisals and 360-degree feedback.
+
+- **Odoo App Category:** `Human Resources`
+- **Command Center Pillar:** `Human Resources`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, employees`
+- **Frontend URL Routing:** `/admin/appraisals`
+
+### Recruitment (`recruiting`)
 > Post job positions, manage applicants, and run recruitment pipelines.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, hr`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, employees`
 - **Frontend URL Routing:** `/admin/recruitment`
 
-### 📦 Referrals (`referrals`)
-> Manage referrals
+### Referrals (`referrals`)
+> Employee referral program management.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, recruiting`
 - **Frontend URL Routing:** `/admin/referrals`
 
-### 📦 Time Off (`timeoff`)
+### Time Off (`timeoff`)
 > Manage time-off requests, leave types, and allocation.
 
 - **Odoo App Category:** `Human Resources`
 - **Command Center Pillar:** `Human Resources`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, hr`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, employees`
 - **Frontend URL Routing:** `/admin/time-off`
 
-### 📦 Barcode (`barcode`)
-> Barcode Module
+### Attendances (`timeclock`)
+> Track employee attendance, check-ins, and working hours.
+
+- **Odoo App Category:** `Human Resources`
+- **Command Center Pillar:** `Human Resources`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, employees`
+- **Frontend URL Routing:** `/admin/hr-attendance`
+
+### Barcode (`barcode`)
+> Barcode scanning integration for inventory and manufacturing operations.
 
 - **Odoo App Category:** `Inventory`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/barcode`
 
-### 📦 Inventory (`inventory`)
+### Inventory (`inventory`)
 > Inventory management with warehouses, transfers, and inventory valuation.
 
 - **Odoo App Category:** `Inventory`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, purchase`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, procurement`
 - **Frontend URL Routing:** `/admin/stock`
 
-### 📦 IoT (`iot`)
-> IoT Module
+### IoT (`iot`)
+> Internet of Things device management and sensor integration.
 
 - **Odoo App Category:** `IoT`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/iot`
 
-### 📦 Maintenance (`maintenance`)
+### Maintenance (`maintenance`)
 > Preventive and corrective maintenance requests and scheduling.
 
 - **Odoo App Category:** `Maintenance`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/maintenance`
 
-### 📦 Manufacturing (`manufacturing`)
+### Manufacturing (`manufacturing`)
 > Manufacturing orders, bills of materials, and work center scheduling.
 
 - **Odoo App Category:** `Manufacturing`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, stock`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, inventory`
 - **Frontend URL Routing:** `/admin/mrp`
 
-### 📦 PLM (`mrp_plm`)
-> Product lifecycle management from concept to retirement.
-
-- **Odoo App Category:** `Manufacturing`
-- **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/mrp-plm`
-
-### 📦 Purchase (`procurement`)
+### Purchase (`procurement`)
 > Manage procurement orders, RFQs, and vendor bills.
 
 - **Odoo App Category:** `Purchase`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system, accounting`
 - **Frontend URL Routing:** `/admin/purchase`
 
-### 📦 Quality (`quality`)
+### Shop Floor (`production`)
+> Manufacturing shop floor management and work order execution. Odoo equivalent: MRP Shop Floor.
+
+- **Odoo App Category:** `Manufacturing`
+- **Command Center Pillar:** `Inventory & MRP`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `manufacturing`
+- **Frontend URL Routing:** `/admin/production`
+- **Status:** Currently a stub — partial implementation.
+
+### Quality (`quality`)
 > Quality checks, control points, and failure analysis.
 
 - **Odoo App Category:** `Quality`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/quality-control`
 
-### 📦 Repairs (`repair`)
-> Repairs Module
+### Repairs (`repair`)
+> Repair orders, spare parts, and warranty tracking.
 
 - **Odoo App Category:** `Repairs`
 - **Command Center Pillar:** `Inventory & MRP`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/repair`
 
-### 📦 Email Marketing (`mass_mailing`)
-> Design and send mass email campaigns.
+### Email Marketing (`campaigns`)
+> Design and send mass email campaigns. Odoo equivalent: `mass_mailing`.
 
 - **Odoo App Category:** `Email Marketing`
 - **Command Center Pillar:** `Marketing`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core`
-- **Frontend URL Routing:** `/admin/mass_mailing`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, inbox`
+- **Frontend URL Routing:** `/admin/campaigns`
 
-### 📦 Events (`events`)
-> Manage events
+### Events (`events`)
+> Event management, registrations, and ticketing.
 
 - **Odoo App Category:** `Events`
 - **Command Center Pillar:** `Marketing`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/events`
 
-### 📦 Marketing (`journeys`)
-> Email campaigns, automation, analytics, and contact management.
+### Marketing (`journeys`)
+> Email campaigns, automation journeys, analytics, and contact management.
 
 - **Odoo App Category:** `Marketing`
 - **Command Center Pillar:** `Marketing`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system, crm`
 - **Frontend URL Routing:** `/admin/marketing`
 
-### 📦 SMS Marketing (`sms`)
-> Send SMS journeys campaigns.
+### SMS Marketing (`sms`)
+> Send targeted SMS campaigns.
 
 - **Odoo App Category:** `SMS`
 - **Command Center Pillar:** `Marketing`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `journeys`
 - **Frontend URL Routing:** `/admin/sms`
 
-### 📦 Social (`social`)
-> Manage and schedule social media posts.
+### Social (`social`)
+> Manage and schedule social media posts across platforms.
 
 - **Odoo App Category:** `Marketing`
 - **Command Center Pillar:** `Marketing`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/social`
 
-### 📦 Surveys (`surveys`)
-> Manage surveys
+### Surveys (`surveys`)
+> Create and distribute surveys, collect responses, and analyze results.
 
 - **Odoo App Category:** `Surveys`
 - **Command Center Pillar:** `Marketing`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/surveys`
 
-### 📦 CRM (`crm`)
-> Track leads, opportunities, and sales pipeline with a powerful CRM.
+### To-Do / Tasks (`tasks`)
+> Personal task management and to-do lists. Odoo equivalent: `note`.
+
+- **Odoo App Category:** `Productivity`
+- **Command Center Pillar:** `Services`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/tasks`
+- **Status:** Currently a stub — partial implementation.
+
+### CRM (`crm`)
+> Track leads, opportunities, and sales pipeline.
 
 - **Odoo App Category:** `CRM`
 - **Command Center Pillar:** `Sales`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/crm`
 
-### 📦 Point of Sale (`pos`)
+### Point of Sale (`pos`)
 > Point-of-sale system for retail stores and restaurants.
 
 - **Odoo App Category:** `Point of Sale`
 - **Command Center Pillar:** `Sales`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/pos`
 
-### 📦 Rental (`rental`)
+### Rental (`rental`)
 > Manage rental orders, availability, and return logistics.
 
 - **Odoo App Category:** `Rental`
 - **Command Center Pillar:** `Sales`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/rental`
 
-### 📦 Sales (`sales`)
+### Sales (`sales`)
 > Manage sales orders, quotations, and customer transactions.
 
 - **Odoo App Category:** `Sales`
 - **Command Center Pillar:** `Sales`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/sales`
 
-### 📦 Subscriptions (`subscriptions`)
+### Subscriptions (`subscriptions`)
 > Recurring billing, subscription products, and renewal management.
 
 - **Odoo App Category:** `Sales`
 - **Command Center Pillar:** `Sales`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system, accounting`
 - **Frontend URL Routing:** `/admin/subscriptions`
 
-### 📦 Appointments (`appointments`)
+### Appointments (`appointments`)
 > Online booking, scheduling, and appointment management.
 
 - **Odoo App Category:** `Appointments`
 - **Command Center Pillar:** `Services`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/appointments`
 
-### 📦 Calendar (`calendar`)
+### Calendar (`calendar`)
 > Schedule meetings and events.
 
 - **Odoo App Category:** `Productivity`
 - **Command Center Pillar:** `Services`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/calendar`
 
-### 📦 Field Service (`dispatch`)
+### Field Service (`dispatch`)
 > Schedule field workers, manage on-site tasks and dispatching.
 
 - **Odoo App Category:** `Field Service`
 - **Command Center Pillar:** `Services`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/field-service`
 
-### 📦 Helpdesk (`helpdesk`)
+### Helpdesk (`helpdesk`)
 > Customer support tickets with SLAs, teams, and escalation rules.
 
 - **Odoo App Category:** `Helpdesk`
 - **Command Center Pillar:** `Services`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/helpdesk`
 
-### 📦 Planning (`planning`)
+### Planning (`planning`)
 > Workforce planning, shift scheduling, and resource allocation.
 
 - **Odoo App Category:** `Planning`
 - **Command Center Pillar:** `Services`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, projects, hr`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, projects, employees`
 - **Frontend URL Routing:** `/admin/planning`
 
-### 📦 Project (`projects`)
+### Project (`projects`)
 > Project management with tasks, milestones, Gantt, and Kanban.
 
 - **Odoo App Category:** `Project`
 - **Command Center Pillar:** `Services`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system, crm`
 - **Frontend URL Routing:** `/admin/projects`
 
-### 📦 Timesheets (`timesheets`)
+### Timesheets (`timesheets`)
 > Track time spent on tasks and projects.
 
 - **Odoo App Category:** `Timesheets`
 - **Command Center Pillar:** `Services`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/timesheets`
 
-### 📦 Studio (`studio`)
-> Studio Module
+### Studio (`studio`)
+> Low-code customization studio for views, models, and workflows.
 
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `Technical`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Odoo App Category:** `Customization`
+- **Command Center Pillar:** `Customization`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/studio`
 
-### 📦 Blog (`blog`)
+### Blog (`blog`)
 > Publish and manage blog posts with tags and SEO optimization.
 
 - **Odoo App Category:** `Website`
 - **Command Center Pillar:** `Website`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, website`
 - **Frontend URL Routing:** `/admin/blog`
 
-### 📦 Forum (`forum`)
-> Forum Module
-
-- **Odoo App Category:** `Website`
-- **Command Center Pillar:** `Website`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core, system`
-- **Frontend URL Routing:** `/admin/forum`
-
-### 📦 Knowledge (`knowledge`)
-> Centralized knowledge base and documentation.
-
-- **Odoo App Category:** `Website`
-- **Command Center Pillar:** `Website`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core`
-- **Frontend URL Routing:** `/admin/knowledge`
-
-### 📦 Website (`website`)
-> Website builder with pages, SEO, forms, and live preview.
-
-- **Odoo App Category:** `Website`
-- **Command Center Pillar:** `Website`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `/admin/website`
-
-### 📦 eCommerce (`ecommerce`)
+### eCommerce (`ecommerce`)
 > Full e-commerce store with products, cart, checkout, and payments.
 
 - **Odoo App Category:** `Website`
 - **Command Center Pillar:** `Website`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, website`
 - **Frontend URL Routing:** `/admin/ecommerce`
 
-### 📦 eLearning (`learning`)
+### Forum (`forum`)
+> Community forum with threads, votes, and moderation.
+
+- **Odoo App Category:** `Website`
+- **Command Center Pillar:** `Website`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, system`
+- **Frontend URL Routing:** `/admin/forum`
+
+### Knowledge (`knowledge`)
+> Centralized knowledge base and documentation.
+
+- **Odoo App Category:** `Website`
+- **Command Center Pillar:** `Website`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/knowledge`
+
+### eLearning (`learning`)
 > Online courses, slides, quizzes, and learning management.
 
 - **Odoo App Category:** `eLearning`
 - **Command Center Pillar:** `Website`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system, hr`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system, employees`
 - **Frontend URL Routing:** `/admin/elearning`
 
+### Website (`website`)
+> Website builder with pages, SEO, forms, and live preview.
 
-## Layer 4: External Integrations
+- **Odoo App Category:** `Website`
+- **Command Center Pillar:** `Website`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system`
+- **Frontend URL Routing:** `/admin/website`
 
-### 📦 WhatsApp (`whatsapp`)
-> Communicate with clients via WhatsApp.
 
-- **Odoo App Category:** `Discuss`
-- **Command Center Pillar:** `Discuss`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `core`
-- **Frontend URL Routing:** `/admin/whatsapp`
+### SOC (`soc`)
+> Security operations center with alerts, incidents, and SIEM integration.
 
-### 📦 SOC (`soc`)
-> Security operations center with alerts, incidents, and SIEM.
-
-- **Odoo App Category:** `Security`
-- **Command Center Pillar:** `Security`
-- **Is Application (Has Dashboard Tile?):** `True ✅`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Odoo App Category:** `Productivity`
+- **Command Center Pillar:** `Productivity`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** `/admin/soc`
 
-### 📦 AI Agent (`ai_agent`)
-> AI-powered assistant for automation and intelligent workflows.
+### AI Agents (`agents`)
+> AI-powered virtual agents for automation and intelligent workflows. Odoo equivalent: `ai_agent`.
 
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
+- **Odoo App Category:** `Productivity`
+- **Command Center Pillar:** `Productivity`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system, automation`
-- **Frontend URL Routing:** `/admin/settings/virtual-agents`
+- **Frontend URL Routing:** `/admin/agents`
 
-### 📦 AI Engine (`ai_engine`)
-> Core integration module for Ai Engine.
+## Layer 4: External Integrations (Third-Party Connectors)
 
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `Headless / No direct URL`
+### Amazon (`amazon`)
+> Amazon marketplace connector. Sync products, orders, and inventory with Amazon Seller Central.
 
-### 📦 Payments (`payments`)
-> Core integration module for Payments.
+- **Odoo App Category:** `Sales`
+- **Command Center Pillar:** `Sales`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `sales, inventory`
+- **Frontend URL Routing:** `/admin/amazon`
+
+### Live Chat (`messaging`)
+> Real-time website visitor chat. External live chat channel integration.
+
+- **Odoo App Category:** `Discuss`
+- **Command Center Pillar:** `Productivity`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, inbox`
+- **Frontend URL Routing:** `/admin/livechat`
+
+### WhatsApp (`whatsapp`)
+> Communicate with clients via WhatsApp Business API.
+
+- **Odoo App Category:** `Discuss`
+- **Command Center Pillar:** `Productivity`
+- **Is Application (Has Dashboard Tile?):** `True`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `core, inbox`
+- **Frontend URL Routing:** `/admin/whatsapp`
+
+### Payments (`payments`)
+> Core payment gateway integration module. Connects to external payment providers (Stripe, PayPal, etc.).
 
 - **Odoo App Category:** `Accounting`
 - **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False ❌`
-- **Is Installable (App Store Enabled?):** `True ✅`
-- **Dependencies (Depends Array):** `system`
-- **Frontend URL Routing:** `Headless / No direct URL`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `accounting`
+- **Frontend URL Routing:** Headless / No direct URL
 
+### AI Engine (`ai_engine`)
+> Core AI model integration and inference engine.
+
+- **Odoo App Category:** `Technical`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `system`
+- **Frontend URL Routing:** Headless / No direct URL
+- **Status:** Frontend-only stub — backend implementation is missing.

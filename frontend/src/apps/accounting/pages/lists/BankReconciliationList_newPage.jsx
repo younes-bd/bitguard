@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link2, Plus, Edit2, Trash2, CheckCircle2 } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { bankReconciliationService } from '../../api/bankReconciliationService';
+import { journalService } from '../../api/journalService';
 import toast from 'react-hot-toast';
 
 const BankReconciliationList = () => {
@@ -22,8 +23,8 @@ const BankReconciliationList = () => {
         try {
             setLoading(true);
             const [reconData, journalData] = await Promise.all([
-                accountingService.getBankReconciliations(),
-                accountingService.getAccountJournals()
+                bankReconciliationService.getBankReconciliations(),
+                journalService.getAccountJournals()
             ]);
             setReconciliations(reconData?.results || reconData || []);
             setJournals(journalData?.results || journalData || []);
@@ -49,10 +50,10 @@ const BankReconciliationList = () => {
             };
             
             if (formData.id) {
-                await accountingService.updateBankReconciliation(formData.id, payload);
+                await bankReconciliationService.updateBankReconciliation(formData.id, payload);
                 toast.success("Reconciliation updated");
             } else {
-                await accountingService.createBankReconciliation(payload);
+                await bankReconciliationService.createBankReconciliation(payload);
                 toast.success("Reconciliation created");
             }
             setIsEditing(false);

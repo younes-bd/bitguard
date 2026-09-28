@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { sequenceService } from '../../../core/api/sequenceService';
 import { Layers, Plus, Search, Edit2, Trash2, X, Loader2 } from 'lucide-react';
 import client from '@/core/api/client';
-import { coreService } from '../../../core/api/coreService';
+
 import toast from 'react-hot-toast';
 
 const EMPTY_FORM = { name: '', code: '', prefix: '', padding: 5, next_number: 1 };
@@ -18,7 +19,7 @@ export default function SequencesPage() {
     const fetchSequences = async () => {
         setLoading(true);
         try {
-            const res = await coreService.getSequences();
+            const res = await sequenceService.getSequences();
             const data = res.data?.results || res.data?.data || res.data || [];
             setSequences(Array.isArray(data) ? data : []);
         } catch {
@@ -39,10 +40,10 @@ export default function SequencesPage() {
         try {
             const payload = { ...form };
             if (editingSeq?.id) {
-                await coreService.updateSequence(editingSeq.id, payload);
+                await sequenceService.updateSequence(editingSeq.id, payload);
                 toast.success('Sequence updated');
             } else {
-                await coreService.createSequence(payload);
+                await sequenceService.createSequence(payload);
                 toast.success('Sequence created');
             }
             setIsModalOpen(false);
@@ -57,7 +58,7 @@ export default function SequencesPage() {
     const handleDelete = async (s) => {
         if (!window.confirm(`Delete sequence "${s.name}"?`)) return;
         try {
-            await coreService.deleteSequence(s.id);
+            await sequenceService.deleteSequence(s.id);
             toast.success('Sequence deleted');
             fetchSequences();
         } catch { toast.error('Failed to delete sequence'); }

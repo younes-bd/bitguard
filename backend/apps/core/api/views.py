@@ -411,3 +411,27 @@ from .serializers import DatabaseBackupSerializer
 class DatabaseBackupViewSet(TenantScopedMixin, viewsets.ReadOnlyModelViewSet):
     queryset = DatabaseBackup.objects.all()
     serializer_class = DatabaseBackupSerializer
+
+from ..domain.models import UoMCategory, UoM
+from .serializers import UoMCategorySerializer, UoMSerializer
+
+class UoMCategoryViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    """
+    ViewSet for Unit of Measurement Categories
+    """
+    queryset = UoMCategory.objects.all()
+    serializer_class = UoMCategorySerializer
+    search_fields = ['name']
+    ordering_fields = ['name']
+    ordering = ['name']
+
+class UoMViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    """
+    ViewSet for Units of Measurement
+    """
+    queryset = UoM.objects.select_related('category').all()
+    serializer_class = UoMSerializer
+    filterset_fields = ['category', 'is_reference']
+    search_fields = ['name', 'category__name']
+    ordering_fields = ['name', 'factor']
+    ordering = ['category', 'name']

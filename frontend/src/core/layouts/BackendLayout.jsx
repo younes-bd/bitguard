@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/shared/core/Sidebar';
 import {
-    Menu, Bell, Search
+    Menu, Bell, Search, Settings
 } from 'lucide-react';
 
 import client from '../api/client';
@@ -219,6 +219,15 @@ const BackendLayout = () => {
                         <QuickActions />
                         
                         <div className="mr-1"></div>
+
+                        {/* Platform Navigation */}
+                        <Link to="/admin/apps" className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors group relative" title="App Store">
+                            <LucideIcons.LayoutGrid size={20} className="group-hover:scale-110 transition-transform" />
+                        </Link>
+                        
+                        <Link to="/admin/settings" className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors group relative" title="Global Settings">
+                            <Settings size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                        </Link>
 
                         <LanguageSwitcher />
                         <InboxBell />

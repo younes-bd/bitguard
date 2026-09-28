@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeftRight, CheckCircle, Clock, Loader, AlertTriangle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { accountingService } from '../../api/accountingService';
+import { paymentService } from '../../api/paymentService';
+import { bankReconciliationService } from '../../api/bankReconciliationService';
+import { expenseService } from '../../../expenses/api/expenseService';
 
 const BankReconciliationPage = () => {
     const [transactions, setTransactions] = useState([]);
@@ -17,9 +19,9 @@ const BankReconciliationPage = () => {
             try {
                 // Fetch bank transactions and ledger entries
                 const [bankRes, paymentsRes, expensesRes] = await Promise.all([
-                    accountingService.getBankTransactions(),
-                    accountingService.getPayments(),
-                    accountingService.getExpenses()
+                    bankReconciliationService.getBankTransactions(),
+                    paymentService.getPayments(),
+                    expenseService.getExpenses()
                 ]);
                 
                 const bankTx = Array.isArray(bankRes) ? bankRes : bankRes?.results || [];

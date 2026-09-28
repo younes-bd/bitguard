@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { accountingService } from '../../../accounting/api/accountingService';
+import { paymentService } from '../../../accounting/api/paymentService';
 import { ArrowLeft, Download, CheckCircle } from 'lucide-react';
 
 const ReceiptDetailPage = () => {
@@ -11,7 +11,7 @@ const ReceiptDetailPage = () => {
 
   useEffect(() => {
     // Fetch payment details — use getPayments and find by id as fallback
-    accountingService.getPayments().then(data => {
+    paymentService.getPayments().then(data => {
       const arr = Array.isArray(data) ? data : data?.results || [];
       const found = arr.find(p => String(p.id) === String(id));
       setPayment(found || null);

@@ -25,7 +25,6 @@ import sys
 
 # Dynamic App Discovery (ERP Standard)
 APPS_DIR = BASE_DIR / 'apps'
-INTEGRATIONS_DIR = BASE_DIR / 'integrations'
 
 # Mandatory Core Apps that must be loaded first
 CORE_APPS = [
@@ -46,12 +45,6 @@ if APPS_DIR.exists():
             app_module = f'apps.{d.name}'
             if app_module not in CORE_APPS:
                 DYNAMIC_APPS.append(app_module)
-
-if INTEGRATIONS_DIR.exists():
-    for d in INTEGRATIONS_DIR.iterdir():
-        if d.is_dir() and d.name != '__pycache__' and not d.name.startswith('.'):
-            INTEGRATIONS_DIR_STR = f'integrations.{d.name}'
-            DYNAMIC_APPS.append(INTEGRATIONS_DIR_STR)
 
 INSTALLED_APPS = [
     # Django Built-in

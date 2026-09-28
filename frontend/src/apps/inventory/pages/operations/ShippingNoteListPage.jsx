@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Truck, Search, Plus, Eye } from 'lucide-react';
-import { accountingService } from '../../../accounting/api/accountingService';
+import { stockService } from '../../../inventory/api/stockService';
 
 export default function ShippingNoteListPage() {
     const [shippingNotes, setShippingNotes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        accountingService.getShippingNotes()
+        stockService.getShippingNotes()
             .then(data => {
                 setShippingNotes(data || []);
                 setIsLoading(false);

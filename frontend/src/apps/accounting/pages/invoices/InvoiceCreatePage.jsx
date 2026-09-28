@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projectsService } from '../../../projects/api/projectsService';
-import { accountingService } from '../../api/accountingService';
+import { invoiceService } from '../../api/invoiceService';
 import { crmService } from '../../../crm/api/crmService';
 import { signService } from '../../../sign/api/signService';
 import { ecommerceService } from '../../../ecommerce/api/ecommerceService';
@@ -180,7 +180,7 @@ const InvoiceCreatePage = () => {
                 ...formData,
                 items: formData.items.map(({ _isContractItem, _isProjectItem, ...item }) => item)
             };
-            await accountingService.createInvoice(payload);
+            await invoiceService.createInvoice(payload);
             toast.success('Invoice created successfully!');
             navigate('/admin/accounting/invoices');
         } catch (error) {

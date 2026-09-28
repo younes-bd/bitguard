@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { accountingService } from '../../api/accountingService';
+import { expenseService } from '../../../expenses/api/expenseService';
 import {
     Search, Filter, Plus, DollarSign,
     FileText, Check, X, Clock, Download, ThumbsUp, ThumbsDown, CreditCard
@@ -26,7 +27,7 @@ const ExpenseListPage = () => {
 
     const loadExpenses = async () => {
         try {
-            const data = await accountingService.getExpenses();
+            const data = await expenseService.getExpenses();
             setExpenses(Array.isArray(data) ? data : data.results || []);
         } catch (error) {
             console.error("Failed to load expenses", error);
@@ -38,7 +39,7 @@ const ExpenseListPage = () => {
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
-            await accountingService.createExpense(formData);
+            await expenseService.createExpense(formData);
             setShowModal(false);
             setFormData({ title: '', amount: '', category: 'other', incurred_date: new Date().toISOString().split('T')[0], notes: '' });
             loadExpenses(); // Refresh

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Truck, Save, ArrowLeft, Package, MapPin, Search } from 'lucide-react';
-import { accountingService } from '../../../accounting/api/accountingService';
+import { invoiceService } from '../../../accounting/api/invoiceService';
+import { stockService } from '../../../inventory/api/stockService';
 import { toast } from 'react-hot-toast';
 
 const ShippingNoteCreatePage = () => {
@@ -22,7 +23,7 @@ const ShippingNoteCreatePage = () => {
         const fetchInvoices = async () => {
             try {
                 // Fetch paid or partially paid standard invoices that don't have DNs yet
-                const data = await accountingService.getInvoices();
+                const data = await invoiceService.getInvoices();
                 setInvoices(data?.filter(i => i.type === 'standard' && i.status !== 'draft') || []);
             } catch (err) {
                 console.error(err);
@@ -56,7 +57,7 @@ const ShippingNoteCreatePage = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const dn = await accountingService.createShippingNote(form);
+            const dn = await stockService.createShippingNote(form);
             toast.success('Shipping Note created');
             navigate(`/admin/inventory/deliveries/${dn.id}`);
         } catch (err) {

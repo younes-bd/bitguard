@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { auditLogService } from '../../core/api/auditLogService';
 import { 
     History, Search, Filter, Download, User, 
     Activity, Clock, Globe, Database, Loader2 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { settingsService } from '../../system/api/settingsService';
+
 
 const ACTION_COLORS = {
     'create': 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
@@ -26,7 +27,7 @@ const AuditLogList = () => {
 
     const fetchLogs = async () => {
         try {
-            const res = await settingsService.getAuditLogs();
+            const res = await auditLogService.getAuditLogs();
             const data = res.data?.data || res.data?.results || res.data || [];
             setLogs(data);
         } catch (error) { toast.error('An error occurred'); } finally {

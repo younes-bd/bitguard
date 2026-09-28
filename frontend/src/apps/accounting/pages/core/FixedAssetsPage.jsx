@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Server, Plus, RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { fixedAssetService } from '../../api/fixedAssetService';
+import { accountService } from '../../api/accountService';
 import { toast } from 'react-hot-toast';
 
 const FixedAssetsPage = () => {
@@ -26,8 +27,8 @@ const FixedAssetsPage = () => {
     const fetchData = async () => {
         try {
             const [assetData, coaData] = await Promise.all([
-                accountingService.getFixedAssets(),
-                accountingService.getAccounts()
+                fixedAssetService.getFixedAssets(),
+                accountService.getAccounts()
             ]);
             setAssets(Array.isArray(assetData) ? assetData : assetData?.results || []);
             setCoaAccounts(coaData || []);
@@ -44,7 +45,7 @@ const FixedAssetsPage = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            await accountingService.createFixedAsset(formData);
+            await fixedAssetService.createFixedAsset(formData);
             toast.success("Fixed asset added successfully!");
             setShowModal(false);
             setFormData({
@@ -68,7 +69,7 @@ const FixedAssetsPage = () => {
     const handleRunDepreciation = async () => {
         setRunning(true);
         try {
-            const result = await accountingService.runDepreciation();
+            const result = await fixedAssetService.runDepreciation();
             toast.success(`Depreciation run complete — ${result?.assets_processed || 0} assets processed`);
             fetchData(); // Refresh data
         } catch (err) {

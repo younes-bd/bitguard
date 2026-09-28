@@ -41,7 +41,7 @@ class CategoryViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
 
 class ProductViewSet(TenantScopedMixin, viewsets.ModelViewSet):
-    queryset = Product.objects.prefetch_related(
+    queryset = Product.objects.select_related('uom', 'uom_po', 'responsible', 'website').prefetch_related(
         'variants', 'categories', 'reviews', 'tags'
     ).order_by('-created_at')
     permission_classes = [permissions.IsAuthenticated]

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { accountingService } from '../../../accounting/api/accountingService';
+import { creditNoteService } from '../../../accounting/api/creditNoteService';
 import { FileMinus, Plus, Search, Eye } from 'lucide-react';
 
 const CreditNoteListPage = () => {
@@ -10,7 +10,7 @@ const CreditNoteListPage = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    accountingService.getCreditNotes().then(data => {
+    creditNoteService.getCreditNotes().then(data => {
       setNotes(Array.isArray(data) ? data : data?.results || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);

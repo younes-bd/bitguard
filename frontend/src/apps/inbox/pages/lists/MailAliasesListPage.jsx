@@ -19,7 +19,7 @@ export default function MailAliasesListPage() {
   const fetchAliases = async () => {
       setLoading(true);
       try {
-          const res = await client.get('system/mail-aliases/');
+          const res = await client.get('inbox/mail-aliases/');
           setData(Array.isArray(res.data?.results || res.data) ? (res.data?.results || res.data) : []);
       } catch {
           toast.error('Failed to load mail aliases');

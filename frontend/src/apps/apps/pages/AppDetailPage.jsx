@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { moduleService } from '../../core/api/moduleService';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Box, CheckCircle2, Download, AlertTriangle, RefreshCw, Trash2, Globe, FileText, User } from 'lucide-react';
 import { useManifest } from '../../../core/hooks/useManifest';
-import { settingsService } from '../../system/api/settingsService';
+
 import toast from 'react-hot-toast';
 
 const AppDetailPage = () => {
@@ -16,7 +17,7 @@ const AppDetailPage = () => {
     useEffect(() => {
         const fetchApp = async () => {
             try {
-                const response = await settingsService.getModules();
+                const response = await moduleService.getModules();
                 let appsArray = [];
                 if (Array.isArray(response)) appsArray = response;
                 else if (response?.data && Array.isArray(response.data)) appsArray = response.data;
@@ -44,7 +45,7 @@ const AppDetailPage = () => {
     const handleInstall = async () => {
         try {
             setActionInProgress(true);
-            await settingsService.installModule(app.id);
+            await moduleService.installModule(app.id);
             toast.success(`${app.name} installed successfully!`);
             await refreshManifest();
             setApp({ ...app, is_installed: true });
@@ -59,7 +60,7 @@ const AppDetailPage = () => {
         if (!window.confirm(`Are you sure you want to uninstall ${app.name}? This may remove related data.`)) return;
         try {
             setActionInProgress(true);
-            await settingsService.uninstallModule(app.id);
+            await moduleService.uninstallModule(app.id);
             toast.success(`${app.name} uninstalled successfully!`);
             await refreshManifest();
             setApp({ ...app, is_installed: false });

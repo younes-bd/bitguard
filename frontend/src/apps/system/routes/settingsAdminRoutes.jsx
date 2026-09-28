@@ -19,16 +19,24 @@ import TranslationsImport from '../pages/features/TranslationsImportPage';
 
 import CompaniesList from '../pages/lists/CompaniesListPage';
 import Sequences from '../pages/lists/SequencesPage';
-import CompanyInfo from '../pages/features/CompanyInfoPage';
-import Currencies from '../pages/lists/CurrenciesPage';
+import FinancialSettingsPage from '../pages/settings/FinancialSettingsPage';
+import CurrenciesPage from '../pages/lists/CurrenciesPage';
 
-
+// newly discovered existing pages
+import UsersListPage from '../../users/pages/lists/UsersListPage';
+import UserGroupsPage from '../../users/pages/lists/UserGroupsPage';
+import ActiveSessionsPage from '../../users/pages/lists/ActiveSessionsPage';
+import AccessRightsPage from '../../users/pages/lists/AccessRightsPage';
+import RecordRulesPage from '../../users/pages/lists/RecordRulesPage';
+import OutgoingMailServersPage from '../../inbox/pages/lists/OutgoingMailServersPage';
+import IncomingMailServersPage from '../../inbox/pages/lists/IncomingMailServersPage';
+import EmailTemplatesPage from '../../inbox/pages/lists/EmailTemplatesPage';
+import ChannelsPage from '../../discuss/pages/features/ChannelsPage';
+import PortalSettingsPage from '../../portal/pages/PortalSettingsPage';
+import WebhooksListPage from '../../automation/pages/lists/WebhooksListPage';
 
 // DYNAMIC SETTINGS REGISTRY (Tier-1 Standard)
-const settingsModules = import.meta.glob('../../*/pages/settings/*Settings*.jsx', { eager: true });
-const featureModules = import.meta.glob('../../*/pages/features/*Settings*.jsx', { eager: true });
 const pluginSettingsRoutes = import.meta.glob('../../*/routes/settingsRoutes.jsx', { eager: true });
-const allDynamicModules = { ...settingsModules, ...featureModules };
 
 export const settingsAdminRoutes = (
   <>
@@ -52,25 +60,25 @@ export const settingsAdminRoutes = (
 
     <Route path="companies" element={<CompaniesList />} />
     <Route path="sequences" element={<Sequences />} />
-    <Route path="company" element={<CompanyInfo />} />
-    <Route path="currencies" element={<Currencies />} />
+    <Route path="financial" element={<FinancialSettingsPage />} />
+    <Route path="currencies" element={<CurrenciesPage />} />
 
-
+    {/* Integrated Existing Layer-2 App Pages */}
+    <Route path="users" element={<UsersListPage />} />
+    <Route path="groups" element={<UserGroupsPage />} />
+    <Route path="active-sessions" element={<ActiveSessionsPage />} />
+    <Route path="access-rights" element={<AccessRightsPage />} />
+    <Route path="record-rules" element={<RecordRulesPage />} />
+    <Route path="webhooks" element={<WebhooksListPage />} />
+    <Route path="outgoing-mail" element={<OutgoingMailServersPage />} />
+    <Route path="incoming-mail" element={<IncomingMailServersPage />} />
+    <Route path="email-templates" element={<EmailTemplatesPage />} />
+    <Route path="channels" element={<ChannelsPage />} />
+    <Route path="portal" element={<PortalSettingsPage />} />
 
     {/* Dynamically Injected Settings Lists from Business Plugins */}
     {Object.entries(pluginSettingsRoutes).map(([path, mod]) => {
         return mod.default || null;
-    })}
-
-    {/* Dynamic App Settings Pages */}
-    {Object.entries(allDynamicModules).map(([path, mod]) => {
-        const appName = path.split('/')[2];
-        if (['system', 'core', 'auth', 'reports', 'inbox', 'users'].includes(appName)) return null;
-
-        const Component = Object.values(mod)[0] || mod.default;
-        if (!Component) return null;
-        
-        return <Route key={`settings-${appName}`} path={appName} element={<Component />} />;
     })}
   </>
 );

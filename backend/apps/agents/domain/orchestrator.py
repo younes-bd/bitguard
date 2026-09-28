@@ -1,7 +1,7 @@
 import logging
 from .models import AgentProfile, AgentRunLog
 from .tools import ERPTools
-from integrations.ai_engine.services import AiEngineService
+from apps.ai_engine.services import AiEngineService
 
 logger = logging.getLogger(__name__)
 

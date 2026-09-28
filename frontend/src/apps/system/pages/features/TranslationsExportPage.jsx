@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { languageService } from '../../../core/api/languageService';
 import { Download, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
 import apiClient from '@/core/api/client';
@@ -14,7 +15,7 @@ export default function TranslationsExportPage() {
   });
 
   useEffect(() => {
-    settingsService.getLanguages()
+    languageService.getLanguages()
         .then(res => setLanguages(Array.isArray(res.data?.results || res.data) ? (res.data?.results || res.data) : []))
         .catch(() => setLanguages([
             { code: 'en', name: 'English' },

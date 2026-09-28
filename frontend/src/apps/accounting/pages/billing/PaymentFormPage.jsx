@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { accountingService } from '../../api/accountingService';
+import { paymentService } from '../../api/paymentService';
 import { crmService } from '../../../crm/api/crmService';
 import { DollarSign, CreditCard, Calendar, FileText, X, Check } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -32,7 +32,7 @@ const PaymentFormPage = ({ invoiceId, invoiceNumber, balanceDue, onSuccess, onCa
         e.preventDefault();
         setLoading(true);
         try {
-            await accountingService.createPayment(form);
+            await paymentService.createPayment(form);
             toast.success('Payment recorded successfully');
             onSuccess?.();
         } catch (err) {

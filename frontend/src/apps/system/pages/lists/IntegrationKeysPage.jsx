@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { settingsService } from '../../api/settingsService';
 import { Search, Plus, Trash2, Key } from 'lucide-react';
 import client from '@/core/api/client';
-import { settingsService } from '../../api/settingsService';
 import toast from 'react-hot-toast';
 
 export default function IntegrationKeysPage() {

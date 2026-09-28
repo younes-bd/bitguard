@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Landmark, ArrowUpRight, ArrowDownRight, RefreshCw, Plus, Building2, CreditCard, CheckCircle2 } from 'lucide-react';
+import { accountService } from '../../api/accountService';
+import { bankReconciliationService } from '../../api/bankReconciliationService';
 import { accountingService } from '../../api/accountingService';
 import { toast } from 'react-hot-toast';
 
@@ -27,8 +29,8 @@ const BankingDashboardPage = () => {
             try {
                 const [accs, trans, coa] = await Promise.all([
                     accountingService.getBankAccounts(),
-                    accountingService.getBankTransactions(),
-                    accountingService.getAccounts()
+                    bankReconciliationService.getBankTransactions(),
+                    accountService.getAccounts()
                 ]);
                 setAccounts(accs || []);
                 setTransactions(trans || []);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Download, Loader2, DollarSign, TrendingUp, TrendingDown, BookOpen } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { financialReportService } from '../../api/financialReportService';
 import { toast } from 'react-hot-toast';
 
 export default function AccountingReportPage() {
@@ -19,8 +19,8 @@ export default function AccountingReportPage() {
         try {
             setLoading(true);
             const [pl, bs] = await Promise.all([
-                accountingService.getProfitLoss(),
-                accountingService.getBalanceSheet()
+                financialReportService.getProfitLoss(),
+                financialReportService.getBalanceSheet()
             ]);
             setPlData(pl || { income: 50000, expenses: 30000, net: 20000 });
             setBsData(bs || { assets: 100000, liabilities: 40000, equity: 60000 });

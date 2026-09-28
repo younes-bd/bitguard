@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FileText, Download, ArrowLeft } from 'lucide-react';
-import { accountingService } from '../../../../accounting/api/accountingService';
+import { invoiceService } from '../../../../accounting/api/invoiceService';
 import toast from 'react-hot-toast';
 
 export default function PortalInvoiceDetailPage() {
@@ -10,7 +10,7 @@ export default function PortalInvoiceDetailPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        accountingService.getInvoices().then(data => {
+        invoiceService.getInvoices().then(data => {
             const arr = Array.isArray(data) ? data : (data?.results ?? []);
             const found = arr.find(i => String(i.id) === String(id));
             if (found) setInvoice(found);

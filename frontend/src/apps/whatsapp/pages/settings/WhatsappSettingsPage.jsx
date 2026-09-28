@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
 import { Save, Loader2, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { settingsService } from '../../../system/api/settingsService';
+
 
 export default function WhatsappSettingsPage() {
     const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ export default function WhatsappSettingsPage() {
 
     const loadSettings = async () => {
         try {
-            const res = await settingsService.getSettings();
+            const res = await parameterService.getSettings();
             const data = res.data?.results || res.data || [];
             
             const current = { ...settings };
@@ -49,7 +50,7 @@ export default function WhatsappSettingsPage() {
                 whatsapp_webhook_verify_token: settings.webhook_verify_token
             };
             
-            await settingsService.batchUpdateSettings(payload);
+            await parameterService.batchUpdateSettings(payload);
             toast.success('WhatsApp settings saved successfully');
         } catch (error) {
             toast.error('Failed to save settings');

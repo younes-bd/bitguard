@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { settingsService } from '../../../system/api/settingsService';
+
 import { FileText, Loader2, Play } from 'lucide-react';
+import { reportService } from '../../../reports/api/reportService';
 import toast from 'react-hot-toast';
 
 const PrintFormatsPage = () => {
@@ -10,7 +11,7 @@ const PrintFormatsPage = () => {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const res = await settingsService.getReports();
+                const res = await reportService.getReports();
                 setReports(res.data?.results || res.data || []);
             } catch (err) {
                 toast.error("Failed to load print formats");

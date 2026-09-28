@@ -287,7 +287,7 @@ const CommandCenterPage = () => {
     };
 
     const CATEGORY_COLORS = {
-      "Saless": "blue", "Services": "amber", "Accounting & Finance": "emerald",
+      "Sales": "blue", "Services": "amber", "Accounting & Finance": "emerald",
       "Inventory": "orange", "Manufacturing": "amber", "Human Resources": "pink",
       "Journeys": "rose", "Website": "sky",
       "Productivity": "violet", "Administration": "slate",

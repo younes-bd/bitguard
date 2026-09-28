@@ -83,7 +83,7 @@ const RecordRulesPage = () => {
     if (loading) {
         return (
             <div className="flex justify-center p-8">
-                <Loader2 className="animate-spin text-purple-500 w-8 h-8" />
+                <Loader2 className="animate-spin text-blue-500 w-8 h-8" />
             </div>
         );
     }
@@ -93,12 +93,12 @@ const RecordRulesPage = () => {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
-                        <ShieldCheck className="text-purple-500" />
+                        <ShieldCheck className="text-blue-500" />
                         Record Rules
                     </h1>
                     <p className="text-slate-400">Row-level security policies equivalent to Odoo's ir.rule</p>
                 </div>
-                <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-md transition-colors">
+                <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
                     <Plus className="w-4 h-4" />
                     New Rule
                 </button>
@@ -134,7 +134,7 @@ const RecordRulesPage = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <code className="text-xs bg-slate-950 p-1 rounded font-mono text-purple-400">
+                                            <code className="text-xs bg-slate-950 p-1 rounded font-mono text-blue-400">
                                                 {rule.domain_force || rule.domain_filter || '[]'}
                                             </code>
                                         </td>
@@ -148,7 +148,7 @@ const RecordRulesPage = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
-                                                <button className="p-1 text-slate-500 hover:text-purple-400 transition-colors" onClick={() => openEdit(rule)}>
+                                                <button className="p-1 text-slate-500 hover:text-blue-400 transition-colors" onClick={() => openEdit(rule)}>
                                                     <Pencil className="w-4 h-4" />
                                                 </button>
                                                 <button className="p-1 text-slate-500 hover:text-rose-400 transition-colors" onClick={() => handleDelete(rule.id)}>
@@ -174,13 +174,13 @@ const RecordRulesPage = () => {
                             <div>
                                 <label className="text-sm font-medium text-slate-400">Name</label>
                                 <input value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))}
-                                    className="mt-1 flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="mt-1 flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Rule name" />
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-slate-400">Role</label>
                                 <select value={form.role} onChange={e => setForm(p => ({...p, role: e.target.value}))}
-                                    className="mt-1 flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    className="mt-1 flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">-- All Roles (Global) --</option>
                                     {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                                 </select>
@@ -188,7 +188,7 @@ const RecordRulesPage = () => {
                             <div>
                                 <label className="text-sm font-medium text-slate-400">Model</label>
                                 <select value={form.content_type} onChange={e => setForm(p => ({...p, content_type: e.target.value}))}
-                                    className="mt-1 flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    className="mt-1 flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">-- Select Model --</option>
                                     {contentTypes.map(ct => <option key={ct.id} value={ct.id}>{ct.app_label} | {ct.label} ({ct.model})</option>)}
                                 </select>
@@ -197,17 +197,17 @@ const RecordRulesPage = () => {
                                 <label className="text-sm font-medium text-slate-400">Domain Filter (JSON)</label>
                                 <textarea value={form.domain_filter} onChange={e => setForm(p => ({...p, domain_filter: e.target.value}))}
                                     rows={3}
-                                    className="mt-1 flex w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="mt-1 flex w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder='[["field", "=", "value"]]' />
                             </div>
                             <div className="flex items-center gap-3">
                                 <input type="checkbox" id="is_global" checked={form.is_global} onChange={e => setForm(p => ({...p, is_global: e.target.checked}))}
-                                    className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-purple-500" />
+                                    className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-blue-500" />
                                 <label htmlFor="is_global" className="text-sm text-slate-300">Global Rule (applies to all roles)</label>
                             </div>
                         </div>
                         <div className="flex gap-3 pt-2">
-                            <button onClick={handleSave} className="flex-1 py-2 rounded-md bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium">
+                            <button onClick={handleSave} className="flex-1 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium">
                                 {editingRule ? 'Save Changes' : 'Create Rule'}
                             </button>
                             <button onClick={() => setIsModalOpen(false)} className="flex-1 py-2 rounded-md border border-slate-700 text-slate-400 hover:text-white text-sm">

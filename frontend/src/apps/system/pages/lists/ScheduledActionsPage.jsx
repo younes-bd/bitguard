@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { scheduledActionService } from '../../../core/api/scheduledActionService';
+import { coreService } from '../../../core/api/coreService';
 import { Play, Clock, CheckCircle2, XCircle, Search, Calendar, Power, X } from 'lucide-react';
 import { settingsService } from '../../api/settingsService';
 import toast from 'react-hot-toast';
@@ -23,8 +25,8 @@ export default function ScheduledActionsPage() {
         setLoading(true);
         try {
             const [res, modelsRes] = await Promise.all([
-                settingsService.getScheduledActions(),
-                settingsService.getContentTypes().catch(() => ({ data: [] }))
+                scheduledActionService.getScheduledActions(),
+                coreService.getContentTypes().catch(() => ({ data: [] }))
             ]);
             
             const d = res.data;
@@ -52,7 +54,7 @@ export default function ScheduledActionsPage() {
 
     const toggleAction = async (action) => {
         try {
-            await settingsService.toggleScheduledAction(action.id, !action.is_active);
+            await scheduledActionService.toggleScheduledAction(action.id, !action.is_active);
             setActions(actions.map(a => a.id === action.id ? { ...a, is_active: !a.is_active } : a));
             toast.success(`Action ${!action.is_active ? 'enabled' : 'disabled'}`);
         } catch (error) {
@@ -62,7 +64,7 @@ export default function ScheduledActionsPage() {
 
     const runAction = async (actionId) => {
         try {
-            await settingsService.runScheduledAction(actionId);
+            await scheduledActionService.runScheduledAction(actionId);
             toast.success('Action executed successfully!');
             fetchActions();
         } catch (error) {
@@ -73,7 +75,7 @@ export default function ScheduledActionsPage() {
     const deleteAction = async (actionId) => {
         if (!window.confirm("Are you sure you want to delete this scheduled action?")) return;
         try {
-            await settingsService.deleteScheduledAction(actionId);
+            await scheduledActionService.deleteScheduledAction(actionId);
             setActions(actions.filter(a => a.id !== actionId));
         } catch (error) {
             toast.error('Failed to delete action');
@@ -109,9 +111,9 @@ export default function ScheduledActionsPage() {
         e.preventDefault();
         try {
             if (editingAction) {
-                await settingsService.updateScheduledAction(editingAction.id, form);
+                await scheduledActionService.updateScheduledAction(editingAction.id, form);
             } else {
-                await settingsService.createScheduledAction(form);
+                await scheduledActionService.createScheduledAction(form);
             }
             setIsModalOpen(false);
             fetchActions();

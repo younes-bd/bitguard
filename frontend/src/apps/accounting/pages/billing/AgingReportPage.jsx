@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, TrendingUp, AlertTriangle, ShieldCheck, PieChart } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { invoiceService } from '../../api/invoiceService';
 
 const AgingReportPage = () => {
     const [report, setReport] = useState(null);
@@ -9,7 +9,7 @@ const AgingReportPage = () => {
     useEffect(() => {
         const fetchAging = async () => {
             try {
-                const data = await accountingService.getAgingReport();
+                const data = await invoiceService.getAgingReport();
                 setReport(data);
             } catch (err) {
                 console.error("Failed to load aging report", err);

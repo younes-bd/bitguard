@@ -1,4 +1,4 @@
-import { Inbox, Send, FileText, AtSign, Bell } from 'lucide-react';
+import { Inbox, Send, FileText, AtSign, Bell, Server, MessageCircle } from 'lucide-react';
 
 export const getSettingsMenu = () => [
     {
@@ -11,4 +11,11 @@ export const getSettingsMenu = () => [
             { label: 'Mail Aliases', icon: AtSign, path: '/admin/settings/mail-aliases' },
         ]
     }
+];
+
+export const settingsMenu = [
+    { section: 'Email / Discuss', label: 'Outgoing Mail Servers', icon: Server, path: '/admin/settings/outgoing-mail' },
+    { section: 'Email / Discuss', label: 'Incoming Mail Servers', icon: Server, path: '/admin/settings/incoming-mail' },
+    { section: 'Email / Discuss', label: 'Email Templates', icon: FileText, path: '/admin/settings/email-templates' },
+    { section: 'Email / Discuss', label: 'Channels', icon: MessageCircle, path: '/admin/settings/channels' },
 ];

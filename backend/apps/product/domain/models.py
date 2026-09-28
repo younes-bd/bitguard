@@ -78,6 +78,10 @@ class Product(TenantAwareModel):
     internal_reference = models.CharField(max_length=100, blank=True, help_text='Internal reference / SKU')
     barcode = models.CharField(max_length=100, blank=True, null=True, help_text='Barcode (EAN, UPC, etc.)')
     sku = models.CharField(max_length=100, blank=True, null=True)  # Legacy, use internal_reference
+    
+    # Unit of Measure
+    uom = models.ForeignKey('core.UoM', on_delete=models.SET_NULL, null=True, blank=True, related_name='products_as_uom')
+    uom_po = models.ForeignKey('core.UoM', on_delete=models.SET_NULL, null=True, blank=True, related_name='products_as_uom_po')
 
     # Relations
     website = models.ForeignKey(

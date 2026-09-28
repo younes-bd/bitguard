@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { languageService } from '../../../core/api/languageService';
 import { Globe, Plus, CheckCircle2, XCircle, Search, Languages as LanguagesIcon, Edit, X } from 'lucide-react';
 import { settingsService } from '../../api/settingsService';
 import toast from 'react-hot-toast';
@@ -19,7 +20,7 @@ export default function LanguagesPage() {
     const fetchLanguages = async () => {
         setLoading(true);
         try {
-            const res = await settingsService.getLanguages();
+            const res = await languageService.getLanguages();
             setLanguages(Array.isArray(res.data?.results || res.data) ? (res.data?.results || res.data) : []);
         } catch (error) {
             console.error("Failed to fetch languages", error);
@@ -38,7 +39,7 @@ export default function LanguagesPage() {
             return;
         }
         try {
-            await settingsService.updateLanguage(language.id, { is_active: !language.is_active });
+            await languageService.updateLanguage(language.id, { is_active: !language.is_active });
             setLanguages(languages.map(l => l.id === language.id ? { ...l, is_active: !l.is_active } : l));
             toast.success('Language updated');
         } catch (error) {
@@ -48,7 +49,7 @@ export default function LanguagesPage() {
 
     const setDefault = async (languageId) => {
         try {
-            await settingsService.setDefaultLanguage(languageId);
+            await languageService.setDefaultLanguage(languageId);
             toast.success('Default language updated!');
             fetchLanguages();
         } catch (error) {
@@ -63,7 +64,7 @@ export default function LanguagesPage() {
         }
         if (!window.confirm("Are you sure you want to delete this language?")) return;
         try {
-            await settingsService.deleteLanguage(language.id);
+            await languageService.deleteLanguage(language.id);
             setLanguages(languages.filter(l => l.id !== language.id));
             toast.success('Language deleted');
         } catch (error) {
@@ -96,9 +97,9 @@ export default function LanguagesPage() {
         e.preventDefault();
         try {
             if (editingLanguage) {
-                await settingsService.updateLanguage(editingLanguage.id, form);
+                await languageService.updateLanguage(editingLanguage.id, form);
             } else {
-                await settingsService.createLanguage(form);
+                await languageService.createLanguage(form);
             }
             setIsModalOpen(false);
             fetchLanguages();

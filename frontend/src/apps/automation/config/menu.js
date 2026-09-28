@@ -1,4 +1,4 @@
-import { Terminal } from 'lucide-react';
+import { Terminal, Webhook } from 'lucide-react';
 
 export const getSettingsMenu = () => [
     {
@@ -7,4 +7,9 @@ export const getSettingsMenu = () => [
             { label: 'Automated Actions', icon: Terminal, path: '/admin/settings/automated-actions' },
         ]
     }
+];
+
+export const settingsMenu = [
+    { section: 'Technical', label: 'Automated Actions', icon: Terminal, path: '/admin/settings/automated-actions' },
+    { section: 'Technical', label: 'Webhooks', icon: Webhook, path: '/admin/settings/webhooks' },
 ];

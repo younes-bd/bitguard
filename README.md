@@ -71,7 +71,7 @@ python manage.py remove_stale_contenttypes --noinput
 pytest apps/erp apps/scm apps/accounting
 python manage.py makemigrations --check # No unmigrated model changes
 python manage.py showmigrations system
-python manage.py test apps.erp          # All ERP tests pass
+python manage.py test apps.crm          # All ERP tests pass
 11) Frontend: cd frontend; npm install; npm start npm run dev
 celery -A config worker -l info 
 celery -A config beat -l info
@@ -300,3 +300,65 @@ Marketing: campaigns(1⚠), journeys(1⚠), sms(2), events(3), social(4⚠), sur
 Human Resources: employees(1), recruiting(2), timeoff(3), timeclock(4), frontdesk(5), payroll(6), performance(8), referrals(8), fleet(10), lunch(11)
 Discuss: discuss(3), voip(8), messaging(6), whatsapp(3)
 Productivity: tasks(2), approvals(5), knowledge(6), calendar(7), analytics(5)
+
+
+
+General Settings          ← Hardcoded kernel (system app)
+─────────────────────────
+Users & Companies         ← Static inject (users app)
+  Users
+  Companies
+  User Groups
+  Active Sessions
+─────────────────────────
+Translations              ← Hardcoded kernel (system app)
+  Languages
+  Export Translations
+  Import Translations
+─────────────────────────
+Email / Discuss           ← Static inject (inbox/discuss app)
+  Outgoing Mail Servers
+  Incoming Mail Servers
+  Email Templates
+  Channels
+─────────────────────────
+Financial                 ← Hardcoded kernel (system app)
+  Financial & Banking
+  Currencies
+─────────────────────────
+Technical                 ← Hardcoded kernel + static injects
+  System Parameters       ← kernel
+  Scheduled Actions       ← kernel
+  Automated Actions       ← automation app inject
+  Webhooks                ← automation app inject
+  Document Layouts        ← kernel
+  Sequences               ← kernel
+  Menu Sequences          ← kernel
+  Access Rights           ← users app inject
+  Record Rules            ← users app inject
+  Security Policy         ← users app inject
+  Virtual Agents          ← ai_engine app inject
+  Audit Logs              ← kernel
+  Server Logs             ← kernel
+  Backup & Restore        ← kernel
+  Integration Keys        ← kernel
+─────────────────────────
+[Dynamic — from backend InstalledModule manifest]
+Sales                     ← if sales module is_installed
+  Settings (/admin/settings/sales)
+Inventory                 ← if inventory module is_installed
+  Settings (/admin/settings/inventory)
+Accounting                ← if accounting module is_installed
+  Settings (/admin/settings/accounting)
+CRM                       ← if crm module is_installed
+  Settings (/admin/settings/crm)
+eCommerce                 ← if ecommerce module is_installed
+  Settings (/admin/settings/ecommerce)
+Website                   ← if website module is_installed
+  Settings (/admin/settings/website)
+Employees                 ← if employees module is_installed
+  Settings (/admin/settings/employees)
+Manufacturing             ← if manufacturing module is_installed
+  Settings (/admin/settings/manufacturing)
+Helpdesk                  ← if helpdesk module is_installed
+  Settings (/admin/settings/helpdesk)

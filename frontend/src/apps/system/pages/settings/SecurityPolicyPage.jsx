@@ -16,6 +16,7 @@ const SecurityPolicyPage = () => {
             const data = await usersService.getSecurityPolicy();
             const fetched = data || {};
             setPolicy({
+                id: fetched.id,
                 password_complexity: fetched.password_complexity || 'medium',
                 pwd_min_length: fetched.pwd_min_length || 8,
                 pwd_require_uppercase: fetched.pwd_require_uppercase ?? true,
@@ -58,7 +59,8 @@ const SecurityPolicyPage = () => {
             if (policy.id) {
                 await usersService.updateSecurityPolicy(policy.id, policy);
             } else {
-                await usersService.updateSecurityPolicy('default', policy);
+                const created = await usersService.createSecurityPolicy(policy);
+                setPolicy(prev => ({ ...prev, id: created.id }));
             }
             toast.success("Security Policy updated successfully");
         } catch (error) {
@@ -71,7 +73,7 @@ const SecurityPolicyPage = () => {
     if (loading) {
         return (
             <div className="flex justify-center p-8">
-                <Loader2 className="animate-spin text-purple-500 w-8 h-8" />
+                <Loader2 className="animate-spin text-blue-500 w-8 h-8" />
             </div>
         );
     }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { moduleService } from '../../core/api/moduleService';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
     Search, Server, Users, Filter, ShieldCheck, LifeBuoy, Briefcase, CreditCard, PieChart,
@@ -14,7 +15,7 @@ import {
     Share2, Sliders, Terminal, ThumbsUp, Upload, Video, Volume2, Watch, Webhook, ChevronDown
 } from 'lucide-react';
 import { useManifest } from '../../../core/hooks/useManifest';
-import { settingsService } from '../../system/api/settingsService';
+
 import toast from 'react-hot-toast';
 
 const IconMap = {
@@ -62,7 +63,7 @@ const AppInstallerPage = () => {
     const installApp = async (app) => {
         try {
             setActionInProgress(prev => new Set([...prev, app.id]));
-            await settingsService.installModule(app.id);
+            await moduleService.installModule(app.id);
             toast.success(`${app.name} ${app.has_update ? 'upgraded' : 'installed'} successfully`);
             await refreshManifest();
             setActionInProgress(prev => { const s = new Set(prev); s.delete(app.id); return s; });
@@ -154,7 +155,7 @@ const AppInstallerPage = () => {
                         onClick={async () => {
                             try {
                                 setActionInProgress(prev => new Set([...prev, 'update_list']));
-                                const res = await settingsService.updateModuleList();
+                                const res = await moduleService.updateModuleList();
                                 toast.success(`Synced ${res.data?.modules_found || 'all'} modules from disk successfully`);
                                 await refreshManifest();
                             } catch (err) {

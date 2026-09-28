@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import productService from '../api/productService';
+import { coreService } from '../../core/api/coreService';
 
 const TABS = [
   { id: 'general', label: 'General', icon: Package },
@@ -22,7 +23,7 @@ const INITIAL_FORM = {
   price: '', discount_price: '',
   brand: '', vendor: '', weight: '', dimensions: '',
   warranty_months: 12, license_type: '', shipping_type: 'instant',
-  unit_label: 'unit', min_quantity: 1, max_quantity: '',
+  uom: '', uom_po: '', min_quantity: 1, max_quantity: '',
   is_featured: false, sales_ok: true, procurement_ok: true, track_stock: false,
   stock_quantity: 0, is_rental: false,
   category_ids: [], tag_ids: [],
@@ -36,6 +37,7 @@ export default function ProductDetailPage() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [variants, setVariants] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [uoms, setUoms] = useState([]);
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
 
@@ -44,7 +46,17 @@ export default function ProductDetailPage() {
       loadProduct();
     }
     loadCategories();
+    loadUoms();
   }, [id, isNew]);
+
+  const loadUoms = async () => {
+    try {
+      const res = await coreService.getUoMs();
+      setUoms(res.data?.results || res.data || []);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const loadProduct = async () => {
     if (!id || id === 'new' || id === 'undefined' || id === 'null') return;
@@ -67,7 +79,8 @@ export default function ProductDetailPage() {
         warranty_months: p.warranty_months || 12,
         license_type: p.license_type || '',
         shipping_type: p.shipping_type || 'instant',
-        unit_label: p.unit_label || 'unit',
+        uom: p.uom || '',
+        uom_po: p.uom_po || '',
         min_quantity: p.min_quantity || 1,
         max_quantity: p.max_quantity || '',
         is_featured: p.is_featured || false,
@@ -106,6 +119,17 @@ export default function ProductDetailPage() {
   const handleSave = async () => {
     if (!form.name.trim()) { toast.error('Product name is required'); return; }
     if (!form.price) { toast.error('Price is required'); return; }
+    
+    // UoM Category Validation
+    if (form.uom && form.uom_po) {
+      const selectedUom = uoms.find(u => u.id == form.uom);
+      const selectedUomPo = uoms.find(u => u.id == form.uom_po);
+      if (selectedUom && selectedUomPo && selectedUom.category !== selectedUomPo.category) {
+        toast.error('Purchase UoM must belong to the same category as Default UoM');
+        setActiveTab('procurement');
+        return;
+      }
+    }
     setSaving(true);
     try {
       const payload = { ...form };
@@ -378,7 +402,14 @@ export default function ProductDetailPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputField label="Sales Price *" field="price" type="number" />
               <InputField label="Discount Price" field="discount_price" type="number" />
-              <InputField label="Unit of Measure" field="unit_label" />
+              <SelectField
+                label="Unit of Measure (Default)"
+                field="uom"
+                options={[
+                  { value: '', label: '--- Select UoM ---' },
+                  ...uoms.map(u => ({ value: u.id, label: `${u.name} ${u.category_name ? `(${u.category_name})` : ''}` }))
+                ]}
+              />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputField label="Min. Order Qty" field="min_quantity" type="number" />
@@ -406,6 +437,14 @@ export default function ProductDetailPage() {
           <div className="space-y-5">
             <h3 className="font-medium text-white border-b border-slate-700/50 pb-3">Procurement & Vendor</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SelectField
+                label="Purchase Unit of Measure"
+                field="uom_po"
+                options={[
+                  { value: '', label: '--- Select UoM ---' },
+                  ...uoms.map(u => ({ value: u.id, label: `${u.name} ${u.category_name ? `(${u.category_name})` : ''}` }))
+                ]}
+              />
               <InputField label="Brand / Manufacturer" field="brand" />
               <InputField label="Vendor / Distributor" field="vendor" />
               <InputField label="Weight (kg)" field="weight" type="number" />

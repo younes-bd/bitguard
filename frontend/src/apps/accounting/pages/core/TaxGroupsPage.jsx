@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Percent, Plus, Loader } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { taxService } from '../../api/taxService';
 
 const TaxGroupsPage = () => {
     const [taxes, setTaxes] = useState([]);
@@ -9,7 +9,7 @@ const TaxGroupsPage = () => {
     useEffect(() => {
         const fetchTaxes = async () => {
             try {
-                const res = await accountingService.getTaxGroups();
+                const res = await taxService.getTaxGroups();
                 setTaxes(Array.isArray(res) ? res : res?.results || []);
             } catch (error) {
                 console.error("Failed to load taxes", error);

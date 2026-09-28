@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { moduleService } from '../../../core/api/moduleService';
 import { X, Building2, Globe, CreditCard, ShieldCheck, Save, Loader2, Check } from 'lucide-react';
 import client from '@/core/api/client';
 
@@ -17,7 +18,7 @@ const TenantManagerModalPage = ({ isOpen, onClose, tenant, onSaved }) => {
     useEffect(() => {
         const loadModules = async () => {
             try {
-                const res = await settingsService.getModules();
+                const res = await moduleService.getModules();
                 const mods = Array.isArray(res.data) ? res.data : (res.data?.results || []);
                 setModulesList(mods.map(m => ({
                     id: m.technical_name,

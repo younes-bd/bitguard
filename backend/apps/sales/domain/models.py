@@ -40,8 +40,8 @@ class SalesOrder(TenantAwareModel):
         ('to_invoice', 'To Invoice'),
         ('invoiced', 'Fully Invoiced'),
     ]
-    client = models.ForeignKey('crm.Client', on_delete=models.CASCADE, related_name='sale_orders')
-    order_number = models.CharField(max_length=100)
+    client = models.ForeignKey('crm.Client', on_delete=models.CASCADE, related_name='sale_orders', null=True, blank=True)
+    order_number = models.CharField(max_length=100, default='NEW')
     date_order = models.DateField(default=timezone.now)
     validity_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
@@ -75,9 +75,9 @@ class SalesOrder(TenantAwareModel):
         print(f"[Cron Job] Cancelled {count} expired quotations.")
 
 class SalesOrderLine(TenantAwareModel):
-    order = models.ForeignKey(SalesOrder, on_delete=models.CASCADE, related_name='lines')
+    order = models.ForeignKey(SalesOrder, on_delete=models.CASCADE, related_name='lines', null=True, blank=True)
     product = models.ForeignKey('product.Product', on_delete=models.SET_NULL, null=True, blank=True)
-    name = models.TextField(help_text="Description")
+    name = models.TextField(help_text="Description", default='Line Item')
     product_uom_qty = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     price_unit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     taxes = models.ManyToManyField('accounting.Tax', blank=True)

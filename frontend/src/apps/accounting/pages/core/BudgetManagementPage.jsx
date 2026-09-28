@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Target, TrendingUp, Plus, Loader } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { accountingService } from '../../api/accountingService';
+import { budgetService } from '../../api/budgetService';
 
 const BudgetManagementPage = () => {
     const [budgets, setBudgets] = useState([]);
@@ -10,7 +10,7 @@ const BudgetManagementPage = () => {
     useEffect(() => {
         const fetchBudgets = async () => {
             try {
-                const res = await accountingService.getBudgets();
+                const res = await budgetService.getBudgets();
                 setBudgets(Array.isArray(res) ? res : res?.results || []);
             } catch (error) {
                 console.error("Failed to load budgets", error);

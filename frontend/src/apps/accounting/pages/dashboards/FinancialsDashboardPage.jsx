@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, FileText, CreditCard, Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { analyticsService } from '../../../analytics/api/analyticsService';
+import { paymentService } from '../../api/paymentService';
 import { accountingService } from '../../api/accountingService';
+import { expenseService } from '../../../expenses/api/expenseService';
 
 const FinancialsDashboardPage = () => {
     const [metrics, setMetrics] = useState(null);
@@ -16,8 +18,8 @@ const FinancialsDashboardPage = () => {
             try {
                 const [dashStats, expRes, payRes, monthlyRes] = await Promise.all([
                     accountingService.getDashboardStats(),
-                    accountingService.getExpenses(),
-                    accountingService.getPayments(),
+                    expenseService.getExpenses(),
+                    paymentService.getPayments(),
                     accountingService.getMonthlyFinancials(6)
                 ]);
                 

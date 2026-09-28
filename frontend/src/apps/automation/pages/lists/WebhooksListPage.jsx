@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { webhookService } from '../../../automation/api/webhookService';
 import { Search, Plus, Trash2, Globe } from 'lucide-react';
 import client from '@/core/api/client';
-import { settingsService } from '@/apps/system/api/settingsService';
+
 import toast from 'react-hot-toast';
 
 export default function WebhooksListPage() {
@@ -23,7 +24,7 @@ export default function WebhooksListPage() {
 
   const fetchWebhooks = async () => {
     try {
-      const response = await settingsService.getWebhooks();
+      const response = await webhookService.getWebhooks();
       setData(response.data?.data || response.data?.results || response.data || []);
     } catch (error) {
       toast.error('Failed to load webhooks');
@@ -52,7 +53,7 @@ export default function WebhooksListPage() {
     }
 
     try {
-        await settingsService.createWebhook({
+        await webhookService.createWebhook({
             ...form,
             events: parsedEvents
         });
@@ -66,7 +67,7 @@ export default function WebhooksListPage() {
 
   const handleDelete = async (id) => {
     try {
-        await settingsService.deleteWebhook(id);
+        await webhookService.deleteWebhook(id);
         toast.success('Webhook deleted');
         fetchWebhooks();
     } catch (error) {
@@ -173,37 +174,37 @@ export default function WebhooksListPage() {
         {isModalVisible && (
             <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
                 <div className="bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95">
-                    <div className="p-6 border-b border-slate-100">
+                    <div className="p-6 border-b border-slate-800">
                         <h2 className="text-xl font-bold text-white">New Webhook Endpoint</h2>
                     </div>
                     <form onSubmit={handleOk} className="p-6 space-y-4">
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Name</label>
+                            <label className="block text-sm font-semibold text-slate-300 mb-1">Name</label>
                             <input 
                                 type="text"
                                 value={form.name}
                                 onChange={(e) => setForm({...form, name: e.target.value})}
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-900 px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                className="w-full bg-slate-950 border border-slate-700 text-white px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                                 placeholder="e.g. Zapier Trigger"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Endpoint URL</label>
+                            <label className="block text-sm font-semibold text-slate-300 mb-1">Endpoint URL</label>
                             <input 
                                 type="url"
                                 value={form.url}
                                 onChange={(e) => setForm({...form, url: e.target.value})}
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-900 px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                className="w-full bg-slate-950 border border-slate-700 text-white px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                                 placeholder="https://api.example.com/webhook"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Events (JSON list or comma separated)</label>
+                            <label className="block text-sm font-semibold text-slate-300 mb-1">Events (JSON list or comma separated)</label>
                             <input 
                                 type="text"
                                 value={form.events}
                                 onChange={(e) => setForm({...form, events: e.target.value})}
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-900 px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-mono text-sm"
+                                className="w-full bg-slate-950 border border-slate-700 text-white px-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-mono text-sm"
                                 placeholder='["*"]'
                             />
                         </div>
@@ -213,16 +214,16 @@ export default function WebhooksListPage() {
                                 id="is_active"
                                 checked={form.is_active}
                                 onChange={(e) => setForm({...form, is_active: e.target.checked})}
-                                className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                                className="rounded bg-slate-950 border-slate-700 text-blue-600 focus:ring-blue-500 w-4 h-4"
                             />
-                            <label htmlFor="is_active" className="text-sm font-medium text-slate-700">Active</label>
+                            <label htmlFor="is_active" className="text-sm font-medium text-slate-300">Active</label>
                         </div>
                         
-                        <div className="pt-4 flex justify-end gap-3">
+                        <div className="pt-4 flex justify-end gap-3 border-t border-slate-800 mt-4">
                             <button 
                                 type="button"
                                 onClick={() => setIsModalVisible(false)}
-                                className="px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-xl transition-colors"
+                                className="px-4 py-2 text-slate-300 font-semibold hover:bg-slate-800 rounded-xl transition-colors"
                             >
                                 Cancel
                             </button>

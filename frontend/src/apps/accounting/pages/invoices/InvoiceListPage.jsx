@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { accountingService } from '../../api/accountingService';
+import { invoiceService } from '../../api/invoiceService';
 import {
     Search, Filter, Plus, FileText,
     MoreVertical, Download, ArrowUpRight,
@@ -36,7 +37,7 @@ const InvoiceListPage = () => {
     const loadInvoices = async () => {
         setLoading(true);
         try {
-            const data = await accountingService.getInvoices();
+            const data = await invoiceService.getInvoices();
             setInvoices(Array.isArray(data) ? data : data.results || []);
             setSelectedIds([]);
         } catch (error) {
@@ -49,7 +50,7 @@ const InvoiceListPage = () => {
 
     const handleDownload = async (id) => {
         try {
-            await accountingService.downloadInvoice(id);
+            await invoiceService.downloadInvoice(id);
             toast.success("Download started");
         } catch (error) {
             toast.error("Download failed. PDF endpoint might not be ready.");
@@ -76,7 +77,7 @@ const InvoiceListPage = () => {
         for (const id of selectedIds) {
             try {
                 if (action === 'paid') await accountingService.markInvoicePaid(id);
-                if (action === 'sent') await accountingService.sendInvoiceToClient(id);
+                if (action === 'sent') await invoiceService.sendInvoiceToClient(id);
                 if (action === 'void') await accountingService.voidInvoice(id);
                 successCount++;
             } catch (e) {
@@ -327,7 +328,7 @@ const InvoiceListPage = () => {
                                                     {/* Custom simple dropdown on hover for "More" */}
                                                     <div className="absolute right-0 top-full mt-1 w-36 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                                                         {inv.status === 'draft' && <button onClick={() => navigate(`/admin/accounting/invoices/${inv.id}/edit`)} className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700">Edit</button>}
-                                                        <button onClick={() => handleStatusChange(inv.id, 'sent', accountingService.sendInvoiceToClient)} className="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-slate-700">Mark Sent</button>
+                                                        <button onClick={() => handleStatusChange(inv.id, 'sent', invoiceService.sendInvoiceToClient)} className="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-slate-700">Mark Sent</button>
                                                         <button onClick={() => handleStatusChange(inv.id, 'paid', accountingService.markInvoicePaid)} className="w-full text-left px-4 py-2 text-sm text-emerald-400 hover:bg-slate-700">Mark Paid</button>
                                                         <button onClick={() => handleStatusChange(inv.id, 'void', accountingService.voidInvoice)} className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-700">Void</button>
                                                         <button onClick={async () => {

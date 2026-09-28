@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { scheduledActionService } from '../../core/api/scheduledActionService';
+import { coreService } from '../../core/api/coreService';
 import { Loader2, Play, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import apiClient from '../../../core/api/client';
-import { settingsService } from '../../system/api/settingsService';
+
 
 // Inline simple UI components to match existing settings pages perfectly
 const Label = ({ children, className }) => <label className={`font-medium ${className}`}>{children}</label>;
@@ -55,7 +57,7 @@ export default function SmartAutomationToggle({ configKey }) {
                 if (matchedConfig) {
                     setConfig(matchedConfig);
                     // Fetch scheduled actions
-                    const actionsRes = await settingsService.getScheduledActions();
+                    const actionsRes = await scheduledActionService.getScheduledActions();
                     const allActions = Array.isArray(actionsRes.data) ? actionsRes.data : (actionsRes.data?.results || actionsRes.data?.data || []);
                     
                     const matchedAction = allActions.find(a => a.blueprint_key === matchedConfig.key);
@@ -79,7 +81,7 @@ export default function SmartAutomationToggle({ configKey }) {
         try {
             if (action) {
                 // We have an existing action, just toggle it
-                await settingsService.toggleScheduledAction(action.id, checked);
+                await scheduledActionService.toggleScheduledAction(action.id, checked);
                 setAction(prev => ({ ...prev, is_active: checked }));
             } else if (checked) {
                 // Action doesn't exist, create it
@@ -93,7 +95,7 @@ export default function SmartAutomationToggle({ configKey }) {
                     next_run: now.toISOString(),
                     is_active: true
                 };
-                const res = await settingsService.createScheduledAction(payload);
+                const res = await scheduledActionService.createScheduledAction(payload);
                 setAction(res.data);
             }
             toast.success(`Automation ${checked ? 'enabled' : 'disabled'}`);
@@ -113,11 +115,11 @@ export default function SmartAutomationToggle({ configKey }) {
         if (!action) return;
         setRunning(true);
         try {
-            await settingsService.runScheduledAction(action.id);
+            await scheduledActionService.runScheduledAction(action.id);
             toast.success('Automation triggered successfully');
             
             // Refresh the action to update last_run
-            const actionsRes = await settingsService.getScheduledActions();
+            const actionsRes = await scheduledActionService.getScheduledActions();
             const allActions = Array.isArray(actionsRes.data) ? actionsRes.data : (actionsRes.data?.results || actionsRes.data?.data || []);
             const matchedAction = allActions.find(a => a.id === action.id);
             if (matchedAction) setAction(matchedAction);

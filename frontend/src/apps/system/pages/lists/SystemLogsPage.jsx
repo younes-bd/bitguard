@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
 import { Terminal, RefreshCw, AlertCircle, Download, Monitor } from 'lucide-react';
 import { settingsService } from '../../api/settingsService';
 
@@ -8,7 +9,7 @@ const SystemLogsPage = () => {
 
     const fetchLogs = () => {
         setLoading(true);
-        settingsService.getServerLogs()
+        parameterService.getServerLogs()
             .then(res => setLogs(res.data.logs || 'No logs available.'))
             .catch(err => setLogs(`Error fetching logs: ${err.message}`))
             .finally(() => setLoading(false));

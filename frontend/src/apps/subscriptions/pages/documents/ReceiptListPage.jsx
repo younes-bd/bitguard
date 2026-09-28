@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { accountingService } from '../../../accounting/api/accountingService';
+import { paymentService } from '../../../accounting/api/paymentService';
 import { Receipt, Search, Eye, Download } from 'lucide-react';
 
 const ReceiptListPage = () => {
@@ -10,7 +10,7 @@ const ReceiptListPage = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    accountingService.getPayments().then(data => {
+    paymentService.getPayments().then(data => {
       setPayments(Array.isArray(data) ? data : data?.results || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);

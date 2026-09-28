@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Repeat, Plus, Play, Pause, Calendar, Building2, Search, Zap } from 'lucide-react';
-import { accountingService } from '../../api/accountingService';
+import { recurringInvoiceService } from '../../api/recurringInvoiceService';
 import { crmService } from '../../../crm/api/crmService';
 import { toast } from 'react-hot-toast';
 
@@ -29,7 +29,7 @@ const RecurringInvoicesPage = () => {
     const fetchData = async () => {
         try {
             const [schedulesData, clientsData] = await Promise.all([
-                accountingService.getRecurringInvoices(),
+                recurringInvoiceService.getRecurringInvoices(),
                 crmService.getClients()
             ]);
             setSchedules(schedulesData || []);
@@ -49,7 +49,7 @@ const RecurringInvoicesPage = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            await accountingService.createRecurringInvoice(formData);
+            await recurringInvoiceService.createRecurringInvoice(formData);
             toast.success("Recurring schedule created successfully!");
             setShowModal(false);
             setFormData({
@@ -88,7 +88,7 @@ const RecurringInvoicesPage = () => {
 
     const handleToggle = async (id) => {
         try {
-            await accountingService.toggleRecurring(id);
+            await recurringInvoiceService.toggleRecurring(id);
             toast.success('Schedule status updated');
             fetchSchedules();
         } catch (err) {
@@ -98,7 +98,7 @@ const RecurringInvoicesPage = () => {
 
     const handleRunNow = async (id) => {
         try {
-            await accountingService.runRecurringNow(id);
+            await recurringInvoiceService.runRecurringNow(id);
             toast.success('Invoice generated successfully from schedule');
             // We could navigate to the newly created invoice if the backend returns it
         } catch (err) {

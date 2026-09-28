@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { parameterService } from '../../../core/api/parameterService';
 import { Save, Loader2, Inbox as InboxIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { settingsService } from '../../../system/api/settingsService';
+
 
 export default function CampaignsSettingsPage() {
     const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export default function CampaignsSettingsPage() {
 
     const loadSettings = async () => {
         try {
-            const res = await settingsService.getSettings();
+            const res = await parameterService.getSettings();
             const data = res.data?.results || res.data || [];
             
             const current = { ...settings };
@@ -52,7 +53,7 @@ export default function CampaignsSettingsPage() {
                 campaigns_sender_email: settings.sender_email
             };
             
-            await settingsService.batchUpdateSettings(payload);
+            await parameterService.batchUpdateSettings(payload);
             toast.success('Campaigns settings saved successfully');
         } catch (error) {
             toast.error('Failed to save settings');

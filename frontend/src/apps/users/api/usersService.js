@@ -158,12 +158,16 @@ export const usersService = {
         const response = await client.put(`users/security-policy/${id}/`, policyData);
         return response.data?.data ?? response.data;
     },
+    createSecurityPolicy: async (policyData) => {
+        const response = await client.post(`users/security-policy/`, policyData);
+        return response.data?.data ?? response.data;
+    },
     getSessions: async () => {
         const response = await client.get('users/sessions/');
         return response.data?.data ?? response.data;
     },
     revokeSession: async (id) => {
-        const response = await client.delete(`users/${id}/session_revoke/`);
+        const response = await client.delete(`users/sessions/${id}/`);
         return response.data?.data ?? response.data;
     },
 

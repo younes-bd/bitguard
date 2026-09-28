@@ -38,13 +38,17 @@ export default function CommandPalette() {
 
         // Add module menu sections
         Object.values(moduleMenus).forEach(moduleGroups => {
+            if (!Array.isArray(moduleGroups)) return;
             moduleGroups.forEach(group => {
-
-                group.items.forEach(item => {
-                    if (item.path) {
-                        routes.push({ ...item, category: group.title });
-                    }
-                });
+                if (group.items && Array.isArray(group.items)) {
+                    group.items.forEach(item => {
+                        if (item.path) {
+                            routes.push({ ...item, category: group.title });
+                        }
+                    });
+                } else if (group.path) {
+                    routes.push({ ...group, category: group.section || 'Settings' });
+                }
             });
         });
 
