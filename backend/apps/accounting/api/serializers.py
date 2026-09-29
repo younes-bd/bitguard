@@ -335,15 +335,9 @@ class FixedAssetSerializer(serializers.ModelSerializer):
 # ─── PHASE 4: ENTERPRISE MSP EXPANSION ────────────────────────────────────────
 
 from ..domain.models import (
-    Currency, ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation, 
+    ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation, 
     DunningWorkflow
 )
-
-class CurrencySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Currency
-        fields = ['id', 'code', 'name', 'symbol', 'is_base']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 class ExchangeRateSerializer(serializers.ModelSerializer):
     class Meta:

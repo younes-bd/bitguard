@@ -26,3 +26,9 @@ Thumbs.db
 # Logs
 *.log
 trace.log
+
+# AI & Temporary Scratch Files
+scratch/
+scratch_*.py
+scratch_*.js
+scratch_*.sh

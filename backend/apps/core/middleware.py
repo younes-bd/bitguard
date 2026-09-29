@@ -47,6 +47,16 @@ class TenantMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        # RULE 34: SINGLE-TENANT MODE OVERRIDE
+        from django.conf import settings
+        if getattr(settings, 'SINGLE_TENANT_MODE', False):
+            from apps.tenants.domain.models import Tenant
+            # Auto-assign the first active tenant to all requests
+            request.tenant = Tenant.objects.filter(is_active=True).first()
+            if request.tenant:
+                _thread_locals.tenant = request.tenant
+                return self.get_response(request)
+        
         # 1. Check Header (API Priority)
         tenant_domain = request.headers.get('X-Tenant-ID')
         

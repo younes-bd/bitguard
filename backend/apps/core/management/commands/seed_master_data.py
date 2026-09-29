@@ -1,7 +1,7 @@
 import pycountry
 from django.core.management.base import BaseCommand
 from apps.core.domain.models import Country, State
-from apps.accounting.domain.models import Currency
+from apps.core.domain.models import Currency
 
 class Command(BaseCommand):
     help = 'Seeds complete ISO master data (Countries, Currencies) to Tier-1 ERP standards.'

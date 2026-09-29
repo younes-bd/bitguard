@@ -9,7 +9,7 @@ from .views import (
     BalanceSheetView, CashFlowView, ProfitLossView,
     PaymentTermsViewSet, InvoiceBrandingViewSet,
     DeferredRevenueViewSet, ClientPortalInvoiceView,
-    CurrencyViewSet, ExchangeRateViewSet, TaxAuthorityViewSet,
+    ExchangeRateViewSet, TaxAuthorityViewSet,
     TaxGroupViewSet, BankReconciliationViewSet, DunningWorkflowViewSet,
     AgedReceivablesView, AgedPayablesView, DashboardStatsView, MonthlyFinancialsView,
     VATReportView
@@ -32,7 +32,6 @@ router.register(r'invoice-branding', InvoiceBrandingViewSet, basename='invoice-b
 router.register(r'deferred-revenue', DeferredRevenueViewSet, basename='deferred-revenue')
 
 # Enterprise MSP Phase 4
-router.register(r'currencies', CurrencyViewSet, basename='currency')
 router.register(r'exchange-rates', ExchangeRateViewSet, basename='exchange-rate')
 router.register(r'tax-authorities', TaxAuthorityViewSet, basename='tax-authority')
 router.register(r'tax-groups', TaxGroupViewSet, basename='tax-group')

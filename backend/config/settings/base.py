@@ -239,3 +239,6 @@ if importlib.util.find_spec('daphne') and importlib.util.find_spec('channels'):
 # CELERY_BEAT_SCHEDULE is now managed via the database using django_celery_beat
 
 
+
+# Rule 34: Dual-Mode Architecture (Multi-Tenant vs Single-Tenant)
+SINGLE_TENANT_MODE = os.environ.get('SINGLE_TENANT_MODE', 'False').lower() == 'true'

@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from apps.core.utils.response import standard_response
 from apps.core.api.permissions import IsPlatformAdmin
 from django_filters.rest_framework import DjangoFilterBackend
@@ -480,3 +481,54 @@ class ConfigOptionsView(APIView):
             ]
         }
         return Response(data)
+
+from .serializers import CompanySerializer
+from ..domain.models import Company
+
+class CompanyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        tenant = getattr(self.request, 'tenant', None)
+        return Company.objects.filter(tenant=tenant)
+        
+    @action(detail=False, methods=['get', 'patch'])
+    def my_company(self, request):
+        # Odoo concept: Get the user's primary company for their tenant
+        # Since Tenant equates to a single main company right now, get the first one.
+        tenant = getattr(request, 'tenant', None)
+        
+        if not tenant:
+            return Response({'detail': 'No active tenant found.'}, status=400)
+            
+        company = Company.objects.filter(tenant=tenant).first()
+        
+        if not company:
+            # Auto-create the main company for the tenant if it doesn't exist yet
+            company = Company.objects.create(
+                tenant=tenant, 
+                name=tenant.name,
+                email=tenant.email if hasattr(tenant, 'email') else ''
+            )
+            
+        if request.method == 'PATCH':
+            serializer = self.get_serializer(company, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+            
+        serializer = self.get_serializer(company)
+        return Response(serializer.data)
+
+
+class CurrencyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    from apps.core.api.serializers import CurrencySerializer
+    serializer_class = CurrencySerializer
+    pagination_class = None
+    def get_queryset(self): 
+        from apps.core.domain.models import Currency
+        tenant = getattr(self.request, 'tenant', None)
+        return Currency.all_objects.filter(Q(tenant=tenant) | Q(tenant__isnull=True), is_deleted=False)
+

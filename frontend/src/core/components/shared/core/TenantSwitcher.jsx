@@ -7,6 +7,11 @@ const TenantSwitcher = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
+    // RULE 34: Hide switcher if in single-tenant mode
+    if (import.meta.env.VITE_SINGLE_TENANT_MODE === 'true') {
+        return null; 
+    }
+
     // Close on click outside
     useEffect(() => {
         function handleClickOutside(event) {

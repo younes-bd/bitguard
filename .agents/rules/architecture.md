@@ -127,3 +127,48 @@ class CompanySerializer(serializers.ModelSerializer):
             secure_filter = Q(tenant=request.user.tenant) | Q(tenant__isnull=True)
             self.fields['country'].queryset = Country.all_objects.filter(secure_filter)
 ```
+
+## Rule 33. The Tenant-to-Request Law (Decoupled Authentication)
+
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You must **NEVER** attach a `tenant` ForeignKey directly to the `User` model. This is a legacy SaaS anti-pattern that creates a strict 1-to-1 limitation, destroying the ability for a single user account to manage multiple workspaces seamlessly.
+
+**The Tier-1 Standard (Middleware Resolution):**
+This system strictly uses **Decoupled Authentication** via Request Middleware.
+*   **The User** is a global identity. One user can belong to multiple tenants (Many-to-Many).
+*   **The Tenant** is resolved dynamically on every single API call (via headers or subdomains) and is attached directly to the `request` object (i.e., `request.tenant`), **NOT** `request.user.tenant`.
+*   **Agent Rule:** When writing Views, Serializers, or Services that require the active tenant context, you must ALWAYS retrieve it using `getattr(request, 'tenant', None)`. Never attempt to query the user's database profile for their tenant.
+
+---
+
+## Rule 34. Dual-Mode Architecture (Single-Tenant vs. Multi-Tenant)
+
+This master codebase natively supports both **Multi-Tenant (SaaS)** and **Single-Tenant (Dedicated Enterprise)** deployments using the exact same underlying infrastructure. 
+
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+If requested to adapt the system for a Single-Tenant deployment, you are strictly forbidden from stripping out, bypassing, or deleting the `TenantAwareModel` architecture or database columns. The core database schema and ORM queries must remain 100% identical across all deployments to prevent code fragmentation.
+
+**To activate Single-Tenant Mode, you must use the "Default Tenant Toggle" Method:**
+1.  **Environment Toggle:** The system relies on a global environment variable (e.g., `SINGLE_TENANT_MODE=True`).
+2.  **Middleware Override:** When this mode is active, the backend `TenantMiddleware` must ignore all frontend headers or subdomains. It automatically forces `request.tenant = Tenant.objects.first()` (the primary dedicated database record) for every incoming request.
+3.  **UI Simplification:** The React frontend detects this mode and visually hides all "Workspace Switcher" dropdowns and multi-tenant onboarding screens.
+
+**Why this is enforced:** This architectural pattern ensures that features built for dedicated Single-Tenant deployments can be merged directly back into the Multi-Tenant SaaS core without rewriting any database queries. It also preserves a seamless upgrade path if a Single-Tenant client later acquires subsidiaries and needs to instantly unlock Multi-Company capabilities.
+
+## Rule 35. The FormData Serialization Rule (Empty String Interception)
+
+When the React frontend submits multipart/form-data (which is mathematically mandatory when a form includes file uploads like logos or documents), all cleared or empty fields are transmitted as empty strings ("") rather than JSON 
+ull. 
+
+Because Django REST Framework (DRF) strictly rejects "" for UUIDs and ForeignKeys (resulting in a 400 Bad Request), we must handle this limitation at the backend gateway.
+*   **CRITICAL INSTRUCTION FOR AI AGENTS:** You are strictly forbidden from "fixing" this by having the React frontend omit empty fields. Omitting fields prevents users from deliberately clearing existing database relationships.
+*   **The Standard Fix:** When writing a DRF ModelSerializer that processes FormData with nullable Foreign Keys, you must ALWAYS override the 	o_internal_value method. You must intercept the raw data and explicitly convert "" into Python None before DRF's internal validation begins.
+
+## Rule 36. Global File Validation Standard
+
+To protect the server from storage bloat and malicious file execution, all file uploads must be strictly governed at the database level. 
+*   **CRITICAL INSTRUCTION FOR AI AGENTS:** You must never create a naked models.FileField or models.ImageField in this codebase.
+*   **The Standard Fix:** Every file field must utilize the global validators located in pps.core.validators. 
+    *   For standard documents, attach alidators=[validate_document_file]. 
+    *   For images, attach alidators=[validate_image_file]. 
+*   This ensures that the 10MB file size limit and the strict whitelist of safe extensions (e.g., .pdf, .png, .jpg) are mathematically enforced across every module in the ERP.

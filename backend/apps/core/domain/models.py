@@ -164,12 +164,65 @@ class UoM(TenantAwareModel):
     def __str__(self):
         return f"{self.name} ({self.category.name})"
 
-class CompanySettings(TenantAwareModel):
-    company_name = models.CharField(max_length=255)
-    fiscal_year_end_month = models.IntegerField(default=12)
-    default_currency = models.ForeignKey('accounting.Currency', on_delete=models.SET_NULL, null=True, blank=True)
+class Currency(TenantAwareModel):
+    code = models.CharField(max_length=3, unique=True, help_text="e.g. USD, EUR, GBP")
+    name = models.CharField(max_length=50)
+    symbol = models.CharField(max_length=5)
+    is_base = models.BooleanField(default=False, help_text="Is this the base currency for the tenant?")
+
+    class Meta:
+        verbose_name_plural = 'Currencies'
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
+class Company(TenantAwareModel):
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='child_companies')
+    
+    # Address
+    street = models.CharField(max_length=255, blank=True, null=True)
+    street2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    state = models.ForeignKey('core.State', on_delete=models.SET_NULL, null=True, blank=True)
+    zip_code = models.CharField(max_length=50, blank=True, null=True)
+    country = models.ForeignKey('core.Country', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Contact
+    phone = models.CharField(max_length=100, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    website = models.CharField(max_length=255, blank=True, null=True)
+    vat = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Branding / Document Layout
+    logo = models.CharField(max_length=255, blank=True, null=True) # Typically ImageField or CharField for URL
+    favicon = models.CharField(max_length=255, blank=True, null=True)
+    font = models.CharField(max_length=100, blank=True, null=True)
+    paper_format = models.CharField(max_length=100, blank=True, null=True)
+    header_text = models.TextField(blank=True, null=True)
+    footer_text = models.TextField(blank=True, null=True)
+    
+    # Localization
+    language = models.CharField(max_length=50, blank=True, null=True)
+    timezone = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Social
+    twitter = models.CharField(max_length=255, blank=True, null=True)
+    linkedin = models.CharField(max_length=255, blank=True, null=True)
+    
+    # Accounting / Settings
+    fiscal_year_end_month = models.IntegerField(default=12, blank=True, null=True)
+    default_currency = models.ForeignKey('core.Currency', on_delete=models.SET_NULL, null=True, blank=True)
     enable_multicurrency = models.BooleanField(default=False)
     setup_completed = models.BooleanField(default=False)
+    multi_company = models.BooleanField(default=False)
+    inter_company_transactions = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = 'Companies'
+
+    def __str__(self):
+        return self.name
 
 
 # â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

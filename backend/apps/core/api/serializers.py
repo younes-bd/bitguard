@@ -277,3 +277,44 @@ class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = ['id', 'name', 'code', 'country']
+
+from ..domain.models import Company
+from django.db.models import Q
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'tenant']
+
+    def to_internal_value(self, data):
+        # Handle empty strings from frontend FormData (convert to null for UUIDs)
+        _data = data.copy() if hasattr(data, 'copy') else data
+        for field in ['country', 'state', 'default_currency']:
+            if _data.get(field) == '':
+                _data[field] = None
+        return super().to_internal_value(_data)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+        tenant = getattr(request, 'tenant', None) if request else None
+        if tenant:
+            secure_filter = Q(tenant=tenant) | Q(tenant__isnull=True)
+            if 'country' in self.fields:
+                self.fields['country'].queryset = Country.all_objects.filter(secure_filter, is_deleted=False)
+            if 'state' in self.fields:
+                from apps.core.domain.models import State
+                self.fields['state'].queryset = State.all_objects.filter(secure_filter, is_deleted=False)
+            if 'default_currency' in self.fields:
+                from apps.core.domain.models import Currency
+                self.fields['default_currency'].queryset = Currency.all_objects.filter(secure_filter, is_deleted=False)
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+    class Meta:
+        from apps.core.domain.models import Currency
+        model = Currency
+        fields = ['id', 'code', 'name', 'symbol', 'is_base']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+

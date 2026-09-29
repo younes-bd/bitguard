@@ -423,20 +423,9 @@ class DeferredRevenue(TenantAwareModel):
     def __str__(self):
         return f"Deferred Revenue — {self.invoice.invoice_number} ({self.remaining_amount} remaining)"
 
-class Currency(TenantAwareModel):
-    code = models.CharField(max_length=3, unique=True, help_text="e.g. USD, EUR, GBP")
-    name = models.CharField(max_length=50)
-    symbol = models.CharField(max_length=5)
-    is_base = models.BooleanField(default=False, help_text="Is this the base currency for the tenant?")
-
-    class Meta:
-        verbose_name_plural = 'Currencies'
-
-    def __str__(self):
-        return f"{self.code} - {self.name}"
 
 class ExchangeRate(TenantAwareModel):
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='exchange_rates')
+    currency = models.ForeignKey('core.Currency', on_delete=models.CASCADE, related_name='exchange_rates')
     date = models.DateField(default=timezone.now)
     rate = models.DecimalField(max_digits=15, decimal_places=6, help_text="Rate against base currency")
 
@@ -639,7 +628,7 @@ class AccountJournal(TenantAwareModel):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=10)
     journal_type = models.CharField(max_length=20, choices=[('sale','Sales'),('purchase','Purchase'),('cash','Cash'),('bank','Bank'),('general','Miscellaneous')], default='general')
-    currency = models.ForeignKey('Currency', on_delete=models.SET_NULL, null=True, blank=True)
+    currency = models.ForeignKey('core.Currency', on_delete=models.SET_NULL, null=True, blank=True)
     default_account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name='default_journals')
     is_active = models.BooleanField(default=True)
 

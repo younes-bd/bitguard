@@ -20,7 +20,7 @@ router.register(r'audit-logs', AuditTrailViewSet, basename='core-audit-logs')
 router.register(r'uom-categories', UoMCategoryViewSet, basename='core-uom-categories')
 router.register(r'uoms', UoMViewSet, basename='core-uoms')
 
-from apps.accounting.api.views import CurrencyViewSet
+from apps.core.api.views import CurrencyViewSet
 from apps.tenants.api.views import TenantViewSet
 from apps.core.api.views import CountryViewSet, StateViewSet, ConfigOptionsView
 
@@ -28,9 +28,10 @@ router.register(r'currencies', CurrencyViewSet, basename='core-currencies')
 router.register(r'countries', CountryViewSet, basename='core-countries')
 router.register(r'states', StateViewSet, basename='core-states')
 
+from apps.core.api.views import CompanyViewSet
 urlpatterns = router.urls + [
     path('config-options/', ConfigOptionsView.as_view(), name='core-config-options'),
-    path('companies/my_company/', TenantViewSet.as_view({'get': 'my_company', 'patch': 'my_company'}), name='core-my-company'),
+    path('companies/my_company/', CompanyViewSet.as_view({'get': 'my_company', 'patch': 'my_company'}), name='core-my-company'),
     path('analytics/global/', AnalyticsViewSet.as_view({'get': 'global_metrics'}), name='core-global-metrics'),
     path('command-center/global/', AnalyticsViewSet.as_view({'get': 'global_metrics'}), name='core-command-center-global'),
     path('command-center/system_health/', AnalyticsViewSet.as_view({'get': 'system_health'}), name='core-command-center-system-health'),

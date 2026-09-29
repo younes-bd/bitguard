@@ -75,9 +75,6 @@ class FixedAssetAdmin(admin.ModelAdmin):
 class DeferredRevenueAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(models.Currency)
-class CurrencyAdmin(admin.ModelAdmin):
-    pass
 
 @admin.register(models.ExchangeRate)
 class ExchangeRateAdmin(admin.ModelAdmin):

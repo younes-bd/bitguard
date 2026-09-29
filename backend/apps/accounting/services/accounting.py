@@ -2,23 +2,24 @@
 ERP Service Layer â€” Full Enterprise Edition
 Charter Â§8, Â§11, Â§16, Â§18 Compliance
 """
+from ..domain.models import VendorBill
 from django.db import transaction
 from django.db.models import Sum, Q
 from django.utils import timezone
 from apps.core.services.core import BaseService
 from apps.core.services.audit import AuditService
+from apps.core.domain.models import Currency
 from ..domain.models import (
     Invoice, Payment, Expense, TaxConfig, GeneralLedger,
     Account, JournalEntry, BankAccount, BankTransaction, FixedAsset,
     CreditNote, PaymentTerms, InvoiceBranding, DeferredRevenue,
-    Currency, ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation,
+    ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation,
     DunningWorkflow, FiscalYear, FiscalPeriod, AccountingJournal,
 )
 import datetime
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 
 # â”€â”€â”€ UTILITIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -52,7 +53,8 @@ class InvoiceService(BaseService):
         with transaction.atomic():
             tenant = cls.get_tenant_context(request)
             request.tenant = Tenant.objects.select_for_update().get(id=tenant.id)
-            prefixes = {'standard': 'INV', 'proforma': 'PRO', 'credit_note': 'CN'}
+            prefixes = {'standard': 'INV',
+                        'proforma': 'PRO', 'credit_note': 'CN'}
             prefix = prefixes.get(doc_type, 'INV')
             year = timezone.now().year
             existing = Invoice.objects.filter(
@@ -70,7 +72,8 @@ class InvoiceService(BaseService):
 
         # Auto-generate number if not supplied
         if not data.get('invoice_number'):
-            data['invoice_number'] = cls.auto_number(request, data.get('type', 'standard'))
+            data['invoice_number'] = cls.auto_number(
+                request, data.get('type', 'standard'))
 
         invoice = Invoice(tenant=tenant, **data)
         invoice.save()
@@ -129,7 +132,8 @@ class InvoiceService(BaseService):
             setattr(invoice, field, value)
         invoice.full_clean()
         invoice.save()
-        AuditService.log_action(request, "ERP_INVOICE_UPDATED", f"erp.Invoice:{invoice.pk}", {"changes": data})
+        AuditService.log_action(
+            request, "ERP_INVOICE_UPDATED", f"erp.Invoice:{invoice.pk}", {"changes": data})
         return invoice
 
     @classmethod
@@ -149,7 +153,8 @@ class InvoiceService(BaseService):
                 request, "Revenue", invoice.subtotal, 'debit',
                 invoice.pk, 'invoice', f"VOID Revenue: {invoice.invoice_number}"
             )
-        AuditService.log_action(request, "ERP_INVOICE_VOIDED", f"erp.Invoice:{invoice.pk}", {})
+        AuditService.log_action(
+            request, "ERP_INVOICE_VOIDED", f"erp.Invoice:{invoice.pk}", {})
         return invoice
 
     @classmethod
@@ -185,8 +190,10 @@ class InvoiceService(BaseService):
     @classmethod
     def get_aging_report(cls, request):
         """Return AR aging bucketed by overdue days."""
-        qs = cls.get_queryset(request).exclude(status__in=['paid', 'void', 'cancelled', 'draft'])
-        buckets = {'current': [], '1-30': [], '31-60': [], '61-90': [], '90+': []}
+        qs = cls.get_queryset(request).exclude(
+            status__in=['paid', 'void', 'cancelled', 'draft'])
+        buckets = {'current': [], '1-30': [],
+                   '31-60': [], '61-90': [], '90+': []}
         for inv in qs:
             buckets[inv.aging_bucket].append({
                 'id': str(inv.id), 'invoice_number': inv.invoice_number,
@@ -203,7 +210,8 @@ class InvoiceService(BaseService):
     def get_client_statement(cls, request, client_id):
         """All financial activity for a single client."""
         tenant = cls.get_tenant_context(request)
-        invoices = Invoice.objects.filter(tenant=tenant, client_id=client_id).prefetch_related('payments')
+        invoices = Invoice.objects.filter(
+            tenant=tenant, client_id=client_id).prefetch_related('payments')
         result = []
         running_balance = 0
         for inv in invoices.order_by('issue_date'):
@@ -255,7 +263,8 @@ class InvoiceService(BaseService):
         tenant = cls.get_tenant_context(request)
         quote = Quote.objects.select_related('client', 'deal').get(id=quote_id)
         if quote.status != 'accepted':
-            raise ValueError("Invoice can only be generated from an accepted quote.")
+            raise ValueError(
+                "Invoice can only be generated from an accepted quote.")
         invoice = Invoice.objects.create(
             tenant=tenant, client=quote.client,
             invoice_number=cls.auto_number(request, 'standard'),
@@ -305,7 +314,8 @@ class PaymentService(BaseService):
         }
         payment = Payment(invoice=invoice, **payment_fields)
         payment.save()
-        total_paid = invoice.payments.aggregate(total=Sum('amount'))['total'] or 0
+        total_paid = invoice.payments.aggregate(
+            total=Sum('amount'))['total'] or 0
         if total_paid >= invoice.total_amount:
             invoice.status = 'paid'
             invoice.paid_at = timezone.now()
@@ -338,14 +348,16 @@ class PaymentService(BaseService):
             payment.pk, 'payment', f"VOID AR credit for {invoice.invoice_number}"
         )
         payment.delete()
-        remaining = invoice.payments.aggregate(total=Sum('amount'))['total'] or 0
+        remaining = invoice.payments.aggregate(
+            total=Sum('amount'))['total'] or 0
         if remaining <= 0:
             invoice.status = 'sent'
             invoice.paid_at = None
         elif remaining < invoice.total_amount:
             invoice.status = 'partially_paid'
         invoice.save()
-        AuditService.log_action(request, "ERP_PAYMENT_VOIDED", f"erp.Invoice:{invoice.pk}", {})
+        AuditService.log_action(
+            request, "ERP_PAYMENT_VOIDED", f"erp.Invoice:{invoice.pk}", {})
         return invoice
 
 
@@ -378,6 +390,7 @@ class ExpenseService(BaseService):
 
 # â”€â”€â”€ PHASE 3: ENTERPRISE FINANCIAL ACCOUNTING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+
 class JournalEntryService(BaseService):
     @classmethod
     @transaction.atomic
@@ -388,16 +401,18 @@ class JournalEntryService(BaseService):
         tenant = cls.get_tenant_context(request)
         total_debit = sum(float(l.get('debit', 0)) for l in lines_data)
         total_credit = sum(float(l.get('credit', 0)) for l in lines_data)
-        
+
         if round(total_debit, 2) != round(total_credit, 2):
-            raise ValueError("Journal Entry must balance. Debits do not equal Credits.")
+            raise ValueError(
+                "Journal Entry must balance. Debits do not equal Credits.")
 
         entry = JournalEntry.objects.create(
             tenant=tenant, date=date, reference=reference, description=description, is_posted=True
         )
 
         for line in lines_data:
-            account = Account.objects.get(tenant=tenant, code=line['account_code'])
+            account = Account.objects.get(
+                tenant=tenant, code=line['account_code'])
             JournalEntryLine.objects.create(
                 tenant=tenant,
                 journal_entry=entry,
@@ -406,7 +421,7 @@ class JournalEntryService(BaseService):
                 credit=line.get('credit', 0),
                 description=line.get('description', '')
             )
-            
+
         AuditService.log_action(request, "ERP_JOURNAL_ENTRY_POSTED",
                                 f"erp.JournalEntry:{entry.pk}", {"total_amount": total_debit})
         return entry
@@ -417,22 +432,23 @@ class BankService(BaseService):
     @transaction.atomic
     def record_transaction(cls, request, bank_account_id, trans_type, amount, description, reference=""):
         tenant = cls.get_tenant_context(request)
-        bank_account = BankAccount.objects.get(tenant=tenant, id=bank_account_id)
-        
+        bank_account = BankAccount.objects.get(
+            tenant=tenant, id=bank_account_id)
+
         trans = BankTransaction.objects.create(
             tenant=tenant, bank_account=bank_account, type=trans_type,
             amount=amount, description=description, reference=reference
         )
-        
+
         if trans_type == 'deposit':
             bank_account.current_balance += amount
         else:
             bank_account.current_balance -= amount
         bank_account.save()
-        
+
         # If the bank is linked to a CoA account, we could auto-generate a Journal Entry here
         # For full ERP, we'd map 'deposit' to Debit Cash Account, Credit Undeposited Funds/Revenue
-        
+
         AuditService.log_action(request, "ERP_BANK_TRANSACTION_RECORDED",
                                 f"erp.BankTransaction:{trans.pk}", {"amount": str(amount)})
         return trans
@@ -445,10 +461,11 @@ class FinancialReportingService(BaseService):
         # In a real system, we aggregate JournalEntryLines up to as_of_date
         # For now, we group accounts by type
         accounts = Account.objects.filter(tenant=tenant, is_active=True)
-        
+
         # Calculate balances (Debits - Credits for Assets/Expenses, Credits - Debits for Liab/Equity/Rev)
         def get_balance(acct):
-            lines = acct.journal_lines.filter(journal_entry__date__lte=as_of_date, journal_entry__is_posted=True)
+            lines = acct.journal_lines.filter(
+                journal_entry__date__lte=as_of_date, journal_entry__is_posted=True)
             debits = lines.aggregate(Sum('debit'))['debit__sum'] or 0
             credits = lines.aggregate(Sum('credit'))['credit__sum'] or 0
             if acct.account_type in ['asset', 'expense']:
@@ -462,9 +479,11 @@ class FinancialReportingService(BaseService):
 
         for acct in accounts:
             bal = get_balance(acct)
-            if bal == 0: continue
-            
-            entry = {'code': acct.code, 'name': acct.name, 'balance': float(bal)}
+            if bal == 0:
+                continue
+
+            entry = {'code': acct.code,
+                     'name': acct.name, 'balance': float(bal)}
             if acct.account_type == 'asset':
                 report['maintenance'].append(entry)
                 report['total_assets'] += float(bal)
@@ -474,17 +493,18 @@ class FinancialReportingService(BaseService):
             elif acct.account_type == 'equity':
                 report['equity'].append(entry)
                 report['total_equity'] += float(bal)
-                
+
         # Calculate Retained Earnings from Revenue/Expenses
         rev_accounts = accounts.filter(account_type='revenue')
         exp_accounts = accounts.filter(account_type='expense')
         total_rev = sum(get_balance(a) for a in rev_accounts)
         total_exp = sum(get_balance(a) for a in exp_accounts)
         net_income = float(total_rev - total_exp)
-        
-        report['equity'].append({'code': '3999', 'name': 'Current Year Net Income', 'balance': net_income})
+
+        report['equity'].append(
+            {'code': '3999', 'name': 'Current Year Net Income', 'balance': net_income})
         report['total_equity'] += net_income
-        
+
         return report
 
     @classmethod
@@ -494,10 +514,12 @@ class FinancialReportingService(BaseService):
         transactions = BankTransaction.objects.filter(
             tenant=tenant, date__range=(start_date, end_date)
         )
-        
-        inflows = float(transactions.filter(type='deposit').aggregate(Sum('amount'))['amount__sum'] or 0)
-        outflows = float(transactions.filter(type='withdrawal').aggregate(Sum('amount'))['amount__sum'] or 0)
-        
+
+        inflows = float(transactions.filter(type='deposit').aggregate(
+            Sum('amount'))['amount__sum'] or 0)
+        outflows = float(transactions.filter(type='withdrawal').aggregate(
+            Sum('amount'))['amount__sum'] or 0)
+
         return {
             'operating_inflows': inflows,
             'operating_outflows': outflows,
@@ -523,7 +545,8 @@ class DepreciationService(BaseService):
         for asset in assets:
             if asset.net_book_value <= asset.salvage_value:
                 continue  # Fully depreciated
-            annual_depreciation = (asset.purchase_price - asset.salvage_value) / asset.useful_life_years
+            annual_depreciation = (
+                asset.purchase_price - asset.salvage_value) / asset.useful_life_years
             monthly_depreciation = round(annual_depreciation / 12, 2)
             asset.accumulated_depreciation += monthly_depreciation
             asset.save()
@@ -548,7 +571,7 @@ class PdfService(BaseService):
     def generate_pdf_bytes(cls, invoice: Invoice) -> bytes:
         from apps.reports.domain.models import ReportTemplate
         from apps.reports.services.pdf_generator import ReportingService
-        
+
         template = ReportTemplate.objects.filter(
             model='accounting.Invoice',
             is_default=True,
@@ -564,7 +587,8 @@ class PdfService(BaseService):
                 with attachment.file.open('rb') as f:
                     return f.read()
 
-        logger.warning(f"Using fallback plain-text PDF for invoice {invoice.invoice_number}")
+        logger.warning(
+            f"Using fallback plain-text PDF for invoice {invoice.invoice_number}")
         html_content = f"<html><body><h1>Invoice {invoice.invoice_number}</h1></body></html>"
         try:
             from weasyprint import HTML
@@ -594,15 +618,18 @@ class InvoiceEmailService(BaseService):
         if not recipient_email:
             contact = getattr(invoice.client, 'contacts', None)
             if contact:
-                primary = contact.filter(is_primary=True).first() or contact.first()
+                primary = contact.filter(
+                    is_primary=True).first() or contact.first()
                 recipient_email = primary.email if primary else invoice.client.email
             else:
                 recipient_email = getattr(invoice.client, 'email', None)
 
         if not recipient_email:
-            raise ValueError("No email address found for client. Cannot send invoice.")
+            raise ValueError(
+                "No email address found for client. Cannot send invoice.")
 
-        branding = InvoiceBranding.objects.filter(tenant=invoice.tenant).first()
+        branding = InvoiceBranding.objects.filter(
+            tenant=invoice.tenant).first()
         company_name = branding.company_name if branding else 'Your Vendor'
 
         subject = f"Invoice {invoice.invoice_number} from {company_name}"
@@ -634,7 +661,8 @@ class InvoiceEmailService(BaseService):
                 invoice.save(update_fields=['status'])
             return True
         except Exception as e:
-            logger.error(f"Failed to send invoice {invoice.invoice_number} email: {e}")
+            logger.error(
+                f"Failed to send invoice {invoice.invoice_number} email: {e}")
             raise
 
 
@@ -657,7 +685,8 @@ class TaxRulesService(BaseService):
         if catalog_item and catalog_item.tax_config_id:
             return float(catalog_item.tax_config.rate)
         # Fall back to tenant's first active tax config
-        default_tax = TaxConfig.objects.filter(tenant=tenant, is_active=True).first()
+        default_tax = TaxConfig.objects.filter(
+            tenant=tenant, is_active=True).first()
         return float(default_tax.rate) if default_tax else 0.0
 
     @classmethod
@@ -686,7 +715,8 @@ class TaxRulesService(BaseService):
         invoice.tax_total = tax_total
         invoice.discount_total = discount_total + invoice_discount
         invoice.total_amount = subtotal + tax_total - discount_total - invoice_discount
-        invoice.save(update_fields=['subtotal', 'tax_total', 'discount_total', 'total_amount'])
+        invoice.save(update_fields=[
+                     'subtotal', 'tax_total', 'discount_total', 'total_amount'])
         return invoice
 
 
@@ -716,7 +746,8 @@ class ClientPortalService:
         """Returns a safe, minimal payload for the client portal â€” no internal data."""
         payments = invoice.payments.all()
         total_paid = sum(p.amount for p in payments)
-        branding = InvoiceBranding.objects.filter(tenant=invoice.tenant).first()
+        branding = InvoiceBranding.objects.filter(
+            tenant=invoice.tenant).first()
         return {
             'invoice_number': invoice.invoice_number,
             'status': invoice.status,
@@ -826,7 +857,8 @@ class AgingReportService(BaseService):
         report = cls.get_report(request)
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(['Client', 'Current', '1-30 Days', '31-60 Days', '61-90 Days', '90+ Days', 'Total'])
+        writer.writerow(['Client', 'Current', '1-30 Days',
+                        '31-60 Days', '61-90 Days', '90+ Days', 'Total'])
         for row in report['clients']:
             writer.writerow([
                 row['client_name'],
@@ -834,19 +866,21 @@ class AgingReportService(BaseService):
                 row['61_90'], row['over_90'], row['total'],
             ])
         t = report['totals']
-        writer.writerow(['TOTAL', t['current'], t['1_30'], t['31_60'], t['61_90'], t['over_90'], t['grand_total']])
+        writer.writerow(['TOTAL', t['current'], t['1_30'],
+                        t['31_60'], t['61_90'], t['over_90'], t['grand_total']])
         return output.getvalue()
 
 
 # â”€â”€â”€ CURRENCY SERVICE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-class CurrencyService:
+class Service:
     """
     Handles multi-currency invoice support.
     Converts invoice amounts to the tenant's base reporting currency.
     Modelled after Odoo's multi-currency / exchange rate module.
     """
-    SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'DZD', 'MAD', 'AED', 'SAR', 'CAD', 'AUD']
+    SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP',
+                            'DZD', 'MAD', 'AED', 'SAR', 'CAD', 'AUD']
 
     @classmethod
     def convert_to_base(cls, amount: float, from_currency: str, exchange_rate: float) -> float:
@@ -871,7 +905,8 @@ class CurrencyService:
     @classmethod
     def format_currency(cls, amount: float, currency: str) -> str:
         """Returns a formatted currency string."""
-        symbols = {'USD': '$', 'EUR': '\u20ac', 'GBP': '\u00a3', 'DZD': 'DA ', 'MAD': 'MAD ', 'AED': 'AED '}
+        symbols = {'USD': '$', 'EUR': '\u20ac', 'GBP': '\u00a3',
+                   'DZD': 'DA ', 'MAD': 'MAD ', 'AED': 'AED '}
         symbol = symbols.get(currency, f"{currency} ")
         return f"{symbol}{amount:,.2f}"
 
@@ -967,9 +1002,6 @@ class DeferredRevenueService(BaseService):
 Accounting Services Layer.
 """
 
-from ..domain.models import VendorBill
-from django.db import transaction
-from django.utils import timezone
 
 class VendorBillService:
     @staticmethod
@@ -979,17 +1011,19 @@ class VendorBillService:
             raise ValueError("Only draft bills can be approved.")
         vendor_bill.status = 'approved'
         vendor_bill.save()
-        
+
         # Odoo-style matching: Link to General Ledger
         # Credit Accounts Payable
         # Debit Expenses / Inventory
         from apps.accounting.services.accounting import GeneralLedgerService
         # Simple placeholder request object for now
+
         class DummyRequest:
             user = None
+
             def __init__(self, tenant):
                 self.tenant = tenant
-        
+
         req = DummyRequest(vendor_bill.tenant)
         GeneralLedgerService.record_entry(
             req, "Expenses", vendor_bill.total_amount, 'debit',
@@ -1002,25 +1036,33 @@ class VendorBillService:
 
         return vendor_bill
 
+
 class DashboardService(BaseService):
     @classmethod
     def get_dashboard_stats(cls, request):
+        from apps.core.domain.models import Currency
         from ..domain.models import Invoice, Expense
         from django.db.models import Sum
         tenant = cls.get_tenant_context(request)
-        total_invoices = Invoice.objects.filter(tenant=tenant).select_related('client', 'sale_order', 'tenant').prefetch_related('items').count()
-        rev_mtd = Invoice.objects.filter(tenant=tenant, status='PAID').aggregate(total=Sum('total_amount'))['total'] or 0
-        exp_mtd = Expense.objects.filter(tenant=tenant, status='APPROVED').aggregate(total=Sum('amount'))['total'] or 0
-        overdue = Invoice.objects.filter(tenant=tenant, status='OVERDUE').aggregate(total=Sum('total_amount'))['total'] or 0
-        outstanding_ar = Invoice.objects.filter(tenant=tenant, status__in=['SENT', 'PARTIAL']).aggregate(t=Sum('total_amount'))['t'] or 0
-        
+        total_invoices = Invoice.objects.filter(tenant=tenant).select_related(
+            'client', 'sale_order', 'tenant').prefetch_related('items').count()
+        rev_mtd = Invoice.objects.filter(tenant=tenant, status='PAID').aggregate(
+            total=Sum('total_amount'))['total'] or 0
+        exp_mtd = Expense.objects.filter(tenant=tenant, status='APPROVED').aggregate(
+            total=Sum('amount'))['total'] or 0
+        overdue = Invoice.objects.filter(tenant=tenant, status='OVERDUE').aggregate(
+            total=Sum('total_amount'))['total'] or 0
+        outstanding_ar = Invoice.objects.filter(tenant=tenant, status__in=[
+                                                'SENT', 'PARTIAL']).aggregate(t=Sum('total_amount'))['t'] or 0
+
         rev_val = float(rev_mtd)
         exp_val = float(exp_mtd)
         out_ar_val = float(outstanding_ar)
         total_sales = rev_val + out_ar_val
 
         dso = int((out_ar_val / total_sales) * 30) if total_sales > 0 else 0
-        collection_rate = int((rev_val / total_sales) * 100) if total_sales > 0 else 100
+        collection_rate = int((rev_val / total_sales) *
+                              100) if total_sales > 0 else 100
         cash_position = rev_val - exp_val
 
         return {
@@ -1038,27 +1080,32 @@ class DashboardService(BaseService):
 
     @classmethod
     def get_monthly_financials(cls, request):
+        from apps.core.domain.models import Currency
         from ..domain.models import Invoice, Expense
         from django.db.models import Sum
         from django.db.models.functions import TruncMonth
         tenant = cls.get_tenant_context(request)
 
-        invoices = Invoice.objects.filter(tenant=tenant, status='PAID').annotate(month=TruncMonth('issue_date')).values('month').annotate(income=Sum('total_amount')).order_by('month')
-        expenses = Expense.objects.filter(tenant=tenant, status='APPROVED').annotate(month=TruncMonth('date')).values('month').annotate(expense=Sum('amount')).order_by('month')
+        invoices = Invoice.objects.filter(tenant=tenant, status='PAID').annotate(month=TruncMonth(
+            'issue_date')).values('month').annotate(income=Sum('total_amount')).order_by('month')
+        expenses = Expense.objects.filter(tenant=tenant, status='APPROVED').annotate(
+            month=TruncMonth('date')).values('month').annotate(expense=Sum('amount')).order_by('month')
 
         data_dict = {}
         for inv in invoices:
             if inv['month']:
                 month_str = inv['month'].strftime('%b')
                 if month_str not in data_dict:
-                    data_dict[month_str] = {'name': month_str, 'income': 0, 'expense': 0, 'sort_val': inv['month']}
+                    data_dict[month_str] = {
+                        'name': month_str, 'income': 0, 'expense': 0, 'sort_val': inv['month']}
                 data_dict[month_str]['income'] += float(inv['income'] or 0)
 
         for exp in expenses:
             if exp['month']:
                 month_str = exp['month'].strftime('%b')
                 if month_str not in data_dict:
-                    data_dict[month_str] = {'name': month_str, 'income': 0, 'expense': 0, 'sort_val': exp['month']}
+                    data_dict[month_str] = {
+                        'name': month_str, 'income': 0, 'expense': 0, 'sort_val': exp['month']}
                 data_dict[month_str]['expense'] += float(exp['expense'] or 0)
 
         sorted_data = sorted(data_dict.values(), key=lambda x: x['sort_val'])
@@ -1069,6 +1116,7 @@ class DashboardService(BaseService):
 
     @classmethod
     def get_finance_report(cls, request):
+        from apps.core.domain.models import Currency
         from ..domain.models import Invoice, Expense
         from django.db.models import Sum, Count, Q
         tenant = cls.get_tenant_context(request)
@@ -1080,7 +1128,8 @@ class DashboardService(BaseService):
         stats = invoices.aggregate(
             total_invoiced=Sum('amount'),
             total_paid=Sum('amount', filter=Q(status='paid')),
-            outstanding=Sum('amount', filter=Q(status__in=['sent','overdue'])),
+            outstanding=Sum('amount', filter=Q(
+                status__in=['sent', 'overdue'])),
             invoice_count=Count('id')
         )
         exp_total = float(expenses.aggregate(t=Sum('amount'))['t'] or 0)
@@ -1097,81 +1146,98 @@ class DashboardService(BaseService):
     def export_invoices_csv(cls, request):
         import csv
         import io
+        from apps.core.domain.models import Currency
         from ..domain.models import Invoice
         tenant = cls.get_tenant_context(request)
         output = io.StringIO()
         writer = csv.writer(output)
         writer.writerow(['Invoice Number', 'Amount', 'Status', 'Date'])
         invoices = Invoice.objects.all().order_by('-issue_date')
-        if tenant: invoices = invoices.filter(tenant=tenant)
+        if tenant:
+            invoices = invoices.filter(tenant=tenant)
         for inv in invoices[:1000]:
-            writer.writerow([inv.invoice_number, inv.amount, inv.status, inv.issue_date])
+            writer.writerow([inv.invoice_number, inv.amount,
+                            inv.status, inv.issue_date])
         return output.getvalue()
-        
+
     @classmethod
     def get_aged_receivables(cls, request):
+        from apps.core.domain.models import Currency
         from ..domain.models import Invoice
         from datetime import date
         tenant = cls.get_tenant_context(request)
-        invoices = Invoice.objects.filter(tenant=tenant).exclude(status__in=['paid', 'void'])
+        invoices = Invoice.objects.filter(
+            tenant=tenant).exclude(status__in=['paid', 'void'])
         today = date.today()
-        
+
         report = {}
         for inv in invoices:
             client_id = str(inv.client.id) if inv.client else 'unknown'
             client_name = inv.client.name if inv.client else 'Unknown Client'
-            
+
             if client_id not in report:
                 report[client_id] = {
                     'client_name': client_name,
                     'current': 0, 'days_30': 0, 'days_60': 0, 'days_90': 0, 'older': 0, 'total': 0
                 }
-                
+
             amount = float(inv.total_amount or 0)
             if not inv.due_date or inv.due_date >= today:
                 report[client_id]['current'] += amount
             else:
                 days_overdue = (today - inv.due_date).days
-                if days_overdue <= 30: report[client_id]['days_30'] += amount
-                elif days_overdue <= 60: report[client_id]['days_60'] += amount
-                elif days_overdue <= 90: report[client_id]['days_90'] += amount
-                else: report[client_id]['older'] += amount
-                
+                if days_overdue <= 30:
+                    report[client_id]['days_30'] += amount
+                elif days_overdue <= 60:
+                    report[client_id]['days_60'] += amount
+                elif days_overdue <= 90:
+                    report[client_id]['days_90'] += amount
+                else:
+                    report[client_id]['older'] += amount
+
             report[client_id]['total'] += amount
-            
+
         return list(report.values())
 
     @classmethod
     def get_aged_payables(cls, request):
-        from ..domain.models import VendorBill
+        from apps.core.domain.models import Currency
+
         from datetime import date
         tenant = cls.get_tenant_context(request)
-        bills = VendorBill.objects.filter(tenant=tenant).exclude(status__in=['paid', 'cancelled'])
+        bills = VendorBill.objects.filter(tenant=tenant).exclude(
+            status__in=['paid', 'cancelled'])
         today = date.today()
-        
+
         report = {}
         for bill in bills:
-            vendor_id = str(bill.vendor.id) if getattr(bill, 'vendor', None) else 'unknown'
-            vendor_name = bill.vendor.name if getattr(bill, 'vendor', None) else 'Unknown Vendor'
-            
+            vendor_id = str(bill.vendor.id) if getattr(
+                bill, 'vendor', None) else 'unknown'
+            vendor_name = bill.vendor.name if getattr(
+                bill, 'vendor', None) else 'Unknown Vendor'
+
             if vendor_id not in report:
                 report[vendor_id] = {
                     'vendor_name': vendor_name,
                     'current': 0, 'days_30': 0, 'days_60': 0, 'days_90': 0, 'older': 0, 'total': 0
                 }
-                
+
             amount = float(bill.total_amount or 0)
             if not bill.due_date or bill.due_date >= today:
                 report[vendor_id]['current'] += amount
             else:
                 days_overdue = (today - bill.due_date).days
-                if days_overdue <= 30: report[vendor_id]['days_30'] += amount
-                elif days_overdue <= 60: report[vendor_id]['days_60'] += amount
-                elif days_overdue <= 90: report[vendor_id]['days_90'] += amount
-                else: report[vendor_id]['older'] += amount
-                
+                if days_overdue <= 30:
+                    report[vendor_id]['days_30'] += amount
+                elif days_overdue <= 60:
+                    report[vendor_id]['days_60'] += amount
+                elif days_overdue <= 90:
+                    report[vendor_id]['days_90'] += amount
+                else:
+                    report[vendor_id]['older'] += amount
+
             report[vendor_id]['total'] += amount
-            
+
         return list(report.values())
 
     @classmethod

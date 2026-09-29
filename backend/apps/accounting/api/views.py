@@ -10,7 +10,7 @@ from ..domain.models import (
     Invoice, Payment, Expense, TaxConfig, GeneralLedger,
     Account, JournalEntry, BankAccount, BankTransaction, FixedAsset, CreditNote,
     PaymentTerms, InvoiceBranding, DeferredRevenue,
-    Currency, ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation, DunningWorkflow,
+    ExchangeRate, TaxAuthority, TaxGroup, BankReconciliation, DunningWorkflow,
     AccountJournal, Tax
 )
 
@@ -20,7 +20,7 @@ from .serializers import (
     AccountSerializer, JournalEntrySerializer, BankAccountSerializer,
     BankTransactionSerializer, FixedAssetSerializer, CreditNoteSerializer,
     PaymentTermsSerializer, InvoiceBrandingSerializer, DeferredRevenueSerializer,
-    CurrencySerializer, ExchangeRateSerializer, TaxAuthoritySerializer,
+    ExchangeRateSerializer, TaxAuthoritySerializer,
     TaxGroupSerializer, BankReconciliationSerializer, DunningWorkflowSerializer,
     AccountJournalSerializer, TaxSerializer
 )
@@ -231,13 +231,6 @@ class DeferredRevenueViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         return Response({'status': 'recognized'})
 
 from django.db.models import Q
-
-class CurrencyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = CurrencySerializer
-    pagination_class = None
-    def get_queryset(self): 
-        return Currency.all_objects.filter(Q(tenant=self.request.user.tenant) | Q(tenant__isnull=True), is_deleted=False)
 
 class ExchangeRateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
