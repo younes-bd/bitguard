@@ -435,3 +435,48 @@ class UoMViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     search_fields = ['name', 'category__name']
     ordering_fields = ['name', 'factor']
     ordering = ['category', 'name']
+
+
+
+from ..domain.models import Country, State
+from .serializers import CountrySerializer, StateSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class CountryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Country.all_objects.filter(is_deleted=False)
+    serializer_class = CountrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
+
+class StateViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = StateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
+    
+    def get_queryset(self):
+        qs = State.all_objects.filter(is_deleted=False)
+        country_id = self.request.query_params.get('country')
+        if country_id:
+            qs = qs.filter(country_id=country_id)
+        return qs
+
+class ConfigOptionsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        try:
+            import zoneinfo
+            timezones = sorted(list(zoneinfo.available_timezones()))
+        except ImportError:
+            timezones = ['UTC', 'America/New_York', 'Europe/Paris']
+        
+        data = {
+            'timezones': timezones,
+            'paper_formats': [
+                {'id': 'A4', 'name': 'A4 (210 x 297 mm)'},
+                {'id': 'Letter', 'name': 'US Letter (8.5 x 11 inches)'},
+                {'id': 'Legal', 'name': 'US Legal (8.5 x 14 inches)'},
+            ]
+        }
+        return Response(data)

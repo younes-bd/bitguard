@@ -72,7 +72,12 @@ export const settingsService = {
   getLogs: (params) => apiClient.get('soc/logs/', { params }),
   getWorkspaces: (params) => apiClient.get('soc/workspaces/', { params }),
   createWorkspace: (data) => apiClient.post('soc/workspaces/', data),
-  deleteWorkspace: (id) => apiClient.delete(`soc/workspaces/${id}/`)
+  deleteWorkspace: (id) => apiClient.delete(`soc/workspaces/${id}/`),
+  getMyCompany: () => apiClient.get('tenants/my-company/'),
+  updateMyCompany: (data) => apiClient.patch('tenants/my-company/', data),
+  triggerBackup: () => apiClient.post('system/retention/backup/'),
+  pruneAuditLogs: (days) => apiClient.post('system/retention/prune/', { days }),
+  clearCache: () => apiClient.post('system/retention/cache/'),
 };
 
 export const getDocumentConfig = async () => {
@@ -84,3 +89,4 @@ export const updateDocumentConfig = async (id, data) => {
     const response = await apiClient.patch(`system/document-config/${id}/`, data);
     return response.data;
 };
+

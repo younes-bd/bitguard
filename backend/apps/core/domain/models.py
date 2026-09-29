@@ -641,3 +641,26 @@ class DatabaseBackup(TenantAwareModel):
 
     def __str__(self):
         return self.filename
+
+class Country(TenantAwareModel):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=2, help_text='ISO 3166-1 alpha-2 code', blank=True, null=True)
+    phone_code = models.CharField(max_length=50, blank=True, default="")
+
+    class Meta:
+        verbose_name_plural = 'Countries'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+class State(TenantAwareModel):
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='states')
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=10, help_text='State code', blank=True, null=True)
+
+    class Meta:
+        ordering = ['country__name', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.country.name})"

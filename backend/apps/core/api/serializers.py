@@ -265,3 +265,15 @@ class DatabaseBackupSerializer(serializers.ModelSerializer):
         model = DatabaseBackup
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
+
+from ..domain.models import Country, State
+
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = ['id', 'name', 'code']
+
+class StateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = State
+        fields = ['id', 'name', 'code', 'country']

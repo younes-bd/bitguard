@@ -230,10 +230,14 @@ class DeferredRevenueViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         revenue = self.get_object()
         return Response({'status': 'recognized'})
 
+from django.db.models import Q
+
 class CurrencyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CurrencySerializer
-    def get_queryset(self): return Currency.objects.filter(tenant=self.request.user.tenant)
+    pagination_class = None
+    def get_queryset(self): 
+        return Currency.all_objects.filter(Q(tenant=self.request.user.tenant) | Q(tenant__isnull=True), is_deleted=False)
 
 class ExchangeRateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
