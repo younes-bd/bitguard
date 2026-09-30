@@ -47,7 +47,7 @@ class GeneratedReportViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         
         try:
             report = ReportingService.generate_and_fetch_report(
-                template_id, record_model_str, record_id, request.user.tenant
+                template_id, record_model_str, record_id, getattr(request, 'tenant', None)
             )
             serializer = self.get_serializer(report)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -68,8 +68,8 @@ class ReportTagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         return ReportTag.objects.filter(tenant=tenant)
 
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))

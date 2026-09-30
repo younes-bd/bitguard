@@ -15,13 +15,13 @@ class SprintViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SprintSerializer
     def get_queryset(self):
-        return Sprint.objects.filter(tenant=self.request.user.tenant)
+        return Sprint.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class TaskTagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TaskTagSerializer
     def get_queryset(self):
-        return TaskTag.objects.filter(tenant=self.request.user.tenant)
+        return TaskTag.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 
 class ProjectViewSet(TenantScopedMixin, viewsets.ModelViewSet):
@@ -255,7 +255,7 @@ from .serializers import TaskTimesheetSerializer
 class TaskTimesheetViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TaskTimesheetSerializer
-    def get_queryset(self): return TaskTimesheet.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else TaskTimesheet.objects.all()
+    def get_queryset(self): return TaskTimesheet.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else TaskTimesheet.objects.all()
 
 class DashboardStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]

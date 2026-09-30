@@ -1,7 +1,0 @@
-with open('.agents/rules/architecture.md', 'a', encoding='utf-8') as f:
-    f.write('\n\n## 23. Headless Configuration (The Anti-Transient Law)\n')
-    f.write('**The Problem:** Developers or AI agents accustomed to standard monolithic Odoo often attempt to create `ResConfigSettings` (Transient Models) to handle module configurations. In a server-rendered monolith, this makes sense (the ORM needs a fake database table to render the XML settings UI). In a Headless React architecture, creating and destroying fake database records just to generate a JSON response is a massive, highly inefficient anti-pattern.\n\n')
-    f.write('**The Rule:** You are STRICTLY FORBIDDEN from using Transient Models or `ResConfigSettings` patterns to handle configuration. All system and module settings MUST use the unified `SystemSetting` Key-Value database table, governed strictly by the `SettingsRegistry` singleton in the Kernel.\n')
-    f.write("* When a business app (e.g., `accounting`, `crm`) introduces a new configuration setting, it MUST explicitly register the key, type, and default value in the Kernel's `settings_registry` inside its `apps.py` `ready()` method.\n")
-    f.write('* The backend will reject any attempt to save an unregistered setting key.\n\n')
-    f.write('**Why:** React handles the UI; the backend does not need transient tables to build forms. The `SettingsRegistry` guarantees strong schema typing, default-value hydration, and strict modular boundaries (giving us Odoo-level safety with modern REST performance).\n')

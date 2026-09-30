@@ -26,19 +26,19 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = DepartmentSerializer
     def get_queryset(self):
-        return Department.objects.filter(tenant=self.request.user.tenant)
+        return Department.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class PerformanceReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PerformanceReviewSerializer
     def get_queryset(self):
-        return PerformanceReview.objects.filter(tenant=self.request.user.tenant)
+        return PerformanceReview.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class EmployeeSkillViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = EmployeeSkillSerializer
     def get_queryset(self):
-        return EmployeeSkill.objects.filter(tenant=self.request.user.tenant)
+        return EmployeeSkill.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -140,12 +140,12 @@ class PayrollPeriodViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PayrollPeriodSerializer
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = PayrollPeriod.objects.all().order_by('-start_date')
         if tenant: qs = qs.filter(tenant=tenant)
         return qs
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 from apps.payroll.models import PayslipBatch, Payslip, PayslipLine, SalaryRule
 from .serializers import PayslipBatchSerializer, PayslipSerializer, PayslipLineSerializer, SalaryRuleSerializer
@@ -155,13 +155,13 @@ class PayslipBatchViewSet(viewsets.ModelViewSet):
     serializer_class = PayslipBatchSerializer
     
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = PayslipBatch.objects.all().order_by('-date_start')
         if tenant: qs = qs.filter(tenant=tenant)
         return qs
         
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def generate_payslips(self, request, pk=None):
@@ -232,7 +232,7 @@ class PayslipViewSet(viewsets.ModelViewSet):
     serializer_class = PayslipSerializer
     
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = Payslip.objects.all()
         if tenant: qs = qs.filter(tenant=tenant)
         batch_id = self.request.query_params.get('batch')
@@ -240,64 +240,64 @@ class PayslipViewSet(viewsets.ModelViewSet):
         return qs
         
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class SalaryRuleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SalaryRuleSerializer
     
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = SalaryRule.objects.all()
         if tenant: qs = qs.filter(tenant=tenant)
         return qs
         
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class OnboardingInstanceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = OnboardingInstanceSerializer
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = OnboardingInstance.objects.all()
         if tenant: qs = qs.filter(tenant=tenant)
         return qs
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class OnboardingTaskViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = OnboardingTaskSerializer
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = OnboardingTask.objects.all()
         if tenant: qs = qs.filter(tenant=tenant)
         return qs
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class JobPositionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = JobPositionSerializer
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = JobPosition.objects.all()
         if tenant: qs = qs.filter(tenant=tenant)
         return qs
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class JobApplicationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = JobApplicationSerializer
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = JobApplication.objects.all()
         if tenant: qs = qs.filter(tenant=tenant)
         return qs
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 from ..domain.models import EmployeeContract
 from apps.timeoff.models import LeaveAllocation
@@ -308,7 +308,7 @@ from .serializers import EmployeeContractSerializer, LeaveAllocationSerializer, 
 class EmployeeContractViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = EmployeeContractSerializer
-    def get_queryset(self): return EmployeeContract.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else EmployeeContract.objects.all()
+    def get_queryset(self): return EmployeeContract.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else EmployeeContract.objects.all()
 
 
 

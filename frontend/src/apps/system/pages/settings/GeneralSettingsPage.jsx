@@ -4,6 +4,7 @@ import { companyService } from '../../../core/api/companyService';
 import { coreService } from '../../../core/api/coreService';
 import { currencyService } from '../../../core/api/currencyService';
 import { databaseBackupService } from '../../../core/api/databaseBackupService';
+import { systemEventService } from '../../../core/api/systemEventService';
 import { Link } from 'react-router-dom';
 import {
     Building2, Save, Loader2, Upload, Shield,
@@ -537,7 +538,7 @@ export default function GeneralSettingsPage() {
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900">
                             <div>
-                                <p className="font-semibold text-slate-200">Prune Audit Logs</p>
+                                <p className="font-semibold text-slate-200">Prune System Events</p>
                                 <p className="text-sm text-slate-500">Delete audit log entries older than 90 days</p>
                             </div>
                             <button

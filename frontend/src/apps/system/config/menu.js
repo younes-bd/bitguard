@@ -39,7 +39,7 @@ const baseSettings = [
             { label: 'Document Layouts', icon: Layout, path: '/admin/settings/document-layouts' },
             { label: 'Sequences', icon: Layers, path: '/admin/settings/sequences' },
             { label: 'Menu Sequences', icon: Layout, path: '/admin/settings/menu-sequences' },
-            { label: 'Audit Logs', icon: ShieldCheck, path: '/admin/settings/logs' },
+            { label: 'System Events', icon: ShieldCheck, path: '/admin/settings/logs' },
             { label: 'Server Logs', icon: Terminal, path: '/admin/settings/server-logs' },
             { label: 'Backup & Restore', icon: Database, path: '/admin/settings/backups' },
             { label: 'Integration Keys', icon: Key, path: '/admin/settings/integration-keys' },

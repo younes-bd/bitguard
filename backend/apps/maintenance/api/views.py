@@ -12,7 +12,7 @@ class AssetViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = Asset.objects.select_related('client', 'assigned_to')
         if tenant:
             qs = qs.filter(tenant=tenant)
@@ -66,7 +66,7 @@ class ItamDashboardView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         qs = Asset.objects.all()
         if tenant:
             qs = qs.filter(tenant=tenant)
@@ -89,10 +89,10 @@ class SoftwareLicenseViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return SoftwareLicense.objects.filter(tenant=self.request.user.tenant)
+        return SoftwareLicense.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 import datetime
 from django.utils import timezone
@@ -102,7 +102,7 @@ class AssetDepreciationView(APIView):
 
     def get(self, request):
         assets = Asset.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             purchase_date__isnull=False,
             purchase_price__isnull=False
         )

@@ -9,27 +9,27 @@ class AppointmentTypeViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return AppointmentType.objects.filter(tenant=self.request.user.tenant)
+        return AppointmentType.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class AppointmentResourceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = AppointmentResourceSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return AppointmentResource.objects.filter(tenant=self.request.user.tenant)
+        return AppointmentResource.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class AppointmentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Appointment.objects.filter(tenant=self.request.user.tenant)
+        return Appointment.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))

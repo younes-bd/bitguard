@@ -50,7 +50,7 @@ class SequenceSerializer(serializers.ModelSerializer):
 
 from ..domain.models import (
     RecordMessage, RecordActivity, RecordFollower,
-    FieldChangeLog, ScheduledAction,
+    FieldHistory, ScheduledAction,
 )
 from apps.automation.domain.models import AutomatedAction
 
@@ -147,11 +147,11 @@ class RecordFollowerSerializer(serializers.ModelSerializer):
         }
 
 
-class FieldChangeLogSerializer(serializers.ModelSerializer):
+class FieldHistorySerializer(serializers.ModelSerializer):
     changed_by_info = serializers.SerializerMethodField()
 
     class Meta:
-        model = FieldChangeLog
+        model = FieldHistory
         fields = [
             'id', 'content_type', 'object_id',
             'field_name', 'field_label', 'old_value', 'new_value',
@@ -226,13 +226,13 @@ class CommandCenterSectionSerializer(serializers.ModelSerializer):
 
 
 
-class AuditTrailSerializer(serializers.ModelSerializer):
+class SystemEventSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_name = serializers.CharField(source='user.get_full_name', read_only=True)
 
     class Meta:
-        from apps.core.domain.models import AuditTrail
-        model = AuditTrail
+        from apps.core.domain.models import SystemEventLog
+        model = SystemEventLog
         fields = ['id', 'user', 'user_email', 'user_name', 'action', 'resource_type', 'resource_id', 'details', 'ip_address', 'created_at']
         read_only_fields = fields
 

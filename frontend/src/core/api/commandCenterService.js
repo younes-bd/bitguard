@@ -17,7 +17,7 @@ export const analyticsService = {
         return response.data?.data ?? response.data ?? {};
     },
     getRecentActivity: async (limit = 8) => {
-        const response = await apiClient.get(`core/audit-logs/?limit=${limit}`);
+        const response = await apiClient.get(`core/system-events/?limit=${limit}`);
         return response.data?.results ?? response.data ?? [];
     },
 

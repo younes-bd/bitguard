@@ -20,11 +20,11 @@ class PosConfigViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return PosConfig.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         )
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class PosSessionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PosSessionSerializer
@@ -36,12 +36,12 @@ class PosSessionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return PosSession.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         ).select_related('config', 'user')
 
     def perform_create(self, serializer):
         serializer.save(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             user=self.request.user,
             created_by=self.request.user
         )
@@ -96,11 +96,11 @@ class PosOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return PosOrder.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         ).select_related('session')
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class PosPaymentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PosPaymentSerializer
@@ -108,11 +108,11 @@ class PosPaymentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return PosPayment.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         )
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class RestaurantFloorViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RestaurantFloorSerializer
@@ -120,11 +120,11 @@ class RestaurantFloorViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return RestaurantFloor.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         )
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class RestaurantTableViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RestaurantTableSerializer
@@ -132,11 +132,11 @@ class RestaurantTableViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return RestaurantTable.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         )
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class RestaurantPrinterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RestaurantPrinterSerializer
@@ -144,11 +144,11 @@ class RestaurantPrinterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return RestaurantPrinter.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         )
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class DashboardStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -32,7 +32,7 @@ class Command(BaseCommand):
         self.stdout.write("Creating Action 2: Prune Audit Logs...")
         ScheduledAction.objects.create(
             name="Prune Old Audit Logs",
-            model_name="core.AuditTrail",
+            model_name="core.SystemEventLog",
             method_name="prune_old_logs",
             interval_number=1,
             interval_type="weeks",

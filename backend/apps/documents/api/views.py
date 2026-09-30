@@ -182,4 +182,4 @@ from .serializers import SpreadsheetDocumentSerializer
 class SpreadsheetDocumentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SpreadsheetDocumentSerializer
-    def get_queryset(self): return SpreadsheetDocument.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else SpreadsheetDocument.objects.all()
+    def get_queryset(self): return SpreadsheetDocument.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else SpreadsheetDocument.objects.all()

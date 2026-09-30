@@ -20,7 +20,7 @@ const UsersDashboardPage = () => {
             try {
                 const [stats, logs] = await Promise.all([
                     usersService.getDashboardStats(),
-                    usersService.getAuditLogs({ limit: 5 })
+                    systemEventService.getSystemEvents({ limit: 5 })
                 ]);
                 
                 setMetrics(stats);
@@ -57,7 +57,7 @@ const UsersDashboardPage = () => {
                 </div>
                 <div className="flex gap-3">
                     <Link to="/admin/users/audit" className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-semibold transition-all border border-slate-700">
-                        Audit Logs
+                        System Events
                     </Link>
                     <Link to="/admin/users/users" className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-purple-600/20">
                         Provision User

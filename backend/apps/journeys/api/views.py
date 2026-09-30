@@ -141,24 +141,24 @@ from .serializers import CampaignsSerializer, SocialPostSerializer, SMSCampaignS
 class CampaignsViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CampaignsSerializer
-    def get_queryset(self): return Campaigns.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else Campaigns.objects.all()
+    def get_queryset(self): return Campaigns.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else Campaigns.objects.all()
 
 class SocialPostViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SocialPostSerializer
-    def get_queryset(self): return SocialPost.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else SocialPost.objects.all()
+    def get_queryset(self): return SocialPost.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else SocialPost.objects.all()
 
 class SMSCampaignViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SMSCampaignSerializer
-    def get_queryset(self): return SMSCampaign.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else SMSCampaign.objects.all()
+    def get_queryset(self): return SMSCampaign.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else SMSCampaign.objects.all()
 
 class EventViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = EventSerializer
-    def get_queryset(self): return Event.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else Event.objects.all()
+    def get_queryset(self): return Event.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else Event.objects.all()
 
 class SurveyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SurveySerializer
-    def get_queryset(self): return Survey.objects.filter(tenant=self.request.user.tenant) if hasattr(self.request.user, 'tenant') else Survey.objects.all()
+    def get_queryset(self): return Survey.objects.filter(tenant=getattr(self.request, 'tenant', None)) if hasattr(self.request.user, 'tenant') else Survey.objects.all()

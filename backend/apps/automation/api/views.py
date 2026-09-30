@@ -12,11 +12,11 @@ class AutomatedActionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsPlatformAdmin]
 
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         return AutomatedAction.objects.filter(tenant=tenant)
 
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def run(self, request, pk=None):
@@ -27,7 +27,7 @@ class AutomatedActionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         try:
             if action_obj.code:
                 exec_globals = {'__builtins__': __builtins__}
-                exec_locals = {'env': request.user.tenant if hasattr(request.user, 'tenant') else None, 'request': request}
+                exec_locals = {'env': getattr(request, 'tenant', None) if hasattr(request.user, 'tenant') else None, 'request': request}
                 exec(compile(action_obj.code, '<automated_action>', 'exec'), exec_globals, exec_locals)
                 action_obj.last_run_status = 'success'
             elif hasattr(action_obj, 'model_name') and hasattr(action_obj, 'method_name') and action_obj.model_name and action_obj.method_name:
@@ -36,7 +36,7 @@ class AutomatedActionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
                     Model = django_apps.get_model(app_label, model_name_str)
                     method = getattr(Model, action_obj.method_name, None)
                     if method:
-                        method(tenant=request.user.tenant if hasattr(request.user, 'tenant') else None)
+                        method(tenant=getattr(request, 'tenant', None) if hasattr(request.user, 'tenant') else None)
                         action_obj.last_run_status = 'success'
                     else:
                         action_obj.last_run_status = 'error'

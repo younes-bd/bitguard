@@ -23,14 +23,14 @@ class RentalOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         # We proxy to SalesOrder but only return ones flagged as rental orders
         return SalesOrder.objects.filter(
-            tenant=self.request.user.tenant, 
+            tenant=getattr(self.request, 'tenant', None), 
             is_rental_order=True,
             is_deleted=False
         ).prefetch_related('lines')
 
     def perform_create(self, serializer):
         serializer.save(
-            tenant=self.request.user.tenant, 
+            tenant=getattr(self.request, 'tenant', None), 
             user=self.request.user,
             is_rental_order=True
         )
@@ -42,7 +42,7 @@ class RentalOrderLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         # We proxy to SalesOrderLine but only return rental lines
         return SalesOrderLine.objects.filter(
-            order__tenant=self.request.user.tenant, 
+            order__tenant=getattr(self.request, 'tenant', None), 
             is_rental=True,
             is_deleted=False
         ).select_related('order')

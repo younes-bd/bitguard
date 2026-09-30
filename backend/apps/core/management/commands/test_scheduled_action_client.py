@@ -14,7 +14,7 @@ class Command(BaseCommand):
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         
-        client = Client(HTTP_AUTHORIZATION=f'Bearer {access_token}', HTTP_X_TENANT_ID=str(user.tenant_id) if user.tenant_id else '')
+        client = Client(HTTP_AUTHORIZATION=f'Bearer {access_token}', HTTP_X_TENANT_ID=str(getattr(request, 'tenant', None)_id) if getattr(request, 'tenant', None)_id else '')
         
         data = {
             "name": "Test Action HTTP",

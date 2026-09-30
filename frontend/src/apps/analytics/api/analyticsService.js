@@ -9,7 +9,7 @@ export const analyticsService = {
         return { data: { status: 'healthy', uptime: '99.99%', api_latency: '42ms' } };
     },
     getRecentActivity: async (limit = 10) => {
-        return await apiClient.get('/api/v1/system/audit-logs/', { params: { limit } });
+        return await apiClient.get('/api/v1/system/system-events/', { params: { limit } });
     },
     // Aggregates data from the newly decoupled endpoints
     getExecutiveSummary: async (dateRange = '30days') => {

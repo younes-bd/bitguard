@@ -19,7 +19,7 @@ class VehicleBrandViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = VehicleBrand.objects.all()
         if tenant:
             qs = qs.filter(tenant=tenant)
@@ -30,7 +30,7 @@ class VehicleModelViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         qs = VehicleModel.objects.all()
         if tenant:
             qs = qs.filter(tenant=tenant)
@@ -47,12 +47,12 @@ class VehicleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Vehicle.objects.filter(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             is_deleted=False
         ).select_related('driver')
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
     @action(detail=True, methods=['post'])
     def add_maintenance(self, request, pk=None):
@@ -113,12 +113,12 @@ class VehicleLogViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return VehicleLog.objects.filter(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             is_deleted=False
         ).select_related('vehicle')
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class VehicleContractViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = VehicleContractSerializer
@@ -127,12 +127,12 @@ class VehicleContractViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return VehicleContract.objects.filter(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             is_deleted=False
         ).select_related('vehicle')
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class DashboardStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -64,13 +64,13 @@ class IntegrationKeyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         user = self.request.user
         qs = super().get_queryset()
         if not user.is_superuser and getattr(user, 'tenant', None):
-            return qs.filter(tenant=user.tenant)
+            return qs.filter(tenant=getattr(request, 'tenant', None))
         return qs
 
     def create(self, request, *args, **kwargs):
         name = request.data.get('name', 'New Integration Key')
         service = SettingsService()
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         api_key, raw_secret = service.create_integration_key(name, request.user, tenant)
         data = self.get_serializer(api_key).data
         data['raw_secret'] = raw_secret # Only returned once

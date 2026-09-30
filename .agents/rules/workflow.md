@@ -33,14 +33,21 @@ All Git commit messages MUST follow the Conventional Commits specification.
 **UNDER NO CIRCUMSTANCES** are you allowed to write temporary refactoring or debugging scripts (`.py`, `.sh`, `.js`) into the `backend/`, `frontend/`, or global root directories. This is a FATAL violation of the workflow.
 
 You must strictly follow this folder strategy for scripts:
-*   **AI Scratchpad (Highly Recommended):** Use your isolated Antigravity `scratch/` artifact directory for ALL temporary debugging and throwaway scripts. Execute them from there.
+*   **AI Scratchpad (Hidden):** Use the `.scratch/` directory at the root of the project for ALL temporary debugging and throwaway scripts. These must never be committed to Git. Execute them from there, and use `scripts/prune_scratch.py` to periodically clean the folder.
 *   **Root `scripts/`**: Use this for permanent global monorepo tooling or cross-stack deployment scripts that the user needs to keep.
 *   **`backend/scripts/`**: Use this ONLY for permanent Django-specific operations (e.g., database seeders).
 *   **`frontend/scripts/`**: Use this ONLY for permanent React-specific build tools.
 
 If you drop a junk script in the project roots, you have failed your core directive.
-## 5. Automated AI Architecture Checkpoint (The Anti-Tunnel-Vision Rule)
-CRITICAL INSTRUCTION FOR ALL AI AGENTS: 
-When the user presents a stack trace or bug, you are strictly forbidden from immediately writing a patch to make the error disappear. 
-Before generating ANY code to fix a bug, you MUST pause and automatically cross-reference your proposed solution against the rules in rchitecture.md (specifically Rule 9 on Kernel Boundaries, Rule 12 on Soft Dependencies, and Rule 20 on Registries). 
-You must prioritize Domain-Driven Design and architectural integrity over a quick fix. If your fix violates the architecture, you must find a different way.
+## 5. Automated AI Architecture Checkpoint (The Universal Pre-Flight Checklist)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS to prevent "AI Tunnel Vision":**
+Whether the user asks for a new feature, a file relocation, a bug fix, or a UI change, you are **strictly forbidden** from immediately writing code or executing file moves. 
+
+Before proposing or executing *any* architectural change, you MUST pause and explicitly output a **"Rule Validation Matrix"** in your chain-of-thought or response. 
+You must explicitly verify your proposed action against the core rules in `architecture.md`, specifically scanning for conflicts between:
+1.  **Rule 39 (Data Gravity Law)** vs. **Rule 9 (Kernel Boundaries):** If a model is in `core`, its UI goes to `system`.
+2.  **Rule 40 (Lexical Symmetry):** Are the names identical across all stack layers?
+3.  **Rule 12 & 20 (Soft Dependencies & Registries):** Does this break cross-module boundaries?
+4.  **Rule 4 (The No-Clutter Law):** Am I writing a temporary debugging or refactoring script? If yes, is it strictly going into the hidden `.scratch/` directory at the project root?
+
+*This mirrors Tier-1 Enterprise standard Architecture Decision Records (ADRs). You must prioritize Domain-Driven Design and architectural integrity over speed. If your fix violates a rule, you must find a different way.*

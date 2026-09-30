@@ -71,7 +71,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         if user.is_superuser or user.roles.filter(name='SUPER_ADMIN').exists():
             qs = User.objects.all().order_by('-date_joined')
         elif user.roles.filter(name='TENANT_ADMIN').exists():
-            qs = User.objects.filter(tenant=user.tenant).order_by('-date_joined')
+            qs = User.objects.filter(tenant=getattr(request, 'tenant', None)).order_by('-date_joined')
         else:
             qs = User.objects.filter(id=user.id)
             
@@ -89,7 +89,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         return qs.filter(is_active=True)
 
     def perform_create(self, serializer):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         if tenant and not self.request.user.is_superuser:
             serializer.save(tenant=tenant)
         else:
@@ -238,11 +238,11 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def activity(self, request):
-        from apps.core.domain.models import AuditTrail
-        from apps.core.api.serializers import AuditTrailSerializer
+        from apps.core.domain.models import SystemEventLog
+        from apps.core.api.serializers import SystemEventSerializer
         
-        logs = AuditTrail.objects.filter(user=request.user).order_by('-created_at')[:20]
-        serializer = AuditTrailSerializer(logs, many=True)
+        logs = SystemEventLog.objects.filter(user=request.user).order_by('-created_at')[:20]
+        serializer = SystemEventSerializer(logs, many=True)
         return standard_response(True, "User activity retrieved", serializer.data)
 
     @action(detail=False, methods=['post'])
@@ -302,7 +302,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def stats(self, request):
         from django.db.models import Count
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         if not tenant:
             return Response({'total_users': 0, 'active_users': 0, 'mfa_adoption_pct': 0.0, 'admin_count': 0})
         qs = self.get_queryset()
@@ -319,7 +319,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def policy(self, request):
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         policy, created = SecurityPolicy.objects.get_or_create(tenant=tenant)
         serializer = SecurityPolicySerializer(policy)
         return standard_response(True, "Security Policy retrieved", serializer.data)
@@ -327,7 +327,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def update_policy(self, request):
         from apps.core.services.audit import AuditService
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         policy, created = SecurityPolicy.objects.get_or_create(tenant=tenant)
         serializer = SecurityPolicySerializer(policy, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)

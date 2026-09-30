@@ -26,7 +26,7 @@ class QualityAlertViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             user=self.request.user,
             created_by=self.request.user
         )
@@ -41,7 +41,7 @@ class QualityPointViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             created_by=self.request.user
         )
 
@@ -59,6 +59,6 @@ class QualityCheckViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             created_by=self.request.user
         )

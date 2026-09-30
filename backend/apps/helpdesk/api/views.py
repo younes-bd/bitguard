@@ -57,7 +57,7 @@ class TicketViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         if not stage_id:
             return Response({'error': 'stage_id is required'}, status=drf_status.HTTP_400_BAD_REQUEST)
         try:
-            stage = HelpdeskStage.objects.get(id=stage_id, tenant=request.user.tenant)
+            stage = HelpdeskStage.objects.get(id=stage_id, tenant=getattr(request, 'tenant', None))
             ticket.stage = stage
             if stage.is_closed:
                 ticket.status = 'closed'
@@ -145,40 +145,40 @@ class HelpdeskTeamViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = HelpdeskTeamSerializer
     
     def get_queryset(self):
-        return HelpdeskTeam.objects.filter(tenant=self.request.user.tenant)
+        return HelpdeskTeam.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class HelpdeskStageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = HelpdeskStageSerializer
     
     def get_queryset(self):
-        return HelpdeskStage.objects.filter(tenant=self.request.user.tenant).order_by('sequence')
+        return HelpdeskStage.objects.filter(tenant=getattr(self.request, 'tenant', None)).order_by('sequence')
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class HelpdeskTagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = HelpdeskTagSerializer
     
     def get_queryset(self):
-        return HelpdeskTag.objects.filter(tenant=self.request.user.tenant)
+        return HelpdeskTag.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class SlaPolicyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SlaPolicySerializer
     
     def get_queryset(self):
-        return SlaPolicy.objects.filter(tenant=self.request.user.tenant)
+        return SlaPolicy.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 
 from rest_framework.views import APIView

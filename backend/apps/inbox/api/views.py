@@ -166,9 +166,9 @@ class MailAliasViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsPlatformAdmin]
 
     def get_queryset(self):
-        tenant = getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None)
         return MailAlias.objects.filter(tenant=tenant)
 
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 

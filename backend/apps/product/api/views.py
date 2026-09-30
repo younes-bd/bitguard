@@ -37,7 +37,7 @@ class CategoryViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     ordering_fields = ['name', 'sort_order', 'created_at']
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 
 class ProductViewSet(TenantScopedMixin, viewsets.ModelViewSet):
@@ -56,7 +56,7 @@ class ProductViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         return ProductSerializer
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, responsible=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), responsible=self.request.user)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def archive(self, request, pk=None):
@@ -83,7 +83,7 @@ class ProductViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def stats(self, request):
         from .services import ProductService
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         stats_data = ProductService.get_stats(tenant)
         return Response(stats_data)
 
@@ -140,7 +140,7 @@ class ProductReviewViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     ordering_fields = ['created_at', 'rating']
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, tenant=self.request.user.tenant)
+        serializer.save(user=self.request.user, tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def approve(self, request, pk=None):

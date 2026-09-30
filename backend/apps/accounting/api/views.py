@@ -29,18 +29,18 @@ class AccountJournalViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = AccountJournalSerializer
     def get_queryset(self):
-        return AccountJournal.objects.filter(tenant=self.request.user.tenant)
+        return AccountJournal.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class TaxViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TaxSerializer
     def get_queryset(self):
-        return Tax.objects.filter(tenant=self.request.user.tenant)
+        return Tax.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class InvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = InvoiceSerializer
-    def get_queryset(self): return Invoice.objects.filter(tenant=self.request.user.tenant).select_related('client', 'sale_order', 'tenant').prefetch_related('items')
+    def get_queryset(self): return Invoice.objects.filter(tenant=getattr(self.request, 'tenant', None)).select_related('client', 'sale_order', 'tenant').prefetch_related('items')
 
     @action(detail=True, methods=['post'], url_path='generate-report')
     def generate_report(self, request, pk=None):
@@ -48,7 +48,7 @@ class InvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             model=f"{record._meta.app_label}.{record._meta.model_name}",
             is_default=True,
             is_active=True,
@@ -95,7 +95,7 @@ class InvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class PaymentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PaymentSerializer
-    def get_queryset(self): return Payment.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return Payment.objects.filter(tenant=getattr(self.request, 'tenant', None))
     def perform_create(self, serializer):
         payment = serializer.save()
         from apps.core.services.audit import AuditService
@@ -104,37 +104,37 @@ class PaymentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class ExpenseViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ExpenseSerializer
-    def get_queryset(self): return Expense.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return Expense.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class AnalyticAccountViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = AnalyticAccountSerializer
-    def get_queryset(self): return AnalyticAccount.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return AnalyticAccount.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class CostCenterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CostCenterSerializer
-    def get_queryset(self): return CostCenter.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return CostCenter.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class BudgetLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = BudgetLineSerializer
-    def get_queryset(self): return BudgetLine.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return BudgetLine.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class AnalyticAccountViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = AnalyticAccountSerializer
-    def get_queryset(self): return AnalyticAccount.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return AnalyticAccount.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class CostCenterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CostCenterSerializer
-    def get_queryset(self): return CostCenter.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return CostCenter.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class BudgetLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = BudgetLineSerializer
-    def get_queryset(self): return BudgetLine.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return BudgetLine.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -153,22 +153,22 @@ class BudgetLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class TaxConfigViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TaxConfigSerializer
-    def get_queryset(self): return TaxConfig.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return TaxConfig.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class GeneralLedgerViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GeneralLedgerSerializer
-    def get_queryset(self): return GeneralLedger.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return GeneralLedger.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class AccountViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = AccountSerializer
-    def get_queryset(self): return Account.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return Account.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class JournalEntryViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = JournalEntrySerializer
-    def get_queryset(self): return JournalEntry.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return JournalEntry.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def post(self, request, pk=None):
@@ -188,17 +188,17 @@ class JournalEntryViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class BankAccountViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = BankAccountSerializer
-    def get_queryset(self): return BankAccount.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return BankAccount.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class BankTransactionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = BankTransactionSerializer
-    def get_queryset(self): return BankTransaction.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return BankTransaction.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class FixedAssetViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FixedAssetSerializer
-    def get_queryset(self): return FixedAsset.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return FixedAsset.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def run_depreciation(self, request, pk=None):
@@ -208,22 +208,22 @@ class FixedAssetViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class CreditNoteViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CreditNoteSerializer
-    def get_queryset(self): return CreditNote.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return CreditNote.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class PaymentTermsViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = PaymentTermsSerializer
-    def get_queryset(self): return PaymentTerms.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return PaymentTerms.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class InvoiceBrandingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = InvoiceBrandingSerializer
-    def get_queryset(self): return InvoiceBranding.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return InvoiceBranding.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class DeferredRevenueViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = DeferredRevenueSerializer
-    def get_queryset(self): return DeferredRevenue.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return DeferredRevenue.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def recognize(self, request, pk=None):
@@ -235,27 +235,27 @@ from django.db.models import Q
 class ExchangeRateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ExchangeRateSerializer
-    def get_queryset(self): return ExchangeRate.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return ExchangeRate.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class TaxAuthorityViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TaxAuthoritySerializer
-    def get_queryset(self): return TaxAuthority.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return TaxAuthority.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class TaxGroupViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TaxGroupSerializer
-    def get_queryset(self): return TaxGroup.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return TaxGroup.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class BankReconciliationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = BankReconciliationSerializer
-    def get_queryset(self): return BankReconciliation.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return BankReconciliation.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class DunningWorkflowViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = DunningWorkflowSerializer
-    def get_queryset(self): return DunningWorkflow.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return DunningWorkflow.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 from ..services import FinancialReportingService, ClientPortalService
 from django.utils.dateparse import parse_date
@@ -270,9 +270,9 @@ class BalanceSheetView(APIView):
         if request.query_params.get('format') == 'pdf':
             from apps.reports.services.pdf_generator import ReportingService
             from apps.reports.domain.models import ReportTemplate
-            template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Balance Sheet').first()
+            template = ReportTemplate.objects.filter(tenant=getattr(request, 'tenant', None), name='Balance Sheet').first()
             if template:
-                attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
+                attachment = ReportingService.generate_pdf(template, getattr(request, 'tenant', None), {'report_data': data})
                 if attachment:
                     return Response({'url': attachment.file.url, 'filename': attachment.name})
             return Response({'error': 'PDF generation failed or template missing.'}, status=500)
@@ -291,9 +291,9 @@ class CashFlowView(APIView):
         if request.query_params.get('format') == 'pdf':
             from apps.reports.services.pdf_generator import ReportingService
             from apps.reports.domain.models import ReportTemplate
-            template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Cash Flow').first()
+            template = ReportTemplate.objects.filter(tenant=getattr(request, 'tenant', None), name='Cash Flow').first()
             if template:
-                attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
+                attachment = ReportingService.generate_pdf(template, getattr(request, 'tenant', None), {'report_data': data})
                 if attachment:
                     return Response({'url': attachment.file.url, 'filename': attachment.name})
             return Response({'error': 'PDF generation failed or template missing.'}, status=500)
@@ -312,9 +312,9 @@ class ProfitLossView(APIView):
         if request.query_params.get('format') == 'pdf':
             from apps.reports.services.pdf_generator import ReportingService
             from apps.reports.domain.models import ReportTemplate
-            template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Profit and Loss').first()
+            template = ReportTemplate.objects.filter(tenant=getattr(request, 'tenant', None), name='Profit and Loss').first()
             if template:
-                attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
+                attachment = ReportingService.generate_pdf(template, getattr(request, 'tenant', None), {'report_data': data})
                 if attachment:
                     return Response({'url': attachment.file.url, 'filename': attachment.name})
             return Response({'error': 'PDF generation failed or template missing.'}, status=500)
@@ -335,22 +335,22 @@ from .serializers import (
 class FiscalYearViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FiscalYearSerializer
-    def get_queryset(self): return FiscalYear.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return FiscalYear.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class FiscalPeriodViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FiscalPeriodSerializer
-    def get_queryset(self): return FiscalPeriod.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return FiscalPeriod.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class AccountingJournalViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = AccountingJournalSerializer
-    def get_queryset(self): return AccountingJournal.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return AccountingJournal.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = VendorBillSerializer
-    def get_queryset(self): return VendorBill.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return VendorBill.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -379,7 +379,7 @@ class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             model=f"{record._meta.app_label}.{record._meta.model_name}",
             is_default=True,
             is_active=True,
@@ -394,7 +394,7 @@ class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class RecurringInvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = RecurringInvoiceSerializer
-    def get_queryset(self): return RecurringInvoice.objects.filter(tenant=self.request.user.tenant).select_related('client', 'sale_order', 'tenant').prefetch_related('items')
+    def get_queryset(self): return RecurringInvoice.objects.filter(tenant=getattr(self.request, 'tenant', None)).select_related('client', 'sale_order', 'tenant').prefetch_related('items')
 
     @action(detail=True, methods=['post'])
     def toggle(self, request, pk=None):
@@ -412,33 +412,33 @@ class RecurringInvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class FiscalPositionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FiscalPositionSerializer
-    def get_queryset(self): return FiscalPosition.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return FiscalPosition.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 
 class ExchangeRateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ExchangeRateSerializer
-    def get_queryset(self): return ExchangeRate.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return ExchangeRate.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class TaxAuthorityViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TaxAuthoritySerializer
-    def get_queryset(self): return TaxAuthority.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return TaxAuthority.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class TaxGroupViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TaxGroupSerializer
-    def get_queryset(self): return TaxGroup.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return TaxGroup.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class BankReconciliationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = BankReconciliationSerializer
-    def get_queryset(self): return BankReconciliation.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return BankReconciliation.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class DunningWorkflowViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = DunningWorkflowSerializer
-    def get_queryset(self): return DunningWorkflow.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return DunningWorkflow.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 from ..services import FinancialReportingService, ClientPortalService
 from django.utils.dateparse import parse_date
@@ -453,9 +453,9 @@ class BalanceSheetView(APIView):
         if request.query_params.get('format') == 'pdf':
             from apps.reports.services.pdf_generator import ReportingService
             from apps.reports.domain.models import ReportTemplate
-            template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Balance Sheet').first()
+            template = ReportTemplate.objects.filter(tenant=getattr(request, 'tenant', None), name='Balance Sheet').first()
             if template:
-                attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
+                attachment = ReportingService.generate_pdf(template, getattr(request, 'tenant', None), {'report_data': data})
                 if attachment:
                     return Response({'url': attachment.file.url, 'filename': attachment.name})
             return Response({'error': 'PDF generation failed or template missing.'}, status=500)
@@ -474,9 +474,9 @@ class CashFlowView(APIView):
         if request.query_params.get('format') == 'pdf':
             from apps.reports.services.pdf_generator import ReportingService
             from apps.reports.domain.models import ReportTemplate
-            template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Cash Flow').first()
+            template = ReportTemplate.objects.filter(tenant=getattr(request, 'tenant', None), name='Cash Flow').first()
             if template:
-                attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
+                attachment = ReportingService.generate_pdf(template, getattr(request, 'tenant', None), {'report_data': data})
                 if attachment:
                     return Response({'url': attachment.file.url, 'filename': attachment.name})
             return Response({'error': 'PDF generation failed or template missing.'}, status=500)
@@ -495,9 +495,9 @@ class ProfitLossView(APIView):
         if request.query_params.get('format') == 'pdf':
             from apps.reports.services.pdf_generator import ReportingService
             from apps.reports.domain.models import ReportTemplate
-            template = ReportTemplate.objects.filter(tenant=request.user.tenant, name='Profit and Loss').first()
+            template = ReportTemplate.objects.filter(tenant=getattr(request, 'tenant', None), name='Profit and Loss').first()
             if template:
-                attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
+                attachment = ReportingService.generate_pdf(template, getattr(request, 'tenant', None), {'report_data': data})
                 if attachment:
                     return Response({'url': attachment.file.url, 'filename': attachment.name})
             return Response({'error': 'PDF generation failed or template missing.'}, status=500)
@@ -518,22 +518,22 @@ from .serializers import (
 class FiscalYearViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FiscalYearSerializer
-    def get_queryset(self): return FiscalYear.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return FiscalYear.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class FiscalPeriodViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FiscalPeriodSerializer
-    def get_queryset(self): return FiscalPeriod.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return FiscalPeriod.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class AccountingJournalViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = AccountingJournalSerializer
-    def get_queryset(self): return AccountingJournal.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return AccountingJournal.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = VendorBillSerializer
-    def get_queryset(self): return VendorBill.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return VendorBill.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -562,7 +562,7 @@ class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             model=f"{record._meta.app_label}.{record._meta.model_name}",
             is_default=True,
             is_active=True,
@@ -577,7 +577,7 @@ class VendorBillViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class RecurringInvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = RecurringInvoiceSerializer
-    def get_queryset(self): return RecurringInvoice.objects.filter(tenant=self.request.user.tenant).select_related('client', 'sale_order', 'tenant').prefetch_related('items')
+    def get_queryset(self): return RecurringInvoice.objects.filter(tenant=getattr(self.request, 'tenant', None)).select_related('client', 'sale_order', 'tenant').prefetch_related('items')
 
     @action(detail=True, methods=['post'])
     def toggle(self, request, pk=None):
@@ -595,7 +595,7 @@ class RecurringInvoiceViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 class FiscalPositionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FiscalPositionSerializer
-    def get_queryset(self): return FiscalPosition.objects.filter(tenant=self.request.user.tenant)
+    def get_queryset(self): return FiscalPosition.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
 from datetime import date
 from django.db.models import Sum
@@ -620,13 +620,13 @@ class VATReportView(APIView):
             from apps.reports.domain.models import ReportTemplate
             from apps.reports.services.pdf_generator import ReportingService
             template = ReportTemplate.objects.filter(
-                tenant=request.user.tenant, 
+                tenant=getattr(request, 'tenant', None), 
                 name='VAT Report',
                 is_default=True
             ).first()
             if not template:
                 return Response({'error': 'No VAT template found'}, status=404)
-            attachment = ReportingService.generate_pdf(template, request.user.tenant, {'report_data': data})
+            attachment = ReportingService.generate_pdf(template, getattr(request, 'tenant', None), {'report_data': data})
             if not attachment:
                 return Response({'error': 'PDF generation failed'}, status=500)
             return Response({'url': attachment.file.url, 'filename': attachment.name})

@@ -89,8 +89,10 @@ MIDDLEWARE = ['corsheaders.middleware.CorsMiddleware','django.middleware.securit
 'django.contrib.sessions.middleware.SessionMiddleware','django.middleware.common.CommonMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware','django.contrib.auth.middleware.AuthenticationMiddleware',
 'django.contrib.messages.middleware.MessageMiddleware','django.middleware.clickjacking.XFrameOptionsMiddleware',
-'apps.core.middleware.RequestLoggingMiddleware',
-'apps.core.middleware.TenantMiddleware',]
+'apps.core.middleware.security.IPBlacklistMiddleware',
+'apps.core.middleware.http.ThreadLocalMiddleware',
+'apps.core.middleware.http.RequestLoggingMiddleware',
+'apps.core.middleware.http.TenantMiddleware',]
 
 ROOT_URLCONF = 'config.urls'
 

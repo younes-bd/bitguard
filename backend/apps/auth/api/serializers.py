@@ -62,7 +62,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'roles': list(user.roles.values_list('name', flat=True)),
                 'is_staff': user.is_staff,
                 'is_superuser': user.is_superuser,
-                'tenant_id': str(user.tenant.id) if getattr(user, 'tenant', None) else None
+                'tenant_id': str(getattr(request, 'tenant', None).id) if getattr(user, 'tenant', None) else None
             }
         }
 

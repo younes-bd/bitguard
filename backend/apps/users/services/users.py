@@ -202,7 +202,7 @@ class IdentityService(BaseService):
         from django.conf import settings
         
         User = get_user_model()
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         
         if User.objects.filter(email=email, tenant_memberships__tenant=tenant).exists():
             return False, 'User with this email already exists', None

@@ -17,7 +17,6 @@ export default function SystemParametersPage() {
             const data = await systemParameterService.getParameters();
             setParameters(data);
         } catch (error) {
-            console.error('Failed to fetch system parameters', error);
             toast.error('Failed to load system parameters');
         } finally {
             setLoading(false);
@@ -57,7 +56,6 @@ export default function SystemParametersPage() {
             closeModal();
             fetchParameters();
         } catch (error) {
-            console.error(error);
             toast.error('Failed to save system parameter. Check if key is unique.');
         }
     };
@@ -73,7 +71,6 @@ export default function SystemParametersPage() {
                 toast.success('Parameter deleted successfully');
                 fetchParameters();
             } catch (error) {
-                console.error(error);
                 toast.error('Failed to delete system parameter');
             }
         }

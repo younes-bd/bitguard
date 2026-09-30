@@ -45,9 +45,9 @@ export const settingsService = {
   deleteLanguage: (id) => apiClient.delete(`core/languages/${id}/`),
   setDefaultLanguage: (id) => apiClient.post(`core/languages/${id}/set_default/`),
 
-  // Audit Logs
-  getAuditLogs: (params) => apiClient.get('core/audit-logs/', { params }),
-  exportAuditLogs: (params) => apiClient.get('core/audit-logs/?export=csv', { params }),
+  // System Events
+  getAuditLogs: (params) => apiClient.get('core/system-events/', { params }),
+  exportAuditLogs: (params) => apiClient.get('core/system-events/?export=csv', { params }),
 
   // Email Config
   getEmailConfig: () => apiClient.get('system/email-config/'),
@@ -61,32 +61,5 @@ export const settingsService = {
 
   // Backups
   getBackups: () => apiClient.get('core/database-backups/'),
-
-  // SOC (Security Operations Center) - Forward compatibility
-  getSystemMonitors: (params) => apiClient.get('soc/monitors/', { params }),
-  getNetworkEvents: (params) => apiClient.get('soc/network-events/', { params }),
-  getEndpoints: (params) => apiClient.get('soc/endpoints/', { params }),
-  isolateEndpoint: (id) => apiClient.post(`soc/endpoints/${id}/isolate/`),
-  getRemoteSessions: (params) => apiClient.get('soc/remote-sessions/', { params }),
-  createRemoteSession: (data) => apiClient.post('soc/remote-sessions/', data),
-  getLogs: (params) => apiClient.get('soc/logs/', { params }),
-  getWorkspaces: (params) => apiClient.get('soc/workspaces/', { params }),
-  createWorkspace: (data) => apiClient.post('soc/workspaces/', data),
-  deleteWorkspace: (id) => apiClient.delete(`soc/workspaces/${id}/`),
-  getMyCompany: () => apiClient.get('tenants/my-company/'),
-  updateMyCompany: (data) => apiClient.patch('tenants/my-company/', data),
-  triggerBackup: () => apiClient.post('system/retention/backup/'),
-  pruneAuditLogs: (days) => apiClient.post('system/retention/prune/', { days }),
-  clearCache: () => apiClient.post('system/retention/cache/'),
-};
-
-export const getDocumentConfig = async () => {
-    const response = await apiClient.get('system/document-config/');
-    return response.data;
-};
-
-export const updateDocumentConfig = async (id, data) => {
-    const response = await apiClient.patch(`system/document-config/${id}/`, data);
-    return response.data;
 };
 

@@ -19,13 +19,13 @@ class ChannelViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Channel.objects.filter(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             is_deleted=False
         ).prefetch_related('members')
 
     def perform_create(self, serializer):
         channel = serializer.save(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             created_by=self.request.user
         )
         channel.members.add(self.request.user)
@@ -40,13 +40,13 @@ class MessageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Message.objects.filter(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             is_deleted=False
         ).select_related('author', 'channel').order_by('created_at')
 
     def perform_create(self, serializer):
         serializer.save(
-            tenant=self.request.user.tenant,
+            tenant=getattr(self.request, 'tenant', None),
             author=self.request.user,
             created_by=self.request.user
         )
@@ -62,7 +62,7 @@ class LiveChatChannelViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         # Allow public read access for widget loading if needed, otherwise strict tenant
         if self.request.user.is_authenticated and hasattr(self.request.user, 'tenant'):
             return LiveChatChannel.objects.filter(
-                tenant=self.request.user.tenant,
+                tenant=getattr(self.request, 'tenant', None),
                 is_deleted=False
             )
         return LiveChatChannel.objects.filter(is_deleted=False)
@@ -70,7 +70,7 @@ class LiveChatChannelViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     def perform_create(self, serializer):
         if self.request.user.is_authenticated and hasattr(self.request.user, 'tenant'):
             serializer.save(
-                tenant=self.request.user.tenant,
+                tenant=getattr(self.request, 'tenant', None),
                 created_by=self.request.user
             )
         else:

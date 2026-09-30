@@ -28,6 +28,7 @@ Thumbs.db
 trace.log
 
 # AI & Temporary Scratch Files
+.scratch/
 scratch/
 scratch_*.py
 scratch_*.js

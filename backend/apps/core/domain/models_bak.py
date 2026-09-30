@@ -68,8 +68,8 @@ class TenantAwareModel(BaseModel):
 # - Tenancy -> apps.tenants
 # - Notifications -> apps.inbox
 
-class AuditTrail(TenantAwareModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_trails')
+class SystemEventLog(TenantAwareModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='system_events')
     action = models.CharField(max_length=255)
     resource_type = models.CharField(max_length=255)
     resource_id = models.CharField(max_length=255)
@@ -83,7 +83,7 @@ class AuditTrail(TenantAwareModel):
     def __str__(self):
         return f"{self.user} - {self.action} on {self.resource_type} ({self.resource_id})"
 
-# See apps.audit.models.AuditTrail for the centralized implementation.
+# See apps.audit.models.SystemEventLog for the centralized implementation.
 
 class Partner(TenantAwareModel):
     PARTNER_TYPES = [
@@ -341,7 +341,7 @@ class RecordFollower(TenantAwareModel):
         return f"{self.user} follows {self.content_type.model}/{self.object_id}"
 
 
-class FieldChangeLog(TenantAwareModel):
+class FieldHistory(TenantAwareModel):
     """
     Automatic audit log of field value changes on any record.
     Odoo's tracking=True field equivalent.
@@ -352,7 +352,7 @@ class FieldChangeLog(TenantAwareModel):
     # Generic FK
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE,
-        related_name='field_change_logs',
+        related_name='field_histories',
         verbose_name=_('Record Type'),
     )
     object_id = models.CharField(max_length=255, verbose_name=_('Record ID'))
@@ -532,12 +532,12 @@ class ChatterMixin(models.Model):
 
     def log_field_change(self, field_name, old_value, new_value, user=None, field_label=''):
         """
-        Log a field value change to the FieldChangeLog.
+        Log a field value change to the FieldHistory.
         Call this inside your model's save() or a service method when a tracked
         field changes. The change will appear in the chatter as "Field → New Value".
         """
         ct = ContentType.objects.get_for_model(self)
-        return FieldChangeLog.objects.create(
+        return FieldHistory.objects.create(
             content_type=ct,
             object_id=str(self.pk),
             field_name=field_name,
@@ -548,7 +548,7 @@ class ChatterMixin(models.Model):
             tenant=getattr(self, 'tenant', None),
         )
 
-    def get_change_log(self):
+    def get_field_history(self):
         """Return all field-change log entries for this record, newest first."""
         ct = ContentType.objects.get_for_model(self)
-        return FieldChangeLog.objects.filter(content_type=ct, object_id=str(self.pk))
+        return FieldHistory.objects.filter(content_type=ct, object_id=str(self.pk))

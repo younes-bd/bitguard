@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from apps.core.services.core import BaseService
 from apps.core.domain.models import SystemParameter
-from apps.core.domain.models import AuditTrail
+from apps.core.domain.models import SystemEventLog
 
 User = get_user_model()
 
@@ -20,7 +20,7 @@ class SettingsService(BaseService):
         if details is None:
             details = {}
         
-        # Ensure action is one of the choices in AuditTrail
+        # Ensure action is one of the choices in SystemEventLog
         # 'create', 'update', 'delete', 'login', 'logout', 'other'
         valid_actions = ['create', 'update', 'delete', 'login', 'logout', 'other']
         log_action_val = action if action in valid_actions else 'other'
@@ -28,7 +28,7 @@ class SettingsService(BaseService):
             details['original_action'] = action
             details['message'] = f"Action {action} performed on {resource_type}"
 
-        audit_log = AuditTrail(
+        audit_log = SystemEventLog(
             user=user,
             action=log_action_val,
             resource_type=resource_type,
@@ -75,7 +75,7 @@ class SettingsService(BaseService):
         from apps.tenants.domain.models import Tenant
 
         active_users_count = User.objects.filter(is_active=True).count()
-        audit_count = AuditTrail.objects.count()
+        audit_count = SystemEventLog.objects.count()
         
         active_companies = Tenant.objects.filter(is_active=True).count()
         installed_apps = InstalledModule.objects.filter(is_installed=True).count()
@@ -126,8 +126,8 @@ class SettingsService(BaseService):
         from django.utils import timezone
         from datetime import timedelta
         recent_threshold = timezone.now() - timedelta(days=1)
-        recent_audits = AuditTrail.objects.filter(created_at__gte=recent_threshold).count()
-        recent_deletes = AuditTrail.objects.filter(created_at__gte=recent_threshold, action='delete').count()
+        recent_audits = SystemEventLog.objects.filter(created_at__gte=recent_threshold).count()
+        recent_deletes = SystemEventLog.objects.filter(created_at__gte=recent_threshold, action='delete').count()
         # Proxy error rate: ratio of deletes/auth failures over total actions in last 24h, max 5%
         error_rate = min(0.05, round(recent_deletes / (recent_audits or 1), 3))
 
@@ -260,7 +260,7 @@ class SettingsService(BaseService):
         from datetime import timedelta
         
         threshold = timezone.now() - timedelta(days=days_retention)
-        deleted_count, _ = AuditTrail.objects.filter(tenant=tenant, created_at__lt=threshold).delete()
+        deleted_count, _ = SystemEventLog.objects.filter(tenant=tenant, created_at__lt=threshold).delete()
         
-        self.log_action(user, 'delete', 'AuditTrail', details={'message': f'Pruned {deleted_count} logs older than {days_retention} days'}, tenant=tenant)
+        self.log_action(user, 'delete', 'SystemEventLog', details={'message': f'Pruned {deleted_count} logs older than {days_retention} days'}, tenant=tenant)
         return deleted_count

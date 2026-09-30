@@ -9,27 +9,27 @@ class PlanningRoleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return PlanningRole.objects.filter(tenant=self.request.user.tenant)
+        return PlanningRole.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class ShiftTemplateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ShiftTemplateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return ShiftTemplate.objects.filter(tenant=self.request.user.tenant)
+        return ShiftTemplate.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class ShiftViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ShiftSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Shift.objects.filter(tenant=self.request.user.tenant)
+        return Shift.objects.filter(tenant=getattr(self.request, 'tenant', None))
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))

@@ -23,7 +23,7 @@ class ReportGenerateMixin:
         from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
-            tenant=getattr(request.user, 'tenant', None),
+            tenant=getattr(request, 'tenant', None),
             model=f"{record._meta.app_label}.{record._meta.model_name}",
             is_default=True,
             is_active=True,

@@ -144,7 +144,7 @@ class Command(BaseCommand):
         spot_checks = [
             ('apps.accounting.api.views', 'InvoiceViewSet'),
             ('apps.core.api.views', 'SystemParameterViewSet'),
-            ('apps.system.api.views', 'AuditTrailViewSet'),
+            ('apps.system.api.views', 'SystemEventViewSet'),
             ('apps.system.api.views', 'LanguageViewSet'),
             ('apps.system.api.views', 'WebhookEndpointViewSet'),
         ]

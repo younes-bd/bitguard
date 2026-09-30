@@ -95,7 +95,7 @@ def install_module(module, tenant=None):
     """
     Tier-1 Installer Hook.
     Transition a module from Uninstalled to Installed.
-    Checks dependencies and writes to AuditTrail.
+    Checks dependencies and writes to SystemEventLog.
     """
     if module.is_installed:
         return True, []
@@ -122,8 +122,8 @@ def install_module(module, tenant=None):
     module.save()
     
     try:
-        from apps.core.domain.models import AuditTrail
-        AuditTrail.objects.create(
+        from apps.core.domain.models import SystemEventLog
+        SystemEventLog.objects.create(
             action='install_module',
             resource_type='InstalledModule',
             resource_id=str(module.id),
@@ -145,8 +145,8 @@ def upgrade_module(module, tenant=None):
         module.save()
         
         try:
-            from apps.core.domain.models import AuditTrail
-            AuditTrail.objects.create(
+            from apps.core.domain.models import SystemEventLog
+            SystemEventLog.objects.create(
                 action='update',
                 resource_type='InstalledModule',
                 resource_id=str(module.id),
@@ -167,8 +167,8 @@ def uninstall_module(module, tenant=None):
     module.save()
     
     try:
-        from apps.core.domain.models import AuditTrail
-        AuditTrail.objects.create(
+        from apps.core.domain.models import SystemEventLog
+        SystemEventLog.objects.create(
             action='uninstall_module',
             resource_type='InstalledModule',
             resource_id=str(module.id),

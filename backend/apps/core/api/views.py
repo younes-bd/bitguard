@@ -15,7 +15,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def global_metrics(self, request):
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         date_range = request.query_params.get('range', '30days')
         
         # Call the Orchestrator Service (Tier-1 Standard)
@@ -25,7 +25,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def system_health(self, request):
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         date_range = request.query_params.get('range', '30days')
         metrics = CommandCenterAnalyticsService.get_global_metrics(tenant=tenant, date_range=date_range)
         return Response(metrics.get("system_health", {}))
@@ -54,7 +54,7 @@ class LanguageViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         user = self.request.user
         qs = super().get_queryset()
         if not user.is_superuser and getattr(user, 'tenant', None):
-            qs = qs.filter(tenant=user.tenant)
+            qs = qs.filter(tenant=getattr(request, 'tenant', None))
         return qs
 
 class TranslationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
@@ -85,7 +85,7 @@ class TranslationViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         from django.http import HttpResponse
         language = request.query_params.get('language', 'en')
         fmt = request.query_params.get('format', 'po')
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         
         lines = []
         lines.append(f'# Translation file for language: {language}')
@@ -195,8 +195,8 @@ class InstalledModuleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
             
         tenant = getattr(request, 'tenant', None)
         try:
-            from apps.core.domain.models import AuditTrail
-            AuditTrail.objects.create(
+            from apps.core.domain.models import SystemEventLog
+            SystemEventLog.objects.create(
                 action='update',
                 resource_type='InstalledModule',
                 resource_id=str(module.id),
@@ -240,8 +240,8 @@ class InstalledModuleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         
         tenant = getattr(request, 'tenant', None)
         try:
-            from apps.core.domain.models import AuditTrail
-            AuditTrail.objects.create(
+            from apps.core.domain.models import SystemEventLog
+            SystemEventLog.objects.create(
                 action='uninstall_module',
                 resource_type='InstalledModule',
                 resource_id=str(module.id),
@@ -258,28 +258,40 @@ class InstalledModuleViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
-from apps.core.api.serializers import AuditTrailSerializer
+from apps.core.api.serializers import SystemEventSerializer
 
-class AuditTrailViewSet(TenantScopedMixin, viewsets.ReadOnlyModelViewSet):
+class SystemEventViewSet(TenantScopedMixin, viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows audit logs to be viewed.
-    Using central AuditTrail model for system-wide transparency.
+    Using central SystemEventLog model for system-wide transparency.
     """
-    from apps.core.domain.models import AuditTrail
-    queryset = AuditTrail.objects.all()
-    serializer_class = AuditTrailSerializer
+    from apps.core.domain.models import SystemEventLog
+    queryset = SystemEventLog.objects.all()
+    serializer_class = SystemEventSerializer
     permission_classes = [permissions.IsAuthenticated, IsPlatformAdmin]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['action', 'resource_type', 'user__email', 'details']
     filterset_fields = ['action', 'resource_type']
     ordering_fields = ['created_at']
+
+    @action(detail=False, methods=['post'], url_path='prune')
+    def prune(self, request):
+        days = request.data.get('days', 90)
+        from django.utils import timezone
+        import datetime
+        from apps.core.domain.models import SystemEventLog
+        threshold = timezone.now() - datetime.timedelta(days=int(days))
+        tenant = getattr(request, 'tenant', None)
+        qs = SystemEventLog.objects.filter(tenant=tenant) if tenant else SystemEventLog.objects.all()
+        deleted_count, _ = qs.filter(created_at__lt=threshold).delete()
+        return Response({'message': f'Pruned {deleted_count} logs older than {days} days.'}, status=200)
     
     def get_queryset(self):
         user = self.request.user
         if user.is_superuser:
             return self.queryset
         if getattr(user, 'tenant', None):
-            return self.queryset.filter(tenant=user.tenant)
+            return self.queryset.filter(tenant=getattr(request, 'tenant', None))
         return self.queryset
 
     @action(detail=False, methods=['get'])
@@ -306,10 +318,16 @@ class SystemParameterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return SystemParameter.objects.filter(tenant=self.request.user.tenant)
+        return SystemParameter.objects.filter(tenant=getattr(self.request, 'tenant', None))
+
+    @action(detail=False, methods=['post'], url_path='clear_cache')
+    def clear_cache(self, request):
+        from django.core.cache import cache
+        cache.clear()
+        return Response({'message': 'System cache cleared successfully.'}, status=200)
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
         
     def perform_destroy(self, instance):
         SystemParametersService.delete_param(instance)
@@ -325,7 +343,7 @@ class ScheduledActionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     pagination_class = None
 
     def perform_create(self, serializer):
-        tenant = getattr(self.request, 'tenant', None) or getattr(self.request.user, 'tenant', None)
+        tenant = getattr(self.request, 'tenant', None) or getattr(self.request, 'tenant', None)
         serializer.save(tenant=tenant)
 
     @action(detail=True, methods=['post'])
@@ -412,6 +430,15 @@ from .serializers import DatabaseBackupSerializer
 class DatabaseBackupViewSet(TenantScopedMixin, viewsets.ReadOnlyModelViewSet):
     queryset = DatabaseBackup.objects.all()
     serializer_class = DatabaseBackupSerializer
+
+    @action(detail=False, methods=['post'], url_path='trigger')
+    def trigger_backup(self, request):
+        from apps.core.services.database_backup import DatabaseBackupService
+        tenant = getattr(request, 'tenant', None)
+        service = DatabaseBackupService()
+        backup = service.trigger_backup(request.user, tenant=tenant)
+        serializer = self.get_serializer(backup)
+        return Response(serializer.data, status=201)
 
 from ..domain.models import UoMCategory, UoM
 from .serializers import UoMCategorySerializer, UoMSerializer

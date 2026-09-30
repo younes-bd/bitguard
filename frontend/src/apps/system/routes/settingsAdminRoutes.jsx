@@ -3,7 +3,7 @@ import { Route, Navigate } from 'react-router-dom';
 import DocumentLayouts from '../pages/features/DocumentLayoutsPage';
 import GeneralSettings from '../pages/settings/GeneralSettingsPage';
 import SystemLogs from '../pages/lists/SystemLogsPage';
-import AuditLogList from '../../core/components/AuditLogList';
+import SystemEventPage from '../pages/security/SystemEventPage';
 
 import SecurityPolicy from '../pages/settings/SecurityPolicyPage';
 
@@ -45,7 +45,7 @@ export const settingsAdminRoutes = (
     <Route path="document-layouts" element={<DocumentLayouts />} />
     <Route path="general" element={<GeneralSettings />} />
     <Route path="profile" element={<Navigate to="/admin/users/profile" replace />} />
-    <Route path="logs" element={<AuditLogList />} />
+    <Route path="system-events" element={<SystemEventPage />} />
     <Route path="server-logs" element={<SystemLogs />} />
     <Route path="security-policy" element={<SecurityPolicy />} />
     <Route path="integration-keys" element={<IntegrationKeysPage />} />

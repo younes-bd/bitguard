@@ -26,7 +26,7 @@ class LicenseKeyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         if hasattr(self.request.user, 'tenant'):
-            return LicenseKey.objects.filter(tenant=self.request.user.tenant)
+            return LicenseKey.objects.filter(tenant=getattr(self.request, 'tenant', None))
         return LicenseKey.objects.none()
 
 class CustomerProfileViewSet(TenantScopedMixin, viewsets.ModelViewSet):
@@ -35,7 +35,7 @@ class CustomerProfileViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         if hasattr(self.request.user, 'tenant'):
-            return CustomerProfile.objects.filter(tenant=self.request.user.tenant)
+            return CustomerProfile.objects.filter(tenant=getattr(self.request, 'tenant', None))
         return CustomerProfile.objects.none()
 
 class OrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
@@ -44,7 +44,7 @@ class OrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         if hasattr(self.request.user, 'tenant'):
-            return Order.objects.filter(tenant=self.request.user.tenant).order_by('-created_at')
+            return Order.objects.filter(tenant=getattr(self.request, 'tenant', None)).order_by('-created_at')
         return Order.objects.none()
 
     def perform_create(self, serializer):
@@ -128,7 +128,7 @@ class CouponViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     
     def get_queryset(self):
         if hasattr(self.request.user, 'tenant'):
-            return Coupon.objects.filter(tenant=self.request.user.tenant)
+            return Coupon.objects.filter(tenant=getattr(self.request, 'tenant', None))
         return Coupon.objects.all()
 
 class StoreSettingViewSet(TenantScopedMixin, viewsets.ModelViewSet):

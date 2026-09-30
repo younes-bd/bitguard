@@ -8,7 +8,7 @@ class AISettingsViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if hasattr(self.request.user, 'tenant'):
-            return self.queryset.filter(tenant=self.request.user.tenant)
+            return self.queryset.filter(tenant=getattr(self.request, 'tenant', None))
         return self.queryset.none()
 
 class AIUsageLogViewSet(viewsets.ReadOnlyModelViewSet):
@@ -17,5 +17,5 @@ class AIUsageLogViewSet(viewsets.ReadOnlyModelViewSet):
     
     def get_queryset(self):
         if hasattr(self.request.user, 'tenant'):
-            return self.queryset.filter(tenant=self.request.user.tenant)
+            return self.queryset.filter(tenant=getattr(self.request, 'tenant', None))
         return self.queryset.none()

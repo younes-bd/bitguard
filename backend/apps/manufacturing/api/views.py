@@ -29,21 +29,21 @@ class WorkCenterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return WorkCenter.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         )
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class RoutingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = RoutingSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return Routing.objects.filter(tenant=self.request.user.tenant, is_deleted=False)
+        return Routing.objects.filter(tenant=getattr(self.request, 'tenant', None), is_deleted=False)
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class BillOfMaterialViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = BillOfMaterialSerializer
@@ -52,31 +52,31 @@ class BillOfMaterialViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return BillOfMaterial.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         )
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class WorkOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = WorkOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return WorkOrder.objects.filter(tenant=self.request.user.tenant, is_deleted=False)
+        return WorkOrder.objects.filter(tenant=getattr(self.request, 'tenant', None), is_deleted=False)
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class ScrapOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ScrapOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return ScrapOrder.objects.filter(tenant=self.request.user.tenant, is_deleted=False)
+        return ScrapOrder.objects.filter(tenant=getattr(self.request, 'tenant', None), is_deleted=False)
         
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
 class ManufacturingOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ManufacturingOrderSerializer
@@ -89,11 +89,11 @@ class ManufacturingOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return ManufacturingOrder.objects.filter(
-            tenant=self.request.user.tenant, is_deleted=False
+            tenant=getattr(self.request, 'tenant', None), is_deleted=False
         ).select_related('bom')
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant, created_by=self.request.user)
+        serializer.save(tenant=getattr(self.request, 'tenant', None), created_by=self.request.user)
 
     @action(detail=True, methods=['post'])
     def confirm(self, request, pk=None):

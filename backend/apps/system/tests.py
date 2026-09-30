@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from apps.core.domain.models import SystemParameter
-from apps.core.domain.models import AuditTrail
+from apps.core.domain.models import SystemEventLog
 from apps.tenants.domain.models import Tenant
 from apps.users.domain.models import TenantMembership
 
@@ -102,7 +102,7 @@ class SysadminAPITests(APITestCase):
         self.assertEqual(SystemParameter.objects.get(key="default_currency").value, "EUR")
 
         # Verify audit logging
-        self.assertTrue(AuditTrail.objects.filter(resource_type="SystemParameter", resource_id="company_name").exists())
+        self.assertTrue(SystemEventLog.objects.filter(resource_type="SystemParameter", resource_id="company_name").exists())
 
     def test_system_metrics(self):
         """Admins can fetch system telemetry/metrics."""
@@ -137,7 +137,7 @@ class SysadminAPITests(APITestCase):
     def test_audit_logs_csv_export(self):
         """Admins can export global audit logs in CSV format."""
         # Create an audit event first
-        AuditTrail.objects.create(
+        SystemEventLog.objects.create(
             tenant=self.tenant,
             user=self.admin_user,
             action="update",

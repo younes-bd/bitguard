@@ -8,6 +8,5 @@ export const parameterService = {
     batchUpdateSettings: (data) => client.post('core/parameters/batch_update/', data),
     clearCache: () => client.post('core/parameters/clear_cache/'),
     getSystemMetrics: () => client.get('core/parameters/metrics/'),
-    getServerLogs: () => client.get('core/parameters/server_logs/'),
-    pruneAuditLogs: (days) => client.post('core/parameters/prune/', { days })
+    getServerLogs: () => client.get('core/parameters/server_logs/')
 };

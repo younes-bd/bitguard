@@ -9,7 +9,7 @@ class Command(BaseCommand):
         c = Client()
         tenant = Tenant.objects.first()
         user = User.objects.first()
-        user.tenant_memberships.get_or_create(tenant=tenant)
+        getattr(request, 'tenant', None)_memberships.get_or_create(tenant=tenant)
         c.force_login(user)
 
         country = Country.all_objects.filter(code='US').first()

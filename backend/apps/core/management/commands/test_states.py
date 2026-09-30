@@ -9,7 +9,7 @@ class Command(BaseCommand):
         user = User.objects.first()
         tenant = Tenant.objects.first()
         if user and tenant:
-            user.tenant = tenant
+            getattr(request, 'tenant', None) = tenant
             user.save()
             c.force_login(user)
             response = c.get('/api/v1/core/states/?country=27976738-c560-4741-a765-4541d506198b', HTTP_X_TENANT_ID=str(tenant.id))

@@ -43,7 +43,7 @@ class InventoryPickingViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             model=f"{record._meta.app_label}.{record._meta.model_name}",
             is_default=True,
             is_active=True,
@@ -123,7 +123,7 @@ class GoodsReceiptViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             model=f"{record._meta.app_label}.{record._meta.model_name}",
             is_default=True,
             is_active=True,
@@ -156,7 +156,7 @@ class InventoryAdjustmentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         from apps.reports.services.pdf_generator import ReportingService
         record = self.get_object()
         template = ReportTemplate.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             model=f"{record._meta.app_label}.{record._meta.model_name}",
             is_default=True,
             is_active=True,

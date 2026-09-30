@@ -40,7 +40,7 @@ class IsTenantUser(BasePermission):
             return True
             
         request_tenant = getattr(request, 'tenant', None)
-        user_tenant = getattr(request.user, 'tenant', None)
+        user_tenant = getattr(request, 'tenant', None)
         
         if request_tenant and user_tenant:
             return request_tenant == user_tenant

@@ -23,7 +23,6 @@ const UsersSettingsPage = () => {
                 const data = await usersService.getSecurityPolicy();
                 if (data) setSettings(data);
             } catch (error) {
-                console.error("Failed to load policy", error);
                 toast.error("Failed to synchronize security policy");
             } finally {
                 setLoading(false);
@@ -38,7 +37,6 @@ const UsersSettingsPage = () => {
             await usersService.updateSecurityPolicy(settings);
             toast.success("Security Policy Synchronized Successfully");
         } catch (error) {
-            console.error("Failed to save policy", error);
             toast.error("Protocol Error: Policy rejection");
         } finally {
             setSaving(false);
@@ -217,14 +215,14 @@ const UsersSettingsPage = () => {
                     <Fingerprint size={48} />
                 </div>
                 <div className="space-y-2 flex-1">
-                    <h4 className="text-2xl font-bold text-white uppercase tracking-tight">Security Audit Log Persistence</h4>
+                    <h4 className="text-2xl font-bold text-white uppercase tracking-tight">Security System Event Persistence</h4>
                     <p className="text-slate-400 leading-relaxed text-sm">
                         All changes to the Global IAM Policy are cryptographically signed and stored in the immutable security audit trail. 
                         Ensure you have the required high-level clearance before committing these changes.
                     </p>
                 </div>
                 <button className="px-8 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest border border-slate-700 transition-all">
-                    View Audit Logs
+                    View System Events
                 </button>
             </div>
         </div>

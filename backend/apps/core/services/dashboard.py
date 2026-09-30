@@ -1,4 +1,4 @@
-from apps.core.domain.models import RecordMessage, RecordActivity, RecordFollower, FieldChangeLog
+from apps.core.domain.models import RecordMessage, RecordActivity, RecordFollower, FieldHistory
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.response import Response
 
@@ -7,7 +7,7 @@ class ChatterService:
     def get_chatter_summary(cls, request, model_name, object_id):
         from apps.core.api.serializers import (
             RecordMessageSerializer, RecordActivitySerializer,
-            RecordFollowerSerializer, FieldChangeLogSerializer
+            RecordFollowerSerializer, FieldHistorySerializer
         )
         if not model_name or not object_id:
             return {'error': 'Both model and object_id query params are required.'}, 400
@@ -18,7 +18,7 @@ class ChatterService:
         except (ContentType.DoesNotExist, ValueError):
             return {'error': f'Model "{model_name}" not found.'}, 404
 
-        tenant = getattr(request.user, 'tenant', None)
+        tenant = getattr(request, 'tenant', None)
         tenant_filter = {'tenant': tenant} if tenant else {}
 
         messages = RecordMessage.objects.filter(
@@ -33,7 +33,7 @@ class ChatterService:
             content_type=ct, object_id=object_id, **tenant_filter
         ).select_related('user')
 
-        change_log = FieldChangeLog.objects.filter(
+        change_log = FieldHistory.objects.filter(
             content_type=ct, object_id=object_id, **tenant_filter
         ).select_related('changed_by').order_by('-created_at')[:30]
 
@@ -44,7 +44,7 @@ class ChatterService:
             'messages': RecordMessageSerializer(messages, many=True).data,
             'activities': RecordActivitySerializer(activities, many=True).data,
             'followers': RecordFollowerSerializer(followers, many=True).data,
-            'change_log': FieldChangeLogSerializer(change_log, many=True).data,
+            'change_log': FieldHistorySerializer(change_log, many=True).data,
             'is_following': followers.filter(user=request.user).exists(),
         }, 200
 

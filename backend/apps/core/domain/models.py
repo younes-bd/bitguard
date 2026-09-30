@@ -1,9 +1,10 @@
 from apps.core.validators import validate_document_file, validate_image_file
 import uuid
 from django.db import models
+from .mixins import ChatterMixin, FieldHistoryMixin
 from django.utils import timezone
 from django.conf import settings
-from apps.core.middleware import get_current_tenant
+from apps.core.middleware.http import get_current_tenant
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -68,8 +69,8 @@ class TenantAwareModel(BaseModel):
 # - Tenancy -> apps.tenants
 # - Notifications -> apps.inbox
 
-class AuditTrail(TenantAwareModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_trails')
+class SystemEventLog(TenantAwareModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='system_events')
     action = models.CharField(max_length=255)
     resource_type = models.CharField(max_length=255)
     resource_id = models.CharField(max_length=255)
@@ -83,7 +84,7 @@ class AuditTrail(TenantAwareModel):
     def __str__(self):
         return f"{self.user} - {self.action} on {self.resource_type} ({self.resource_id})"
 
-# See apps.audit.models.AuditTrail for the centralized implementation.
+# See apps.audit.models.SystemEventLog for the centralized implementation.
 
 class Partner(TenantAwareModel):
     PARTNER_TYPES = [
@@ -398,7 +399,7 @@ class RecordFollower(TenantAwareModel):
         return f"{self.user} follows {self.content_type.model}/{self.object_id}"
 
 
-class FieldChangeLog(TenantAwareModel):
+class FieldHistory(TenantAwareModel):
     """
     Automatic audit log of field value changes on any record.
     Odoo's tracking=True field equivalent.
@@ -409,7 +410,7 @@ class FieldChangeLog(TenantAwareModel):
     # Generic FK
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE,
-        related_name='field_change_logs',
+        related_name='field_histories',
         verbose_name=_('Record Type'),
     )
     object_id = models.CharField(max_length=255, verbose_name=_('Record ID'))
@@ -461,122 +462,6 @@ class ScheduledAction(TenantAwareModel):
         unique_together = ('tenant', 'model_name', 'method_name')
 
 
-class ChatterMixin(models.Model):
-    """
-    Abstract mixin that any TenantAwareModel can inherit to gain full chatter
-    functionality: messages, activities, followers, field-change logging.
-
-    Usage:
-        class Deal(ChatterMixin, TenantAwareModel):
-            ...
-
-    The mixin provides helper methods that delegate to the generic
-    RecordMessage / RecordActivity / RecordFollower models via
-    Django's ContentTypes framework.
-    """
-
-    class Meta:
-        abstract = True
-
-    # â”€â”€ Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    def post_message(self, body, author=None, message_type='comment', is_internal=False, subject=''):
-        """Post a message or internal note to this record's chatter thread."""
-        ct = ContentType.objects.get_for_model(self)
-        msg = RecordMessage.objects.create(
-            content_type=ct,
-            object_id=str(self.pk),
-            author=author,
-            message_type=message_type,
-            subject=subject,
-            body=body,
-            is_internal=is_internal,
-            tenant=getattr(self, 'tenant', None),
-        )
-        return msg
-
-    def log_note(self, body, author=None):
-        """Post an internal note (not sent externally, styled in amber)."""
-        return self.post_message(body, author=author, message_type='note', is_internal=True)
-
-    def get_messages(self):
-        """Return all messages for this record, newest first."""
-        ct = ContentType.objects.get_for_model(self)
-        return RecordMessage.objects.filter(content_type=ct, object_id=str(self.pk))
-
-    # â”€â”€ Activities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    def schedule_activity(self, activity_type, due_date, assigned_to=None, summary='', note=''):
-        """Schedule a new activity (call, email, meeting, to-do) on this record."""
-        ct = ContentType.objects.get_for_model(self)
-        return RecordActivity.objects.create(
-            content_type=ct,
-            object_id=str(self.pk),
-            activity_type=activity_type,
-            due_date=due_date,
-            assigned_to=assigned_to,
-            summary=summary,
-            note=note,
-            tenant=getattr(self, 'tenant', None),
-        )
-
-    def get_activities(self, include_done=False):
-        """Return open (pending) activities for this record."""
-        ct = ContentType.objects.get_for_model(self)
-        qs = RecordActivity.objects.filter(content_type=ct, object_id=str(self.pk))
-        if not include_done:
-            qs = qs.filter(is_done=False)
-        return qs
-
-    # â”€â”€ Followers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    def follow(self, user):
-        """Subscribe a user to notifications on this record."""
-        ct = ContentType.objects.get_for_model(self)
-        obj, created = RecordFollower.objects.get_or_create(
-            content_type=ct,
-            object_id=str(self.pk),
-            user=user,
-            defaults={'tenant': getattr(self, 'tenant', None)},
-        )
-        return obj
-
-    def unfollow(self, user):
-        """Unsubscribe a user from this record."""
-        ct = ContentType.objects.get_for_model(self)
-        RecordFollower.objects.filter(
-            content_type=ct, object_id=str(self.pk), user=user
-        ).delete()
-
-    def get_followers(self):
-        """Return all follower records for this record."""
-        ct = ContentType.objects.get_for_model(self)
-        return RecordFollower.objects.filter(content_type=ct, object_id=str(self.pk))
-
-    # â”€â”€ Field-Change Tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    def log_field_change(self, field_name, old_value, new_value, user=None, field_label=''):
-        """
-        Log a field value change to the FieldChangeLog.
-        Call this inside your model's save() or a service method when a tracked
-        field changes. The change will appear in the chatter as "Field â†’ New Value".
-        """
-        ct = ContentType.objects.get_for_model(self)
-        return FieldChangeLog.objects.create(
-            content_type=ct,
-            object_id=str(self.pk),
-            field_name=field_name,
-            field_label=field_label or field_name.replace('_', ' ').title(),
-            old_value=str(old_value) if old_value is not None else '',
-            new_value=str(new_value) if new_value is not None else '',
-            changed_by=user,
-            tenant=getattr(self, 'tenant', None),
-        )
-
-    def get_change_log(self):
-        """Return all field-change log entries for this record, newest first."""
-        ct = ContentType.objects.get_for_model(self)
-        return FieldChangeLog.objects.filter(content_type=ct, object_id=str(self.pk))
 
 class Language(TenantAwareModel):
     name = models.CharField(max_length=100, help_text="Language name (e.g., English, French)")

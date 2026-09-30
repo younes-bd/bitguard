@@ -31,11 +31,11 @@ class SalesOrderViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         return SalesOrder.objects.filter(
-            tenant=self.request.user.tenant
+            tenant=getattr(self.request, 'tenant', None)
         ).select_related('partner', 'crm_lead', 'tenant').prefetch_related('lines').select_related('client', 'user').prefetch_related('lines')
 
     def perform_create(self, serializer):
-        tenant = self.request.user.tenant
+        tenant = getattr(self.request, 'tenant', None)
         count = SalesOrder.objects.filter(tenant=tenant).select_related('partner', 'crm_lead', 'tenant').prefetch_related('lines').count()
         order_number = f"SO-{timezone.now().year}-{count+1:04d}"
         serializer.save(tenant=tenant, created_by=self.request.user, order_number=order_number)
@@ -88,33 +88,33 @@ class SalesOrderLineViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return SalesOrderLine.objects.filter(tenant=self.request.user.tenant)
+        return SalesOrderLine.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     def perform_create(self, serializer):
-        tenant = self.request.user.tenant
+        tenant = getattr(self.request, 'tenant', None)
         serializer.save(tenant=tenant)
 
 class SalesTeamViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = SalesTeamSerializer
     permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
-        return SalesTeam.objects.filter(tenant=self.request.user.tenant)
+        return SalesTeam.objects.filter(tenant=getattr(self.request, 'tenant', None))
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class PricelistViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = PricelistSerializer
     permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
-        return Pricelist.objects.filter(tenant=self.request.user.tenant)
+        return Pricelist.objects.filter(tenant=getattr(self.request, 'tenant', None))
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class QuotationTemplateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = QuotationTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
-        return QuotationTemplate.objects.filter(tenant=self.request.user.tenant)
+        return QuotationTemplate.objects.filter(tenant=getattr(self.request, 'tenant', None))
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 

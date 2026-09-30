@@ -31,11 +31,11 @@ class AgentProfileViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if hasattr(self.request.user, 'tenant'):
-            return self.queryset.filter(tenant=self.request.user.tenant)
+            return self.queryset.filter(tenant=getattr(self.request, 'tenant', None))
         return self.queryset.none()
 
     def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user.tenant)
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
     @action(detail=True, methods=['post'], url_path='run')
     def run(self, request, pk=None):
@@ -53,7 +53,7 @@ class AgentProfileViewSet(viewsets.ModelViewSet):
         AgentOrchestrator.handle_event(
             role=agent.role,
             context={'user_input': user_input, 'id': str(agent.id)},
-            tenant_id=str(request.user.tenant.id)
+            tenant_id=str(getattr(request, 'tenant', None).id)
         )
         return Response({'status': 'triggered', 'agent': agent.name}, status=status.HTTP_202_ACCEPTED)
 
@@ -63,7 +63,7 @@ class AgentProfileViewSet(viewsets.ModelViewSet):
         Returns KPI stats for the AI Agent dashboard.
         GET /agents/profiles/stats/
         """
-        tenant = request.user.tenant
+        tenant = getattr(request, 'tenant', None)
         total   = AgentProfile.objects.filter(tenant=tenant).count()
         active  = AgentProfile.objects.filter(tenant=tenant, is_active=True).count()
         today_logs = AgentRunLog.objects.filter(tenant=tenant, created_at__date=date.today())
@@ -86,7 +86,7 @@ class AgentRunLogViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         qs = self.queryset
         if hasattr(self.request.user, 'tenant'):
-            qs = qs.filter(tenant=self.request.user.tenant)
+            qs = qs.filter(tenant=getattr(self.request, 'tenant', None))
         # Allow filtering by agent_id via query param
         agent_id = self.request.query_params.get('agent')
         if agent_id:

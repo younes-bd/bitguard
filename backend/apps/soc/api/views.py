@@ -182,7 +182,7 @@ class SecurityStatsViewSet(TenantScopedMixin, viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
-        tenant = request.user.tenant if hasattr(request.user, 'tenant') else None
+        tenant = getattr(request, 'tenant', None) if hasattr(request.user, 'tenant') else None
         return Response({
             'endpoints': {
                 'total': ManagedEndpoint.objects.filter(tenant=tenant).count(),
@@ -216,7 +216,7 @@ class EventIngestView(viewsets.views.APIView):
         title = data.get('title', 'External Security Event')
         description = data.get('description', str(data))
         
-        tenant = request.user.tenant if hasattr(request.user, 'tenant') else None
+        tenant = getattr(request, 'tenant', None) if hasattr(request.user, 'tenant') else None
 
         if external_id and Incident.objects.filter(external_event_id=external_id).exists():
             return Response({"status": "ignored", "reason": "duplicate event"}, status=status.HTTP_200_OK)
@@ -244,24 +244,24 @@ class ComplianceFrameworkViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     serializer_class = ComplianceFrameworkSerializer
 
     def get_queryset(self):
-        return ComplianceFramework.objects.filter(tenant=getattr(self.request.user, 'tenant', None))
+        return ComplianceFramework.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 class ComplianceControlViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ComplianceControlSerializer
 
     def get_queryset(self):
-        qs = ComplianceControl.objects.filter(tenant=getattr(self.request.user, 'tenant', None))
+        qs = ComplianceControl.objects.filter(tenant=getattr(self.request, 'tenant', None))
         framework_id = self.request.query_params.get('framework')
         if framework_id:
             qs = qs.filter(framework_id=framework_id)
         return qs
 
     def perform_create(self, serializer):
-        serializer.save(tenant=getattr(self.request.user, 'tenant', None))
+        serializer.save(tenant=getattr(self.request, 'tenant', None))
 
 
 from rest_framework.views import APIView

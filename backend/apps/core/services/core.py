@@ -17,8 +17,8 @@ class BaseService:
         if not tenant and request and hasattr(request, 'user') and request.user.is_authenticated:
             if hasattr(request.user, 'employee_profile') and request.user.employee_profile.tenant:
                 tenant = request.user.employee_profile.tenant
-            elif hasattr(request.user, 'tenant') and request.user.tenant:
-                tenant = request.user.tenant
+            elif hasattr(request.user, 'tenant') and getattr(request, 'tenant', None):
+                tenant = getattr(request, 'tenant', None)
         return tenant
 
     @classmethod

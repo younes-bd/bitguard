@@ -105,8 +105,8 @@ class PasswordResetRequestView(APIView):
 
             reset_url = f"{getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')}/auth/set-password/{uid}/{token}/"
 
-            tenant_name = request.user.tenant.name if hasattr(request.user, 'tenant') and request.user.tenant else 'BitGuard'
-            from_email = request.user.tenant.from_email if hasattr(request.user, 'tenant') and request.user.tenant and hasattr(request.user.tenant, 'from_email') else getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
+            tenant_name = getattr(request, 'tenant', None).name if hasattr(request.user, 'tenant') and getattr(request, 'tenant', None) else 'BitGuard'
+            from_email = getattr(request, 'tenant', None).from_email if hasattr(request.user, 'tenant') and getattr(request, 'tenant', None) and hasattr(getattr(request, 'tenant', None), 'from_email') else getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
 
             send_mail(
                 subject=f"{tenant_name} — Password Reset Request",

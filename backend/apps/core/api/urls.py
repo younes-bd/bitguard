@@ -15,8 +15,8 @@ router.register(r'parameters', SystemParameterViewSet, basename='core-parameters
 router.register(r'scheduled-actions', ScheduledActionViewSet, basename='core-scheduled-actions')
 router.register(r'database-backups', DatabaseBackupViewSet, basename='core-database-backups')
 
-from apps.core.api.views import AuditTrailViewSet, UoMCategoryViewSet, UoMViewSet
-router.register(r'audit-logs', AuditTrailViewSet, basename='core-audit-logs')
+from apps.core.api.views import SystemEventViewSet, UoMCategoryViewSet, UoMViewSet
+router.register(r'system-events', SystemEventViewSet, basename='core-audit-logs')
 router.register(r'uom-categories', UoMCategoryViewSet, basename='core-uom-categories')
 router.register(r'uoms', UoMViewSet, basename='core-uoms')
 

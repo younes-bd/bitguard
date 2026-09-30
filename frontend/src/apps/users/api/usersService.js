@@ -110,7 +110,7 @@ export const usersService = {
     },
 
     getAuditLogs: async (params = {}) => {
-        const response = await client.get('core/audit-logs/', { params });
+        const response = await client.get('core/system-events/', { params });
         return response.data?.data?.results ?? response.data?.results ?? response.data ?? [];
     },
 

@@ -6,7 +6,6 @@ import UsersDashboard from '../pages/dashboards/UsersDashboardPage';
 import UserList from '../pages/lists/UserListPage';
 import RoleList from '../pages/lists/RoleListPage';
 import PermissionsList from '../pages/lists/PermissionsListPage';
-import AuditLogPage from '../pages/lists/AuditLogPage';
 import MfaManagement from '../pages/settings/MfaManagementPage';
 import PersonalAccessTokens from '../pages/settings/PersonalAccessTokensPage';
 import ActiveSessions from '../pages/lists/ActiveSessionsPage';
@@ -22,7 +21,6 @@ export const usersAdminRoutes = (
         <Route path="users" element={<UserList />} />
         <Route path="roles" element={<RoleList />} />
         <Route path="permissions" element={<PermissionsList />} />
-        <Route path="audit" element={<AuditLogPage />} />
         <Route path="mfa" element={<MfaManagement />} />
         <Route path="personal-access-tokens" element={<PersonalAccessTokens />} />
         <Route path="sessions" element={<ActiveSessions />} />

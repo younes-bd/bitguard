@@ -13,7 +13,7 @@ export const userService = {
 
     // --- Security ---
     getSecurityLogs: async () => {
-        const response = await client.get('system/audit-logs/');
+        const response = await client.get('system/system-events/');
         return response.data?.data ?? response.data;
     },
     getSecurityDevices: async () => {

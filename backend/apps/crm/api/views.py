@@ -76,7 +76,7 @@ class ClientViewSet(ReportGenerateMixin, TenantScopedMixin, viewsets.ModelViewSe
         }
         
         template = ReportTemplate.objects.filter(
-            tenant=request.user.tenant,
+            tenant=getattr(request, 'tenant', None),
             model="crm.client",
             is_default=True,
             is_active=True,
@@ -234,7 +234,7 @@ class DealViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         if not stage_id:
             return Response({'error': 'stage_id is required'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            stage = CrmStage.objects.get(id=stage_id, tenant=request.user.tenant)
+            stage = CrmStage.objects.get(id=stage_id, tenant=getattr(request, 'tenant', None))
             deal.stage = stage
             if stage.is_won:
                 deal.status = 'won'
@@ -249,7 +249,7 @@ class DealViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     def mark_won(self, request, pk=None):
         deal = self.get_object()
         deal.status = 'won'
-        won_stage = CrmStage.objects.filter(tenant=request.user.tenant, is_won=True).first()
+        won_stage = CrmStage.objects.filter(tenant=getattr(request, 'tenant', None), is_won=True).first()
         if won_stage:
             deal.stage = won_stage
         deal.save()
@@ -262,11 +262,11 @@ class DealViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         lost_reason_id = request.data.get('lost_reason_id')
         if lost_reason_id:
             try:
-                reason = LostReason.objects.get(id=lost_reason_id, tenant=request.user.tenant)
+                reason = LostReason.objects.get(id=lost_reason_id, tenant=getattr(request, 'tenant', None))
                 deal.lost_reason = reason
             except LostReason.DoesNotExist:
                 pass
-        lost_stage = CrmStage.objects.filter(tenant=request.user.tenant, is_lost=True).first()
+        lost_stage = CrmStage.objects.filter(tenant=getattr(request, 'tenant', None), is_lost=True).first()
         if lost_stage:
             deal.stage = lost_stage
         deal.save()

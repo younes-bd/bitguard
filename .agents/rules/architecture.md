@@ -123,8 +123,9 @@ class CompanySerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         request = self.context.get('request')
-        if request and hasattr(request.user, 'tenant'):
-            secure_filter = Q(tenant=request.user.tenant) | Q(tenant__isnull=True)
+        tenant = getattr(request, 'tenant', None)
+        if request and tenant:
+            secure_filter = Q(tenant=tenant) | Q(tenant__isnull=True)
             self.fields['country'].queryset = Country.all_objects.filter(secure_filter)
 ```
 
@@ -155,6 +156,17 @@ If requested to adapt the system for a Single-Tenant deployment, you are strictl
 
 **Why this is enforced:** This architectural pattern ensures that features built for dedicated Single-Tenant deployments can be merged directly back into the Multi-Tenant SaaS core without rewriting any database queries. It also preserves a seamless upgrade path if a Single-Tenant client later acquires subsidiaries and needs to instantly unlock Multi-Company capabilities.
 
+
+**The Dual-Power of Request-Level Resolution:**
+Rule 33 strictly forbids `request.user.tenant`. We do this for two massive architectural reasons:
+
+1.  **SaaS Scalability (The Skyscraper):** It allows a single global user account (e.g., an external accountant) to access multiple different SaaS workspaces. If you hardcode `request.user.tenant`, you lock the user into a 1-to-1 relationship and break the SaaS model.
+2.  **Dual-Mode Compatibility:** By forcing all API logic to read the tenant from the `request` (populated centrally by `TenantMiddleware`), the business logic becomes completely agnostic to how the system is deployed:
+    *   *In SaaS Mode:* The Middleware reads the URL subdomain and dynamically attaches the correct tenant.
+    *   *In Dedicated Mode:* The Middleware ignores the URL and blindly attaches `Tenant.objects.first()`.
+
+Because the Middleware absorbs all this complexity, the underlying API code never has to change. The Middleware is the brain; the Request is the messenger. Trust the Request.
+
 ## Rule 35. The FormData Serialization Rule (Empty String Interception)
 
 When the React frontend submits multipart/form-data (which is mathematically mandatory when a form includes file uploads like logos or documents), all cleared or empty fields are transmitted as empty strings ("") rather than JSON 
@@ -172,3 +184,94 @@ To protect the server from storage bloat and malicious file execution, all file 
     *   For standard documents, attach alidators=[validate_document_file]. 
     *   For images, attach alidators=[validate_image_file]. 
 *   This ensures that the 10MB file size limit and the strict whitelist of safe extensions (e.g., .pdf, .png, .jpg) are mathematically enforced across every module in the ERP.
+
+
+## Rule 37. The UI Proximity Fallacy & Layer 1 Infrastructure Ownership
+
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You must **NEVER** place heavy business logic or infrastructural actions inside generic "Settings" services, regardless of where the trigger button is located on the frontend UI. Furthermore, fundamental infrastructure logic must reside in the correct architectural layer.
+
+**The Fallacy:**
+Just because a button (e.g., "Trigger Backup", "Sync Search Indexes") lives on a "Settings" page in the React frontend, does NOT mean the backend logic belongs in the `SettingsService` or the `system` module.
+
+**The Tier-1 Standard (Odoo 17 Alignment):**
+1. **Segregation of Settings:** A "Settings" backend service (equivalent to `res.config.settings` in Odoo) has exactly ONE architectural responsibility: **Saving, loading, and validating configuration values**.
+2. **Layer 1 Infrastructure Ownership:** Fundamental system infrastructure (e.g., Database Backups, Base Models, Master Data) belongs exclusively to the **`core`** module (Layer 1) — exactly how Odoo places `ir.model` and database management into its `base` module.
+
+**By Example:**
+If the user clicks "Trigger Database Backup" on the General Settings page:
+*   ❌ **WRONG:** Routing the API call to `apps/system/services/settings.py` and writing a file-copying script inside the `SettingsService`. This creates a "God Object" anti-pattern and violates Layer 1 kernel boundaries.
+*   ✅ **CORRECT:** The frontend Settings page calls a dedicated API endpoint (`/api/v1/core/database/backup/`), which triggers a strictly isolated `DatabaseManagementService` located in `apps/core/services/` (Layer 1).
+
+Always isolate execution logic into dedicated, single-responsibility services, and place infrastructure services in the `core` module.
+
+## Rule 38. The Skyscraper Doctrine (Logical Multi-Tenancy vs. Database-per-Tenant)
+
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You must fundamentally understand that this ERP operates on a **Logical Multi-Tenancy (Shared Database, Shared Schema)** architecture—often referred to as the SaaS "Skyscraper" model. You must NEVER confuse this with standard Odoo's "Multi-Company" feature, which operates on a **Database-per-Tenant** architecture (the "Detached House" model).
+
+**The Architectural Distinction:**
+1.  **Standard Odoo (Database-per-Tenant):** Odoo is inherently Single-Tenant. One customer = one physical database (a detached house). Inside that database, the customer can create multiple legal entities (Multi-Company).
+2.  **This BitGuard ERP (Logical Multi-Tenancy):** This system is a true SaaS Skyscraper. A single shared database holds data for millions of different SaaS customers, mathematically separated by `tenant_id`. 
+    *   **The `Tenant` model:** Represents the entire SaaS subscription / Workspace (e.g., "Disney's Workspace" vs. "Netflix's Workspace"). This is the absolute, impenetrable data boundary.
+    *   **The `Company` model:** Inherits from `TenantAwareModel`. It represents the legal entities *inside* a specific tenant (e.g., "Pixar" and "Marvel" inside the Disney workspace). 
+
+**Agent Enforcement Rules:**
+*   **Zero Cross-Tenant Sharing:** Unlike Odoo's Multi-Company where products and users can be shared across companies, Tenant A and Tenant B in this ERP exist in parallel universes. The `TenantAwareManager` enforces mathematical isolation.
+*   **Decoupled Identity:** Because a single global `User` might be an external accountant invited to both Tenant 1 and Tenant 2, you can NEVER rely on a user's database profile to determine the active tenant. You must always extract the active tenant from the HTTP Request (via `TenantMiddleware`).
+
+## Rule 39. The Data Gravity Law (Domain Ownership of Services)
+
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You must strictly enforce **Domain Ownership** across both the Backend API and the Frontend Services. You must NEVER place data-fetching or data-mutating methods inside a generic `settingsService.js` (or any generic service) just because the frontend UI happens to display that data on a "Settings" page.
+
+**The Fallacy:**
+Because there is a "Document Configuration" tab on the Settings UI, previous agents hallucinated a `getDocumentConfig()` method inside the frontend `settingsService.js` and pointed it to a fake backend endpoint.
+
+**The Tier-1 Standard (Domain Dictates Service):**
+Frontend Service files and Backend API endpoints are dictated by the underlying **Domain Model**, never by the UI layout.\n\n**EXCEPTION TO THE DATA GRAVITY LAW (The Kernel Delegation):**\nBecause the re module (Layer 1) is strictly headless and forbidden from possessing UI pages (per Rule 9), it cannot host its own frontend views. Therefore, any UI pages required to display or manage re database models (e.g., System Events, Tenants, Settings) **MUST be delegated to the system app** (Layer 2 Control Plane).
+*   **The Rule by Example:** Because document fields (like `logo` or `font`) physically belong to the `Company` model in the database, ALL frontend calls to update them MUST be routed through `companyService.js`, calling the standard `core/companies/{id}/` backend endpoint. 
+*   **Universal Enforcement:** This applies to every feature. If a UI setting modifies a `User` property, the method belongs in `userService.js`. If a UI setting modifies an `AutomationRule`, the method belongs in `automationService.js`. 
+*   The `settingsService.js` file is only permitted to handle pure, abstract system configurations (like clearing system cache) that do not belong to any other distinct business domain.
+
+
+## Rule 40: The Lexical Symmetry Law
+File names, class names, and service names MUST be perfectly symmetrical across the stack. If a database model is named `AuditTrail`, the backend service file must be `audit_trail.py`, the backend class must be `AuditTrailService`, and the frontend file must be `auditTrailService.js`. Never abbreviate or arbitrarily change names between layers.
+
+## Rule 41: The Vertical Mixin Law (Strict Layered DDD)
+Do **NOT** use horizontal slicing for mixins (e.g., do not create a global `core/mixins/` folder). Mixins must be strictly segregated by the architectural layer they operate on:
+*   **API-Layer Mixins:** Mixins that modify ViewSets or HTTP Requests (e.g., `TenantScopedMixin`) MUST live in `apps/<module>/api/mixins.py`.
+*   **Domain-Layer Mixins:** Mixins that intercept database ORM operations (e.g., `ChatterMixin`, `AuditTrailMixin`) MUST live in `apps/<module>/domain/mixins.py`.
+Never mix HTTP logic with Database logic.
+
+## Rule 42: The Middleware Segregation Protocol
+All global application middleware must live centrally in `apps/core/middleware/`. Furthermore, they must be separated by network protocol:
+*   **WSGI / HTTP:** Standard request middlewares (Tenant routing, ThreadLocals) live in `apps/core/middleware/http.py`.
+*   **ASGI / WebSockets:** Django Channels middlewares live in `apps/core/middleware/websockets.py`.
+Never merge ASGI and WSGI middleware into the same file.
+
+## Rule 43: ThreadLocal User Resolution (The Deep ORM Rule)
+Because Django Models sit at the very bottom of the architecture, they inherently do not have access to the `request` object. **NEVER** pass the `request` object through layers of function arguments just to reach the database. 
+Instead, if a Model or deep ORM interceptor needs to know the active user, you must retrieve it from the ThreadLocal memory by calling:
+`from apps.core.middleware.http import get_current_request`
+
+## Rule 44: The Dual-Layered Auditing Doctrine (Strict Split)
+To match Tier-1 ERP standards (like Salesforce and Odoo), the ERP utilizes a strictly split, dual-layered auditing system. **Never attempt to merge these two systems into a single database table.** They have different schemas, different retention policies, and different use cases.
+
+#### Layer 1: System Event Logging (Global Security & IT)
+This layer tracks *who* did *what* to the global system. It cares about IP Addresses, Endpoints, and User Agents.
+*   **Database Model:** `SystemEventLog`
+*   **Backend Service:** `system_event_service.py` (`SystemEventService.log_action()`)
+*   **Frontend UI:** `SystemEventPage.jsx`
+*   **When to use:** Use this explicitly in Service files for high-level technical events (e.g., "User Login Failed", "Database Backup Triggered", "Module Installed", "Permission Granted").
+
+#### Layer 2: Field History Tracking (Data Lifecycle & ORM)
+This layer tracks the step-by-step lifecycle of *specific business records*. It cares about Generic Foreign Keys, Field Names, Old Values, and New Values. It does *not* care about HTTP data.
+*   **Database Model:** `FieldHistory`
+*   **Backend Mixin:** `FieldHistoryMixin` (Intercepts `save()` to calculate diffs)
+*   **When to use:** Use this to automatically track value changes on business records (e.g., "Invoice Amount changed from $100 to $200").
+
+#### The Opt-In Law (Precision Auditing for Field History)
+Do NOT blindly apply `FieldHistoryMixin` to all models. It causes database bloat and performance death. It must be selectively applied.
+*   **MUST Inherit (High-Risk/Core Models):** Financial & Inventory (`SalesOrder`, `PurchaseOrder`, `Invoice`), Security (`User`, `Company`, `SystemParameter`), and Core Operations (`CRMLead`).
+*   **MUST NOT Inherit (Transient/Low-Risk Models):** Logging tables (`SystemEventLog`, `FieldHistory`), Technical data (`Session`, `Token`, `BackgroundJob`), and Metadata (`Tag`, `Category`, `Language`).

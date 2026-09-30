@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from apps.core.services.core import BaseService
 from apps.core.domain.models import SystemParameter
-from apps.core.domain.models import AuditTrail
+from apps.core.domain.models import SystemEventLog
 
 User = get_user_model()
 
@@ -14,13 +14,13 @@ class SettingsService(BaseService):
     model = SystemParameter
 
     def get_public_settings(self, tenant=None):
-        return self.model.objects.filter(tenant=tenant, is_public=True)
+        return self.model.objects.filter(tenant=tenant, is_system=True)
 
     def log_action(self, user, action, resource_type, resource_id="", details=None, ip_address=None, tenant=None):
         if details is None:
             details = {}
         
-        # Ensure action is one of the choices in AuditTrail
+        # Ensure action is one of the choices in SystemEventLog
         # 'create', 'update', 'delete', 'login', 'logout', 'other'
         valid_actions = ['create', 'update', 'delete', 'login', 'logout', 'other']
         log_action_val = action if action in valid_actions else 'other'
@@ -28,7 +28,7 @@ class SettingsService(BaseService):
             details['original_action'] = action
             details['message'] = f"Action {action} performed on {resource_type}"
 
-        audit_log = AuditTrail(
+        audit_log = SystemEventLog(
             user=user,
             action=log_action_val,
             resource_type=resource_type,
@@ -56,7 +56,7 @@ class SettingsService(BaseService):
         old_value = setting.value
         setting.value = str(value)
         if key in ['twilio_account_sid', 'twilio_auth_token', 'twilio_phone_number', 'stripe_secret_key']:
-            setting.is_public = False
+            setting.is_system = False
         setting.save()
 
         # Log via Audit Trail
@@ -81,19 +81,20 @@ class SettingsService(BaseService):
         from datetime import datetime
 
         from apps.core.domain.models import InstalledModule
-        from apps.system.domain.models import WebhookEndpoint, DatabaseBackup
+        from apps.automation.domain.models import WebhookEndpoint
+        from apps.core.domain.models import DatabaseBackup
         from apps.tenants.domain.models import Tenant
 
         if tenant:
             active_users_count = User.objects.filter(is_active=True, tenant_memberships__tenant=tenant).distinct().count()
-            audit_count = AuditTrail.objects.filter(tenant=tenant).count()
+            audit_count = SystemEventLog.objects.filter(tenant=tenant).count()
             installed_apps = InstalledModule.objects.filter(is_installed=True, tenant=tenant).count()
             active_webhooks = WebhookEndpoint.objects.filter(tenant=tenant).count()
             last_backup_obj = DatabaseBackup.objects.filter(status='completed', tenant=tenant).order_by('-created_at').first()
             active_companies = 1
         else:
             active_users_count = User.objects.filter(is_active=True).count()
-            audit_count = AuditTrail.objects.count()
+            audit_count = SystemEventLog.objects.count()
             installed_apps = InstalledModule.objects.filter(is_installed=True).count()
             active_webhooks = WebhookEndpoint.objects.count()
             last_backup_obj = DatabaseBackup.objects.filter(status='completed').order_by('-created_at').first()
@@ -145,11 +146,11 @@ class SettingsService(BaseService):
         from datetime import timedelta
         recent_threshold = timezone.now() - timedelta(days=1)
         if tenant:
-            recent_audits = AuditTrail.objects.filter(tenant=tenant, created_at__gte=recent_threshold).count()
-            recent_deletes = AuditTrail.objects.filter(tenant=tenant, created_at__gte=recent_threshold, action='delete').count()
+            recent_audits = SystemEventLog.objects.filter(tenant=tenant, created_at__gte=recent_threshold).count()
+            recent_deletes = SystemEventLog.objects.filter(tenant=tenant, created_at__gte=recent_threshold, action='delete').count()
         else:
-            recent_audits = AuditTrail.objects.filter(created_at__gte=recent_threshold).count()
-            recent_deletes = AuditTrail.objects.filter(created_at__gte=recent_threshold, action='delete').count()
+            recent_audits = SystemEventLog.objects.filter(created_at__gte=recent_threshold).count()
+            recent_deletes = SystemEventLog.objects.filter(created_at__gte=recent_threshold, action='delete').count()
         # Proxy error rate: ratio of deletes/auth failures over total actions in last 24h, max 5%
         error_rate = min(0.05, round(recent_deletes / (recent_audits or 1), 3))
 
@@ -237,54 +238,20 @@ class SettingsService(BaseService):
         return integration_key, raw_key
 
     def register_webhook(self, data, user, tenant=None):
-        from ..domain.models import WebhookEndpoint
+        from apps.automation.domain.models import WebhookEndpoint
         webhook = WebhookEndpoint.objects.create(tenant=tenant, **data)
         self.log_action(user, 'create', 'WebhookEndpoint', str(webhook.id), tenant=tenant)
         return webhook
 
-    def trigger_backup(self, user, tenant=None):
-        import os
-        import shutil
-        from django.conf import settings
-        from django.utils import timezone
-        from ..domain.models import DatabaseBackup
-
-        # Simulate or perform SQLite backup
-        db_path = settings.DATABASES['default']['NAME']
-        backup_dir = os.path.join(settings.BASE_DIR, 'backups')
-        os.makedirs(backup_dir, exist_ok=True)
-        
-        timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"backup_{timestamp}.sqlite3"
-        dest_path = os.path.join(backup_dir, filename)
-        
-        try:
-            shutil.copy2(db_path, dest_path)
-            size_bytes = os.path.getsize(dest_path)
-            status = 'completed'
-        except Exception as e:
-            size_bytes = 0
-            status = f'failed: {str(e)}'
-
-        backup = DatabaseBackup.objects.create(
-            filename=filename,
-            size_bytes=size_bytes,
-            status=status,
-            triggered_by=user,
-            tenant=tenant
-        )
-        
-        self.log_action(user, 'create', 'DatabaseBackup', str(backup.id), details={'status': status}, tenant=tenant)
-        return backup
 
     def prune_audit_logs(self, days_retention, user, tenant=None):
         from django.utils import timezone
         from datetime import timedelta
         
         threshold = timezone.now() - timedelta(days=days_retention)
-        deleted_count, _ = AuditTrail.objects.filter(tenant=tenant, created_at__lt=threshold).delete()
+        deleted_count, _ = SystemEventLog.objects.filter(tenant=tenant, created_at__lt=threshold).delete()
         
-        self.log_action(user, 'delete', 'AuditTrail', details={'message': f'Pruned {deleted_count} logs older than {days_retention} days'}, tenant=tenant)
+        self.log_action(user, 'delete', 'SystemEventLog', details={'message': f'Pruned {deleted_count} logs older than {days_retention} days'}, tenant=tenant)
         return deleted_count
 
     def read_server_logs(self):

@@ -205,7 +205,7 @@ const AccountingDashboardPage = () => {
                             { icon: Landmark, label: 'Banking', path: '/admin/accounting/banking', c: 'cyan' },
                             { icon: Server, label: 'Assets', path: '/admin/accounting/fixed-assets', c: 'orange' },
                             { icon: Repeat, label: 'Subscriptions', path: '/admin/accounting/recurring', c: 'blue' },
-                            { icon: Shield, label: 'Audit Log', path: '/admin/settings/audit', c: 'slate' },
+                            { icon: Shield, label: 'System Event', path: '/admin/settings/audit', c: 'slate' },
                         ].map((m, i) => {
                             const Icon = m.icon;
                             return (
