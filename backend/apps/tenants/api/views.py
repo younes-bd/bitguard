@@ -145,3 +145,13 @@ class TenantViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return standard_response(True, "Tenant deleted", status=status.HTTP_204_NO_CONTENT)
+
+from ..domain.models import SecurityPolicy
+from .serializers import SecurityPolicySerializer
+from apps.core.api.mixins import TenantScopedMixin
+from apps.core.api.permissions import IsPlatformAdmin
+
+class SecurityPolicyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    queryset = SecurityPolicy.objects.all().order_by('id')
+    serializer_class = SecurityPolicySerializer
+    permission_classes = [IsPlatformAdmin]

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, ShieldAlert, Key, Clock, Fingerprint, Lock, Globe, Server, Save, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { usersService } from '../../api/usersService';
+import { usersService } from '../../api/securityPolicyService';
 
-const UsersSettingsPage = () => {
+const SecurityPolicyPage = () => {
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [settings, setSettings] = useState({
@@ -20,7 +20,7 @@ const UsersSettingsPage = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const data = await usersService.getSecurityPolicy();
+                const data = await securityPolicyService.getPolicy();
                 if (data) setSettings(data);
             } catch (error) {
                 toast.error("Failed to synchronize security policy");
@@ -34,7 +34,7 @@ const UsersSettingsPage = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await usersService.updateSecurityPolicy(settings);
+            await securityPolicyService.updatePolicy(settings);
             toast.success("Security Policy Synchronized Successfully");
         } catch (error) {
             toast.error("Protocol Error: Policy rejection");
@@ -229,4 +229,4 @@ const UsersSettingsPage = () => {
     );
 };
 
-export default UsersSettingsPage;
+export default SecurityPolicyPage;

@@ -137,8 +137,18 @@ This document is the **definitive, authoritative registry** of every module in t
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/settings/reports` (Settings only)
 
+### Shell (`shell`)
+> **The Visual Control Plane.** The global UI framework of the ERP. Houses the App Launcher (Command Center), Master Layouts (Sidebar, TopBar), and shared UI primitives (DataTables, Forms, Typography). Equivalent to Odoo `web`.
+
+- **Odoo App Category:** `Technical`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `False (non-removable, always present)`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** Global UI Wrappers
+
 ### Settings (`system`)
-> Global ERP settings, system parameters, audit logs, integration keys, backup management, localization, and Module Registry UI. Equivalent to Odoo `base_setup`.
+> **The IT Control Plane.** Global ERP settings, system parameters, audit logs, integration keys, backup management, and Module Registry UI. Equivalent to Odoo `base_setup`.
 
 - **Odoo App Category:** `Administration`
 - **Command Center Pillar:** `N/A`
@@ -146,6 +156,7 @@ This document is the **definitive, authoritative registry** of every module in t
 - **Is Installable (App Store Enabled?):** `False (non-removable, always present)`
 - **Dependencies (Depends Array):** `core`
 - **Frontend URL Routing:** `/admin/settings`
+
 
 ### Delivery (`shipping`)
 > Delivery orders, shipping methods, and carrier integration. Backend-only service.

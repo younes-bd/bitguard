@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
-from apps.users.domain.models import SecurityPolicy
+from apps.tenants.domain.models import SecurityPolicy
 
 User = get_user_model()
 

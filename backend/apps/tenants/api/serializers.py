@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..domain.models import Tenant
+from ..domain.models import Tenant, SecurityPolicy
 
 class TenantSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
@@ -15,3 +15,8 @@ class TenantSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         return 'active' if obj.is_active else 'suspended'
 
+class SecurityPolicySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecurityPolicy
+        fields = ['id', 'tenant', 'password_complexity', 'session_timeout', 'mfa_required', 'api_key_rotation', 'ip_whitelist', 'failed_login_lock', 'lock_duration', 'concurrent_sessions']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']

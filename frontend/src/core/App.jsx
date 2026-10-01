@@ -26,6 +26,7 @@ import { AuthProvider } from './context/AuthContext';
 import { TenantProvider } from './context/TenantContext';
 import { InboxProvider } from './context/InboxContext';
 import { ThemeProvider } from './context/ThemeProvider';
+import { ConfigProvider } from './context/ConfigContext';
 
 const AppContent = () => {
     const { isAuthenticated, isAdmin, loading } = useAuth();
@@ -85,12 +86,14 @@ const App = () => {
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <AuthProvider>
                 <TenantProvider>
-                    <InboxProvider>
-                        <ThemeProvider>
-                            <Toaster position="top-right" reverseOrder={false} />
-                            <AppContent />
-                        </ThemeProvider>
-                    </InboxProvider>
+                    <ConfigProvider>
+                        <InboxProvider>
+                            <ThemeProvider>
+                                <Toaster position="top-right" reverseOrder={false} />
+                                <AppContent />
+                            </ThemeProvider>
+                        </InboxProvider>
+                    </ConfigProvider>
                 </TenantProvider>
             </AuthProvider>
         </Router>

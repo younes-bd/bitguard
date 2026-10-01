@@ -32,11 +32,11 @@ All Git commit messages MUST follow the Conventional Commits specification.
 ## 4. CRITICAL DIRECTIVE: The No-Clutter Law (STRICT BAN)
 **UNDER NO CIRCUMSTANCES** are you allowed to write temporary refactoring or debugging scripts (`.py`, `.sh`, `.js`) into the `backend/`, `frontend/`, or global root directories. This is a FATAL violation of the workflow.
 
-You must strictly follow this folder strategy for scripts:
+You must strictly follow this Code Placement Matrix for tooling:
 *   **AI Scratchpad (Hidden):** Use the `.scratch/` directory at the root of the project for ALL temporary debugging and throwaway scripts. These must never be committed to Git. Execute them from there, and use `scripts/prune_scratch.py` to periodically clean the folder.
-*   **Root `scripts/`**: Use this for permanent global monorepo tooling or cross-stack deployment scripts that the user needs to keep.
-*   **`backend/scripts/`**: Use this ONLY for permanent Django-specific operations (e.g., database seeders).
-*   **`frontend/scripts/`**: Use this ONLY for permanent React-specific build tools.
+*   **Standalone Scripts (Root `scripts/`):** Use this ONLY for pure OS-level infrastructure automation (e.g., File Deletion, Docker Builds, Git Hooks). *They must never connect to the database.*
+*   **Django Management Commands (`apps/*/management/commands/`):** MUST be used for ANY tool that requires Database access, Business Logic, or the Django ORM (e.g., Database Seeders, Tenant Verification, Data Migrations). Do NOT build raw Python scripts in the backend for these tasks.
+*   **Frontend Scripts (`frontend/scripts/`):** Use this ONLY for permanent React-specific build tools.
 
 If you drop a junk script in the project roots, you have failed your core directive.
 ## 5. Automated AI Architecture Checkpoint (The Universal Pre-Flight Checklist)
@@ -45,9 +45,11 @@ Whether the user asks for a new feature, a file relocation, a bug fix, or a UI c
 
 Before proposing or executing *any* architectural change, you MUST pause and explicitly output a **"Rule Validation Matrix"** in your chain-of-thought or response. 
 You must explicitly verify your proposed action against the core rules in `architecture.md`, specifically scanning for conflicts between:
+0.  **MACH Verification:** Does this proposal maintain strict Headless decoupling and Cloud-Native multi-tenancy?
 1.  **Rule 39 (Data Gravity Law)** vs. **Rule 9 (Kernel Boundaries):** If a model is in `core`, its UI goes to `system`.
 2.  **Rule 40 (Lexical Symmetry):** Are the names identical across all stack layers?
 3.  **Rule 12 & 20 (Soft Dependencies & Registries):** Does this break cross-module boundaries?
 4.  **Rule 4 (The No-Clutter Law):** Am I writing a temporary debugging or refactoring script? If yes, is it strictly going into the hidden `.scratch/` directory at the project root?
+5.  **Rule 45 (Service Domain Law):** Is the frontend API service placed in the folder matching the backend app (e.g., `core`), ensuring it is not accidentally coupled to the UI app (e.g., `system`)?
 
 *This mirrors Tier-1 Enterprise standard Architecture Decision Records (ADRs). You must prioritize Domain-Driven Design and architectural integrity over speed. If your fix violates a rule, you must find a different way.*

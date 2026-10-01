@@ -1,6 +1,6 @@
 from apps.users.domain.models import RecordRule
 from rest_framework import serializers
-from ..domain.models import User, Role, SecurityPolicy, RolePermission
+from ..domain.models import User, Role, RolePermission
 from django.contrib.contenttypes.models import ContentType
 from apps.core.domain.models import Partner
 
@@ -51,7 +51,8 @@ class UserSerializer(serializers.ModelSerializer):
             'phone_number', 'is_verified', 'is_active', 'is_staff', 'is_superuser',
             'mfa_enabled', 'is_locked', 'last_login_ip',
             'tenant', 'tenant_id', 'contact_id', 'roles', 'role_ids', 'partner', 'date_joined', 'memberships', 'tenants',
-            'user_type', 'must_change_password', 'manager', 'manager_name', 'avatar'
+            'user_type', 'must_change_password', 'manager', 'manager_name', 'avatar',
+            'language', 'timezone', 'theme_mode', 'date_format'
         ]
         read_only_fields = ['id', 'date_joined', 'tenant', 'mfa_enabled', 'is_locked', 'last_login_ip', 'memberships', 'tenants', 'manager_name']
 
@@ -159,12 +160,6 @@ class UserSerializer(serializers.ModelSerializer):
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
-
-class SecurityPolicySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SecurityPolicy
-        fields = ['id', 'tenant', 'password_complexity', 'session_timeout', 'mfa_required', 'api_key_rotation', 'ip_whitelist', 'failed_login_lock', 'lock_duration', 'concurrent_sessions']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'tenant']
 
 
 class RecordRuleSerializer(serializers.ModelSerializer):

@@ -1,3 +1,12 @@
+> **THE PRIME DIRECTIVE: MACH ARCHITECTURE**
+> This ERP is strictly governed by the **MACH** enterprise standard. 
+> *   **[M]icroservices (Modular):** Django apps must be strictly isolated (No soft dependencies).
+> *   **[A]PI-First:** All business logic must be exposed via DRF. No server-side HTML rendering is permitted.
+> *   **[C]loud-Native SaaS:** The system operates on a Shared-Schema, Logical Multi-Tenant database (The Skyscraper Doctrine).
+> *   **[H]eadless:** The React Control Plane is physically and logically decoupled from the Django Kernel. 
+> 
+> *Every architectural decision must uphold these 4 pillars. If a proposed design couples the UI to the database, or breaks tenant isolation, it is invalid.*
+
 > **Important:** For a complete, definitive mapping of all modules and their architectural layers (1, 2, 3, or 4), always refer to `SYSTEM_ARCHITECTURE_MAP.md` at the root of the project.
 
 ## THE ODOO 17 MANDATE (CRITICAL AI INSTRUCTION)
@@ -29,6 +38,11 @@ Every module in this codebase MUST be classified into exactly one of these four 
 
 **Settings Sidebar:** Layer 1 modules do NOT inject into the sidebar. Their configuration is hardcoded directly into `system/config/menu.js` baseSettings.
 
+**CRITICAL MACH ENFORCEMENT:** The `core` module is the invisible data engine of the ERP. It is strictly **Headless**. 
+* **Backend:** Contains Database schemas, multi-tenant isolation, and ORM primitives.
+* **Frontend:** Contains ONLY Hooks (`useFormatters`), Contexts (`ConfigContext`), API Clients, and routing logic. 
+* **THE BAN:** The `frontend/src/core/` directory is **strictly forbidden** from possessing visual React components, Pages, Layouts, or UI libraries. Dumping UI components into `core` violates the MACH standard and permanently entangles the presentation layer with the data layer.
+
 ---
 
 ### Layer 2 — Platform Services (Shared Infrastructure with Admin UI)
@@ -44,6 +58,21 @@ Every module in this codebase MUST be classified into exactly one of these four 
 **Current Layer 2 Modules:** `users`, `automation`, `approvals`, `system`, `inbox`, `portal`, `product`, `reports`, `shipping`
 
 **Settings Sidebar:** Layer 2 modules MUST export a static `settingsMenu` array from their `config/menu.js`. This is the static injection pattern (see Rule 5H).
+
+### Rule 9B: The Layer 2 Control Plane Split (`system` vs `shell`)
+To maintain strict Domain-Driven Design (DDD) and prevent "God Modules", Layer 2 platform services are split into two distinct, highly specialized modules. Both are classified as Layer 2 (`application: False`):
+
+1.  **The `shell` Module (The Visual Control Plane):**
+    *   This module is the UI Framework of the ERP (matching Odoo's `web` module).
+    *   **Domain:** It is responsible for rendering the Operating System shell. 
+    *   **Contents:** It houses the App Launcher (`CommandCenterPage`), the Master Layouts (`Sidebar`, `TopBar`), and the shared UI primitives (`DataTable`, `KanbanBoard`, `<FormattedDate />`). 
+    *   **Rule:** Business apps (Layer 3) import from `shell` to render their views.
+
+2.  **The `system` Module (The IT Control Plane):**
+    *   This module is the Configuration Engine (matching Odoo's `base_setup` module).
+    *   **Domain:** It is responsible for IT Administration, Global Settings, and Security Policies.
+    *   **Contents:** It houses `GeneralSettingsPage`, `SecurityPolicyPage`, and infrastructure triggers (e.g., "Run Backup"). 
+    *   **Rule:** It does *not* contain global layout wrappers or generic UI components.
 
 ---
 
@@ -205,7 +234,7 @@ If the user clicks "Trigger Database Backup" on the General Settings page:
 
 Always isolate execution logic into dedicated, single-responsibility services, and place infrastructure services in the `core` module.
 
-## Rule 38. The Skyscraper Doctrine (Logical Multi-Tenancy vs. Database-per-Tenant)
+## Rule 38. The Skyscraper Doctrine (Logical Multi-Tenancy vs. Database-per-Tenant) [CLOUD-NATIVE]
 
 **CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
 You must fundamentally understand that this ERP operates on a **Logical Multi-Tenancy (Shared Database, Shared Schema)** architecture—often referred to as the SaaS "Skyscraper" model. You must NEVER confuse this with standard Odoo's "Multi-Company" feature, which operates on a **Database-per-Tenant** architecture (the "Detached House" model).
@@ -220,7 +249,7 @@ You must fundamentally understand that this ERP operates on a **Logical Multi-Te
 *   **Zero Cross-Tenant Sharing:** Unlike Odoo's Multi-Company where products and users can be shared across companies, Tenant A and Tenant B in this ERP exist in parallel universes. The `TenantAwareManager` enforces mathematical isolation.
 *   **Decoupled Identity:** Because a single global `User` might be an external accountant invited to both Tenant 1 and Tenant 2, you can NEVER rely on a user's database profile to determine the active tenant. You must always extract the active tenant from the HTTP Request (via `TenantMiddleware`).
 
-## Rule 39. The Data Gravity Law (Domain Ownership of Services)
+## Rule 39. The Data Gravity Law (Domain Ownership of Services) [API-FIRST & HEADLESS]
 
 **CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
 You must strictly enforce **Domain Ownership** across both the Backend API and the Frontend Services. You must NEVER place data-fetching or data-mutating methods inside a generic `settingsService.js` (or any generic service) just because the frontend UI happens to display that data on a "Settings" page.
@@ -275,3 +304,19 @@ This layer tracks the step-by-step lifecycle of *specific business records*. It 
 Do NOT blindly apply `FieldHistoryMixin` to all models. It causes database bloat and performance death. It must be selectively applied.
 *   **MUST Inherit (High-Risk/Core Models):** Financial & Inventory (`SalesOrder`, `PurchaseOrder`, `Invoice`), Security (`User`, `Company`, `SystemParameter`), and Core Operations (`CRMLead`).
 *   **MUST NOT Inherit (Transient/Low-Risk Models):** Logging tables (`SystemEventLog`, `FieldHistory`), Technical data (`Session`, `Token`, `BackgroundJob`), and Metadata (`Tag`, `Category`, `Language`).
+
+## Rule 45: The Service Domain Law (Frontend Decoupling)
+Frontend API services must ALWAYS be strictly mapped to the backend endpoint's domain, regardless of where the UI lives. 
+*   If an endpoint is /api/v1/core/..., the frontend service MUST live in src/apps/core/api/. 
+*   The system app is a pure UI Control Plane and should contain almost NO internal services; it must import services from the domain kernels (core, 	enants).
+
+
+## Rule 46: The Configuration Cascade Law (Tenant vs. Company vs. Headless)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+When building configuration fallbacks (Language, Timezone, Currency, Themes), you must strictly obey these two MACH principles:
+
+**1. Business Data Ownership (The Tenant Trap):** 
+The `Tenant` model is purely invisible infrastructure (the walls of the skyscraper). You must NEVER add business settings (Language, Timezone, Currency) to the `Tenant`. All organizational business configurations belong strictly to the `Company` model.
+
+**2. The Headless Resolution Engine:** 
+Because this is a MACH architecture, the Django backend must remain "dumb." It must never compute configuration fallbacks or format localized data on the server. The backend strictly returns raw, decoupled data (User preferences + Company preferences). The fallback logic (`User -> Active Company -> System Default`) must ALWAYS be computed on the Frontend Control Plane (e.g., inside a React Global Context).

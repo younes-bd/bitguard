@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/core/hooks/useAuth';
 import { useTenant } from '@/core/context/TenantContext';
 import client from '@/core/api/client';
+import { languageService } from '@/apps/core/api/languageService';
+import { coreService } from '@/apps/core/api/coreService';
 import toast from 'react-hot-toast';
 import { User, Inbox, Phone, Shield, Key, Clock, LogIn, Camera, Globe, SlidersHorizontal, CheckCircle2, XCircle, Smartphone, Loader2, Briefcase } from 'lucide-react';
 
@@ -15,6 +17,26 @@ const UserProfilePage = () => {
     
     const [sessions, setSessions] = useState([]);
     const [sessionsLoading, setSessionsLoading] = useState(false);
+
+    const [languages, setLanguages] = useState([]);
+    const [timezones, setTimezones] = useState([]);
+    const [configLoading, setConfigLoading] = useState(true);
+
+    useEffect(() => {
+        Promise.all([
+            languageService.getLanguages(),
+            client.get('core/config-options/', { params: { type: 'timezone' } }) // Bypass coreService temporarily if it doesn't support params
+        ]).then(([langRes, tzRes]) => {
+            const langData = Array.isArray(langRes.data?.results) ? langRes.data.results : (Array.isArray(langRes.data) ? langRes.data : []);
+            setLanguages(langData);
+            
+            const tzData = Array.isArray(tzRes.data?.results) ? tzRes.data.results : (Array.isArray(tzRes.data) ? tzRes.data : []);
+            setTimezones(tzData);
+        }).catch(() => {
+            console.error('Failed to load configs');
+        }).finally(() => setConfigLoading(false));
+    }, []);
+
     
     const [form, setForm] = useState({
         first_name: '',
@@ -25,6 +47,7 @@ const UserProfilePage = () => {
         timezone: 'UTC',
         manager: '',
         theme: 'dark',
+        date_format: 'YYYY-MM-DD',
         inbox: 'all',
         default_home: '/dashboard',
         avatarFile: null,
@@ -48,7 +71,8 @@ const UserProfilePage = () => {
                 language: user.language || 'en',
                 timezone: user.timezone || 'UTC',
                 manager: user.manager || '',
-                theme: user.theme || 'dark',
+                theme: user.theme_mode || 'system',
+                date_format: user.date_format || 'YYYY-MM-DD',
                 inbox: user.inbox || 'all',
                 default_home: user.default_home || '/dashboard',
                 avatarFile: null,
@@ -106,7 +130,8 @@ const UserProfilePage = () => {
             formData.append('phone', form.phone);
             formData.append('language', form.language);
             formData.append('timezone', form.timezone);
-            formData.append('theme', form.theme);
+            formData.append('theme_mode', form.theme);
+            formData.append('date_format', form.date_format);
             formData.append('inbox', form.inbox);
             formData.append('default_home', form.default_home);
             if (form.manager) formData.append('manager', form.manager);
@@ -277,22 +302,28 @@ const UserProfilePage = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-sm font-semibold text-slate-300">Language</label>
-                                        <select value={form.language} onChange={e => setForm({...form, language: e.target.value})} className="w-full bg-slate-950 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition-all">
-                                            <option value="en">English</option>
-                                            <option value="fr">French</option>
-                                            <option value="ar">Arabic</option>
-                                            <option value="es">Spanish</option>
-                                            <option value="de">German</option>
+                                        <select value={form.language} onChange={e => setForm({...form, language: e.target.value})} disabled={configLoading} className="w-full bg-slate-950 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50">
+                                            {configLoading ? <option>Loading...</option> : languages.map(l => (
+                                                <option key={l.code} value={l.code}>{l.name}</option>
+                                            ))}
+                                            {languages.length === 0 && !configLoading && <option value="en">English</option>}
                                         </select>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-semibold text-slate-300">Timezone</label>
-                                        <select value={form.timezone} onChange={e => setForm({...form, timezone: e.target.value})} className="w-full bg-slate-950 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition-all">
-                                            <option value="UTC">UTC</option>
-                                            <option value="Europe/London">Europe/London</option>
-                                            <option value="Europe/Paris">Europe/Paris</option>
-                                            <option value="America/New_York">America/New_York</option>
-                                            <option value="Asia/Dubai">Asia/Dubai</option>
+                                        <select value={form.timezone} onChange={e => setForm({...form, timezone: e.target.value})} disabled={configLoading} className="w-full bg-slate-950 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50">
+                                            {configLoading ? <option>Loading...</option> : timezones.map(tz => (
+                                                <option key={tz.value || tz.id} value={tz.value || tz.code || tz.id}>{tz.label || tz.name || tz.value}</option>
+                                            ))}
+                                            {timezones.length === 0 && !configLoading && <option value="UTC">UTC</option>}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-semibold text-slate-300">Date Format</label>
+                                        <select value={form.date_format} onChange={e => setForm({...form, date_format: e.target.value})} className="w-full bg-slate-950 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition-all">
+                                            <option value="YYYY-MM-DD">YYYY-MM-DD (e.g. 2026-10-01)</option>
+                                            <option value="MM/DD/YYYY">MM/DD/YYYY (e.g. 10/01/2026)</option>
+                                            <option value="DD/MM/YYYY">DD/MM/YYYY (e.g. 01/10/2026)</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">

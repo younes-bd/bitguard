@@ -13,9 +13,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from ..domain.models import User, Role, SecurityPolicy, RolePermission, RecordRule
+from ..domain.models import User, Role, RolePermission, RecordRule
 from ..api.serializers import (
-    UserSerializer, RoleSerializer, SecurityPolicySerializer,
+    UserSerializer, RoleSerializer,
     RolePermissionSerializer, RecordRuleSerializer
 )
 
@@ -318,24 +318,6 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         })
 
     @action(detail=False, methods=['get'])
-    def policy(self, request):
-        tenant = getattr(request, 'tenant', None)
-        policy, created = SecurityPolicy.objects.get_or_create(tenant=tenant)
-        serializer = SecurityPolicySerializer(policy)
-        return standard_response(True, "Security Policy retrieved", serializer.data)
-
-    @action(detail=False, methods=['post'])
-    def update_policy(self, request):
-        from apps.core.services.audit import AuditService
-        tenant = getattr(request, 'tenant', None)
-        policy, created = SecurityPolicy.objects.get_or_create(tenant=tenant)
-        serializer = SecurityPolicySerializer(policy, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        AuditService.log_action(request, action="POLICY_UPDATE", resource="users.SecurityPolicy", payload=request.data)
-        return standard_response(True, "Security Policy updated successfully", serializer.data)
-
-    @action(detail=False, methods=['get'])
     def sessions(self, request):
         try:
             from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
@@ -387,9 +369,6 @@ class RolePermissionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
             }
         return standard_response(True, "Permission Matrix", matrix_data)
 
-class SecurityPolicyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
-    queryset = SecurityPolicy.objects.all().order_by('id')
-    serializer_class = SecurityPolicySerializer
     permission_classes = [IsPlatformAdmin]
 
 class RecordRuleViewSet(TenantScopedMixin, viewsets.ModelViewSet):

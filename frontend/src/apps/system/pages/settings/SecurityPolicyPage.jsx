@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { usersService } from '../../../users/api/usersService';
+import { securityPolicyService } from '../../../tenants/api/securityPolicyService';
 import { ShieldAlert, Loader2, Save, Shield } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -13,7 +13,7 @@ const SecurityPolicyPage = () => {
     const fetchPolicy = async () => {
         try {
             setLoading(true);
-            const data = await usersService.getSecurityPolicy();
+            const data = await securityPolicyService.getPolicy();
             const fetched = data || {};
             setPolicy({
                 id: fetched.id,
@@ -57,7 +57,7 @@ const SecurityPolicyPage = () => {
         try {
             setSaving(true);
             if (policy.id) {
-                await usersService.updateSecurityPolicy(policy.id, policy);
+                await securityPolicyService.updatePolicy(policy.id, policy);
             } else {
                 const created = await usersService.createSecurityPolicy(policy);
                 setPolicy(prev => ({ ...prev, id: created.id }));

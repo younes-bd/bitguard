@@ -19,3 +19,17 @@ class Tenant(UUIDModel):
 
     def __str__(self):
         return self.name
+
+
+class SecurityPolicy(UUIDModel):
+    tenant = models.OneToOneField('Tenant', on_delete=models.CASCADE, null=True, blank=True, related_name='security_policy')
+    password_complexity = models.CharField(max_length=20, default='high')
+    session_timeout = models.IntegerField(default=60) # Minutes
+    mfa_required = models.BooleanField(default=True)
+    api_key_rotation = models.IntegerField(default=90) # Days
+    ip_whitelist = models.TextField(blank=True, help_text="Comma-separated CIDR ranges")
+    failed_login_lock = models.IntegerField(default=5)
+    lock_duration = models.IntegerField(default=30) # Minutes
+    concurrent_sessions = models.CharField(max_length=20, default='1')
+
+    

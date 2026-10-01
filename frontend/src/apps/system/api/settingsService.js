@@ -46,8 +46,8 @@ export const settingsService = {
   setDefaultLanguage: (id) => apiClient.post(`core/languages/${id}/set_default/`),
 
   // System Events
-  getAuditLogs: (params) => apiClient.get('core/system-events/', { params }),
-  exportAuditLogs: (params) => apiClient.get('core/system-events/?export=csv', { params }),
+  getSystemEvents: (params) => apiClient.get('core/system-events/', { params }),
+  exportSystemEvents: (params) => apiClient.get('core/system-events/?export=csv', { params }),
 
   // Email Config
   getEmailConfig: () => apiClient.get('system/email-config/'),

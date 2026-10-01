@@ -421,14 +421,15 @@ export default function GeneralSettingsPage() {
                                 <div>
                                     <label className="block text-sm font-medium text-slate-400 mb-1">Language</label>
                                     <select
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
                                         value={companyForm.language}
                                         onChange={e => setCompanyForm({ ...companyForm, language: e.target.value })}
+                                        disabled={langLoading}
                                     >
-                                        <option value="en">English</option>
-                                        <option value="fr">French</option>
-                                        <option value="es">Spanish</option>
-                                        <option value="de">German</option>
+                                        {langLoading ? <option>Loading...</option> : languages.map(l => (
+                                            <option key={l.code} value={l.code}>{l.name}</option>
+                                        ))}
+                                        {languages.length === 0 && !langLoading && <option value="en">English</option>}
                                     </select>
                                 </div>
                                 <div>

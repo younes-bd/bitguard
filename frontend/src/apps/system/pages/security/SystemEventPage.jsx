@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, ShieldAlert, Loader2, Search, Filter, Calendar, Terminal, RefreshCw } from 'lucide-react';
-import { usersService } from '../../api/usersService';
+import { systemEventService } from '../../api/systemEventService';
 import { toast } from 'react-hot-toast';
 
 const SystemEventPage = () => {
@@ -16,7 +16,7 @@ const SystemEventPage = () => {
                 const data = await systemEventService.getSystemEvents();
                 setLogs(Array.isArray(data) ? data : []);
             } catch (error) {
-                console.error("Failed to fetch audit logs", error);
+                console.error("Failed to fetch system events", error);
                 toast.error("Failed to load security registry");
             } finally {
                 setLoading(false);

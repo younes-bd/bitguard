@@ -67,6 +67,17 @@ class User(AbstractUser, UUIDModel):
         related_name='users'
     )
 
+    # Configuration Cascade Preferences
+    language = models.CharField(max_length=50, blank=True, null=True, help_text="User's personal language preference")
+    timezone = models.CharField(max_length=100, blank=True, null=True, help_text="User's personal timezone preference")
+    theme_mode = models.CharField(
+        max_length=10, 
+        choices=[('light', 'Light'), ('dark', 'Dark'), ('system', 'System')], 
+        default='system',
+        help_text="User's UI theme preference"
+    )
+    date_format = models.CharField(max_length=50, blank=True, null=True, help_text="Optional date format override")
+
     partner = models.OneToOneField('core.Partner', on_delete=models.CASCADE, null=True, blank=True, related_name='user')
 
     class Meta:
@@ -151,23 +162,6 @@ class Connection(TenantAwareModel):
     def __str__(self):
         return f"{self.from_user} -> {self.to_user} ({self.status})"
 
-class SecurityPolicy(UUIDModel):
-    tenant = models.OneToOneField('tenants.Tenant', on_delete=models.CASCADE, null=True, blank=True, related_name='security_policy')
-    password_complexity = models.CharField(max_length=20, default='high')
-    session_timeout = models.IntegerField(default=60) # Minutes
-    mfa_required = models.BooleanField(default=True)
-    api_key_rotation = models.IntegerField(default=90) # Days
-    ip_whitelist = models.TextField(blank=True, help_text="Comma-separated CIDR ranges")
-    failed_login_lock = models.IntegerField(default=5)
-    lock_duration = models.IntegerField(default=30) # Minutes
-    concurrent_sessions = models.CharField(max_length=20, default='1')
-
-    class Meta:
-        verbose_name = 'Security Policy'
-        verbose_name_plural = 'Security Policies'
-
-    def __str__(self):
-        return f"Policy for {self.tenant.name if self.tenant else 'Global'}"
 
 class TenantMembership(UUIDModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tenant_memberships')

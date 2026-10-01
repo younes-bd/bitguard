@@ -109,10 +109,6 @@ export const usersService = {
         return response.data?.data ?? response.data;
     },
 
-    getAuditLogs: async (params = {}) => {
-        const response = await client.get('core/system-events/', { params });
-        return response.data?.data?.results ?? response.data?.results ?? response.data ?? [];
-    },
 
     // --- Security Actions ---
     lockUser: async (id) => {
@@ -149,48 +145,3 @@ export const usersService = {
     },
 
     // --- Security Policies ---
-    getSecurityPolicy: async () => {
-        const response = await client.get('users/security-policy/');
-        // Assume single policy for now
-        return response.data?.data?.[0] ?? response.data?.results?.[0] ?? response.data?.[0] ?? response.data;
-    },
-    updateSecurityPolicy: async (id, policyData) => {
-        const response = await client.put(`users/security-policy/${id}/`, policyData);
-        return response.data?.data ?? response.data;
-    },
-    createSecurityPolicy: async (policyData) => {
-        const response = await client.post(`users/security-policy/`, policyData);
-        return response.data?.data ?? response.data;
-    },
-    getSessions: async () => {
-        const response = await client.get('users/sessions/');
-        return response.data?.data ?? response.data;
-    },
-    revokeSession: async (id) => {
-        const response = await client.delete(`users/sessions/${id}/`);
-        return response.data?.data ?? response.data;
-    },
-
-    // --- Record Rules ---
-    getRecordRules: async (params = {}) => {
-        const response = await client.get('users/record-rules/', { params });
-        return response.data?.data?.results ?? response.data?.results ?? response.data ?? [];
-    },
-    getRecordRule: async (id) => {
-        const response = await client.get(`users/record-rules/${id}/`);
-        return response.data?.data ?? response.data;
-    },
-    createRecordRule: async (data) => {
-        const response = await client.post('users/record-rules/', data);
-        return response.data?.data ?? response.data;
-    },
-    updateRecordRule: async (id, data) => {
-        const response = await client.put(`users/record-rules/${id}/`, data);
-        return response.data?.data ?? response.data;
-    },
-    deleteRecordRule: async (id) => {
-        const response = await client.delete(`users/record-rules/${id}/`);
-        return response.data?.data ?? response.data;
-    }
-};
-

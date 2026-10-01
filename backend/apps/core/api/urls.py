@@ -16,7 +16,7 @@ router.register(r'scheduled-actions', ScheduledActionViewSet, basename='core-sch
 router.register(r'database-backups', DatabaseBackupViewSet, basename='core-database-backups')
 
 from apps.core.api.views import SystemEventViewSet, UoMCategoryViewSet, UoMViewSet
-router.register(r'system-events', SystemEventViewSet, basename='core-audit-logs')
+router.register(r'system-events', SystemEventViewSet, basename='core-system-events')
 router.register(r'uom-categories', UoMCategoryViewSet, basename='core-uom-categories')
 router.register(r'uoms', UoMViewSet, basename='core-uoms')
 

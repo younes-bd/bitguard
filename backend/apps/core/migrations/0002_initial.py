@@ -34,17 +34,17 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(app_label)s_%(class)s_set', to='tenants.tenant'),
         ),
         migrations.AddField(
-            model_name='audittrail',
+            model_name='systemeventlog',
             name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_created', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
-            model_name='audittrail',
+            model_name='systemeventlog',
             name='tenant',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='%(app_label)s_%(class)s_set', to='tenants.tenant'),
         ),
         migrations.AddField(
-            model_name='audittrail',
+            model_name='systemeventlog',
             name='user',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='system_events', to=settings.AUTH_USER_MODEL),
         ),
