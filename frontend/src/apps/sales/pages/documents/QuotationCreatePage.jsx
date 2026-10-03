@@ -1,10 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { SuspenseComponent } from '../../../../core/registry/ComponentRegistry';
 import { useNavigate } from 'react-router-dom';
 import { salesService } from '../../api/salesService';
 import { crmService } from '../../../crm/api/crmService';
 import { toast } from 'react-hot-toast';
 import { Save, ArrowLeft, FileCheck, User, Calendar } from 'lucide-react';
-import InvoiceLineItems from '@/core/components/shared/InvoiceLineItems';
 
 const QuotationCreatePage = () => {
   const navigate = useNavigate();
@@ -134,7 +134,7 @@ const QuotationCreatePage = () => {
 
         <div className="glass-panel p-8 rounded-2xl border border-slate-700/50">
           <h3 className="text-xl font-bold text-white mb-6">Services & Pricing</h3>
-          <InvoiceLineItems items={formData.items} onChange={(items) => setFormData(p => ({...p, items}))} products={products} />
+          <SuspenseComponent name="accounting.InvoiceLineItems" items={formData.items} onChange={(items) => setFormData(p => ({...p, items}))} products={products} />
         </div>
 
         <div className="flex justify-end items-center gap-6 pt-8 border-t border-slate-800">

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { crmService } from '../../api/crmService';
 import client from '@/core/api/client';
 import { MessageSquare, Calendar, User, Phone, Mail, Clock, ArrowRight, Plus, Edit2, Trash2 } from 'lucide-react';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const INTERACTION_FIELDS = [

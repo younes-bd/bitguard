@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import RecordFormLayout from '../../../../apps/shell/components/ui/forms/RecordFormLayout';
 import helpdeskService from '../../api/helpdeskService';
 import { toast } from 'react-hot-toast';
 import { Loader2, Shield, User, Clock, AlertTriangle, CheckCircle } from 'lucide-react';

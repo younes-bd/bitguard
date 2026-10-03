@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Ticket, FileText, CreditCard, LogOut, Shield, User, ShoppingCart, Briefcase, Target, Cloud, Home } from 'lucide-react';
 import { useAuth } from '@/core/hooks/useAuth';
 import { useTenant } from '@/core/context/TenantContext';
-import UserAvatarDropdown from '@/core/components/shared/core/UserAvatarDropdown';
+import UserAvatarDropdown from '../../../apps/shell/components/layout/UserAvatarDropdown';
 
 const navItems = [
     { label: 'Overview', path: '/portal', icon: LayoutDashboard, end: true },

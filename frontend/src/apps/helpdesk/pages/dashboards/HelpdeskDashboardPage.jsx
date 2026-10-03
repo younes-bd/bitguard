@@ -7,8 +7,8 @@ import {
   LifeBuoy, Search, Filter, Plus, User, FileText,
   LayoutGrid, List as ListIcon
 } from 'lucide-react';
-import KanbanBoard from '@/core/components/shared/views/KanbanBoard';
-import DataTable from '@/core/components/shared/views/DataTable';
+import KanbanBoard from '../../../../apps/shell/components/ui/views/KanbanBoard';
+import DataTable from '../../../../apps/shell/components/ui/views/DataTable';
 
 export default function HelpdeskDashboardPage() {
   const navigate = useNavigate();

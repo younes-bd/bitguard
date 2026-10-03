@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import SectionDivider from '@/core/components/SectionDivider';
-import PageMeta from '@/core/components/shared/PageMeta';
+import SectionDivider from '../../../../../apps/shell/components/SectionDivider';
+import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 import client from '@/core/api/client';
 import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import '../../../../../core/styles/landing.css';
+import '../../../../../apps/shell/styles/landing.css';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({

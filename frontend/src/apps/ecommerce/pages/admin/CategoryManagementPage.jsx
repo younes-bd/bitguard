@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Layers, Search, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
 import { ecommerceService } from '../../api/ecommerceService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const CATEGORY_FIELDS = [

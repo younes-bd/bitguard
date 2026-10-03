@@ -9,7 +9,7 @@ import PermissionsList from '../pages/lists/PermissionsListPage';
 import MfaManagement from '../pages/settings/MfaManagementPage';
 import PersonalAccessTokens from '../pages/settings/PersonalAccessTokensPage';
 import ActiveSessions from '../pages/lists/ActiveSessionsPage';
-import UsersSettings from '../pages/settings/UsersSettingsPage';
+// import UsersSettings from '../pages/settings/UsersSettingsPage';
 import TenantList from '../pages/lists/TenantListPage';
 import UserProfile from '../pages/profile/UserProfilePage';
 import AccessRightsPage from '../pages/lists/AccessRightsPage';
@@ -24,7 +24,7 @@ export const usersAdminRoutes = (
         <Route path="mfa" element={<MfaManagement />} />
         <Route path="personal-access-tokens" element={<PersonalAccessTokens />} />
         <Route path="sessions" element={<ActiveSessions />} />
-        <Route path="settings" element={<UsersSettings />} />
+        {/* <Route path="settings" element={<UsersSettings />} /> */}
         <Route path="tenants" element={<TenantList />} />
         <Route path="profile" element={<UserProfile />} />
         <Route path="access-rights" element={<AccessRightsPage />} />

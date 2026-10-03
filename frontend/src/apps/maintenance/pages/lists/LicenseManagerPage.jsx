@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Key, Plus, Search, Trash2, AlertTriangle, CheckCircle } from 'lucide-react';
 import client from '@/core/api/client';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const daysUntil = (dateStr) => {

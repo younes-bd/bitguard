@@ -2,8 +2,8 @@
 import { Search, Plus, User, Building2, Inbox, Phone, ChevronRight, Edit2, Trash2, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { employeesService } from '../../api/employeesService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const statusBadge = (status) => {
     const map = { active: 'bg-emerald-500/10 text-emerald-400', inactive: 'bg-slate-700 text-slate-400', on_leave: 'bg-amber-500/10 text-amber-400' };

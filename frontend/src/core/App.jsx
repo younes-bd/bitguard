@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
-import WebsiteLayout from './layouts/WebsiteLayout';
+import WebsiteLayout from '../apps/shell/layouts/WebsiteLayout';
 import ProtectedRoute from './guards/ProtectedRoute';
 import AuthLoader from './guards/AuthLoader';
 

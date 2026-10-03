@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, Layers, Zap, Check, Plus, Edit2, Trash2, Globe } from 'lucide-react';
 import { subscriptionsService } from '../../api/subscriptionsService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const PlansListPage = () => {
     const [plans, setPlans] = useState([]);

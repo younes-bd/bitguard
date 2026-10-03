@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 import ProductCatalog from '../pages/public/ProductCatalogPage';
 import ProductDetail from '../pages/public/ProductDetailPage';
 import Checkout from '../pages/public/CheckoutPage';
-import WebsiteLayout from '@/core/layouts/WebsiteLayout';
+import WebsiteLayout from '../../../apps/shell/layouts/WebsiteLayout';
 
 export const ecommercePublicRoutes = (
     <Route element={<WebsiteLayout />}>

@@ -47,10 +47,10 @@ Every module in this codebase MUST be classified into exactly one of these four 
 
 ### Layer 2 — Platform Services (Shared Infrastructure with Admin UI)
 
-**Definition:** Cross-cutting platform services that every business app uses but that are NOT business apps themselves. They have admin-only configuration UI accessible through Settings only. They have no standalone Command Center tile. Equivalent to Odoo modules with `application: False`.
+**Definition:** Cross-cutting platform services that every business app uses but that are NOT business apps themselves. They have admin-only configuration UI accessible through Settings only. They have no standalone Command Center tile. Equivalent to Odoo modules with `application: True`. They are real UI applications, but they are deliberately hidden from the Command Center grid via Frontend Layout Configuration.
 
 **Decision Rules (ALL must be true):**
-- Has NO Command Center tile (`application: False`)
+- Has NO Command Center tile (Hidden by frontend layout config, but technically `application: True` in the database)
 - Has admin configuration UI (accessible only through Settings — never as a primary nav app)
 - Provides a shared service consumed by Layer 3 Business Apps (e.g., user identity, approval gates, mail servers, reports engine)
 - CAN be installed or uninstalled by a tenant (unlike Layer 1)
@@ -110,9 +110,9 @@ To maintain strict Domain-Driven Design (DDD) and prevent "God Modules", Layer 2
 Before classifying ANY module, answer these questions in order:
 
 1. **Is it non-removable and has zero UI?** → Layer 1
-2. **Is it `application: False` and has admin-only UI?** → Layer 2
+2. **Is it `application: True` with admin-only UI, but manually hidden from the Command Center?** → Layer 2
 3. **Is it `application: True` with a Command Center tile?** → Layer 3
-4. **Does it primarily connect to an external third-party system?** → Layer 4
+4. **Does it primarily connect to an external third-party system?** → Layer 4 (`application: False`)
 
 If none of these apply, the module is not yet properly defined — escalate to the user.
 
@@ -320,3 +320,114 @@ The `Tenant` model is purely invisible infrastructure (the walls of the skyscrap
 
 **2. The Headless Resolution Engine:** 
 Because this is a MACH architecture, the Django backend must remain "dumb." It must never compute configuration fallbacks or format localized data on the server. The backend strictly returns raw, decoupled data (User preferences + Company preferences). The fallback logic (`User -> Active Company -> System Default`) must ALWAYS be computed on the Frontend Control Plane (e.g., inside a React Global Context).
+
+## Rule 47: The Asymmetric Module Law (Frontend-Only Modules)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+Unlike legacy monolithic ERPs (e.g., Odoo) that require a backend Python folder for every piece of UI, this system is a strict **MACH (Headless) ERP**. The Django backend must remain completely blind to visual orchestration. 
+
+**The Rule (The Dead-Code Ban):**
+If a module possesses **zero database tables** and **zero backend API endpoints**, you are strictly forbidden from creating a corresponding `backend/apps/<module>` directory. You must never create empty Django apps just to hold metadata or maintain "folder symmetry."
+
+Modules that are pure UI Consumers must exist **exclusively on the frontend.**
+
+**Key Examples of Frontend-Only Modules:**
+1.  **The `shell` Module (Layer 2):** This module houses the global React layouts, the Command Center grid, and shared UI components (DataTables, TopBar). Because it relies on no specific database tables, it exists **exclusively** at `frontend/src/apps/shell/`. It has zero backend presence.
+2.  **The `apps` Module (The App Store):** According to Rule 39 (Data Gravity), the `InstalledModule` database table and its API ViewSets are strictly owned by the `core` kernel. Because the data and API live in `core`, the `apps` module is reduced to a pure UI React consumer. Therefore, it exists **exclusively** at `frontend/src/apps/apps/`. It has zero backend presence.
+
+## Rule 48: The Headless Registry Pattern (Vite Glob Imports)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+To maintain strict MACH headlessness, **Layer 2 (The Shell)** must remain 100% agnostic to the existence of any Layer 3 business apps. 
+
+**The Rule (The Hard-Import Ban):**
+You are strictly forbidden from writing static `import` statements inside the Shell (e.g., `ModuleLayout.jsx`, `GlobalSearch.jsx`) that point downward into a specific business application folder (e.g., `apps/crm` or `apps/analytics`).
+
+**The Solution:**
+All cross-module feature aggregation (Menus, Search Plugins, Routing) must be resolved dynamically at build time using Vite's `import.meta.glob` registry pattern. 
+*   **Example (Menus):** `const appMenus = import.meta.glob('../../apps/*/config/menu.js', { eager: true });`
+*   **Example (Search):** `const searchPlugins = import.meta.glob('../../apps/*/config/search.js', { eager: true });`
+This guarantees the shell will never crash if a tenant uninstalls a module.
+
+## Rule 49: Cross-App UI Isolation (Layer-3 to Layer-3 Soft Dependencies)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+While business applications (Layer 3) often share data contexts (e.g., Sales relies on Accounting Invoices), they are strictly prohibited from statically importing React Components from each other. 
+
+**The Rule:**
+An app (e.g., `sales`) cannot write a static import statement importing a `.jsx` component from a sibling app (e.g., `accounting/components/InvoiceLineItems.jsx`). Doing so creates a fatal build-time coupling that crashes the app if the sibling module is missing.
+
+**The Solution:**
+You must use the global `ComponentRegistry.jsx` and `<SuspenseComponent name="..." />` wrapper.
+1.  The owning app registers its exportable UI pieces in its `config/components.js` file using `React.lazy()`.
+2.  The consuming app requests it dynamically: `<SuspenseComponent name="accounting.InvoiceLineItems" />`.
+If the requested app is uninstalled or deactivated, the registry handles it gracefully with a fallback UI instead of crashing the React Tree.
+
+
+
+## Rule 9C: The Headless UI Proxy (The Split-Layer Phenomenon)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You must understand the MACH asymmetry between the Backend Data Plane and the Frontend Control Plane, specifically regarding Layer 1 Kernel modules (e.g., `auth`, `tenants`).
+*   **The Rule:** Layer 1 is strictly headless and has zero UI.
+*   **The Phenomenon:** Humans still require a visual way to authenticate or switch workspaces. Therefore, the frontend spawns "Proxy UI Modules" (e.g., `frontend/src/apps/auth` and `frontend/src/apps/tenants`). 
+*   **Classification:** The *backend* Python code is the pure Layer 1 Data Plane. The *frontend* React UI acts as a **Layer 2 Control Plane** application. It is one single module mathematically split across two planes. You are strictly forbidden from forcing Frontend UI pages into `frontend/src/core/` just to make the folder structures "match."
+
+## Rule 48B: The Registry Dictatorship Law (Single Source of Truth)
+While Rule 48 mandates the use of `import.meta.glob` for dynamic UI aggregation, you must **never** duplicate these registries across modules. 
+*   **The Rule:** If a module owns a specific business domain, it is the *sole dictator* of that domain's registry.
+*   **The Settings Dictator:** The `system` module (The IT Control Plane) is the absolute, sole dictator of the Global Settings Menu. It alone runs `import.meta.glob` to aggregate plugin menus inside `apps/system/config/menu.js`. 
+*   **The Ban:** The `shell` module (The Canvas) and the `core/useManifest` hook (The Kernel) are strictly forbidden from running glob imports to calculate, aggregate, or override settings menus. The `shell` must act as a pure visual canvas that simply accepts and draws the finalized array provided by the `system` module.
+
+## Rule 50: The 3-Tier Settings Architecture (Control Plane Routing)
+To maintain Tier-1 MACH decoupling (similar to Odoo's `base_setup` modularity), the global Settings Menu (owned exclusively by the `system` module) must aggregate settings links using a strict 3-tier classification strategy. This prevents Business Apps from polluting the IT Control Plane.
+
+#### 1. Layer 1 (The Kernel): Hardcoded Foundation
+Because the `system` module acts as the explicit Control Plane proxy for the `core` and `auth` backend modules, it inherently knows the foundational infrastructure. These core routes must be hardcoded to guarantee system stability.
+*   **Mechanism:** Static Array Definition
+*   **Code Standard:**
+    `javascript
+    // frontend/src/apps/system/config/menu.js
+    const baseSettings = [
+        {
+            section: 'Technical',
+            items: [
+                { label: 'System Events', path: '/admin/settings/logs' },
+                { label: 'System Parameters', path: '/admin/settings/parameters' }
+            ]
+        }
+    ];
+    `
+
+#### 2. Layer 2 (Platform Services): Dynamic Plugin Injection
+Other IT infrastructure apps (e.g., `users`, `automation`, `inbox`) are peers to the `system` app. To prevent fatal React crashes if an IT administrator uninstalls one of them, they must inject their settings menus dynamically at build-time.
+*   **Mechanism:** Vite `import.meta.glob` (The Registry Dictatorship)
+*   **Code Standard:**
+    `javascript
+    // frontend/src/apps/system/config/menu.js
+    const pluginMenus = import.meta.glob('../../*/config/menu.js', { eager: true });
+    
+    Object.entries(pluginMenus).forEach(([path, mod]) => {
+        if (mod.settingsMenu && Array.isArray(mod.settingsMenu)) {
+            // Dynamically extract mod.settingsMenu and inject it into baseSettings
+        }
+    });
+    `
+
+#### 3. Layer 3 (Business Apps): Data-Driven Manifest (Data Gravity)
+Business apps (`sales`, `crm`, `accounting`) are strictly forbidden from writing custom React UI settings menus into the `system` app. Instead, their settings link is automatically generated based purely on their Backend Database metadata (`has_settings: true`). 
+*   **Mechanism:** API Manifest Resolution
+*   **Code Standard:**
+    `javascript
+    // frontend/src/apps/system/config/menu.js
+    export const getSettingsMenu = (manifestData = []) => {
+        manifestData
+            .filter(mod => mod.application === true && mod.has_settings === true)
+            .forEach(mod => {
+                // Auto-generate settings link derived purely from the DB
+                unifiedMenu.push({
+                    label: mod.display_name || mod.name,
+                    path: mod.settings_url // e.g., /admin/crm/settings
+                });
+            });
+        
+        return unifiedMenu;
+    };
+    `
+

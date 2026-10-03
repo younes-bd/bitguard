@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PageMeta from '@/core/components/shared/PageMeta';
+import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 import { settingsService } from '../../../../system/api/settingsService';
 import { Loader2 } from 'lucide-react';
 

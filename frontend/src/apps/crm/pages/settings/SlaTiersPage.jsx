@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Search, Clock, AlertCircle, Plus, Edit2, Trash2 } from 'lucide-react';
 import signService from '../../../sign/api/signService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const SlaTiersPage = () => {
     const [tiers, setTiers] = useState([]);

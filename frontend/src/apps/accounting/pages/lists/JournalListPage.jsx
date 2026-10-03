@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from '@/core/components/shared/views/DataTable';
+import DataTable from '../../../../apps/shell/components/ui/views/DataTable';
 import { journalService } from '../../api/journalService';
 import { BookOpen } from 'lucide-react';
 import { toast } from 'react-hot-toast';

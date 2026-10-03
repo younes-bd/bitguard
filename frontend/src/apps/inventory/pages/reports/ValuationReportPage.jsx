@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import DataTable from '@/core/components/shared/views/DataTable';
+import DataTable from '../../../../apps/shell/components/ui/views/DataTable';
 import inventoryService from '../../api/inventoryService';
 import { DollarSign } from 'lucide-react';
 import { toast } from 'react-hot-toast';

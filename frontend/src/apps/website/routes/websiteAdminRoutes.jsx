@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import ModuleLayout from '@/core/layouts/ModuleLayout';
+import ModuleLayout from '../../../apps/shell/layouts/ModuleLayout';
 import { websiteMenu } from '../config/menu';
 
 // Lazy loading the pages

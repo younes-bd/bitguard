@@ -1,21 +1,30 @@
 import {
-    LayoutDashboard, Users, ShieldCheck, Building2,
-    AlertCircle, FileText, ShoppingBag, Server,
-    Layers, Database, Key, PieChart,
-    Paintbrush, Tags, Box, ShoppingCart, Truck, Activity, Puzzle, RefreshCw, Settings,
-    Megaphone, LifeBuoy, Bell, CreditCard, BarChart3, FolderKanban, TrendingUp, BookOpen,
-    Monitor, Cpu, Wrench, DollarSign, Tag, Globe, Plus, FolderOpen, CheckSquare, GitBranch,
-    Award, Download, Clock, Repeat, Landmark, FileSpreadsheet, Scale, Image, Mail,
-    UserPlus, TrendingDown, FileCheck, Terminal, Calendar, Edit3, Share2, MessageSquare, Sparkles, PenTool, Palette, Layout, Send, Video, Smartphone, Zap, Printer, User, Trash2, Grid, Home, Target, Compass, MessageCircle, FileQuestion, Book, PhoneCall, CheckCircle, MapPin, Utensils, Leaf, UserCheck, Star, Upload, AtSign, Webhook
+    LayoutDashboard, ShoppingBag, FolderKanban, FileText, LifeBuoy,
+    Receipt, CheckSquare, CreditCard, ShoppingCart, Clock, Target, User, Server
 } from 'lucide-react';
 
-export const portalMenu = [
-        {
-            title: 'Client Portal',
-            items: [
-                { label: 'Overview', icon: LayoutDashboard, path: '/admin/portal' },
-                { label: 'Access Management', icon: Users, path: '/admin/portal/access' },
-                { label: 'Shared Resources', icon: Share2, path: '/admin/portal/shares' },
-            ]
-        }
-    ];
+export const portalSections = [
+    {
+        title: 'My Documents',
+        items: [
+            { label: 'Dashboard', icon: LayoutDashboard, path: '/portal' },
+            { label: 'My Orders', icon: ShoppingBag, path: '/portal/orders' },
+            { label: 'My Quotes', icon: FileText, path: '/portal/quotes' },
+            { label: 'My Invoices', icon: Receipt, path: '/portal/invoices' },
+            { label: 'My Projects', icon: FolderKanban, path: '/portal/projects' },
+            { label: 'My Tasks', icon: CheckSquare, path: '/portal/tasks' },
+            { label: 'My Tickets', icon: LifeBuoy, path: '/portal/tickets' },
+            { label: 'My Subscriptions', icon: CreditCard, path: '/portal/subscriptions' },
+            { label: 'My Procurements', icon: ShoppingCart, path: '/portal/procurement' },
+            { label: 'My Timesheets', icon: Clock, path: '/portal/timesheets' },
+            { label: 'My Leads', icon: Target, path: '/portal/leads' },
+            { label: 'My Assets', icon: Server, path: '/portal/assets' }
+        ]
+    },
+    {
+        title: 'Account',
+        items: [
+            { label: 'My Details', icon: User, path: '/portal/account' },
+        ]
+    }
+];

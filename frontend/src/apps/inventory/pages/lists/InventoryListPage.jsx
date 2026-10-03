@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Search, Plus, AlertTriangle, Package, ArrowUpDown, Edit2, Trash2 } from 'lucide-react';
 import { inventoryService } from '../../api/inventoryService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const stockBadge = (qty, reorderLevel = 10) => {

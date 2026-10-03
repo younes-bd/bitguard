@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from '@/core/components/shared/views/DataTable';
+import DataTable from '../../../../apps/shell/components/ui/views/DataTable';
 import { accountingService } from '../../api/accountingService';
 import { Percent } from 'lucide-react';
 import { toast } from 'react-hot-toast';

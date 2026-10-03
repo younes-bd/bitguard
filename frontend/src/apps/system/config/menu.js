@@ -1,3 +1,4 @@
+import * as LucideIcons from 'lucide-react';
 import { Settings, Building2, Globe, Layers, Layout, Database, Clock, Terminal, Upload, Download, DollarSign, Key, ShieldCheck } from 'lucide-react';
 
 // Hardcoded Kernel Settings (Because `system` is the UI for `core` and `auth`)
@@ -50,8 +51,6 @@ const baseSettings = [
 // DYNAMIC SETTINGS AGGREGATOR
 const pluginMenus = import.meta.glob('../../*/config/menu.js', { eager: true });
 
-import * as LucideIcons from 'lucide-react';
-
 export const getSettingsMenu = (manifestData = []) => {
     // Deep clone the base system/kernel settings to prevent mutation bugs
     const unifiedMenu = baseSettings.map(section => ({
@@ -64,13 +63,27 @@ export const getSettingsMenu = (manifestData = []) => {
         // Prevent the system app from recursively pulling itself in
         if (path.includes('/system/config/menu.js')) return;
 
-        // Only extract the exported `settingsMenu` array
+        // Support both static arrays and dynamic functions
+        let injectedSettings = [];
         if (mod.settingsMenu && Array.isArray(mod.settingsMenu)) {
-            mod.settingsMenu.forEach(pluginItem => {
-                const existingSection = unifiedMenu.find(s => s.section === pluginItem.section || s.title === pluginItem.section);
+            injectedSettings = mod.settingsMenu;
+        } else if (mod.getSettingsMenu && typeof mod.getSettingsMenu === 'function') {
+            injectedSettings = mod.getSettingsMenu();
+        }
+
+        if (injectedSettings.length > 0) {
+            injectedSettings.forEach(pluginItem => {
+                const existingSection = unifiedMenu.find(s => s.section === pluginItem.section || s.title === pluginItem.section || s.title === pluginItem.title);
                 
                 if (existingSection) {
-                    if (!existingSection.items.some(i => i.path === pluginItem.path)) {
+                    // Check for nested items if the pluginItem is a full section
+                    if (pluginItem.items && Array.isArray(pluginItem.items)) {
+                        pluginItem.items.forEach(nestedItem => {
+                            if (!existingSection.items.some(i => i.path === nestedItem.path)) {
+                                existingSection.items.push(nestedItem);
+                            }
+                        });
+                    } else if (!existingSection.items.some(i => i.path === pluginItem.path)) {
                         existingSection.items.push({
                             label: pluginItem.label,
                             icon: pluginItem.icon,
@@ -79,16 +92,20 @@ export const getSettingsMenu = (manifestData = []) => {
                         });
                     }
                 } else {
-                    unifiedMenu.push({
-                        title: pluginItem.section,
-                        section: pluginItem.section,
-                        items: [{
-                            label: pluginItem.label,
-                            icon: pluginItem.icon,
-                            path: pluginItem.path,
-                            permissions: pluginItem.permissions
-                        }]
-                    });
+                    if (pluginItem.items && Array.isArray(pluginItem.items)) {
+                        unifiedMenu.push(pluginItem);
+                    } else {
+                        unifiedMenu.push({
+                            title: pluginItem.section,
+                            section: pluginItem.section,
+                            items: [{
+                                label: pluginItem.label,
+                                icon: pluginItem.icon,
+                                path: pluginItem.path,
+                                permissions: pluginItem.permissions
+                            }]
+                        });
+                    }
                 }
             });
         }

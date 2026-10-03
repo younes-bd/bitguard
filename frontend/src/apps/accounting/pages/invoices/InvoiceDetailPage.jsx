@@ -7,7 +7,7 @@ import {
     ArrowLeft, Printer, Download, Mail,
     CheckCircle, AlertCircle, Clock, FileCheck, RefreshCcw, Link, DollarSign, FileText, X
 } from 'lucide-react';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 
 const InvoiceDetailPage = () => {
     const { id } = useParams();

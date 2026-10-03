@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import websiteService from '../../../api/websiteService';
-import '../../../../../core/styles/index.css';
+import '../../../../../apps/shell/styles/index.css';
 
 const BrochurePage = () => {
     const { slug } = useParams();

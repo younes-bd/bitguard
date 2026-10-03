@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Globe, Phone, Mail, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 import { procurementService } from '../../api/procurementService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const VendorListPage = () => {

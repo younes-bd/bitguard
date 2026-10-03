@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import SectionDivider from '@/core/components/SectionDivider';
-import PageMeta from '@/core/components/shared/PageMeta';
+import SectionDivider from '../../../../../apps/shell/components/SectionDivider';
+import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 
 const EventsPage = () => {
     const [events, setEvents] = useState([]);

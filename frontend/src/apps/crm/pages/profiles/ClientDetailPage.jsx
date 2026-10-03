@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import ActivityTimeline from '../dashboards/ActivityTimelinePage';
 import ClientModal from '../modals/ClientModalPage';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const ClientDetailPage = () => {
     const { id } = useParams();

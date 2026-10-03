@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { crmService } from '../../api/crmService';
 import { DollarSign, Plus, Calendar, User, GripVertical, Trash2 } from 'lucide-react';
 import DealModal from '../modals/DealModalPage';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import { useNavigate } from 'react-router-dom';
 
 const STAGES = [

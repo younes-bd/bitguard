@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Monitor, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 import maintenanceService from '../../api/maintenanceService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const TYPE_OPTIONS = ['', 'laptop', 'desktop', 'server', 'network', 'mobile', 'printer', 'software', 'cloud', 'other'];
 const STATUS_OPTIONS = ['', 'active', 'spare', 'maintenance', 'retired', 'lost'];

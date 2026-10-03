@@ -4,8 +4,8 @@ import { signService } from '../../../sign/api/signService';
 import helpdeskService from '../../../helpdesk/api/helpdeskService';
 import { Users, Search, Filter, Briefcase, MapPin, ExternalLink, Edit2, Trash2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const ClientListPage = () => {
     const navigate = useNavigate();

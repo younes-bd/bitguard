@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { UserPlus, CheckCircle, Circle, Clock, ChevronDown, ChevronRight, Plus, X } from 'lucide-react';
 import client from '@/core/api/client';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 import toast from 'react-hot-toast';
 
 const TASK_CATEGORIES = [

@@ -4,7 +4,7 @@ import Login from '../pages/public/LoginPage';
 import Register from '../pages/public/RegisterPage';
 import ForgotPassword from '../pages/public/ForgotPasswordPage';
 import SetPassword from '../pages/SetPasswordPage';
-import AuthLayout from '../../../core/layouts/AuthLayout';
+import AuthLayout from '../../../apps/shell/layouts/AuthLayout';
 
 export const authAdminRoutes = (
     <React.Fragment>

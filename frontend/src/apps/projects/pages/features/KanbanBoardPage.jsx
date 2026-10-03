@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import projectsService from '../../api/projectsService';
 import { toast } from 'react-hot-toast';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 
 const COLUMNS = [
     { id: 'backlog', label: 'Backlog', color: 'slate' },

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { crmService } from '../../api/crmService';
 import { UserCircle, Search, Phone, Mail, Building2, Plus, Edit2, Trash2 } from 'lucide-react';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 const ContactListPage = () => {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import PageMeta from '@/core/components/shared/PageMeta';
+import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 
 const IntegrationsPage = () => {
     const [searchQuery, setSearchQuery] = useState('');

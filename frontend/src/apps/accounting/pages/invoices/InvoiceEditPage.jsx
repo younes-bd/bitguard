@@ -7,7 +7,7 @@ import { signService } from '../../../sign/api/signService';
 import { ecommerceService } from '../../../ecommerce/api/ecommerceService';
 import { toast } from 'react-hot-toast';
 import { Save, ArrowLeft, FileText, User, Tag, Briefcase, FileSignature } from 'lucide-react';
-import InvoiceLineItems from '@/core/components/shared/InvoiceLineItems';
+import InvoiceLineItems from '../../components/InvoiceLineItems';
 
 const InvoiceEditPage = () => {
     const navigate = useNavigate();

@@ -6,8 +6,8 @@ const ManifestContext = createContext({
     manifestData: [],
     installedSet: new Set(),
     commandCenterSections: [],
-    settingsAppEntries: [],
     moduleMenus: {},
+    activeApps: [],
     loading: true,
     refreshManifest: async () => {},
 });
@@ -65,7 +65,7 @@ export const ManifestProvider = ({ children }) => {
         fetchManifest();
     }, []);
 
-    const { installedSet, commandCenterSections, settingsAppEntries, moduleMenus } = useMemo(() => {
+    const { installedSet, commandCenterSections, moduleMenus, activeApps } = useMemo(() => {
         const menusMap = {};
 
         // 1. Extract *Menu sidebar navigation arrays from frontend glob imports.
@@ -90,6 +90,7 @@ export const ManifestProvider = ({ children }) => {
 
         manifestData.filter(m => m.is_installed !== false).forEach(mod => {
             installed.add(mod.technical_name);
+            
             activeModules.push({
                 name: mod.name,
                 techName: mod.technical_name,
@@ -152,26 +153,18 @@ export const ManifestProvider = ({ children }) => {
             return aSeq - bSeq;
         });
 
-        // 4. Build Settings App Entries
-        const settingsEntries = activeModules
-            .filter(mod => mod.hasSettings)
-            .sort((a, b) => (a.sequence || 99) - (b.sequence || 99))
-            .map(mod => ({
-                title: mod.displayName,
-                desc: mod.settingsDesc,
-                link: mod.settingsUrl
-            }));
+        const activeApps = activeModules.filter(mod => mod.application !== false);
 
         return {
             installedSet: installed,
             commandCenterSections: finalSections,
-            settingsAppEntries: settingsEntries,
-            moduleMenus: menusMap
+            moduleMenus: menusMap,
+            activeApps: activeApps
         };
     }, [manifestData, menuConfigs, sectionsData]);
 
     return (
-        <ManifestContext.Provider value={{ manifestData, installedSet, commandCenterSections, settingsAppEntries, moduleMenus, loading, refreshManifest: fetchManifest }}>
+        <ManifestContext.Provider value={{ manifestData, installedSet, commandCenterSections, moduleMenus, activeApps, loading, refreshManifest: fetchManifest }}>
             {children}
         </ManifestContext.Provider>
     );

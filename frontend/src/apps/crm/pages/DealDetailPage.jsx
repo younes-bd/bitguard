@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import RecordFormLayout from '../../../apps/shell/components/ui/forms/RecordFormLayout';
 import { crmService } from '../api/crmService';
 import { toast } from 'react-hot-toast';
 import { Loader2, DollarSign, Calendar, Check, X } from 'lucide-react';

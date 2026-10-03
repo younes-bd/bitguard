@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import WebsiteLayout from '@/core/layouts/WebsiteLayout';
+import WebsiteLayout from '../../../apps/shell/layouts/WebsiteLayout';
 
 import BlogList from '../pages/public/BlogListPage';
 import BlogPost from '../pages/public/BlogPostPage';

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, FileText, Edit2, Trash2 } from 'lucide-react';
 import signService from '../../../sign/api/signService';
 import { crmService } from '../../../crm/api/crmService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const statusBadge = (status) => {
     const map = {

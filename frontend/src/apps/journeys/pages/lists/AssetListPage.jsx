@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Image, Search, Plus, Trash2, FileText, Video, Link } from 'lucide-react';
 import { journeysService } from '../../api/journeysService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const AssetListPage = () => {

@@ -22,6 +22,8 @@ export default function GeneralSettingsPage() {
     const [states, setStates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [langLoading, setLangLoading] = useState(false);
+    const [languages, setLanguages] = useState([]);
     
     // Developer Mode
     const [isDevMode, setIsDevMode] = useState(localStorage.getItem('bitguard_dev_mode') === 'true');

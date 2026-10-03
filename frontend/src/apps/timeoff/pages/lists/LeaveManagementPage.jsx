@@ -3,7 +3,7 @@ import { CheckCircle, XCircle, Clock, Filter, Plus, Download } from 'lucide-reac
 import { holidaysService } from '@/apps/timeoff/api/holidaysService';
 import { reportsService } from '@/apps/reports/api/reportsService';
 import client from '@/core/api/client';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 import toast from 'react-hot-toast';
 
 const LEAVE_FIELDS = [

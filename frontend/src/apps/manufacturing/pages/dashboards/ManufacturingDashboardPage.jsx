@@ -2,7 +2,7 @@
 import { LayoutDashboard, Sparkles, Activity, Box, CheckCircle, AlertOctagon, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import manufacturingService from '../../api/manufacturingService';
-import DataTable from '@/core/components/shared/views/DataTable';
+import DataTable from '../../../../apps/shell/components/ui/views/DataTable';
 
 export default function ManufacturingDashboardPage() {
   const [orders, setOrders] = useState([]);

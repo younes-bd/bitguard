@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { ShieldAlert, Plus, Search, Trash2, Edit2 } from 'lucide-react';
 import client from '@/core/api/client';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 import toast from 'react-hot-toast';
 
 const RISK_SCORE_COLOR = (score) => score > 12 ? 'text-rose-400 bg-rose-500/10 border-rose-500/20' : score >= 5 ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';

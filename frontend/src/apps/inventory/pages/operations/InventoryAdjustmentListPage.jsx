@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DataTable from '@/core/components/shared/views/DataTable';
+import DataTable from '../../../../apps/shell/components/ui/views/DataTable';
 import inventoryService from '../../api/inventoryService';
 import { Edit3, Plus, Search, Filter } from 'lucide-react';
 import { toast } from 'react-hot-toast';

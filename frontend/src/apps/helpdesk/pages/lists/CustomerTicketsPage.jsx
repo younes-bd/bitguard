@@ -5,7 +5,7 @@ import {
     Activity, Lock
 } from 'lucide-react';
 import { helpdeskService } from '../../api/helpdeskService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 import TicketThread from '../../components/TicketThread';
 
 const STATUS_CONFIG = {

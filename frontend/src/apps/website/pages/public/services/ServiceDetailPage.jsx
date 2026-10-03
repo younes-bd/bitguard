@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 
 import websiteService from '../../../api/websiteService';
-import PageMeta from '@/core/components/shared/PageMeta';
+import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 
 const ServiceDetailPage = () => {
     const { slug } = useParams();

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../../../../../core/styles/landing.css';
-import SectionDivider from '@/core/components/SectionDivider';
-import PageMeta from '@/core/components/shared/PageMeta';
+import '../../../../../apps/shell/styles/landing.css';
+import SectionDivider from '../../../../../apps/shell/components/SectionDivider';
+import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 import client from '@/core/api/client';
 import { useAuth } from '@/core/hooks/useAuth';
 import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';

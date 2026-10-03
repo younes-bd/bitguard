@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { SuspenseComponent } from '../../../../core/registry/ComponentRegistry';
 import { ecommerceService } from '../../api/ecommerceService';
 import { Plus, Search, Edit2, Trash2, Package, Filter, MoreVertical } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-import CreateProductModal from '@/core/components/store/CreateProductModal';
 
 const StoreProductsPage = () => {
     const [products, setProducts] = useState([]);
@@ -207,7 +207,7 @@ const StoreProductsPage = () => {
 
             {/* Modal */}
             {isModalOpen && (
-                <CreateProductModal
+                <SuspenseComponent name="product.CreateProductModal"
                     initialData={editingProduct}
                     onClose={handleCloseModal}
                     onSave={handleSaveProduct}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Package, CheckCircle, Clock, Truck } from 'lucide-react';
 import { procurementService } from '../../api/procurementService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 import toast from 'react-hot-toast';
 
 const statusBadge = (status) => {

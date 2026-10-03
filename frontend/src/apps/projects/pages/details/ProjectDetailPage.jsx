@@ -8,7 +8,7 @@ import {
     PlusCircle, ExternalLink, ChevronRight
 } from 'lucide-react';
 import projectsService from '../../api/projectsService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 import { toast } from 'react-hot-toast';
 
 const STATUS_MAP = {

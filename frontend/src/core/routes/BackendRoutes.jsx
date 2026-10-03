@@ -1,10 +1,10 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import ModuleLayout from '../layouts/ModuleLayout';
-import BackendLayout from '../layouts/BackendLayout';
-import StandaloneLayout from '../layouts/StandaloneLayout';
+import ModuleLayout from '../../apps/shell/layouts/ModuleLayout';
+import BackendLayout from '../../apps/shell/layouts/BackendLayout';
+import StandaloneLayout from '../../apps/shell/layouts/StandaloneLayout';
 
-import CommandCenter from '../pages/CommandCenterPage';
+import CommandCenter from '../../apps/shell/pages/CommandCenterPage';
 import InboxCenter from '../../apps/inbox/pages/InboxCenterPage';
 import UserProfile from '../../apps/users/pages/profile/UserProfilePage';
 import { websiteAdminRoutes as WebsiteAdminRoutes } from '../../apps/website/routes/websiteAdminRoutes';
@@ -63,7 +63,10 @@ const BackendRoutesInner = () => {
                 // Odoo 17 standard: resolve display title from the DB (InstalledModule.display_name),
                 // falling back to InstalledModule.name, then to a formatted folder name.
                 const dbModule = manifestData.find(m => m.technical_name === appName);
-                const moduleTitle = dbModule?.display_name || dbModule?.name || formatTitle(appName);
+                let moduleTitle = dbModule?.display_name || dbModule?.name || formatTitle(appName);
+                if (appName === 'system') {
+                    moduleTitle = 'Settings';
+                }
 
                 const menuPath = `../../apps/${appName}/config/menu.js`;
                 const moduleMenuObj = menuConfigs[menuPath];
@@ -73,6 +76,10 @@ const BackendRoutesInner = () => {
                     // API-Driven Injection: Pass the live manifest to the system settings builder
                     if (moduleMenuObj && moduleMenuObj.getSettingsMenu) {
                         moduleMenu = moduleMenuObj.getSettingsMenu(manifestData);
+                    }
+                } else if (appName === 'analytics') {
+                    if (moduleMenuObj && moduleMenuObj.getDashboardsMenu) {
+                        moduleMenu = moduleMenuObj.getDashboardsMenu(manifestData);
                     }
                 } else if (moduleMenuObj) {
                     const menuKey = Object.keys(moduleMenuObj).find(k => k.endsWith('Menu') && Array.isArray(moduleMenuObj[k]));

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
+import RecordFormLayout from '../../../../apps/shell/components/ui/forms/RecordFormLayout';
 import inventoryService from '../../api/inventoryService';
 import { toast } from 'react-hot-toast';
 import { Loader2, ArrowRight } from 'lucide-react';

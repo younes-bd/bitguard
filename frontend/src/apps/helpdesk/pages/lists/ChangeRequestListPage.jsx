@@ -2,7 +2,7 @@
 import { GitBranch, Plus, Search, CheckCircle, AlertCircle, Clock, Play, X, ChevronRight, Loader2, XCircle, RotateCcw, CheckSquare, User, Calendar, Download } from 'lucide-react';
 import serviceService from '../../../field-service/api/serviceService';
 import reportsService from '@/apps/reports/api/reportsService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 import toast from 'react-hot-toast';
 
 const STATUS_CONFIG = {

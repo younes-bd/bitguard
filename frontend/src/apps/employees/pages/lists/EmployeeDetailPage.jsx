@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import RecordFormLayout from '@/core/components/shared/forms/RecordFormLayout';
-import ChatterPanel from '@/core/components/shared/chatter/ChatterPanel';
+import RecordFormLayout from '../../../../apps/shell/components/ui/forms/RecordFormLayout';
+import ChatterPanel from '../../../../apps/shell/components/ui/chatter/ChatterPanel';
 import { employeesService } from '../../api/employeesService';
 import { Users, Inbox, Phone, Calendar, Briefcase, Hash } from 'lucide-react';
 import { toast } from 'react-hot-toast';

@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import manufacturingService from '../../api/manufacturingService';
-import DataTable from '@/core/components/shared/views/DataTable';
+import DataTable from '../../../../apps/shell/components/ui/views/DataTable';
 import { Plus, List as ListIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 

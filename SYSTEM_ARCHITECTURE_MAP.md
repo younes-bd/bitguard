@@ -4,13 +4,31 @@ This document is the **definitive, authoritative registry** of every module in t
 
 ## Architectural Layers Defined (4-Layer Headless ERP Model)
 
-1. **Layer 1: Kernel (Non-Optional Foundation)**: Zero standalone UI. Non-removable. Every other module depends on it transitively. Equivalent to Odoo's `base` module. `application: False`. These modules do NOT inject into the Settings sidebar.
+This strict 4-Layer model governs how the Backend Data Plane interacts with the Frontend Control Plane, ensuring total MACH Tier-1 compliance.
 
-2. **Layer 2: Platform Services (Shared Infrastructure with Admin UI)**: Cross-cutting shared services with admin-only configuration UI accessible through Settings only. No Command Center tile. `application: False`. These modules MUST export a static `settingsMenu` array from `config/menu.js`.
+### 1. Layer 1: Kernel & Infrastructure (Non-Optional Foundation)
+*   **The Rule:** These are invisible, headless background engines (e.g., core, uth, 	enants). They establish the database primitives, multi-tenancy bounds, and security rules. They are non-removable, and every other module depends on them.
+*   **Manifest Setting:** 'application': False (Equivalent to Odoo's ase module).
+*   **Frontend Action:** Naturally ignored by the frontend useManifest parser. They have zero standalone UI and no dashboard tiles. 
+*   **Sidebar Routing:** These modules do NOT inject into the Settings sidebar. Any core infrastructure configurations are hardcoded into the system app's base settings.
 
-3. **Layer 3: Business Applications (Standalone Apps)**: Full-featured business modules with a Command Center tile, standalone navigation, and dedicated settings page. `application: True`. These modules MUST NEVER export a static `settingsMenu`.
+### 2. Layer 2: Platform Services (The Control Plane)
+*   **The Rule:** Cross-cutting shared IT services (e.g., system, users, utomation, shell). **Under the MACH standard, these are classified as full applications because they possess complex administrative UIs, but they are *infrastructure*, not primary business domains.** Therefore, they must NOT clutter the main dashboard grid.
+*   **Manifest Setting:** 'application': True (Because they are factual UI applications).
+*   **Frontend Action:** Forcefully hidden from the Command Center grid using the strict layout filter defined in **rontend/src/apps/shell/config/dashboard.js** (HIDDEN_DASHBOARD_TILES). They are accessed exclusively via top-bar navigation or the Waffle menu.
+*   **Sidebar Routing (Static Explicit):** Because Platform Services often have deep, multi-link configuration menus, these modules MUST explicitly export a static settingsMenu array from their frontend **config/menu.js** file. The system module statically aggregates these.
 
-4. **Layer 4: External Integrations (Third-Party Connectors)**: Modules that bridge to external third-party platforms or services.
+### 3. Layer 3: Business Applications (The Data Plane)
+*   **The Rule:** These are the primary, decoupled business domains (e.g., crm, sales, ccounting, soc, gents). They are the lifeblood of the ERP and are the only modules that deserve massive, interactive tiles on the Command Center grid.
+*   **Manifest Setting:** 'application': True
+*   **Frontend Action:** Rendered normally on the Command Center grid.
+*   **Sidebar Routing (Dynamic Payload):** To enforce strict MACH uniformity ('1 App = 1 Settings Page'), Layer 3 modules MUST NEVER export a static settingsMenu. Instead, their settings link is dynamically generated on the frontend by reading the has_settings: True flag directly from the InstalledModule backend database payload.
+
+### 4. Layer 4: External Integrations (Third-Party Bridges)
+*   **The Rule:** These are headless connectors bridging the ERP to outside SaaS platforms (e.g., whatsapp, mazon, i_engine, payments). They act as background capability injectors for Layer 3 apps or run silently in the background via webhooks/crons.
+*   **Manifest Setting:** 'application': False
+*   **Frontend Action:** Naturally filtered out by the frontend dashboard parser, keeping the UI completely clean of external connector clutter.
+*   **Sidebar Routing:** Any API key configuration required for these connectors is injected into the Layer 2 system app's generic Settings views, rather than spawning standalone UI pages.
 
 ---
 

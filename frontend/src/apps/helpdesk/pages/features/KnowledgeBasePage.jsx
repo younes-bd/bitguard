@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { BookOpen, Search, Plus, ChevronRight, Tag, Loader2, Edit2, Trash2 } from 'lucide-react';
 import helpdeskService from '../../api/helpdeskService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
-import DeleteConfirmationModal from '@/core/components/shared/core/DeleteConfirmationModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
+import DeleteConfirmationModal from '../../../../apps/shell/components/layout/DeleteConfirmationModal';
 
 const KnowledgeBasePage = () => {
     const [search, setSearch] = useState('');

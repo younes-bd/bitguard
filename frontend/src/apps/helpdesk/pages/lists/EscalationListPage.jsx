@@ -2,7 +2,7 @@
 import { AlertOctagon, Clock, User, ArrowUpCircle, CheckCircle, UserPlus, Loader2 } from 'lucide-react';
 import helpdeskService from '../../api/helpdeskService';
 import { usersService } from '../../../users/api/usersService';
-import GenericModal from '@/core/components/shared/forms/GenericModal';
+import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';
 
 const priorityBadge = (priority) => {
     const map = {

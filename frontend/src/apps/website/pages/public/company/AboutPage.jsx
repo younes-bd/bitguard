@@ -1,7 +1,7 @@
 import React from 'react';
-import SectionDivider from '@/core/components/SectionDivider';
-import PageMeta from '@/core/components/shared/PageMeta';
-import '../../../../../core/styles/landing.css';
+import SectionDivider from '../../../../../apps/shell/components/SectionDivider';
+import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
+import '../../../../../apps/shell/styles/landing.css';
 
 const AboutPage = () => {
     return (
