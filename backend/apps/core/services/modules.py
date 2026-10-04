@@ -82,6 +82,8 @@ def sync_modules(tenant=None):
                 module.license = manifest.get('license', 'LGPL-3')
                 module.rating = float(manifest.get('rating', 0.0))
                 module.featured = bool(manifest.get('featured', False))
+                module.has_settings = manifest.get('has_settings', False)
+                module.settings_url = manifest.get('settings_url', '')
                 module.screenshots = manifest.get('screenshots', [])
                 module.save()
                 modules_found += 1
@@ -142,6 +144,8 @@ def upgrade_module(module, tenant=None):
         module.version = data.get('version', module.version)
         module.summary = data.get('summary', module.summary)
         module.description = data.get('description', module.description)
+        module.has_settings = data.get('has_settings', module.has_settings)
+        module.settings_url = data.get('settings_url', module.settings_url)
         module.save()
         
         try:

@@ -321,6 +321,54 @@ class SystemParameterViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         return SystemParameter.objects.filter(tenant=getattr(self.request, 'tenant', None))
 
+    @action(detail=False, methods=['get'])
+    def schema(self, request):
+        from apps.core.services.settings_registry import get_full_settings_schema
+        schema = get_full_settings_schema()
+        app_filter = request.query_params.get('app', None)
+        if app_filter:
+            schema = {k: v for k, v in schema.items() if v.get('app') == app_filter}
+        return Response(schema)
+
+    @action(detail=False, methods=['post'])
+    def batch_update(self, request):
+        """
+        Validates and saves a dictionary of settings against the strict schema.
+        """
+        from apps.core.services.settings_registry import get_full_settings_schema, validate_setting_value
+        from apps.core.domain.models import SystemEventLog
+        
+        tenant = getattr(request, 'tenant', None)
+        schema = get_full_settings_schema()
+        updates = request.data.get('updates', {})
+        
+        if not isinstance(updates, dict):
+            return Response({'error': 'Payload must contain an "updates" dictionary.'}, status=400)
+            
+        saved_keys = []
+        try:
+            for key, val in updates.items():
+                validated_val = validate_setting_value(key, val, schema)
+                SystemParameter.objects.update_or_create(
+                    tenant=tenant,
+                    key=key,
+                    defaults={'value': validated_val}
+                )
+                saved_keys.append(key)
+                
+            if saved_keys:
+                SystemEventLog.objects.create(
+                    action='settings_batch_update',
+                    resource_type='SystemParameter',
+                    resource_id='batch',
+                    details={'keys_updated': saved_keys},
+                    tenant=tenant
+                )
+                
+            return Response({'status': 'success', 'updated': saved_keys})
+        except ValueError as e:
+            return Response({'error': str(e)}, status=400)
+
     @action(detail=False, methods=['post'], url_path='clear_cache')
     def clear_cache(self, request):
         from django.core.cache import cache

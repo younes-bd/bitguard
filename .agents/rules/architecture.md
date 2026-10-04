@@ -431,3 +431,112 @@ Business apps (`sales`, `crm`, `accounting`) are strictly forbidden from writing
     };
     `
 
+
+## Rule 51: The Settings UI Decoupling Law (The Manifest Truth)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+When determining which apps have a Settings page, you are strictly forbidden from hardcoding routes, arrays, or React components in the frontend.
+*   **The Backend Truth:** The existence of a settings page (has_settings: True) and its path (settings_url) MUST be defined in the app's __manifest__.py file.
+*   **The API Enforcement:** The backend sync_modules service extracts these manifest keys and saves them to the PostgreSQL InstalledModule table.
+*   **The Frontend Rule:** The React frontend (specifically system) must act as a 'dumb' client, dynamically generating the settings navigation based purely on the has_settings JSON flag returned by the API.
+
+## Rule 52: The Settings Schema Protocol (The `res.config.settings` Headless Equivalent)
+
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+When managing global system or app-specific settings, you must understand how this Headless ERP modernizes Odoo's legacy settings architecture. You are strictly forbidden from creating "Transient Models" (fake/temporary database tables) to handle settings forms.
+
+**The Monolithic Fallacy (Odoo's `res.config.settings`):**
+In standard Odoo, `res.config.settings` is a `TransientModel`. Because Odoo's server-side XML views require a physical database row to bind to, Odoo creates a temporary database record when an admin opens the Settings page, extracts the values upon save, writes them to `ir.config_parameter`, and then deletes the temporary row. This is a monolithic workaround that wastes database I/O.
+
+**The Tier-1 MACH Standard (Stateless Validation):**
+Because BitGuard is a Headless ERP, the backend does not render UI views and does not need temporary database rows. We split Odoo's `res.config.settings` into two stateless halves:
+
+1. **The Temporary State (Frontend Control Plane):** 
+   The React frontend natively holds uncommitted settings in browser memory (React State) while the admin edits the form.
+2. **The Validation Registry (Backend Data Plane):** 
+   When the user saves, the backend does NOT accept arbitrary keys. Every setting must be explicitly declared in a `settings_schema.py` file within the app's directory. 
+3. **The Persistent Store (`SystemParameter`):**
+   The `/batch_update/` API endpoint intercepts the payload, validates the keys and data types against the central `settings_registry.py`, and securely saves them into the `SystemParameter` model (the exact equivalent of Odoo's `ir.config_parameter`), scoped by `tenant_id`.
+
+**Agent Enforcement:**
+You must NEVER write settings directly to the database without schema validation. If you add a new setting for an app, you MUST define it in that app's `settings_schema.py` using the standard dot-notation (e.g., `crm.lead_scoring`), or the central registry will reject the save request.
+
+## Rule 53: The Strict Tree-Shaking Standard (The Icon Registry)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You are strictly forbidden from writing wildcard imports for heavy UI libraries (e.g., 'import * as LucideIcons from 'lucide-react''). This destroys Webpack/Vite tree-shaking and causes massive frontend bundle bloat, violating Tier-1 performance standards.
+
+*   **The Problem:** The backend database often stores icon names as plain text strings. Agents often use wildcard imports to dynamically map these strings to React Components.
+*   **The Standard Fix:** You MUST use the central `IconRegistry` located strictly at `frontend/src/apps/shell/components/ui/iconRegistry.js`. If an app requires a new icon, you must explicitly add it to the named exports in that registry file. All dynamic icon resolution must pass through this single file.
+
+## Rule 54: The Manifest Segregation Protocol (menu.js vs settingsManifest.js)
+To maintain strict Domain-Driven Design on the frontend, an app's primary navigation must be physically separated from its IT configuration hooks.
+
+*   **config/menu.js (Primary Navigation):** This file is STRICTLY reserved for the app's primary navigation inside the Command Center and its main layout. It must never contain links to the /admin/settings/ domain.
+*   **config/settingsManifest.js (Control Plane Hooks):** If a Layer 2 Platform App (like users or inbox) needs to inject configuration menus into the system settings pages, it MUST export them from this dedicated manifest file. The system module will dynamically aggregate these via import.meta.glob.
+*   **The Ban:** Never export a settingsMenu array from a standard menu.js file.
+
+## Rule 55: Layer 4 Settings Injection (The Edge Integration Standard)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+Layer 4 modules (Smart Add-ons, AI Engines, Payment Gateways, External Integrations) sit *on top* of the business logic. They are "Global Enhancers."
+
+Because they are enhancements rather than standalone business apps, **Layer 4 modules are strictly forbidden from occupying a dedicated link in the left Settings sidebar.** (They must not rely on the 'has_settings: True' Layer 3 mechanism).
+
+Instead, Layer 4 must inject its settings using one of two MACH methods:
+1.  **Global UI Injection ('settingsManifest.js'):** If the module has global configurations (e.g., "Enter Stripe API Keys", "Enable AI Virtual Agents"), it must export a 'generalSettingsCards' array from its 'settingsManifest.js'. The 'system' module will dynamically aggregate these into the root "General Settings" page. It must never export a 'settingsMenu'.
+2.  **Contextual Backend Injection ('settings_schema.py'):** If the configuration is specific to a business app (e.g., a "Use AI Lead Scoring" toggle for CRM), the Layer 4 module must declare that setting using the target app's prefix (e.g., 'crm.use_ai'). The backend Settings Registry will seamlessly merge it into the target app's schema.
+
+## Rule 56: The AI Engine vs. AI Agent Decoupling Law
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+To comply with Tier-1 MACH ERP standards, you must strictly decouple AI Infrastructure from AI Business Logic. You are forbidden from creating a monolithic "AI App". 
+
+In this codebase, this separation is physically enforced by two explicitly named modules:
+
+#### 1. The AI Engine (i_engine module - Layer 4 Edge Infrastructure)
+The i_engine module is the headless technical plumbing. It handles LLM provider routing (OpenAI, Claude), token limits, API keys, vector databases, and security guardrails. It does not know what a "Lead" or "Invoice" is.
+*   **Settings Management:** Because it is infrastructure, the i_engine must inject its configuration cards (e.g., "LLM Providers", "Global Token Limits") directly into the **General Settings** page using the settingsManifest.js -> generalSettingsCards method.
+*   **The Ban:** The i_engine module must NEVER store business prompts, personas, or app-specific logic.
+
+#### 2. The Global Fleet of Agents (gents module - Layer 3 Business Application)
+BitGuard utilizes a **Global Fleet Model** for its digital workers. All autonomous agents, copilots, and their personas are managed centrally within the dedicated gents module. 
+*   **Settings Management:** The gents module is a standard Layer 3 Business App. It acts as the global dispatch and configuration dashboard for all AI personas across the ERP. Future AI developers must not fragment agent management across individual apps (e.g., do not build a standalone agent manager inside CRM; instead, link the CRM to the global gents module).
+*   **The Ban:** The gents module must NEVER store, request, or manage API keys or model endpoints. It must send clean requests to the i_engine, allowing the engine to handle the external authentication.
+
+**The MACH Execution Flow:**
+The gents module compiles the business prompt and tools -> sends an internal request to the i_engine -> the i_engine attaches the central API key, executes the external LLM call, logs the token usage, and returns the response to the agent.
+
+## Rule 57: The General Settings Aggregation Law (The IT Control Panel)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+The GeneralSettingsPage.jsx inside the system module serves strictly as the global "IT Control Panel." It must maintain perfect MACH decoupling. 
+
+You must adhere to the 3-Tier General Settings strictures:
+
+#### 1. The Hardcoded Foundation (Layer 1 Kernel)
+Because the system frontend module is the explicit UI proxy for the headless core and 	enants backend modules, it inherently owns the system's foundational configuration.
+*   **Allowed:** Base infrastructure sections like "Users & Companies", "Permissions", and "Developer Tools" must be statically hardcoded into the aseKernelCards array inside GeneralSettingsPage.jsx.
+
+#### 2. The Dynamic Injectors (Layer 2 Platform & Layer 4 Edge)
+Global platform services (e.g., inbox emails, portal) and external integrations (e.g., i_engine, stripe) must inject their configurations dynamically to prevent hard-coupling.
+*   **Mechanism:** They must export a generalSettingsCards array from their respective settingsManifest.js. 
+*   **Execution:** The GeneralSettingsPage.jsx uses Vite's import.meta.glob to retrieve these manifests, automatically grouping and rendering them by their Section Title (e.g., merging all AI and Payment cards under a single "Integrations" header). The page must NEVER import these plugins statically.
+
+#### 3. The Strict Ban on Business Apps (Layer 3 Isolation)
+Business Applications (e.g., sales, crm, ccounting, inventory) manage vast amounts of domain-specific data. 
+*   **The Ban:** Layer 3 Business Apps are **STRICTLY FORBIDDEN** from injecting cards into the General Settings page. 
+*   **The Alternative:** They must utilize the has_settings: True backend database parameter, which automatically generates a dedicated, isolated settings page in the left sidebar exclusively for that business app. Do not mix Business Settings with IT Settings.
+
+## Rule 58: The settingsManifest.js Injection Protocol
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You must never hardcode settings navigation links. All Settings routing is dynamically aggregated based on the MACH Layer of the app.
+
+1.  **Layer 3 Business Apps:** Never use a manifest file for navigation. Simply set has_settings: True in the backend database. The system will automatically generate a dedicated settings link in the left sidebar (e.g., /admin/settings/sales).
+2.  **Layer 2 / Layer 4 Technical Apps:** Must use rontend/src/apps/<app>/config/settingsManifest.js. You have two injection targets:
+    *   generalSettingsCards: [] ? Injects visual blocks directly into the global General Settings page.
+    *   	opMenu: [] ? Injects navigation links into the Settings Top Bar. You must provide {category, group, label, path, devOnly: true/false}.
+3.  **The Left Sidebar Ban:** The left sidebar of the Settings App is strictly reserved for Business Apps. You are forbidden from placing Technical, IT, or Security links there.
+
+## Rule 59: Global Context Layering (The Developer Mode Law)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+In a Headless MACH frontend, there is a strict separation between global state (core) and visual layouts (shell).
+
+*   Global State Providers (like DeveloperModeContext, AuthContext, ManifestContext) must **strictly reside in rontend/src/core/context/**.
+*   Even if a state (like Developer Mode) is primarily used to toggle UI elements, it is still a global variable that any Layer 3 app might need to read. 
+*   If you place a React Context inside the visual shell module, you are violating the Kernel Boundaries (Rule 9) and will cause circular dependency failures when business apps try to consume it.

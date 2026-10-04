@@ -532,6 +532,8 @@ class InstalledModule(TenantAwareModel):
     installable = models.BooleanField(default=True)
     application = models.BooleanField(default=False)
     url = models.CharField(max_length=255, blank=True, help_text="URL path to the live app")
+    has_settings = models.BooleanField(default=False, help_text="Does this module have a settings menu?")
+    settings_url = models.CharField(max_length=255, blank=True, help_text="e.g. /admin/crm/settings")
     website = models.URLField(max_length=255, blank=True, help_text="App creator website")
     license = models.CharField(max_length=100, blank=True, default="LGPL-3")
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0, help_text='App rating out of 5.0')

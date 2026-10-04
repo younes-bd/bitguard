@@ -10,23 +10,12 @@ import {
 } from 'lucide-react';
 
 export const usersMenu = [
-        {
-            title: 'Users & Companies',
-            items: [
-                { label: 'Users', icon: Users, path: '/admin/users/users' },
-                { label: 'Companies', icon: Building2, path: '/admin/users/tenants' },
-                { label: 'Groups', icon: Key, path: '/admin/users/roles' },
-            ]
-        }
-    ];
-
-export const settingsMenu = [
-    { section: 'Users & Companies', label: 'Users', icon: Users, path: '/admin/settings/users' },
-    { section: 'Users & Companies', label: 'Companies', icon: Building2, path: '/admin/settings/companies' },
-    { section: 'Users & Companies', label: 'User Groups', icon: ShieldCheck, path: '/admin/settings/groups' },
-    { section: 'Users & Companies', label: 'Active Sessions', icon: Server, path: '/admin/settings/active-sessions' },
-    { section: 'Users & Companies', label: 'Personal Access Tokens', icon: Key, path: '/admin/settings/personal-access-tokens' },
-    { section: 'Technical', label: 'Access Rights', icon: Key, path: '/admin/settings/access-rights' },
-    { section: 'Technical', label: 'Record Rules', icon: Database, path: '/admin/settings/record-rules' },
-    { section: 'Technical', label: 'Security Policy', icon: ShieldCheck, path: '/admin/settings/security-policy' },
+    {
+        title: 'Users & Companies',
+        items: [
+            { label: 'Users', icon: Users, path: '/admin/users/users' },
+            { label: 'Companies', icon: Building2, path: '/admin/users/tenants' },
+            { label: 'Groups', icon: Key, path: '/admin/users/roles' },
+        ]
+    }
 ];

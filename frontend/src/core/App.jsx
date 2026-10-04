@@ -27,6 +27,7 @@ import { TenantProvider } from './context/TenantContext';
 import { InboxProvider } from './context/InboxContext';
 import { ThemeProvider } from './context/ThemeProvider';
 import { ConfigProvider } from './context/ConfigContext';
+import { DeveloperModeProvider } from './context/DeveloperModeContext';
 
 const AppContent = () => {
     const { isAuthenticated, isAdmin, loading } = useAuth();
@@ -88,10 +89,12 @@ const App = () => {
                 <TenantProvider>
                     <ConfigProvider>
                         <InboxProvider>
-                            <ThemeProvider>
+                            <DeveloperModeProvider>
+                                <ThemeProvider>
                                 <Toaster position="top-right" reverseOrder={false} />
                                 <AppContent />
                             </ThemeProvider>
+                            </DeveloperModeProvider>
                         </InboxProvider>
                     </ConfigProvider>
                 </TenantProvider>
@@ -101,4 +104,5 @@ const App = () => {
 };
 
 export default App;
+
 

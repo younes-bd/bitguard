@@ -2,6 +2,8 @@ import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 import DocumentLayouts from '../pages/features/DocumentLayoutsPage';
 import GeneralSettings from '../pages/settings/GeneralSettingsPage';
+import { Outlet } from 'react-router-dom';
+import SettingsTopBar from '../components/SettingsTopBar';
 import SystemLogs from '../pages/lists/SystemLogsPage';
 import SystemEventPage from '../pages/security/SystemEventPage';
 
@@ -38,8 +40,17 @@ import WebhooksListPage from '../../automation/pages/lists/WebhooksListPage';
 // DYNAMIC SETTINGS REGISTRY (Tier-1 Standard)
 const pluginSettingsRoutes = import.meta.glob('../../*/routes/settingsRoutes.jsx', { eager: true });
 
+const SettingsLayout = () => (
+    <div className="flex flex-col h-full w-full">
+        <SettingsTopBar />
+        <div className="flex-1 overflow-auto">
+            <Outlet />
+        </div>
+    </div>
+);
+
 export const settingsAdminRoutes = (
-  <>
+  <Route element={<SettingsLayout />}>
     {/* Base System Routes */}
     <Route index element={<Navigate to="general" replace />} />
     <Route path="document-layouts" element={<DocumentLayouts />} />
@@ -80,5 +91,6 @@ export const settingsAdminRoutes = (
     {Object.entries(pluginSettingsRoutes).map(([path, mod]) => {
         return mod.default || null;
     })}
-  </>
+  </Route>
 );
+
