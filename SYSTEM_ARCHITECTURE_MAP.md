@@ -1,31 +1,31 @@
 # BitGuard ERP — System Architecture Map
 
-This document is the **definitive, authoritative registry** of every module in the BitGuard ERP system. It classifies every module according to the adopted **4-Layer Headless ERP Model** (aligned with Odoo 17 `application`/`installable` flags). All AI agents MUST consult this file before making architectural decisions.
+This document is a **human-readable view** of the BitGuard ERP module catalogue. The **single source of truth** for which layer each module belongs to is `.agents/rules/layer_registry.json` (Rule 65 in `architecture.md`). If this file and the registry disagree, the registry wins. The Quick Summary below is generated from the registry. The per-module detail sections are informational: manifest values such as `Is Application` may lag behind the registry until the manifests are migrated.
 
 ## Architectural Layers Defined (4-Layer Headless ERP Model)
 
 This strict 4-Layer model governs how the Backend Data Plane interacts with the Frontend Control Plane, ensuring total MACH Tier-1 compliance.
 
 ### 1. Layer 1: Kernel & Infrastructure (Non-Optional Foundation)
-*   **The Rule:** These are invisible, headless background engines (e.g., core, uth, 	enants). They establish the database primitives, multi-tenancy bounds, and security rules. They are non-removable, and every other module depends on them.
-*   **Manifest Setting:** 'application': False (Equivalent to Odoo's ase module).
+*   **The Rule:** These are invisible, headless background engines (e.g., core, auth, tenants). They establish the database primitives, multi-tenancy bounds, and security rules. They are non-removable, and every other module depends on them.
+*   **Manifest Setting:** 'application': False (Equivalent to Odoo's base module).
 *   **Frontend Action:** Naturally ignored by the frontend useManifest parser. They have zero standalone UI and no dashboard tiles. 
 *   **Sidebar Routing:** These modules do NOT inject into the Settings sidebar. Any core infrastructure configurations are hardcoded into the system app's base settings.
 
 ### 2. Layer 2: Platform Services (The Control Plane)
-*   **The Rule:** Cross-cutting shared IT services (e.g., system, users, utomation, shell). **Under the MACH standard, these are classified as full applications because they possess complex administrative UIs, but they are *infrastructure*, not primary business domains.** Therefore, they must NOT clutter the main dashboard grid.
+*   **The Rule:** Cross-cutting shared IT services (e.g., system, users, automation, shell). **Under the MACH standard, these are classified as full applications because they possess complex administrative UIs, but they are *infrastructure*, not primary business domains.** Therefore, they must NOT clutter the main dashboard grid.
 *   **Manifest Setting:** 'application': True (Because they are factual UI applications).
-*   **Frontend Action:** Forcefully hidden from the Command Center grid using the strict layout filter defined in **rontend/src/apps/shell/config/dashboard.js** (HIDDEN_DASHBOARD_TILES). They are accessed exclusively via top-bar navigation or the Waffle menu.
+*   **Frontend Action:** Forcefully hidden from the Command Center grid using the strict layout filter defined in **frontend/src/apps/shell/config/dashboard.js** (HIDDEN_DASHBOARD_TILES). They are accessed exclusively via top-bar navigation or the Waffle menu.
 *   **Sidebar Routing (Static Explicit):** Because Platform Services often have deep, multi-link configuration menus, these modules MUST explicitly export a static settingsMenu array from their frontend **config/menu.js** file. The system module statically aggregates these.
 
 ### 3. Layer 3: Business Applications (The Data Plane)
-*   **The Rule:** These are the primary, decoupled business domains (e.g., crm, sales, ccounting, soc, gents). They are the lifeblood of the ERP and are the only modules that deserve massive, interactive tiles on the Command Center grid.
+*   **The Rule:** These are the primary, decoupled business domains (e.g., crm, sales, accounting, soc, agents). They are the lifeblood of the ERP and are the only modules that deserve massive, interactive tiles on the Command Center grid.
 *   **Manifest Setting:** 'application': True
 *   **Frontend Action:** Rendered normally on the Command Center grid.
 *   **Sidebar Routing (Dynamic Payload):** To enforce strict MACH uniformity ('1 App = 1 Settings Page'), Layer 3 modules MUST NEVER export a static settingsMenu. Instead, their settings link is dynamically generated on the frontend by reading the has_settings: True flag directly from the InstalledModule backend database payload.
 
 ### 4. Layer 4: External Integrations (Third-Party Bridges)
-*   **The Rule:** These are headless connectors bridging the ERP to outside SaaS platforms (e.g., whatsapp, mazon, i_engine, payments). They act as background capability injectors for Layer 3 apps or run silently in the background via webhooks/crons.
+*   **The Rule:** These are headless connectors bridging the ERP to outside SaaS platforms (e.g., amazon, ai_engine, shipping carriers, payment provider connectors). They act as background capability injectors for Layer 3 apps or run silently in the background via webhooks/crons.
 *   **Manifest Setting:** 'application': False
 *   **Frontend Action:** Naturally filtered out by the frontend dashboard parser, keeping the UI completely clean of external connector clutter.
 *   **Sidebar Routing:** Any API key configuration required for these connectors is injected into the Layer 2 system app's generic Settings views, rather than spawning standalone UI pages.
@@ -35,28 +35,26 @@ This strict 4-Layer model governs how the Backend Data Plane interacts with the 
 ## Quick Summary (Bird's-Eye View)
 
 ### Layer 1: Kernel
-- **Technical**: `auth`, `core`, `tenants`
+- `auth`, `core`, `tenants`
 
 ### Layer 2: Platform Services
-- **Technical**: `apps`,`system`, `users`, `inbox`, `portal`, `automation`, `reports`,  
-- **Inventory**: `product`, `shipping`
+- `apps`, `automation`, `inbox`, `payments`, `portal`, `product`, `reports`, `shell`, `system`, `users`
 
 ### Layer 3: Business Applications
-- **Sales**: `crm`, `pos`, `rental`, `sales`, `subscriptions`
-- **Services**: `appointments`, `dispatch`, `helpdesk`, `planning`, `projects`, `timesheets`
-- **Accounting & Finance**: `accounting`, `consolidation`, `equity`, `esg`, `expenses`, `invoicing`
+- **Accounting**: `accounting`, `consolidation`, `documents`, `equity`, `esg`, `expenses`, `invoicing`, `sign`, `spreadsheet`
+- **Administration**: `agents`, `soc`, `studio`
+- **Discuss**: `discuss`, `messaging`, `voip`, `whatsapp`
+- **Human Resources**: `employees`, `fleet`, `frontdesk`, `lunch`, `payroll`, `performance`, `recruiting`, `referrals`, `timeclock`, `timeoff`
 - **Inventory**: `barcode`, `inventory`, `procurement`
 - **Manufacturing**: `iot`, `maintenance`, `manufacturing`, `production`, `quality`, `repair`
-- **Human Resources**: `employees`, `fleet`, `frontdesk`, `lunch`, `payroll`, `performance`, `recruiting`, `referrals`, `timeclock`, `timeoff`
 - **Marketing**: `campaigns`, `events`, `journeys`, `sms`, `social`, `surveys`
+- **Productivity**: `analytics`, `approvals`, `calendar`, `knowledge`, `tasks`
+- **Sales**: `crm`, `pos`, `rental`, `sales`, `subscriptions`
+- **Services**: `appointments`, `dispatch`, `helpdesk`, `planning`, `projects`, `timesheets`
 - **Website**: `blog`, `ecommerce`, `forum`, `learning`, `website`
-- **Productivity**: `agents`, `analytics`, `approvals`, `calendar`, `discuss`, `documents`, `knowledge`, `messaging`, `sign`, `soc`, `spreadsheet`, `tasks`, `voip`, `whatsapp`
-- **Customization**: `studio`
 
 ### Layer 4: External Integrations
-- **Commerce**: `amazon`
-- **Finance**: `payments`
-- **Technical**: `ai_engine`
+- `ai_engine`, `amazon`, `shipping`
 
 ---
 
@@ -94,16 +92,6 @@ This strict 4-Layer model governs how the Backend Data Plane interacts with the 
 
 
 ## Layer 2: Platform Services (Shared Infrastructure with Admin UI)
-
-### Approvals (`approvals`)
-> Configurable approval workflow engine. Injects approval gates into HR, Finance, Procurement.
-
-- **Odoo App Category:** `Technical`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False`
-- **Is Installable (App Store Enabled?):** `True`
-- **Dependencies (Depends Array):** `core`
-- **Frontend URL Routing:** `/admin/settings/approvals` (Settings only)
 
 ### Automation (`automation`)
 > Scheduled Actions, Automated Actions, and Webhooks engine. Background task execution and event-driven automation for all business apps.
@@ -176,16 +164,6 @@ This strict 4-Layer model governs how the Backend Data Plane interacts with the 
 - **Frontend URL Routing:** `/admin/settings`
 
 
-### Delivery (`shipping`)
-> Delivery orders, shipping methods, and carrier integration. Backend-only service.
-
-- **Odoo App Category:** `Inventory`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False`
-- **Is Installable (App Store Enabled?):** `True`
-- **Dependencies (Depends Array):** `inventory`
-- **Frontend URL Routing:** Backend-only. No standalone frontend app. UI surfaced within `/admin/stock`.
-
 ### Users (`users`)
 > User management, roles, permissions, access rights, record rules, active sessions, and security policies. Platform-level IAM service.
 
@@ -206,6 +184,16 @@ This strict 4-Layer model governs how the Backend Data Plane interacts with the 
 - **Is Installable (App Store Enabled?):** `True`
 - **Dependencies (Depends Array):** `core, system`
 - **Frontend URL Routing:** `/admin/apps`
+
+### Payments (`payments`)
+> Core payment gateway integration module. Connects to external payment providers (Stripe, PayPal, etc.).
+
+- **Odoo App Category:** `Accounting`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `accounting`
+- **Frontend URL Routing:** Headless / No direct URL
 
 ## Layer 3: Business Applications (Standalone Apps)
 
@@ -802,17 +790,15 @@ This strict 4-Layer model governs how the Backend Data Plane interacts with the 
 - **Dependencies (Depends Array):** `core, system, automation`
 - **Frontend URL Routing:** `/admin/agents`
 
-## Layer 4: External Integrations (Third-Party Connectors)
+### Approvals (`approvals`)
+> Configurable approval workflow engine. Injects approval gates into HR, Finance, Procurement.
 
-### Amazon (`amazon`)
-> Amazon marketplace connector. Sync products, orders, and inventory with Amazon Seller Central.
-
-- **Odoo App Category:** `Sales`
-- **Command Center Pillar:** `Sales`
-- **Is Application (Has Dashboard Tile?):** `True`
+- **Odoo App Category:** `Technical`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
 - **Is Installable (App Store Enabled?):** `True`
-- **Dependencies (Depends Array):** `sales, inventory`
-- **Frontend URL Routing:** `/admin/amazon`
+- **Dependencies (Depends Array):** `core`
+- **Frontend URL Routing:** `/admin/settings/approvals` (Settings only)
 
 ### Live Chat (`messaging`)
 > Real-time website visitor chat. External live chat channel integration.
@@ -834,15 +820,17 @@ This strict 4-Layer model governs how the Backend Data Plane interacts with the 
 - **Dependencies (Depends Array):** `core, inbox`
 - **Frontend URL Routing:** `/admin/whatsapp`
 
-### Payments (`payments`)
-> Core payment gateway integration module. Connects to external payment providers (Stripe, PayPal, etc.).
+## Layer 4: External Integrations (Third-Party Connectors)
 
-- **Odoo App Category:** `Accounting`
-- **Command Center Pillar:** `N/A`
-- **Is Application (Has Dashboard Tile?):** `False`
+### Amazon (`amazon`)
+> Amazon marketplace connector. Sync products, orders, and inventory with Amazon Seller Central.
+
+- **Odoo App Category:** `Sales`
+- **Command Center Pillar:** `Sales`
+- **Is Application (Has Dashboard Tile?):** `True`
 - **Is Installable (App Store Enabled?):** `True`
-- **Dependencies (Depends Array):** `accounting`
-- **Frontend URL Routing:** Headless / No direct URL
+- **Dependencies (Depends Array):** `sales, inventory`
+- **Frontend URL Routing:** `/admin/amazon`
 
 ### AI Engine (`ai_engine`)
 > Core AI model integration and inference engine.
@@ -854,3 +842,13 @@ This strict 4-Layer model governs how the Backend Data Plane interacts with the 
 - **Dependencies (Depends Array):** `system`
 - **Frontend URL Routing:** Headless / No direct URL
 - **Status:** Frontend-only stub — backend implementation is missing.
+
+### Delivery (`shipping`)
+> Delivery orders, shipping methods, and carrier integration. Backend-only service.
+
+- **Odoo App Category:** `Inventory`
+- **Command Center Pillar:** `N/A`
+- **Is Application (Has Dashboard Tile?):** `False`
+- **Is Installable (App Store Enabled?):** `True`
+- **Dependencies (Depends Array):** `inventory`
+- **Frontend URL Routing:** Backend-only. No standalone frontend app. UI surfaced within `/admin/stock`.

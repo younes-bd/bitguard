@@ -155,37 +155,9 @@ https://github.com/younes-bd/bitguard
 
 This is the link you give me.
 
-
-3️⃣ Recommended Production-Ready Structure
-
-Here’s a professional, industry-standard structure for a BitGuard tech platform:
-
-backend/ (or bitguard/)  # Django project root
-├─ config/              # Core Django settings
-│  ├─ settings/
-│  │  ├─ base.py
-│  │  ├─ dev.py
-│  │  ├─ prod.py
-├─ apps/                 # Backend Business Modules
-│  ├─ auth/              # Authentication, permissions, roles
-│  ├─ users/             # Users, profiles
-│  ├─ crm/               # Customers, tickets, alerts
-│  ├─ erp/               # Inventory, operations, reporting
-│  ├─ store/             # E-commerce, products, orders, payments
-│  ├─ website/           # Homepage management
-│  ├─ ai_engine/         # AI/automation integrations
-│  ├─ automation/        # Scheduled jobs, background tasks
-│  ├─ blog/              # Content management
-│  ├─ security/          # Logging, monitoring, alerts
-│  └─ tenants/           # Multi-tenancy management
-├─ scripts/
-│  ├─ populate_store.py
-│  └─ start_servers.sh
-├─ requirements/
-├─ docker/
-├─ .env
-├─ README.md
-└─ manage.py
+npm install eslint-plugin-boundaries --save-dev
+npm install
+npm run lint --fix
 
 1. New Frontend Folder Architecture (frontend/src/apps/)
 We will create a new src/apps/ directory to mirror the exact modules present in the backend/apps/ folder. This ensures 1:1 parity across the entire stack. Each frontend app will encapsulate its own pages/, components/, api/, and routes/.

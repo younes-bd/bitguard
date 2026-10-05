@@ -3,6 +3,7 @@ const settingsManifest = {
         { category: 'Technical', group: 'Email', label: 'Outgoing Mail Servers', path: '/admin/settings/outgoing-mail', devOnly: true },
         { category: 'Technical', group: 'Email', label: 'Incoming Mail Servers', path: '/admin/settings/incoming-mail', devOnly: true },
         { category: 'Technical', group: 'Email', label: 'Email Templates', path: '/admin/settings/email-templates', devOnly: true },
+        { category: 'Technical', group: 'Email', label: 'Mail Aliases', path: '/admin/settings/mail-aliases', devOnly: true },
         { category: 'Technical', group: 'Email', label: 'Channels', path: '/admin/settings/channels', devOnly: true },
     ],
     generalSettingsCards: [
@@ -17,3 +18,4 @@ const settingsManifest = {
 };
 
 export default settingsManifest;
+

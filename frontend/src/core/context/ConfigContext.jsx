@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { companyService } from '@/apps/core/api/companyService';
+import i18n from '../config/i18n';
 
 const ConfigContext = createContext(null);
 
@@ -44,6 +45,13 @@ export const ConfigProvider = ({ children }) => {
         };
     }, [user, activeCompany]);
 
+    // Push the resolved language into i18next dynamically
+    useEffect(() => {
+        if (resolvedConfig.language && i18n.language !== resolvedConfig.language) {
+            i18n.changeLanguage(resolvedConfig.language);
+        }
+    }, [resolvedConfig.language]);
+
     return (
         <ConfigContext.Provider value={{ config: resolvedConfig, activeCompany, loading }}>
             {children}
@@ -52,3 +60,4 @@ export const ConfigProvider = ({ children }) => {
 };
 
 export const useConfig = () => useContext(ConfigContext);
+

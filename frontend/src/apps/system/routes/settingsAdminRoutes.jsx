@@ -2,6 +2,9 @@ import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 import DocumentLayouts from '../pages/features/DocumentLayoutsPage';
 import GeneralSettings from '../pages/settings/GeneralSettingsPage';
+import CountriesListPage from '../pages/settings/CountriesListPage';
+import UomListPage from '../pages/settings/UomListPage';
+import TranslationsPage from '../pages/settings/TranslationsPage';
 import { Outlet } from 'react-router-dom';
 import SettingsTopBar from '../components/SettingsTopBar';
 import SystemLogs from '../pages/lists/SystemLogsPage';
@@ -67,7 +70,7 @@ export const settingsAdminRoutes = (
     <Route path="scheduled-actions" element={<ScheduledActions />} />
     <Route path="languages" element={<Languages />} />
     <Route path="translations-export" element={<TranslationsExport />} />
-    <Route path="translations-import" element={<TranslationsImport />} />
+    <Route path="translations-import" element={<TranslationsImport />} />`n    <Route path="translations" element={<TranslationsPage />} />`n    <Route path="countries" element={<CountriesListPage />} />`n    <Route path="uoms" element={<UomListPage />} />
 
     <Route path="companies" element={<CompaniesList />} />
     <Route path="sequences" element={<Sequences />} />
@@ -93,4 +96,5 @@ export const settingsAdminRoutes = (
     })}
   </Route>
 );
+
 

@@ -1,12 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
+import SettingsRenderer from '@/apps/system/components/settings/SettingsRenderer';
 
-const JourneysSettingsPage = () => {
+export default function JourneysSettingsPage() {
     return (
-        <div className="p-8">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">JourneysSettings</h1>
-            <p className="mt-4 text-slate-500 dark:text-slate-400">This module is part of the expanded Journeys Automation suite. Integration pending.</p>
+        <div className="max-w-5xl mx-auto">
+            <SettingsRenderer schemaKey="journeys" title="Journeys Settings" />
         </div>
     );
-};
-
-export default JourneysSettingsPage;
+}

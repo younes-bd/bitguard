@@ -1,5 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
+import SettingsRenderer from '@/apps/system/components/settings/SettingsRenderer';
 
 export default function PortalSettingsPage() {
-    return <div className="text-white"><h2>Portal Settings</h2><p>Configure public self-registration and access.</p></div>;
+    return (
+        <div className="max-w-5xl mx-auto">
+            <SettingsRenderer schemaKey="portal" title="Portal Settings" />
+        </div>
+    );
 }

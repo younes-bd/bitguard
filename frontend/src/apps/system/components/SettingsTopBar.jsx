@@ -24,6 +24,8 @@ export default function SettingsTopBar() {
                 { label: 'Languages', path: '/admin/settings/languages' },
                 { label: 'Export Translations', path: '/admin/settings/translations-export' },
                 { label: 'Import Translations', path: '/admin/settings/translations-import' },
+                { label: 'Translated Terms', path: '/admin/settings/translations' },
+                { label: 'Countries', path: '/admin/settings/countries' },
             ]
         }
     ];
@@ -38,6 +40,7 @@ export default function SettingsTopBar() {
                 { label: 'Integration Keys', path: '/admin/settings/integration-keys' }
             ],
             'Database': [
+                { label: 'Units of Measure', path: '/admin/settings/uoms' },
                 { label: 'Backups', path: '/admin/settings/backups' },
                 { label: 'System Parameters', path: '/admin/settings/parameters' },
                 { label: 'Menu Sequences', path: '/admin/settings/menu-sequences' }
@@ -137,3 +140,4 @@ const DropdownMenu = ({ menu, currentPath }) => {
         </div>
     );
 }
+

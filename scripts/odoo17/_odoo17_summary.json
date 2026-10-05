@@ -1,0 +1,698 @@
+﻿{
+    "purchase_stock":  {
+                           "found":  true,
+                           "depends":  [
+                                           "stock_account",
+                                           "purchase"
+                                       ],
+                           "application":  "False",
+                           "installable":  "True",
+                           "category":  "Inventory/Purchase",
+                           "auto_install":  "True"
+                       },
+    "delivery_ups":  {
+                         "found":  false
+                     },
+    "spreadsheet_dashboard":  {
+                                  "found":  true,
+                                  "depends":  [
+
+                                              ],
+                                  "application":  "False",
+                                  "installable":  "True",
+                                  "category":  "?",
+                                  "auto_install":  "False"
+                              },
+    "auth_signup":  {
+                        "found":  true,
+                        "depends":  [
+                                        "base_setup",
+                                        "mail",
+                                        "web"
+                                    ],
+                        "application":  "False",
+                        "installable":  "True",
+                        "category":  "Hidden/Tools",
+                        "auto_install":  "True"
+                    },
+    "mail":  {
+                 "found":  true,
+                 "depends":  [
+                                 "base",
+                                 "base_setup",
+                                 "bus",
+                                 "web_tour"
+                             ],
+                 "application":  "True",
+                 "installable":  "True",
+                 "category":  "Productivity/Discuss",
+                 "auto_install":  "False"
+             },
+    "fleet":  {
+                  "found":  true,
+                  "depends":  [
+                                  "base",
+                                  "mail"
+                              ],
+                  "application":  "True",
+                  "installable":  "True",
+                  "category":  "Human Resources/Fleet",
+                  "auto_install":  "False"
+              },
+    "hr_timesheet":  {
+                         "found":  true,
+                         "depends":  [
+                                         "hr",
+                                         "hr_hourly_cost",
+                                         "analytic",
+                                         "project",
+                                         "uom"
+                                     ],
+                         "application":  "False",
+                         "installable":  "True",
+                         "category":  "Services/Timesheets",
+                         "auto_install":  "False"
+                     },
+    "stock_account":  {
+                          "found":  true,
+                          "depends":  [
+                                          "stock",
+                                          "account"
+                                      ],
+                          "application":  "False",
+                          "installable":  "True",
+                          "category":  "Hidden",
+                          "auto_install":  "True"
+                      },
+    "website_sale":  {
+                         "found":  true,
+                         "depends":  [
+                                         "website",
+                                         "sale",
+                                         "website_payment",
+                                         "website_mail",
+                                         "portal_rating",
+                                         "digest",
+                                         "delivery"
+                                     ],
+                         "application":  "True",
+                         "installable":  "True",
+                         "category":  "Website/Website",
+                         "auto_install":  "False"
+                     },
+    "delivery":  {
+                     "found":  true,
+                     "depends":  "sale",
+                     "application":  "False",
+                     "installable":  "True",
+                     "category":  "Sales/Delivery",
+                     "auto_install":  "False"
+                 },
+    "crm":  {
+                "found":  true,
+                "depends":  [
+                                "base_setup",
+                                "sales_team",
+                                "mail",
+                                "calendar",
+                                "resource",
+                                "utm",
+                                "web_tour",
+                                "contacts",
+                                "digest",
+                                "phone_validation"
+                            ],
+                "application":  "True",
+                "installable":  "True",
+                "category":  "Sales/CRM",
+                "auto_install":  "False"
+            },
+    "stock":  {
+                  "found":  true,
+                  "depends":  [
+                                  "product",
+                                  "barcodes_gs1_nomenclature",
+                                  "digest"
+                              ],
+                  "application":  "True",
+                  "installable":  "True",
+                  "category":  "Inventory/Inventory",
+                  "auto_install":  "False"
+              },
+    "sale":  {
+                 "found":  true,
+                 "depends":  [
+                                 "sales_team",
+                                 "account_payment",
+                                 "utm"
+                             ],
+                 "application":  "False",
+                 "installable":  "True",
+                 "category":  "Sales/Sales",
+                 "auto_install":  "False"
+             },
+    "delivery_fedex":  {
+                           "found":  false
+                       },
+    "product":  {
+                    "found":  true,
+                    "depends":  [
+                                    "base",
+                                    "mail",
+                                    "uom"
+                                ],
+                    "application":  "False",
+                    "installable":  "True",
+                    "category":  "Sales/Sales",
+                    "auto_install":  "False"
+                },
+    "portal":  {
+                   "found":  true,
+                   "depends":  [
+                                   "web",
+                                   "web_editor",
+                                   "http_routing",
+                                   "mail",
+                                   "auth_signup"
+                               ],
+                   "application":  "False",
+                   "installable":  "True",
+                   "category":  "Hidden",
+                   "auto_install":  "False"
+               },
+    "point_of_sale":  {
+                          "found":  true,
+                          "depends":  [
+                                          "stock_account",
+                                          "barcodes",
+                                          "web_editor",
+                                          "digest"
+                                      ],
+                          "application":  "True",
+                          "installable":  "True",
+                          "category":  "Sales/Point of Sale",
+                          "auto_install":  "False"
+                      },
+    "calendar":  {
+                     "found":  true,
+                     "depends":  [
+                                     "base",
+                                     "mail",
+                                     "onboarding"
+                                 ],
+                     "application":  "True",
+                     "installable":  "True",
+                     "category":  "Productivity/Calendar",
+                     "auto_install":  "False"
+                 },
+    "website_blog":  {
+                         "found":  true,
+                         "depends":  [
+                                         "website_mail",
+                                         "website_partner"
+                                     ],
+                         "application":  "False",
+                         "installable":  "True",
+                         "category":  "Website/Website",
+                         "auto_install":  "False"
+                     },
+    "sms":  {
+                "found":  true,
+                "depends":  [
+                                "base",
+                                "iap_mail",
+                                "mail",
+                                "phone_validation"
+                            ],
+                "application":  "False",
+                "installable":  "True",
+                "category":  "Hidden/Tools",
+                "auto_install":  "True"
+            },
+    "survey":  {
+                   "found":  true,
+                   "depends":  [
+                                   "auth_signup",
+                                   "http_routing",
+                                   "mail",
+                                   "web_tour",
+                                   "gamification"
+                               ],
+                   "application":  "True",
+                   "installable":  "True",
+                   "category":  "Marketing/Surveys",
+                   "auto_install":  "False"
+               },
+    "stock_barcode":  {
+                          "found":  false
+                      },
+    "hr_recruitment":  {
+                           "found":  true,
+                           "depends":  [
+                                           "hr",
+                                           "calendar",
+                                           "utm",
+                                           "attachment_indexation",
+                                           "web_tour",
+                                           "digest"
+                                       ],
+                           "application":  "True",
+                           "installable":  "True",
+                           "category":  "Human Resources/Recruitment",
+                           "auto_install":  "False"
+                       },
+    "account":  {
+                    "found":  true,
+                    "depends":  [
+                                    "base_setup",
+                                    "onboarding",
+                                    "product",
+                                    "analytic",
+                                    "portal",
+                                    "digest"
+                                ],
+                    "application":  "True",
+                    "installable":  "True",
+                    "category":  "Accounting/Accounting",
+                    "auto_install":  "False"
+                },
+    "website_forum":  {
+                          "found":  true,
+                          "depends":  [
+                                          "auth_signup",
+                                          "website_mail",
+                                          "website_profile"
+                                      ],
+                          "application":  "False",
+                          "installable":  "True",
+                          "category":  "Website/Website",
+                          "auto_install":  "False"
+                      },
+    "website":  {
+                    "found":  true,
+                    "depends":  [
+                                    "digest",
+                                    "web",
+                                    "web_editor",
+                                    "http_routing",
+                                    "portal",
+                                    "social_media",
+                                    "auth_signup",
+                                    "mail",
+                                    "google_recaptcha",
+                                    "utm"
+                                ],
+                    "application":  "True",
+                    "installable":  "True",
+                    "category":  "Website/Website",
+                    "auto_install":  "False"
+                },
+    "resource":  {
+                     "found":  true,
+                     "depends":  [
+                                     "base",
+                                     "web"
+                                 ],
+                     "application":  "False",
+                     "installable":  "True",
+                     "category":  "Hidden",
+                     "auto_install":  "False"
+                 },
+    "hr_attendance":  {
+                          "found":  true,
+                          "depends":  [
+                                          "hr",
+                                          "barcodes"
+                                      ],
+                          "application":  "True",
+                          "installable":  "True",
+                          "category":  "Human Resources/Attendances",
+                          "auto_install":  "False"
+                      },
+    "whatsapp":  {
+                     "found":  false
+                 },
+    "uom":  {
+                "found":  true,
+                "depends":  "base",
+                "application":  "False",
+                "installable":  "True",
+                "category":  "Sales/Sales",
+                "auto_install":  "False"
+            },
+    "payment_stripe":  {
+                           "found":  true,
+                           "depends":  "payment",
+                           "application":  "False",
+                           "installable":  "True",
+                           "category":  "Accounting/Payment Providers",
+                           "auto_install":  "False"
+                       },
+    "hr_expense":  {
+                       "found":  true,
+                       "depends":  [
+                                       "account",
+                                       "web_tour",
+                                       "hr"
+                                   ],
+                       "application":  "True",
+                       "installable":  "True",
+                       "category":  "Human Resources/Expenses",
+                       "auto_install":  "False"
+                   },
+    "project_todo":  {
+                         "found":  true,
+                         "depends":  "project",
+                         "application":  "True",
+                         "installable":  "True",
+                         "category":  "Productivity/To-Do",
+                         "auto_install":  "True"
+                     },
+    "analytic":  {
+                     "found":  true,
+                     "depends":  [
+
+                                 ],
+                     "application":  "False",
+                     "installable":  "True",
+                     "category":  "Accounting/Accounting",
+                     "auto_install":  "False"
+                 },
+    "base_automation":  {
+                            "found":  true,
+                            "depends":  [
+                                            "base",
+                                            "resource",
+                                            "mail",
+                                            "sms"
+                                        ],
+                            "application":  "False",
+                            "installable":  "True",
+                            "category":  "Sales/Sales",
+                            "auto_install":  "False"
+                        },
+    "mass_mailing_sms":  {
+                             "found":  true,
+                             "depends":  [
+                                             "portal",
+                                             "mass_mailing",
+                                             "sms"
+                                         ],
+                             "application":  "True",
+                             "installable":  "True",
+                             "category":  "Marketing/Email Marketing",
+                             "auto_install":  "False"
+                         },
+    "website_slides":  {
+                           "found":  true,
+                           "depends":  [
+                                           "portal_rating",
+                                           "website",
+                                           "website_mail",
+                                           "website_profile"
+                                       ],
+                           "application":  "True",
+                           "installable":  "True",
+                           "category":  "Website/eLearning",
+                           "auto_install":  "False"
+                       },
+    "maintenance":  {
+                        "found":  true,
+                        "depends":  "mail",
+                        "application":  "True",
+                        "installable":  "True",
+                        "category":  "Manufacturing/Maintenance",
+                        "auto_install":  "False"
+                    },
+    "repair":  {
+                   "found":  true,
+                   "depends":  [
+                                   "sale_stock",
+                                   "sale_management"
+                               ],
+                   "application":  "True",
+                   "installable":  "True",
+                   "category":  "Inventory/Inventory",
+                   "auto_install":  "False"
+               },
+    "lunch":  {
+                  "found":  true,
+                  "depends":  "mail",
+                  "application":  "True",
+                  "installable":  "True",
+                  "category":  "Human Resources/Lunch",
+                  "auto_install":  "False"
+              },
+    "base_setup":  {
+                       "found":  true,
+                       "depends":  [
+                                       "base",
+                                       "web"
+                                   ],
+                       "application":  "False",
+                       "installable":  "True",
+                       "category":  "Hidden",
+                       "auto_install":  "True"
+                   },
+    "spreadsheet":  {
+                        "found":  true,
+                        "depends":  [
+                                        "bus",
+                                        "web",
+                                        "portal"
+                                    ],
+                        "application":  "False",
+                        "installable":  "True",
+                        "category":  "Hidden",
+                        "auto_install":  "False"
+                    },
+    "purchase":  {
+                     "found":  true,
+                     "depends":  "account",
+                     "application":  "True",
+                     "installable":  "True",
+                     "category":  "Inventory/Purchase",
+                     "auto_install":  "False"
+                 },
+    "im_livechat":  {
+                        "found":  true,
+                        "depends":  {
+
+                                    },
+                        "application":  "True",
+                        "installable":  "True",
+                        "category":  "Website/Live Chat",
+                        "auto_install":  "False"
+                    },
+    "mrp":  {
+                "found":  true,
+                "depends":  [
+                                "product",
+                                "stock",
+                                "resource"
+                            ],
+                "application":  "True",
+                "installable":  "True",
+                "category":  "Manufacturing/Manufacturing",
+                "auto_install":  "False"
+            },
+    "project":  {
+                    "found":  true,
+                    "depends":  [
+                                    "analytic",
+                                    "base_setup",
+                                    "mail",
+                                    "portal",
+                                    "rating",
+                                    "resource",
+                                    "web",
+                                    "web_tour",
+                                    "digest"
+                                ],
+                    "application":  "True",
+                    "installable":  "True",
+                    "category":  "Services/Project",
+                    "auto_install":  "False"
+                },
+    "hr":  {
+               "found":  true,
+               "depends":  [
+                               "base_setup",
+                               "phone_validation",
+                               "mail",
+                               "resource",
+                               "web"
+                           ],
+               "application":  "True",
+               "installable":  "True",
+               "category":  "Human Resources/Employees",
+               "auto_install":  "False"
+           },
+    "web":  {
+                "found":  true,
+                "depends":  "base",
+                "application":  "False",
+                "installable":  "True",
+                "category":  "Hidden",
+                "auto_install":  "True"
+            },
+    "payment":  {
+                    "found":  true,
+                    "depends":  [
+                                    "onboarding",
+                                    "portal"
+                                ],
+                    "application":  "False",
+                    "installable":  "True",
+                    "category":  "Hidden",
+                    "auto_install":  "False"
+                },
+    "sale_stock":  {
+                       "found":  true,
+                       "depends":  [
+                                       "sale",
+                                       "stock_account"
+                                   ],
+                       "application":  "False",
+                       "installable":  "True",
+                       "category":  "Hidden",
+                       "auto_install":  "True"
+                   },
+    "website_livechat":  {
+                             "found":  true,
+                             "depends":  [
+                                             "website",
+                                             "im_livechat"
+                                         ],
+                             "application":  "False",
+                             "installable":  "True",
+                             "category":  "Hidden",
+                             "auto_install":  "True"
+                         },
+    "hr_skills":  {
+                      "found":  true,
+                      "depends":  "hr",
+                      "application":  "True",
+                      "installable":  "True",
+                      "category":  "Human Resources/Employees",
+                      "auto_install":  "True"
+                  },
+    "mass_mailing":  {
+                         "found":  true,
+                         "depends":  [
+                                         "contacts",
+                                         "mail",
+                                         "utm",
+                                         "link_tracker",
+                                         "web_editor",
+                                         "social_media",
+                                         "web_tour",
+                                         "digest"
+                                     ],
+                         "application":  "True",
+                         "installable":  "True",
+                         "category":  "Marketing/Email Marketing",
+                         "auto_install":  "False"
+                     },
+    "base":  {
+                 "found":  true,
+                 "depends":  [
+
+                             ],
+                 "application":  "False",
+                 "installable":  "True",
+                 "category":  "Hidden",
+                 "auto_install":  "True"
+             },
+    "hr_holidays":  {
+                        "found":  true,
+                        "depends":  [
+                                        "hr",
+                                        "calendar",
+                                        "resource"
+                                    ],
+                        "application":  "True",
+                        "installable":  "True",
+                        "category":  "Human Resources/Time Off",
+                        "auto_install":  "False"
+                    },
+    "event":  {
+                  "found":  true,
+                  "depends":  [
+                                  "barcodes",
+                                  "base_setup",
+                                  "mail",
+                                  "phone_validation",
+                                  "portal",
+                                  "utm"
+                              ],
+                  "application":  "False",
+                  "installable":  "True",
+                  "category":  "Marketing/Events",
+                  "auto_install":  "False"
+              },
+    "bus":  {
+                "found":  true,
+                "depends":  [
+                                "base",
+                                "web"
+                            ],
+                "application":  "False",
+                "installable":  "True",
+                "category":  "Hidden",
+                "auto_install":  "True"
+            },
+    "sale_timesheet":  {
+                           "found":  true,
+                           "depends":  [
+                                           "sale_project",
+                                           "hr_timesheet"
+                                       ],
+                           "application":  "False",
+                           "installable":  "True",
+                           "category":  "Hidden",
+                           "auto_install":  "True"
+                       },
+    "hr_contract":  {
+                        "found":  true,
+                        "depends":  "hr",
+                        "application":  "True",
+                        "installable":  "True",
+                        "category":  "Human Resources/Contracts",
+                        "auto_install":  "False"
+                    },
+    "account_payment":  {
+                            "found":  true,
+                            "depends":  [
+                                            "account",
+                                            "payment"
+                                        ],
+                            "application":  "False",
+                            "installable":  "True",
+                            "category":  "Accounting/Accounting",
+                            "auto_install":  "["
+                        },
+    "sale_management":  {
+                            "found":  true,
+                            "depends":  [
+                                            "sale",
+                                            "digest"
+                                        ],
+                            "application":  "True",
+                            "installable":  "True",
+                            "category":  "Sales/Sales",
+                            "auto_install":  "False"
+                        },
+    "sale_project":  {
+                         "found":  true,
+                         "depends":  [
+                                         "sale_management",
+                                         "sale_service",
+                                         "project_account"
+                                     ],
+                         "application":  "False",
+                         "installable":  "True",
+                         "category":  "Hidden",
+                         "auto_install":  "["
+                     }
+}

@@ -136,8 +136,8 @@ const SystemEventPage = () => {
                             <tr key={log.id} className="hover:bg-slate-800/30 transition-all group">
                                 <td className="px-8 py-5">
                                     <div className="flex flex-col">
-                                        <span className="text-white text-sm font-bold">{new Date(log.timestamp || log.created_at).toLocaleDateString()}</span>
-                                        <span className="text-slate-500 text-[11px] font-mono">{new Date(log.timestamp || log.created_at).toLocaleTimeString()}</span>
+                                        <FormattedDate value={log.timestamp || log.created_at} className="text-white text-sm font-bold" />
+                                        <FormattedDateTime value={log.timestamp || log.created_at} options={{ year: undefined, month: undefined, day: undefined }} className="text-slate-500 text-[11px] font-mono" />
                                     </div>
                                 </td>
                                 <td className="px-8 py-5">
@@ -178,3 +178,5 @@ const SystemEventPage = () => {
 };
 
 export default SystemEventPage;
+
+

@@ -1,0 +1,963 @@
+{
+  "_meta": {
+    "title": "BitGuard 4-Layer Headless ERP - Layer Registry",
+    "authority": "SINGLE SOURCE OF TRUTH for which layer every module belongs to. architecture.md Rule 0 and Rule 65, SYSTEM_ARCHITECTURE_MAP.md, manifests, linters and AI agents must all agree with this file. If they conflict, this file wins and the other file is wrong.",
+    "odoo_baseline": "Odoo 17.0 Community manifests (application, depends, category) compared on 2026-10-05. Enterprise-only modules are marked odoo17-enterprise-unverified.",
+    "how_to_change": "Edit this file first, then update the manifest and docs, then run scripts/validate_architecture.py."
+  },
+  "layers": {
+    "1": {
+      "name": "Kernel",
+      "application": false,
+      "launcher_tile": false,
+      "tenant_removable": false,
+      "ui": "none (headless)",
+      "odoo_kind": "root",
+      "depends_on": []
+    },
+    "2": {
+      "name": "Platform Services",
+      "application": true,
+      "launcher_tile": false,
+      "tenant_removable": true,
+      "ui": "admin UI reachable from Settings only",
+      "odoo_kind": "platform",
+      "depends_on": [
+        1
+      ]
+    },
+    "3": {
+      "name": "Business Applications",
+      "application": true,
+      "launcher_tile": true,
+      "tenant_removable": true,
+      "ui": "own tile, own navigation, own settings page",
+      "odoo_kind": "app",
+      "depends_on": [
+        1,
+        2,
+        3
+      ]
+    },
+    "4": {
+      "name": "External Integrations",
+      "application": false,
+      "launcher_tile": false,
+      "tenant_removable": true,
+      "ui": "none or embedded; settings injected into system (Rule 55)",
+      "odoo_kind": "addon-connector",
+      "depends_on": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "odoo_to_layer_conversion": [
+    {
+      "odoo": "base and UI-less foundations (bus, uom, resource, analytic, digest, utm, currency, country)",
+      "layer": 1,
+      "why": "Universal dependencies collapse into core (Rule 61)."
+    },
+    {
+      "odoo": "application False, depends only on root or platform, owns an admin UI (base_setup, portal, product, payment, base_automation, web, auth_signup)",
+      "layer": 2,
+      "why": "Shared services consumed by apps. BitGuard sets application True so tenants can install them, but hides the tile."
+    },
+    {
+      "odoo": "application True (account, hr, crm, stock, mrp, project, website, mail Discuss, Enterprise apps)",
+      "layer": 3,
+      "why": "Own tile, own navigation, own settings page."
+    },
+    {
+      "odoo": "application False add-on that bridges an external third party (delivery carriers, payment providers, sale_amazon)",
+      "layer": 4,
+      "why": "External connectors with no tile (Rule 55)."
+    },
+    {
+      "odoo": "application False internal glue between two apps (account_payment, sale_stock, purchase_stock)",
+      "layer": null,
+      "why": "Not a module in BitGuard. Use a Rule 12 soft dependency or registry inside the owning L3 app."
+    }
+  ],
+  "dependency_law": {
+    "rule": "A module may depend only on modules in the same or a lower layer. Layer 4 may depend on 1, 2 and 3. Layer 3 may depend on another Layer 3 module only when it is declared in its manifest depends (the Odoo DAG). Layer 3 must never hard-depend on Layer 4 (use a Rule 12 soft dependency).",
+    "known_drift_to_fix": [
+      "core, auth, tenants declare depends system (Layer 2). core must be the root with depends [] and system must depend on core.",
+      "inventory depends procurement and projects depends crm. Odoo has neither dependency.",
+      "agents (L3) declares depends ai_engine (L4). Use a soft dependency.",
+      "Layer 2 modules still have application False and are hidden by that flag. They must become application True with a launcher_tile gate (see Rule 65)."
+    ]
+  },
+  "frontend_zones": {
+    "headless_l1_engine": [
+      "frontend/src/core"
+    ],
+    "l2_proxy_ui_for_l1_modules": [
+      "frontend/src/apps/core",
+      "frontend/src/apps/auth",
+      "frontend/src/apps/tenants"
+    ],
+    "note": "Rule 9C: the backend of core, auth and tenants is L1, but their frontend folders under apps/ are L2 control-plane proxy UI. Only frontend/src/core is the headless L1 engine."
+  },
+  "modules": {
+    "core": {
+      "layer": 1,
+      "application": false,
+      "launcher_tile": false,
+      "odoo_equivalent": "base",
+      "odoo_kind": "root",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Root of the dependency graph. Odoo base has depends [] so no other module may be a dependency of core."
+    },
+    "auth": {
+      "layer": 1,
+      "application": false,
+      "launcher_tile": false,
+      "odoo_equivalent": "base",
+      "odoo_kind": "root",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Authentication primitives live in Odoo base. Backend is headless L1; the frontend UI is an L2 proxy (Rule 9C)."
+    },
+    "tenants": {
+      "layer": 1,
+      "application": false,
+      "launcher_tile": false,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": "No Odoo equivalent (Odoo multi-company lives in base). Frontend UI is an L2 proxy (Rule 9C)."
+    },
+    "system": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "base_setup",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo base_setup depends on base, so system must depend on core."
+    },
+    "apps": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": "App Store and module installer."
+    },
+    "users": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "auth_signup",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Identity and access admin UI."
+    },
+    "inbox": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "mail",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo mail is both the platform and the Discuss app. BitGuard splits it into inbox (L2) and discuss (L3)."
+    },
+    "portal": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "portal",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "automation": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "base_automation",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "reports": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "web",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Report engine."
+    },
+    "product": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "product",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo product is application False and consumed by sales, stock, mrp and accounting."
+    },
+    "payments": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "payment",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo payment is a platform framework that depends only on portal. Provider connectors (payment_stripe style) are L4."
+    },
+    "shell": {
+      "layer": 2,
+      "application": true,
+      "launcher_tile": false,
+      "odoo_equivalent": "web",
+      "odoo_kind": "platform",
+      "basis": "odoo17-ce-verified",
+      "backend": false,
+      "frontend": true,
+      "note": "Frontend-only visual control plane (Rule 9B). No backend app."
+    },
+    "accounting": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "account",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "invoicing": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "account",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Maps to the same Odoo module as accounting. Confirm it is intentionally separate."
+    },
+    "expenses": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_expense",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "crm": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "crm",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "sales": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "sale",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "In Odoo the app flag lives on sale_management; sale itself is application False."
+    },
+    "pos": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "point_of_sale",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "inventory": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "stock",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo stock does not depend on purchase; remove the inventory to procurement dependency."
+    },
+    "procurement": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "purchase",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "manufacturing": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "mrp",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "production": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "mrp",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Maps to the same Odoo module as manufacturing. Confirm it is intentionally separate."
+    },
+    "maintenance": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "maintenance",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "repair": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "repair",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "fleet": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "fleet",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "employees": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Base HR app that other HR apps depend on."
+    },
+    "timeoff": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_holidays",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "timesheets": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_timesheet",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo treats it as a non-app add-on; kept as L3 with a tile (accepted deviation)."
+    },
+    "timeclock": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_attendance",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "recruiting": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_recruitment",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "lunch": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "lunch",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "projects": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "project",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo project does not depend on crm; remove the projects to crm dependency."
+    },
+    "tasks": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "project_todo",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": false,
+      "note": ""
+    },
+    "website": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "website",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo website is an app (application True) and the base of blog, forum, ecommerce and learning."
+    },
+    "blog": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "website_blog",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo treats it as a non-app add-on; kept as L3 with a tile (accepted deviation)."
+    },
+    "forum": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "website_forum",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo treats it as a non-app add-on; kept as L3 with a tile (accepted deviation)."
+    },
+    "ecommerce": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "website_sale",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "learning": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "website_slides",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "events": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "event",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo treats it as a non-app add-on; kept as L3 with a tile (accepted deviation)."
+    },
+    "surveys": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "survey",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "campaigns": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "mass_mailing",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "sms": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "mass_mailing_sms",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "calendar": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "calendar",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "spreadsheet": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "spreadsheet",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Odoo CE spreadsheet is hidden infrastructure; the Spreadsheet app is Enterprise. Accepted deviation."
+    },
+    "analytics": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "spreadsheet_dashboard",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "Weak equivalent. Accepted deviation."
+    },
+    "discuss": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "mail",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": "The Discuss app half of Odoo mail."
+    },
+    "messaging": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "im_livechat",
+      "odoo_kind": "app",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "barcode": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "stock_barcode",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": "Enterprise module; manifest is not public."
+    },
+    "whatsapp": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "whatsapp",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": "Enterprise module; manifest is not public. Meta API channel with a full UI and a tile, so L3."
+    },
+    "subscriptions": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "sale_subscription",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "rental": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "sale_renting",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "appointments": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "appointment",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "quality": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "quality_control",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "iot": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "iot",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "payroll": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_payroll",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "performance": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_appraisal",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "referrals": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "hr_referral",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "planning": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "planning",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "dispatch": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "industry_fsm",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "helpdesk": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "helpdesk",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "knowledge": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "knowledge",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "journeys": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "marketing_automation",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "social": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "social",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "documents": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "documents",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "sign": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "sign",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "studio": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "web_studio",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "voip": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "voip",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "approvals": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "approvals",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "consolidation": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": "account_consolidation",
+      "odoo_kind": "app",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "equity": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "esg": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "frontdesk": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": ""
+    },
+    "soc": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": "Internal security operations app with its own tile."
+    },
+    "agents": {
+      "layer": 3,
+      "application": true,
+      "launcher_tile": true,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": "Reaches ai_engine (L4) through a Rule 12 soft dependency, never through manifest depends."
+    },
+    "shipping": {
+      "layer": 4,
+      "application": false,
+      "launcher_tile": false,
+      "odoo_equivalent": "delivery",
+      "odoo_kind": "addon-connector",
+      "basis": "odoo17-ce-verified",
+      "backend": true,
+      "frontend": false,
+      "note": "Odoo delivery is an add-on on top of sale. Carrier integrations (FedEx, UPS) are external."
+    },
+    "amazon": {
+      "layer": 4,
+      "application": false,
+      "launcher_tile": false,
+      "odoo_equivalent": "sale_amazon",
+      "odoo_kind": "addon-connector",
+      "basis": "odoo17-enterprise-unverified",
+      "backend": true,
+      "frontend": true,
+      "note": "Enterprise module; manifest is not public. External connector: no tile."
+    },
+    "ai_engine": {
+      "layer": 4,
+      "application": false,
+      "launcher_tile": false,
+      "odoo_equivalent": null,
+      "odoo_kind": "custom",
+      "basis": "custom-no-odoo-equivalent",
+      "backend": true,
+      "frontend": true,
+      "note": "External LLM provider connector."
+    }
+  }
+}
