@@ -84,6 +84,9 @@ def sync_modules(tenant=None):
                 module.featured = bool(manifest.get('featured', False))
                 module.has_settings = manifest.get('has_settings', False)
                 module.settings_url = manifest.get('settings_url', '')
+                module.has_portal = manifest.get('has_portal', False)
+                module.portal_url = manifest.get('portal_url', '')
+                module.portal_label = manifest.get('portal_label', '')
                 module.screenshots = manifest.get('screenshots', [])
                 module.save()
                 modules_found += 1
@@ -146,6 +149,9 @@ def upgrade_module(module, tenant=None):
         module.description = data.get('description', module.description)
         module.has_settings = data.get('has_settings', module.has_settings)
         module.settings_url = data.get('settings_url', module.settings_url)
+        module.has_portal = data.get('has_portal', module.has_portal)
+        module.portal_url = data.get('portal_url', module.portal_url)
+        module.portal_label = data.get('portal_label', module.portal_label)
         module.save()
         
         try:

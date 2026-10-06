@@ -63,6 +63,7 @@ export const ManifestProvider = ({ children }) => {
 
     useEffect(() => {
         fetchManifest();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const { installedSet, commandCenterSections, moduleMenus, activeApps } = useMemo(() => {

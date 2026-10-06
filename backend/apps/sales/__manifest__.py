@@ -22,4 +22,7 @@
     'settings_url': '/admin/settings/sale',
     'settings_desc': 'Configure settings',
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Sales Tile'}
+    'navigation_path': 'Command Center -> Sales Tile'    'has_portal': True,
+    'portal_url': '/portal/orders',
+    'portal_label': 'Sale Orders',
+}

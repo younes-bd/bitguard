@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings } from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
 
 export const frontdeskMenu = [
     {

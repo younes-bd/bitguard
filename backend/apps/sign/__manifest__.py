@@ -14,4 +14,7 @@
     'sequence': 260,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Sign Tile'}
+    'navigation_path': 'Command Center -> Sign Tile'    'has_portal': True,
+    'portal_url': '/portal/contracts',
+    'portal_label': 'Contracts',
+}

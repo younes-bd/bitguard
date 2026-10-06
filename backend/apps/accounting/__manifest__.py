@@ -22,4 +22,7 @@
     'settings_url': '/admin/settings/accounting',
     'settings_desc': 'Configure settings',
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Accounting Tile'}
+    'navigation_path': 'Command Center -> Accounting Tile'    'has_portal': True,
+    'portal_url': '/portal/invoices',
+    'portal_label': 'Invoices',
+}

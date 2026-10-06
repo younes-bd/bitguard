@@ -21,4 +21,7 @@
     'sequence': 320,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Purchase Tile'}
+    'navigation_path': 'Command Center -> Purchase Tile'    'has_portal': True,
+    'portal_url': '/portal/procurement',
+    'portal_label': 'Procurements',
+}

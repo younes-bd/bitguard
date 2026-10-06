@@ -20,4 +20,7 @@
     'sequence': 430,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Maintenance Tile'}
+    'navigation_path': 'Command Center -> Maintenance Tile'    'has_portal': True,
+    'portal_url': '/portal/assets',
+    'portal_label': 'Managed Assets',
+}

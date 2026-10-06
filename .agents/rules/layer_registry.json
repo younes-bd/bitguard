@@ -101,7 +101,7 @@
     "note": "Rule 9C: the backend of core, auth and tenants is L1, but their frontend folders under apps/ are L2 control-plane proxy UI. Only frontend/src/core is the headless L1 engine."
   },
   "modules": {
-    "core": {
+    "base": {
       "layer": 1,
       "application": false,
       "launcher_tile": false,

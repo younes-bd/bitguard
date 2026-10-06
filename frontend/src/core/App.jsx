@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
-import WebsiteLayout from '../apps/shell/layouts/WebsiteLayout';
+import WebsiteLayout from '../apps/website/layouts/WebsiteLayout';
 import ProtectedRoute from './guards/ProtectedRoute';
 import AuthLoader from './guards/AuthLoader';
 
@@ -19,7 +19,7 @@ import { recruitmentPublicRoutes } from '../apps/recruiting/routes/recruitmentPu
 
 // Core Routing
 import { BackendRoutes } from './routes/BackendRoutes';
-import { portalClientRoutes as PortalRoutes } from '../apps/portal/routes/portalClientRoutes';
+import { portalRoutes as PortalRoutes } from '../apps/portal/routes/portalRoutes';
 import { useAuth } from './hooks/useAuth';
 
 import { AuthProvider } from './context/AuthContext';

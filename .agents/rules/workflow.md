@@ -46,10 +46,10 @@ Whether the user asks for a new feature, a file relocation, a bug fix, or a UI c
 Before proposing or executing *any* architectural change, you MUST pause and explicitly output a **"Rule Validation Matrix"** in your chain-of-thought or response. 
 You must explicitly verify your proposed action against the core rules in `architecture.md`, specifically scanning for conflicts between:
 0.  **MACH Verification:** Does this proposal maintain strict Headless decoupling and Cloud-Native multi-tenancy?
-1.  **Rule 39 (Data Gravity Law)** vs. **Rule 9 (Kernel Boundaries):** If a model is in `core`, its UI goes to `system`.
+1.  **Rule 39 (Data Gravity Law)** vs. **Rule 9 (Kernel Boundaries):** If a model is in `base`, its UI goes to `system`.
 2.  **Rule 40 (Lexical Symmetry):** Are the names identical across all stack layers?
 3.  **Rule 12 & 20 (Soft Dependencies & Registries):** Does this break cross-module boundaries?
 4.  **Rule 4 (The No-Clutter Law):** Am I writing a temporary debugging or refactoring script? If yes, is it strictly going into the hidden `.scratch/` directory at the project root?
-5.  **Rule 45 (Service Domain Law):** Is the frontend API service placed in the folder matching the backend app (e.g., `core`), ensuring it is not accidentally coupled to the UI app (e.g., `system`)?
+5.  **Rule 45 (Service Domain Law):** Is the frontend API service placed in the folder matching the backend app (e.g., `base`), ensuring it is not accidentally coupled to the UI app (e.g., `system`)?
 
 *This mirrors Tier-1 Enterprise standard Architecture Decision Records (ADRs). You must prioritize Domain-Driven Design and architectural integrity over speed. If your fix violates a rule, you must find a different way.*

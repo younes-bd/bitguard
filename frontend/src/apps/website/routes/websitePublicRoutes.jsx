@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import WebsiteLayout from '../../../apps/shell/layouts/WebsiteLayout';
+import WebsiteLayout from '../../../apps/website/layouts/WebsiteLayout';
 
 import LandingPage from '../pages/public/landing/LandingPage';
 import About from '../pages/public/company/AboutPage';

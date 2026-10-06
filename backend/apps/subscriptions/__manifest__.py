@@ -20,4 +20,7 @@
     'sequence': 40,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Subscriptions Tile'}
+    'navigation_path': 'Command Center -> Subscriptions Tile'    'has_portal': True,
+    'portal_url': '/portal/subscriptions',
+    'portal_label': 'Subscriptions',
+}

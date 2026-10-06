@@ -1,4 +1,4 @@
-import { Grid, RefreshCw, LayoutTemplate, Briefcase, Calculator, ShoppingCart, Truck, Wrench, Globe, Megaphone, Users, Activity, Settings, List } from 'lucide-react';
+import { Grid, LayoutTemplate, RefreshCw } from 'lucide-react';
 
 export const appsMenu = [
     {

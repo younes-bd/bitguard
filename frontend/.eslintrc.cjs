@@ -5,24 +5,27 @@
  * If you need to reclassify a module, update layer_registry.json first, then
  * update the matching pattern in `boundaries/elements` below.
  *
- * ┌─────────────────────────────────────────────────────────────────┐
- * │ Zone              │ Layer │ Path pattern                         │
- * ├─────────────────────────────────────────────────────────────────┤
- * │ kernel-engine     │  L1   │ src/core/**                          │
- * │ kernel-proxy-ui   │  L1*  │ src/apps/{core,auth,tenants}/**      │
- * │ platform          │  L2   │ src/apps/{shell,system,apps,…}/**    │
- * │ business-app      │  L3   │ src/apps/{accounting,crm,…}/**       │
- * │ edge              │  L4   │ src/apps/{amazon,ai_engine}/**       │
- * └─────────────────────────────────────────────────────────────────┘
- * * Rule 9C: core/auth/tenants backend is L1 kernel; their frontend
- *   folders under apps/ are L2 control-plane proxy UI.
+ * ┌────────────────────────────────────────────────────────────────────────┐
+ * │ Zone                  │ Layer │ Path pattern                           │
+ * ├────────────────────────────────────────────────────────────────────────┤
+ * │ kernel-engine         │  L1   │ src/core/**                            │
+ * │ kernel-domain-service │  L1   │ src/apps/{core,auth,tenants}/(api|ctx) │
+ * │ kernel-proxy-ui       │  L1*  │ src/apps/{core,auth,tenants}/** (UI)   │
+ * │ platform              │  L2   │ src/apps/{shell,system,apps,…}/**      │
+ * │ business-app          │  L3   │ src/apps/{accounting,crm,…}/**         │
+ * │ edge                  │  L4   │ src/apps/{amazon,ai_engine}/**         │
+ * └────────────────────────────────────────────────────────────────────────┘
+ * * Rule 9C & Rule 45: core/auth/tenants backend is L1 kernel.
+ *   - Their domain API services & domain contexts are L1 Domain Services.
+ *   - Their visual frontend folders under apps/ are L2 proxy UI.
  *
- * Traffic Laws (Rule 9):
- *   kernel-engine    → kernel-engine only
- *   kernel-proxy-ui  → kernel-engine, kernel-proxy-ui
- *   platform         → kernel-engine, kernel-proxy-ui, platform
- *   business-app     → kernel-engine, kernel-proxy-ui, platform, business-app
- *   edge             → all zones (external connectors have no restrictions)
+ * Traffic Laws (Rule 9 & Rule 45):
+ *   kernel-engine         → kernel-engine, kernel-domain-service
+ *   kernel-domain-service → kernel-engine, kernel-domain-service
+ *   kernel-proxy-ui       → kernel-engine, kernel-domain-service, kernel-proxy-ui
+ *   platform              → kernel-engine, kernel-domain-service, kernel-proxy-ui, platform
+ *   business-app          → kernel-engine, kernel-domain-service, kernel-proxy-ui, platform, business-app
+ *   edge                  → all zones (external connectors have no restrictions)
  */
 
 module.exports = {
@@ -53,6 +56,18 @@ module.exports = {
         pattern: 'src/core/**/*',
       },
 
+      // ── L1 Domain Services (Rule 45): API services and domain contexts of L1 apps
+      {
+        type: 'kernel-domain-service',
+        pattern: [
+          'src/apps/core/api/**/*',
+          'src/apps/auth/api/**/*',
+          'src/apps/auth/context/**/*',
+          'src/apps/tenants/api/**/*',
+          'src/apps/tenants/context/**/*',
+        ],
+      },
+
       // ── L1* (Rule 9C): Backend is L1, frontend proxy UI is L2 ──────
       {
         type: 'kernel-proxy-ui',
@@ -81,7 +96,6 @@ module.exports = {
       },
 
       // ── L3: Business applications (application:true, launcher_tile:true)
-      // Ordered alphabetically; capture appName for cross-app self-import rule.
       {
         type: 'business-app',
         pattern: [
@@ -156,14 +170,13 @@ module.exports = {
         pattern: [
           'src/apps/ai_engine/**/*',
           'src/apps/amazon/**/*',
-          // shipping has no frontend folder (registry: frontend:false)
         ],
       },
     ],
   },
 
   rules: {
-    'react/prop-types': 'off', // TypeScript will handle this in a later phase
+    'react/prop-types': 'off',
 
     // ── Rule 63: The Syntax Ban ──────────────────────────────────────────
     'no-restricted-syntax': [
@@ -175,56 +188,52 @@ module.exports = {
       },
     ],
 
-    // ── Rule 9: The Traffic Laws ─────────────────────────────────────────
-    //
-    // default: 'disallow' means every import is blocked unless a rule below
-    // explicitly allows it. Add new rules at the END (more-specific rules
-    // override less-specific ones in eslint-plugin-boundaries v3+).
+    // ── Rule 9 & Rule 45: The Traffic Laws ───────────────────────────────
     'boundaries/element-types': [
       'error',
       {
         default: 'disallow',
         rules: [
-          // 1. L1 kernel engine — pure; imports nothing from the app layer.
+          // 1. L1 kernel engine — may use itself and L1 domain services (Rule 45), but NEVER UI pages.
           {
             from: 'kernel-engine',
-            allow: ['kernel-engine'],
+            allow: ['kernel-engine', 'kernel-domain-service'],
           },
 
-          // 2. L1* proxy UI — may use the kernel engine and peer proxy-UI modules.
+          // 2. L1 domain services — may use kernel engine and peer L1 domain services.
+          {
+            from: 'kernel-domain-service',
+            allow: ['kernel-engine', 'kernel-domain-service'],
+          },
+
+          // 3. L1* proxy UI — may use kernel engine, L1 domain services, and peer proxy-UI modules.
           {
             from: 'kernel-proxy-ui',
-            allow: ['kernel-engine', 'kernel-proxy-ui'],
+            allow: ['kernel-engine', 'kernel-domain-service', 'kernel-proxy-ui'],
           },
 
-          // 3. L2 platform — may use kernel zones and peer platform modules.
-          //    This is the critical fix: system importing from core (kernel-engine)
-          //    is now explicitly allowed and will no longer emit false positives.
+          // 4. L2 platform — may use kernel zones, domain services, and peer platform modules.
           {
             from: 'platform',
-            allow: ['kernel-engine', 'kernel-proxy-ui', 'platform'],
+            allow: ['kernel-engine', 'kernel-domain-service', 'kernel-proxy-ui', 'platform'],
           },
 
-          // 4. L3 business apps — may use all lower layers.
-          //    Cross-app imports are allowed only within the SAME app (self-import).
+          // 5. L3 business apps — may use all lower layers and domain services.
           {
             from: 'business-app',
             allow: [
               'kernel-engine',
+              'kernel-domain-service',
               'kernel-proxy-ui',
               'platform',
-              // Self-import only — an app may import from its own sub-folders.
-              // eslint-plugin-boundaries does not support dynamic capture matching
-              // here, so we allow all business-app to business-app and rely on
-              // code review + manifest `depends` to enforce cross-app contracts.
               'business-app',
             ],
           },
 
-          // 5. L4 edge connectors — unrestricted (they bridge external systems).
+          // 6. L4 edge connectors — unrestricted.
           {
             from: 'edge',
-            allow: ['kernel-engine', 'kernel-proxy-ui', 'platform', 'business-app', 'edge'],
+            allow: ['kernel-engine', 'kernel-domain-service', 'kernel-proxy-ui', 'platform', 'business-app', 'edge'],
           },
         ],
       },

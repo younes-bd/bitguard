@@ -23,4 +23,8 @@
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Timesheets Tile',
+    'has_portal': True,
+    'portal_url': '/portal/timesheets',
+    'portal_label': 'Timesheets',
 }
+

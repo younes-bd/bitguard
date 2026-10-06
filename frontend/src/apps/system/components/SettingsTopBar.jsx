@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useDeveloperMode } from '../../../../core/context/DeveloperModeContext';
+import { useDeveloperMode } from '@/core/context/DeveloperModeContext';
 import { ChevronDown } from 'lucide-react';
 
 const pluginManifests = import.meta.glob('../../../*/config/settingsManifest.js', { eager: true });

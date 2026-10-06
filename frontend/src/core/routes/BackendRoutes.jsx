@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ModuleLayout from '../../apps/shell/layouts/ModuleLayout';
 import BackendLayout from '../../apps/shell/layouts/BackendLayout';
-import StandaloneLayout from '../../apps/shell/layouts/StandaloneLayout';
+import TopNavLayout from '../../apps/shell/layouts/TopNavLayout';
 
 import CommandCenter from '../../apps/shell/pages/CommandCenterPage';
 import InboxCenter from '../../apps/inbox/pages/InboxCenterPage';
@@ -43,7 +43,7 @@ const BackendRoutesInner = () => {
                 <Route path="inbox" element={<InboxCenter />} />
             </Route>
 
-            <Route path="profile" element={<StandaloneLayout title="My Profile" />}>
+            <Route path="profile" element={<TopNavLayout title="My Profile" />}>
                 <Route index element={<UserProfile />} />
             </Route>
 

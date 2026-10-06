@@ -1,27 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Ticket, FileText, CreditCard, LogOut, Shield, User, ShoppingCart, Briefcase, Target, Cloud, Home } from 'lucide-react';
+import { LayoutDashboard, Shield } from 'lucide-react';
 import { useAuth } from '@/core/hooks/useAuth';
 import { useTenant } from '@/core/context/TenantContext';
+import { useManifest } from '@/core/hooks/useManifest';
 import UserAvatarDropdown from '../../../apps/shell/components/layout/UserAvatarDropdown';
-
-const navItems = [
-    { label: 'Overview', path: '/portal', icon: LayoutDashboard, end: true },
-    { label: 'Sale Orders', path: '/portal/orders', icon: ShoppingCart },
-    { label: 'Invoices', path: '/portal/invoices', icon: FileText },
-    { label: 'My Tickets', path: '/portal/tickets', icon: Ticket },
-    { label: 'Projects', path: '/portal/projects', icon: Briefcase },
-    { label: 'Contracts', path: '/portal/contracts', icon: Shield },
-    { label: 'Subscriptions', path: '/portal/subscriptions', icon: Cloud },
-    { label: 'Managed Assets', path: '/portal/assets', icon: Target },
-];
+import { getIcon } from '../../shell/components/ui/iconRegistry';
 
 const PortalLayout = () => {
     const { user, logout } = useAuth();
     const { tenant } = useTenant();
+    const { manifestData } = useManifest();
     const navigate = useNavigate();
 
     const handleLogout = () => { logout(); navigate('/login'); };
+
+    // Server-Driven UI: Dynamically build the portal menu from the backend manifest
+    const dynamicNavItems = [
+        { label: 'Overview', path: '/portal', icon: LayoutDashboard, end: true }
+    ];
+
+    if (manifestData && manifestData.length > 0) {
+        manifestData
+            .filter(mod => mod.is_installed !== false && mod.has_portal === true)
+            .forEach(mod => {
+                dynamicNavItems.push({
+                    label: mod.portal_label || mod.display_name || mod.name,
+                    path: mod.portal_url,
+                    icon: getIcon(mod.icon || 'Folder')
+                });
+            });
+    }
 
     return (
         <div className="min-h-screen bg-slate-950 flex flex-col font-sans">
@@ -53,16 +62,19 @@ const PortalLayout = () => {
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl sticky top-24">
                         <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-2">My Account</div>
                         <nav className="space-y-1.5">
-                            {navItems.map(item => (
-                                <NavLink key={item.path} to={item.path} end={item.end}
-                                    className={({ isActive }) =>
-                                        `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all no-underline
-                                        ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'}`
-                                    }>
-                                    <item.icon size={18} className={({ isActive }) => isActive ? 'text-white' : 'text-slate-500'} /> 
-                                    {item.label}
-                                </NavLink>
-                            ))}
+                            {dynamicNavItems.map(item => {
+                                const IconComp = item.icon;
+                                return (
+                                    <NavLink key={item.path} to={item.path} end={item.end}
+                                        className={({ isActive }) =>
+                                            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all no-underline
+                                            ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'}`
+                                        }>
+                                        <IconComp size={18} className={({ isActive }) => isActive ? 'text-white' : 'text-slate-500'} /> 
+                                        {item.label}
+                                    </NavLink>
+                                );
+                            })}
                         </nav>
                     </div>
                 </aside>

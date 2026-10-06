@@ -1,4 +1,7 @@
-import { Bot, Settings, Activity, Users, Plus, BarChart3, FileText } from 'lucide-react';
+import {
+    Activity, BarChart3, Bot, Plus,
+    Settings, Users
+} from 'lucide-react';
 
 export const agentsMenu = [
     {

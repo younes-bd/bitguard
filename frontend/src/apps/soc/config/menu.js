@@ -1,7 +1,8 @@
 import {
-    LayoutDashboard, AlertCircle, ShieldCheck, Server,
-    FileText, Activity, Wifi, Mail, Cloud, Shield,
-    Bug, BarChart3, Scale, FileWarning, Settings
+    Activity, AlertCircle, BarChart3, Bug,
+    Cloud, FileText, FileWarning, LayoutDashboard,
+    Mail, Scale, Server, Shield,
+    ShieldCheck, Wifi
 } from 'lucide-react';
 
 // SOC sidebar menu — auto-discovered by BackendRoutes glob: apps/*/config/menu.js

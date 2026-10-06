@@ -22,4 +22,8 @@
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
     'navigation_path': 'Command Center -> Projects Tile',
+    'has_portal': True,
+    'portal_url': '/portal/projects',
+    'portal_label': 'Projects',
 }
+

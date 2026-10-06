@@ -22,4 +22,7 @@
     'settings_url': '/admin/settings/crm',
     'settings_desc': 'Configure settings',
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Crm Tile'}
+    'navigation_path': 'Command Center -> Crm Tile'    'has_portal': True,
+    'portal_url': '/portal/leads',
+    'portal_label': 'My Leads',
+}

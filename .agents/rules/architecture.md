@@ -235,7 +235,7 @@ Just because a button (e.g., "Trigger Backup", "Sync Search Indexes") lives on a
 **By Example:**
 If the user clicks "Trigger Database Backup" on the General Settings page:
 *   ❌ **WRONG:** Routing the API call to `apps/system/services/settings.py` and writing a file-copying script inside the `SettingsService`. This creates a "God Object" anti-pattern and violates Layer 1 kernel boundaries.
-*   ✅ **CORRECT:** The frontend Settings page calls a dedicated API endpoint (`/api/v1/core/database/backup/`), which triggers a strictly isolated `DatabaseManagementService` located in `apps/core/services/` (Layer 1).
+*   ✅ **CORRECT:** The frontend Settings page calls a dedicated API endpoint (`/api/v1/core/database/backup/`), which triggers a strictly isolated `DatabaseManagementService` located in `apps/base/services/` (Layer 1).
 
 Always isolate execution logic into dedicated, single-responsibility services, and place infrastructure services in the `core` module.
 
@@ -279,9 +279,9 @@ Do **NOT** use horizontal slicing for mixins (e.g., do not create a global `core
 Never mix HTTP logic with Database logic.
 
 ## Rule 42: The Middleware Segregation Protocol
-All global application middleware must live centrally in `apps/core/middleware/`. Furthermore, they must be separated by network protocol:
-*   **WSGI / HTTP:** Standard request middlewares (Tenant routing, ThreadLocals) live in `apps/core/middleware/http.py`.
-*   **ASGI / WebSockets:** Django Channels middlewares live in `apps/core/middleware/websockets.py`.
+All global application middleware must live centrally in `apps/base/middleware/`. Furthermore, they must be separated by network protocol:
+*   **WSGI / HTTP:** Standard request middlewares (Tenant routing, ThreadLocals) live in `apps/base/middleware/http.py`.
+*   **ASGI / WebSockets:** Django Channels middlewares live in `apps/base/middleware/websockets.py`.
 Never merge ASGI and WSGI middleware into the same file.
 
 ## Rule 43: ThreadLocal User Resolution (The Deep ORM Rule)
@@ -312,7 +312,7 @@ Do NOT blindly apply `FieldHistoryMixin` to all models. It causes database bloat
 
 ## Rule 45: The Service Domain Law (Frontend Decoupling)
 Frontend API services must ALWAYS be strictly mapped to the backend endpoint's domain, regardless of where the UI lives. 
-*   If an endpoint is /api/v1/core/..., the frontend service MUST live in src/apps/core/api/. 
+*   If an endpoint is /api/v1/core/..., the frontend service MUST live in src/apps/base/api/. 
 *   The system app is a pure UI Control Plane and should contain almost NO internal services; it must import services from the domain kernels (core, tenants).
 
 
@@ -337,7 +337,7 @@ Modules that are pure UI Consumers must exist **exclusively on the frontend.**
 
 **Key Examples of Frontend-Only Modules:**
 1.  **The `shell` Module (Layer 2):** This module houses the global React layouts, the Command Center grid, and shared UI components (DataTables, TopBar). Because it relies on no specific database tables, it exists **exclusively** at `frontend/src/apps/shell/`. It has zero backend presence.
-2.  **The `apps` Module (The App Store):** According to Rule 39 (Data Gravity), the `InstalledModule` database table and its API ViewSets are strictly owned by the `core` kernel. Because the data and API live in `core`, the `apps` module is reduced to a pure UI React consumer. Therefore, it exists **exclusively** at `frontend/src/apps/apps/`. It has zero backend presence.
+2.  **The `apps` Module (The App Store):** According to Rule 39 (Data Gravity), the `InstalledModule` database table and its API ViewSets are strictly owned by the `base` kernel. Because the data and API live in `base`, the `apps` module is reduced to a pure UI React consumer. Therefore, it exists **exclusively** at `frontend/src/apps/apps/`. It has zero backend presence.
 
 ## Rule 48: The Headless Registry Pattern (Vite Glob Imports)
 **CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
@@ -602,9 +602,9 @@ By strictly adhering to this law, you guarantee the following MACH workflow:
 While Rule 39 (Data Gravity) dictates that models belong in their specific business app, there is a strict override for **Universal Dependencies**.
 
 If a domain model is fundamentally required by 3 or more isolated Layer 3 apps (e.g., `Country`, `Currency`, `UnitOfMeasure`, `Translation`), its Data Gravity collapses into Layer 1. 
-You must build these models inside `backend/apps/core/` to prevent circular cross-module imports. 
+You must build these models inside `backend/apps/base/` to prevent circular cross-module imports. 
 
-*Example:* `inventory` cannot depend on `sales`, and `sales` cannot depend on `inventory`. By placing `UoM` in `core`, both apps can safely import it downward.
+*Example:* `inventory` cannot depend on `sales`, and `sales` cannot depend on `inventory`. By placing `UoM` in `base`, both apps can safely import it downward.
 
 ## Rule 62: The Settings UI Purity Law (No Destructive Actions)
 **CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
@@ -687,3 +687,40 @@ Layer 2 is deliberately `application: True` even though the equivalent Odoo plat
 Odoo apps may depend on other apps (`hr_expense` depends on `hr` and `account`). BitGuard follows the same rule: a Layer 3 module may depend on another Layer 3 module only when it declares that dependency in its manifest `depends`.
 
 **4. The registry is verified automatically.** `scripts/validate_architecture.py` checks that every backend and frontend module folder has a registry entry, that every registry entry exists on disk, and reports any manifest whose `application` flag or `depends` direction contradicts the registry. Run it before every commit that touches `backend/apps/*/__manifest__.py`.
+
+## Rule 66: The L2 Inversion of Control Law (The Anti-BFF Rule)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+You are **STRICTLY FORBIDDEN** from building monolithic ""Backend-for-Frontend"" (BFF) aggregators or central API proxies in Layer 2 (e.g., portal or system) that hard-import from Layer 3 business apps. This violates the MACH Microservices standard by creating a monolithic dependency chokepoint.
+
+**The Portal Plugin Pattern:**
+*   Layer 2 apps (like the Customer Portal or E-Commerce storefront) must remain ""dumb shells.""
+*   They cannot import L3 models, services, or UI components.
+*   Instead, Layer 3 apps (e.g., crm, ccounting) must physically own their own external-facing endpoints and React UI pages (e.g., rontend/src/apps/crm/pages/portal/PortalLeadsPage.jsx).
+*   The L3 apps then inject these pages into the L2 shell dynamically via the global registry. If an L3 app is uninstalled, its portal tab simply disappears without breaking the L2 shell.
+
+## Rule 67: The Server-Driven UI & Dynamic Routing Law (L3 Glob Pattern)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+While Layer 2 and Layer 4 technical apps use local frontend manifests (Rule 58), you are **STRICTLY FORBIDDEN** from inventing new frontend configuration files (e.g., config/portal.js or config/dashboard.js) for **Layer 3 Business Apps**.
+
+For Layer 3 apps and central aggregators (Portal, Command Center), the frontend must act as a "dumb" reflection of the backend database:
+
+**1. The Menu Injection Standard (Server-Driven UI):**
+Aggregator menus (Portal Sidebar, Command Center grid) must read the active tenant's installed modules directly from the backend via the useManifest() context. The UI must loop over manifestData to dynamically generate links. You must never hardcode Layer 3 links in a static React array.
+
+**2. The Route Injection Standard (Vite Globbing):**
+To map these dynamic menus to physical React pages without violating the ESLint boundary rules (Rule 9), you must NEVER use hard file imports across domains. Instead, aggregator routers (like PortalRoutes.jsx) must use Vite's dynamic glob pattern:
+`const routeModules = import.meta.glob('../../apps/*/routes/*Routes.jsx', { eager: true });`
+This guarantees mathematically pure decoupling: L3 apps simply drop their route files in their own folder, and the L2 shell dynamically sweeps and mounts them at runtime.
+
+## Rule 68: The Core Asymmetry Law
+To prevent naming collisions and architectural confusion, developers must strictly recognize the difference between the "Outside Core" and the "Inside Core" on the frontend:
+*   **The React Engine (rontend/src/core/):** This is the Headless OS. It contains the router, the Axios HTTP client, and generic UI primitives. It possesses absolutely zero business logic and has no knowledge of database models.
+*   **The Database UI Proxy (rontend/src/apps/base/ and pps/system):** These are standard business apps. They act as visual proxies for the backend's lowest-level database tables (e.g., Currencies, Languages, Audit Logs). They are *not* the engine.
+
+## Rule 69: The MACH State Decoupling Law (The "Slot" Pattern)
+To maintain Tier-1 Micro-SaaS decoupling (mirroring platforms like CommerceTools and Shopify), the Headless Engine must never be tightly coupled to Business Apps.
+*   **The Strict Ban:** The React Engine (rontend/src/core/) is mathematically forbidden from importing services, contexts, or logic from rontend/src/apps/ (including foundational apps like pps/auth or pps/tenant).
+*   **Inversion of Control (The Slot Pattern):** Cross-cutting state (like Authentication Tokens or active Tenant IDs) must be passed to the Engine via generic slots:
+    *   **Browser Memory:** The uth app writes the JWT to localStorage. The core Axios client reads it blindly from localStorage.
+    *   **URL Resolution:** The core engine identifies the active tenant blindly by reading the subdomain from window.location.hostname. 
+    *   **Generic Contexts:** The core provides dumb, empty Context Providers (e.g. SessionContext). The uth app is responsible for mutating the state inside that generic slot.

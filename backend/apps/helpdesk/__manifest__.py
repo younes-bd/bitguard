@@ -20,4 +20,7 @@
     'sequence': 140,
     'has_settings': False,
     'ui_paradigm': 'Primary Application (Has Dashboard/Command Center Tile)',
-    'navigation_path': 'Command Center -> Helpdesk Tile'}
+    'navigation_path': 'Command Center -> Helpdesk Tile'    'has_portal': True,
+    'portal_url': '/portal/tickets',
+    'portal_label': 'My Tickets',
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { authService } from '../api/authService';
+import { authService } from '@/core/api/authService';
 import toast from 'react-hot-toast';
 import { Key, Loader2, Lock } from 'lucide-react';
 
