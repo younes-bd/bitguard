@@ -1,4 +1,4 @@
-from apps.core.services import BaseService, AuditService
+from apps.base.services import BaseService, AuditService
 
 class RentalService(BaseService):
     """

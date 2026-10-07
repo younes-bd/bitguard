@@ -34,12 +34,12 @@ frontend/src/apps/<module_name>/
   api/                     ← API service functions
   config/menu.js           ← Sidebar menu config
   routes/<name>AdminRoutes.jsx  ← React Router route definitions
-CONTEXT
 
 
 Email: contact@bitguard.tech
 Password: youness
 
+\\wsl$\
 
 Quick start:
 # 1. Remove the broken environment
@@ -52,7 +52,7 @@ python3 -m venv venv --clear
 source venv/bin/activate
 
 # 4. Upgrade pip and install all requirements
-\\wsl$\
+
 pip install --upgrade pip
 pip install -r requirements.txt
 1) cd backend
@@ -172,38 +172,6 @@ Workflow Diagram showing how your platform should operate as a unified tech comp
 
 I just want you to audit my website and make sure it matches with enterprise grade like my IT enterprise that offers SaaS services and managed services and like other IT enterprise. But I want you to make a full audit including the navigation bar, the headers, the sections, all of the pages of my website module and make it much with enterprise grade. Give me a audit, please. 
 
-SYSTEM CONTEXT
-You are refactoring BitGuard Enterprise Platform, a multi-tenant ERP SaaS built on:
-
-Backend: Django 5 + Django REST Framework (DRF), following Domain-Driven Design (DDD) for internal business logic.
-Frontend: React 18 + Vite, following Feature-Sliced Design (FSD).
-Architecture: Registry-Driven Plugin Architecture for 100% decoupling (see ARCHITECTURE_REGISTRY_MIGRATION.md).
-Root path: c:\Users\youne\Desktop\2-InfoTech\website\website13\
-The platform has 53 frontend app modules and 40+ backend app modules. An automated deep audit has identified 38 total violations (24 frontend, 14 backend). Your job is to fix ALL of them without breaking any existing functionality.
-
-CRITICAL OPERATING RULE: Never break a working feature to achieve modularity. Every fix must be a clean refactor: same behavior, stricter boundaries.
-
-Phase 1 — Foundation (no risk of breakage)
-  ├── A4: Register missing apps in api/urls.py (additive only)
-  ├── A5: Fix AppConfig labels (low-risk with care)
-  ├── B2: Eliminate inline API calls (pure refactor, no behavior change)
-  └── B1: Fix flat directory structure (move files + update imports)
-
-Phase 2 — Service Layer (moderate complexity)
-  ├── A1: Create services.py for 27 apps (move logic, don't delete)
-  ├── A2: Add missing AuditService calls (additive only)
-  └── A3: Fix serializer fields (be careful not to break API contracts)
-
-Phase 3 — Structural Boundaries (higher complexity)
-  ├── A6: Fix cross-app model imports → string references
-  ├── A7: Fix base class inheritance (requires migration)
-  ├── B3: Remove cross-module component imports
-  ├── B4: Fix cross-module API imports → backend orchestration
-  └── B5: Fix core importing from apps
-
-Phase 4 — Architectural Patterns (advanced)
-  ├── A8: Centralize signals in core/signals.py
-  └── B6: Implement app registry for BackendRoutes
 
 
 🔴 Fix all hardcoded company data and credentials (move to env vars and tenant context)
@@ -225,53 +193,6 @@ Apply select_related and prefetch_related to complex ViewSets to prevent N+1 que
 Add database indexes to high-query fields (Ticket.status, Invoice.due_date, Notification.user).
 Add robust file upload security validation (extensions and size limits).
 
-
-
-Module	Documents Required
-
-Accounting	
-Invoice, Credit Note, Vendor Bill, Payment Receipt, Statement of Account, Aged Receivables Report, Aged Payables Report, Bank Reconciliation Report, Tax Report (VAT), Trial Balance, P&L, Balance Sheet
-
-Sales
-Quotation/Proposal, Sales Order Confirmation, Delivery Order, Proforma Invoice, Customer Portal Order Summary
-
-Purchases	
-Purchase Order, Request for Quotation (RFQ), Goods Receipt Note (GRN), Vendor Bill confirmation
-
-Inventory/Stock
-Delivery Slip, Reception Report, Inventory Adjustment Report, Picking List, Packing List, Barcode Label, Stock Valuation Report
-
-HR
-Employment Contract, Payslip, Leave Request, Expense Report, Employee Badge
-
-CRM	
-Meeting/Activity Report, Pipeline Summary
-
-Projects	
-Project Status Report, Timesheet Report
-
-E-sign
- / EDMS	Document templates with signature blocks
-
-
-"Act as a Senior Tier-1 ERP Architect. Audit my codebase for Domain Leakage, Separation of Concerns (SoC) violations, and Architectural Inversions. Specifically, verify that downstream business plugins are perfectly encapsulated and are not accidentally hosting global dispatchers, system infrastructure, or cross-module orchestrators that rightfully belong in the core or system modules
-
-
-
-Layer 3 — Business Plugins (application: True) ✅
-All 61 business plugin modules are correctly classified with application: True. Sections are now correct after this session's pillar fix:
-
-Administration: system(1), apps(2), soc(3), studio(99), agents(98)
-Sales: sales(1), crm(2), pos(3), subscriptions(4), rental(5), amazon(6)
-Services: projects(1), timesheets(2), dispatch(3), helpdesk(4), planning(5), appointments(6)
-Accounting: accounting(1), invoicing(2), consolidation(3), documents(3⚠), sign(4⚠), spreadsheet(4⚠), esg(5), equity(6), expenses(7)
-Inventory: inventory(1), procurement(2), barcode(3)
-Manufacturing: manufacturing(1), production(2), maintenance(4), quality(5), repair(6), iot(7)
-Website: website(1), ecommerce(2), learning(3), forum(4), blog(5)
-Marketing: campaigns(1⚠), journeys(1⚠), sms(2), events(3), social(4⚠), surveys(4⚠)
-Human Resources: employees(1), recruiting(2), timeoff(3), timeclock(4), frontdesk(5), payroll(6), performance(8), referrals(8), fleet(10), lunch(11)
-Discuss: discuss(3), voip(8), messaging(6), whatsapp(3)
-Productivity: tasks(2), approvals(5), knowledge(6), calendar(7), analytics(5)
 
 
 

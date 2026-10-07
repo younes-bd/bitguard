@@ -57,7 +57,7 @@
     {
       "odoo": "base and UI-less foundations (bus, uom, resource, analytic, digest, utm, currency, country)",
       "layer": 1,
-      "why": "Universal dependencies collapse into core (Rule 61)."
+      "why": "Universal dependencies collapse into base (Rule 61)."
     },
     {
       "odoo": "application False, depends only on root or platform, owns an admin UI (base_setup, portal, product, payment, base_automation, web, auth_signup)",
@@ -83,7 +83,7 @@
   "dependency_law": {
     "rule": "A module may depend only on modules in the same or a lower layer. Layer 4 may depend on 1, 2 and 3. Layer 3 may depend on another Layer 3 module only when it is declared in its manifest depends (the Odoo DAG). Layer 3 must never hard-depend on Layer 4 (use a Rule 12 soft dependency).",
     "known_drift_to_fix": [
-      "core, auth, tenants declare depends system (Layer 2). core must be the root with depends [] and system must depend on core.",
+      "base, auth, tenants declare depends system (Layer 2). base must be the root with depends [] and system must depend on base.",
       "inventory depends procurement and projects depends crm. Odoo has neither dependency.",
       "agents (L3) declares depends ai_engine (L4). Use a soft dependency.",
       "Layer 2 modules still have application False and are hidden by that flag. They must become application True with a launcher_tile gate (see Rule 65)."
@@ -94,11 +94,11 @@
       "frontend/src/core"
     ],
     "l2_proxy_ui_for_l1_modules": [
-      "frontend/src/apps/core",
+      "frontend/src/apps/base",
       "frontend/src/apps/auth",
       "frontend/src/apps/tenants"
     ],
-    "note": "Rule 9C: the backend of core, auth and tenants is L1, but their frontend folders under apps/ are L2 control-plane proxy UI. Only frontend/src/core is the headless L1 engine."
+    "note": "Rule 9C: the backend of base, auth and tenants is L1, but their frontend folders under apps/ are L2 control-plane proxy UI. Only frontend/src/core is the headless L1 engine."
   },
   "modules": {
     "base": {
@@ -110,7 +110,7 @@
       "basis": "odoo17-ce-verified",
       "backend": true,
       "frontend": true,
-      "note": "Root of the dependency graph. Odoo base has depends [] so no other module may be a dependency of core."
+      "note": "Root of the dependency graph. Odoo base has depends [] so no other module may be a dependency of base."
     },
     "auth": {
       "layer": 1,
@@ -143,7 +143,7 @@
       "basis": "odoo17-ce-verified",
       "backend": true,
       "frontend": true,
-      "note": "Odoo base_setup depends on base, so system must depend on core."
+      "note": "Odoo base_setup depends on base, so system must depend on base."
     },
     "apps": {
       "layer": 2,
@@ -347,7 +347,7 @@
       "layer": 3,
       "application": true,
       "launcher_tile": true,
-      "odoo_equivalent": "mrp",
+      "odoo_equivalent": "mrp_workorder Shop Floor",
       "odoo_kind": "app",
       "basis": "odoo17-ce-verified",
       "backend": true,

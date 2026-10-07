@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("accounting", "0003_remove_currency_created_by_remove_currency_tenant"),
-        ("core", "0006_currency_alter_company_default_currency"),
+        ("base", "0006_currency_alter_company_default_currency"),
     ]
 
     operations = [
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="exchange_rates",
-                to="core.currency",
+                to="base.currency",
             ),
         ),
         migrations.AlterField(
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                to="core.currency",
+                to="base.currency",
             ),
         ),
         migrations.DeleteModel(

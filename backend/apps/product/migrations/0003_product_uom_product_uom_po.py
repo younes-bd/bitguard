@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0003_alter_sequence_options_alter_sequence_table_and_more'),
+        ('base', '0003_alter_sequence_options_alter_sequence_table_and_more'),
         ('product', '0002_initial'),
     ]
 
@@ -15,11 +15,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='uom',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='products_as_uom', to='core.uom'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='products_as_uom', to='base.uom'),
         ),
         migrations.AddField(
             model_name='product',
             name='uom_po',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='products_as_uom_po', to='core.uom'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='products_as_uom_po', to='base.uom'),
         ),
     ]

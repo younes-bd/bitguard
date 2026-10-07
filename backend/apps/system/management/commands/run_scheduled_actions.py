@@ -1,7 +1,7 @@
 import traceback
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from apps.core.domain.models import ScheduledAction
+from apps.base.domain.models import ScheduledAction
 from django.apps import apps
 from dateutil.relativedelta import relativedelta
 

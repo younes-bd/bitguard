@@ -43,7 +43,7 @@ export default function UomListPage() {
     useEffect(() => {
         const fetchUoms = async () => {
             try {
-                const response = await apiClient.get('/api/core/uoms/');
+                const response = await apiClient.get('base/uoms/');
                 setData(response.data.results || response.data);
             } catch (error) {
                 toast.error('Failed to load Units of Measure');

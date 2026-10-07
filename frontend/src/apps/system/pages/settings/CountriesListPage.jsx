@@ -27,7 +27,7 @@ export default function CountriesListPage() {
     useEffect(() => {
         const fetchCountries = async () => {
             try {
-                const response = await apiClient.get('/api/core/countries/');
+                const response = await apiClient.get('base/countries/');
                 setData(response.data.results || response.data);
             } catch (error) {
                 toast.error('Failed to load countries');

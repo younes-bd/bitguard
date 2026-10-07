@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.contenttypes.models import ContentType
-from apps.core.domain.models import Attachment
+from apps.base.domain.models import Attachment
 from apps.documents.domain.models import Document, DocumentWorkspace, Tag
 from apps.users.domain.models import User
 from apps.tenants.domain.models import Tenant

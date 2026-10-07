@@ -28,7 +28,7 @@ APPS_DIR = BASE_DIR / 'apps'
 
 # Mandatory Core Apps that must be loaded first
 CORE_APPS = [
-    'apps.core',
+    'apps.base',
     'apps.users',
     'apps.tenants',
     'apps.auth',
@@ -89,10 +89,10 @@ MIDDLEWARE = ['corsheaders.middleware.CorsMiddleware','django.middleware.securit
 'django.contrib.sessions.middleware.SessionMiddleware','django.middleware.common.CommonMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware','django.contrib.auth.middleware.AuthenticationMiddleware',
 'django.contrib.messages.middleware.MessageMiddleware','django.middleware.clickjacking.XFrameOptionsMiddleware',
-'apps.core.middleware.security.IPBlacklistMiddleware',
-'apps.core.middleware.http.ThreadLocalMiddleware',
-'apps.core.middleware.http.RequestLoggingMiddleware',
-'apps.core.middleware.http.TenantMiddleware',]
+'apps.base.middleware.security.IPBlacklistMiddleware',
+'apps.base.middleware.http.ThreadLocalMiddleware',
+'apps.base.middleware.http.RequestLoggingMiddleware',
+'apps.base.middleware.http.TenantMiddleware',]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -123,7 +123,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'EXCEPTION_HANDLER': 'apps.core.exceptions.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'apps.base.exceptions.custom_exception_handler',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 25,
     'DEFAULT_FILTER_BACKENDS': (
@@ -244,3 +244,40 @@ if importlib.util.find_spec('daphne') and importlib.util.find_spec('channels'):
 
 # Rule 34: Dual-Mode Architecture (Multi-Tenant vs Single-Tenant)
 SINGLE_TENANT_MODE = os.environ.get('SINGLE_TENANT_MODE', 'False').lower() == 'true'
+
+# File-based logging for diagnostic stream
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname}  {name} - {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'apps': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

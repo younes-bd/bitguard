@@ -3,8 +3,8 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 from ..domain.models import Invoice, Plan, Subscription
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 

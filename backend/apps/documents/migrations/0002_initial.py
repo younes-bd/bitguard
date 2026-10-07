@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
+        ('base', '0001_initial'),
         ('documents', '0001_initial'),
         ('tenants', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='documentversion',
             name='attachment',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.attachment'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='base.attachment'),
         ),
         migrations.AddField(
             model_name='documentversion',

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../../../../../apps/shell/styles/landing.css';
+import '../../../styles/landing.css';
 import SectionDivider from '../../../../../apps/shell/components/SectionDivider';
 import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 import client from '@/core/api/client';

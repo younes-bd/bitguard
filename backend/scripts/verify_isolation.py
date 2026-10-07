@@ -31,7 +31,7 @@ def verify_isolation():
     # This should be handled by the developer using the manager or service
     # But let's check if our filter_by_context service works as expected
     
-    from apps.core.services.base import BaseService
+    from apps.base.services.base import BaseService
     factory = RequestFactory()
     
     # Mock request for User B

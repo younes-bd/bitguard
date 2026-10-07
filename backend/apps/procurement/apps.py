@@ -13,6 +13,6 @@ class PurchaseConfig(AppConfig):
             pass
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('procurement/', 'apps.procurement.api.urls')
 

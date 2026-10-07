@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from apps.core.utils.response import standard_response
+from apps.base.utils.response import standard_response
 from ..domain.models import (
     Department, Employee, Certification, TimeEntry,
     OnboardingInstance, OnboardingTask, EmployeeSkill

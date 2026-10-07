@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -121,7 +121,7 @@ class ProjectViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     def bill_time(self, request, pk=None):
         from apps.accounting.domain.models import Invoice, InvoiceLine
         from datetime import date, timedelta
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         
         project = self.get_object()
         unbilled_logs = project.time_logs.filter(is_billable=True, billed=False)

@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 from apps.employees.domain.models import Employee
 
 class Appraisal(TenantAwareModel):

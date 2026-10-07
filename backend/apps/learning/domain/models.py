@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 
 # --- E-LEARNING ---
 class Course(TenantAwareModel):

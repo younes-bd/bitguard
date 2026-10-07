@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { moduleService } from '../../core/api/moduleService';
+import { moduleService } from '@/apps/base/api/moduleService';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Box, CheckCircle2, Download, AlertTriangle, RefreshCw, Trash2, Globe, FileText, User } from 'lucide-react';
 import { useManifest } from '../../../core/hooks/useManifest';

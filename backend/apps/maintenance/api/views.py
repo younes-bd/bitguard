@@ -1,9 +1,9 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from apps.core.utils.response import standard_response
+from apps.base.utils.response import standard_response
 from ..api.serializers import AssetListSerializer, AssetDetailSerializer, AssetAssignmentSerializer, MaintenanceRecordSerializer, SoftwareLicenseSerializer
 from ..domain.models import Asset, AssetAssignment, MaintenanceRecord, SoftwareLicense
 

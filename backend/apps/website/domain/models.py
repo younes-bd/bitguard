@@ -1,11 +1,11 @@
-from apps.core.validators import validate_document_file, validate_image_file
+from apps.base.validators import validate_document_file, validate_image_file
 
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.conf import settings
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 
 
 User = get_user_model()

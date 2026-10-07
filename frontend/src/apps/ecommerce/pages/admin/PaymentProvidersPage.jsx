@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { parameterService } from '../../../core/api/parameterService';
+import { parameterService } from '@/apps/base/api/parameterService';
 import { CreditCard, Save, Loader2, LayoutDashboard, Shield, ShieldAlert, Key } from 'lucide-react';
 import toast from 'react-hot-toast';
 

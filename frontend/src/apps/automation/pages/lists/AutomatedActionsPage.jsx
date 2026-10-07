@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Terminal, Plus, Search, Edit2, Trash2, X, Play, Loader2, AlertCircle } from 'lucide-react';
 import apiClient from '@/core/api/client';
 import { automationService } from '../../api/automationService';
@@ -23,7 +23,7 @@ export default function ServerActions() {
         try {
             const [actionRes, modelsRes] = await Promise.all([
                 automationService.getActions(),
-                apiClient.get('core/content-types/').catch(() => ({ data: [] }))
+                apiClient.get('base/content-types/').catch(() => ({ data: [] }))
             ]);
             setActions(actionRes.data.results || actionRes.data);
             const flat = Object.values(modelsRes.data?.data || modelsRes.data || {}).flat();
@@ -140,7 +140,7 @@ export default function ServerActions() {
                                     <td className="px-6 py-4 font-semibold text-slate-200">{action.name}</td>
                                     <td className="px-6 py-4">
                                         <span className="px-2 py-1 bg-slate-950 border border-slate-800 text-slate-300 rounded text-xs font-mono">
-                                            {action.model_name || 'â€”'}
+                                            {action.model_name || '—'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">

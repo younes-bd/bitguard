@@ -7,8 +7,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from ..domain.models import OTP, Device, LoginActivity
 
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
 
 class OTPService(BaseService):
     @classmethod
@@ -238,7 +238,7 @@ class IdentityService(BaseService):
             fail_silently=True,
         )
         
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         AuditService.log_action(
             request, 
             action="USER_INVITED", 

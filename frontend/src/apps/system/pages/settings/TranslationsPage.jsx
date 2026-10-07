@@ -32,7 +32,7 @@ export default function TranslationsPage() {
     useEffect(() => {
         const fetchTranslations = async () => {
             try {
-                const response = await apiClient.get('/api/core/translations/');
+                const response = await apiClient.get('base/translations/');
                 setData(response.data.results || response.data);
             } catch (error) {
                 toast.error('Failed to load translations');

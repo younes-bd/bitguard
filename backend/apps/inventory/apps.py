@@ -14,11 +14,11 @@ class InventoryConfig(AppConfig):
             pass
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('inventory/', 'apps.inventory.api.urls')
 
     def _register_automations(self):
-        from apps.core.registry import register_scheduled_action
+        from apps.base.registry import register_scheduled_action
         register_scheduled_action({
             'key': 'stock_reordering',
             'model_name': 'inventory.Warehouse',
@@ -33,7 +33,7 @@ class InventoryConfig(AppConfig):
 
     def _register_kpis(self):
         try:
-            from apps.core.registry import kpi_registry
+            from apps.base.registry import kpi_registry
             from apps.inventory.services.kpi import get_kpis
             kpi_registry.register('stock', get_kpis)
         except ImportError:

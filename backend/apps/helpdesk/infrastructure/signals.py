@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from apps.helpdesk.domain.models import Ticket
 from apps.ai_engine.services import AiEngineService
-from apps.core.services.audit import AuditService
+from apps.base.services.audit import AuditService
 
 class _SystemRequest:
     """Minimal request-like object for signals that run outside an HTTP request."""

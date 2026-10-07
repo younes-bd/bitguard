@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions
 from ..domain.models import Course, Content, Forum, CourseCertification, Review
 from .serializers import (

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Blocks, Search, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
 import client from '@/core/api/client';
 import GenericModal from '../../../../apps/shell/components/ui/forms/GenericModal';

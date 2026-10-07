@@ -1,9 +1,9 @@
+import { languageService } from '@/apps/base/api/languageService';
 import React, { useState } from 'react';
-import { languageService } from '../../../core/api/languageService';
 import { Download, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
 import apiClient from '@/core/api/client';
-import { settingsService } from '../../api/settingsService';
+
 
 export default function TranslationsExportPage() {
   const [languages, setLanguages] = useState([]);

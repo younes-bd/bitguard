@@ -1,5 +1,5 @@
 from django.db import models
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 from apps.employees.domain.models import Employee
 
 class PayrollPeriod(TenantAwareModel):

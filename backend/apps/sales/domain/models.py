@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 from django.conf import settings
 
 class SalesTeam(TenantAwareModel):

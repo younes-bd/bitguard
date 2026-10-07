@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.payroll.domain.models import PayrollPeriod, PayrollStructure, SalaryRule, PayslipBatch, Payslip, PayslipLine
 from apps.payroll.api.serializers import PayrollPeriodSerializer, PayrollStructureSerializer, SalaryRuleSerializer, PayslipBatchSerializer, PayslipSerializer, PayslipLineSerializer
 

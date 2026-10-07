@@ -4,7 +4,7 @@ import SectionDivider from '../../../../../apps/shell/components/SectionDivider'
 import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
 import client from '@/core/api/client';
 import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import '../../../../../apps/shell/styles/landing.css';
+import '../../../styles/landing.css';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({

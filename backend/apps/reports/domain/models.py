@@ -1,6 +1,6 @@
-from apps.core.validators import validate_document_file
+from apps.base.validators import validate_document_file
 from django.db import models
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 
 class ReportTemplate(TenantAwareModel):
     """
@@ -26,22 +26,33 @@ class GeneratedReport(TenantAwareModel):
     def __str__(self):
         return f"Report {self.id} for {self.record_model}"
 
-class ReportEngineSettings(TenantAwareModel):
-    paper_format = models.CharField(max_length=20, default='A4')
-    margin_top = models.IntegerField(default=15)
-    margin_bottom = models.IntegerField(default=15)
-    margin_left = models.IntegerField(default=15)
-    margin_right = models.IntegerField(default=15)
-    company_header_html = models.TextField(blank=True)
-    company_footer_html = models.TextField(blank=True)
+class PaperFormat(TenantAwareModel):
+    """
+    Tier-1 ERP Master Data Model defining physical paper dimensions and margins.
+    Odoo equivalent: report.paperformat
+    """
+    name = models.CharField(max_length=100, help_text="e.g. A4, US Letter, Zebra 4x6")
+    page_height = models.IntegerField(default=297, help_text="Height in mm")
+    page_width = models.IntegerField(default=210, help_text="Width in mm")
+    margin_top = models.IntegerField(default=15, help_text="Top margin in mm")
+    margin_bottom = models.IntegerField(default=15, help_text="Bottom margin in mm")
+    margin_left = models.IntegerField(default=15, help_text="Left margin in mm")
+    margin_right = models.IntegerField(default=15, help_text="Right margin in mm")
+    orientation = models.CharField(
+        max_length=20, 
+        choices=[('Portrait', 'Portrait'), ('Landscape', 'Landscape')], 
+        default='Portrait'
+    )
+    dpi = models.IntegerField(default=90)
+    is_global = models.BooleanField(default=False, help_text="If true, available to all tenants (tenant=None)")
 
-    def save(self, *args, **kwargs):
-        # Ensure only one instance per tenant
-        if not self.pk and ReportEngineSettings.objects.filter(tenant=self.tenant).exists():
-            # If exists, update instead
-            existing = ReportEngineSettings.objects.get(tenant=self.tenant)
-            self.pk = existing.pk
-        super().save(*args, **kwargs)
+    class Meta:
+        ordering = ['name']
+        verbose_name = "Paper Format"
+        verbose_name_plural = "Paper Formats"
+
+    def __str__(self):
+        return f"{self.name} ({self.page_width}x{self.page_height}mm)"
 
 class ReportTag(TenantAwareModel):
     name = models.CharField(max_length=100)

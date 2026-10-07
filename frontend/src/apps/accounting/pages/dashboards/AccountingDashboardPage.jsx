@@ -7,7 +7,6 @@ import {
     Building2, ShoppingCart, Repeat, BookOpen,
     Landmark, FileSpreadsheet, Server, ArrowRight, Wallet, Shield
 } from 'lucide-react';
-import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 

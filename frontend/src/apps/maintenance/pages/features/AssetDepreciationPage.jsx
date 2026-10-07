@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrendingDown, BarChart2 } from 'lucide-react';
 import client from '@/core/api/client';
 import toast from 'react-hot-toast';
@@ -75,8 +75,8 @@ export default function AssetDepreciationPage() {
                                         <td className="p-4">
                                             <p className="text-white font-semibold text-sm">{asset.name}</p>
                                         </td>
-                                        <td className="p-4 text-slate-400 text-sm">{asset.asset_tag || 'â€”'}</td>
-                                        <td className="p-4 text-slate-400 text-sm">{asset.procurement_date || 'â€”'}</td>
+                                        <td className="p-4 text-slate-400 text-sm">{asset.asset_tag || '—'}</td>
+                                        <td className="p-4 text-slate-400 text-sm">{asset.procurement_date || '—'}</td>
                                         <td className="p-4 text-white font-bold text-sm">${parseFloat(asset.procurement_price).toLocaleString()}</td>
                                         <td className="p-4 text-amber-400 font-bold text-sm">${parseFloat(asset.annual_depreciation).toLocaleString()}/yr</td>
                                         <td className="p-4 text-rose-400 font-bold text-sm">${parseFloat(asset.accumulated_depreciation).toLocaleString()}</td>

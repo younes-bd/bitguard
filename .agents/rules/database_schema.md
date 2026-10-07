@@ -9,7 +9,7 @@ trigger: always_on
 This document outlines the core database models and security mechanisms.
 
 ## The Prime Law: Multi-Tenancy
-*   This is a Micro-SaaS architecture. **EVERY** business model must inherit from `TenantAwareModel` (found in `core.models` or `system.domain.models`).
+*   This is a Micro-SaaS architecture. **EVERY** business model must inherit from `TenantAwareModel` (found in `base.models` or `system.domain.models`).
 *   When writing Django ORM queries, you must ALWAYS filter by the active tenant: `Model.objects.filter(tenant=request.user.tenant)`.
 *   Failing to filter by `tenant` will cause catastrophic data bleed between companies.
 

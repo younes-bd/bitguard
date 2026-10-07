@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from apps.core.domain.models import InstalledModule
-from apps.core.domain.models import CommandCenterSection
+from apps.base.domain.models import InstalledModule
+from apps.base.domain.models import CommandCenterSection
 
 def sync_tenant_sections(tenant):
     if not tenant:

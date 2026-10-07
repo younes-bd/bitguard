@@ -214,7 +214,7 @@ Because Django REST Framework (DRF) strictly rejects "" for UUIDs and ForeignKey
 
 To protect the server from storage bloat and malicious file execution, all file uploads must be strictly governed at the database level. 
 *   **CRITICAL INSTRUCTION FOR AI AGENTS:** You must never create a naked models.FileField or models.ImageField in this codebase.
-*   **The Standard Fix:** Every file field must utilize the global validators located in apps.core.validators. 
+*   **The Standard Fix:** Every file field must utilize the global validators located in apps.base.validators. 
     *   For standard documents, attach validators=[validate_document_file]. 
     *   For images, attach validators=[validate_image_file]. 
 *   This ensures that the 10MB file size limit and the strict whitelist of safe extensions (e.g., .pdf, .png, .jpg) are mathematically enforced across every module in the ERP.
@@ -235,7 +235,7 @@ Just because a button (e.g., "Trigger Backup", "Sync Search Indexes") lives on a
 **By Example:**
 If the user clicks "Trigger Database Backup" on the General Settings page:
 *   ❌ **WRONG:** Routing the API call to `apps/system/services/settings.py` and writing a file-copying script inside the `SettingsService`. This creates a "God Object" anti-pattern and violates Layer 1 kernel boundaries.
-*   ✅ **CORRECT:** The frontend Settings page calls a dedicated API endpoint (`/api/v1/core/database/backup/`), which triggers a strictly isolated `DatabaseManagementService` located in `apps/base/services/` (Layer 1).
+*   ✅ **CORRECT:** The frontend Settings page calls a dedicated API endpoint (`/api/v1/base/database/backup/`), which triggers a strictly isolated `DatabaseManagementService` located in `apps/base/services/` (Layer 1).
 
 Always isolate execution logic into dedicated, single-responsibility services, and place infrastructure services in the `core` module.
 
@@ -287,7 +287,7 @@ Never merge ASGI and WSGI middleware into the same file.
 ## Rule 43: ThreadLocal User Resolution (The Deep ORM Rule)
 Because Django Models sit at the very bottom of the architecture, they inherently do not have access to the `request` object. **NEVER** pass the `request` object through layers of function arguments just to reach the database. 
 Instead, if a Model or deep ORM interceptor needs to know the active user, you must retrieve it from the ThreadLocal memory by calling:
-`from apps.core.middleware.http import get_current_request`
+`from apps.base.middleware.http import get_current_request`
 
 ## Rule 44: The Dual-Layered Auditing Doctrine (Strict Split)
 To match Tier-1 ERP standards (like Salesforce and Odoo), the ERP utilizes a strictly split, dual-layered auditing system. **Never attempt to merge these two systems into a single database table.** They have different schemas, different retention policies, and different use cases.
@@ -312,8 +312,8 @@ Do NOT blindly apply `FieldHistoryMixin` to all models. It causes database bloat
 
 ## Rule 45: The Service Domain Law (Frontend Decoupling)
 Frontend API services must ALWAYS be strictly mapped to the backend endpoint's domain, regardless of where the UI lives. 
-*   If an endpoint is /api/v1/core/..., the frontend service MUST live in src/apps/base/api/. 
-*   The system app is a pure UI Control Plane and should contain almost NO internal services; it must import services from the domain kernels (core, tenants).
+*   If an endpoint is /api/v1/base/..., the frontend service MUST live in src/apps/base/api/. 
+*   The system app is a pure UI Control Plane and should contain almost NO internal services; it must import services from the domain kernels (base, tenants).
 
 
 ## Rule 46: The Configuration Cascade Law (Tenant vs. Company vs. Headless)
@@ -515,7 +515,7 @@ The GeneralSettingsPage.jsx inside the system module serves strictly as the glob
 You must adhere to the 3-Tier General Settings strictures:
 
 #### 1. The Hardcoded Foundation (Layer 1 Kernel)
-Because the system frontend module is the explicit UI proxy for the headless core and tenants backend modules, it inherently owns the system's foundational configuration.
+Because the system frontend module is the explicit UI proxy for the headless base and tenants backend modules, it inherently owns the system's foundational configuration.
 *   **Allowed:** Base infrastructure sections like "Users & Companies", "Permissions", and "Developer Tools" must be statically hardcoded into the baseKernelCards array inside GeneralSettingsPage.jsx.
 
 #### 2. The Dynamic Injectors (Layer 2 Platform & Layer 4 Edge)
@@ -593,8 +593,8 @@ export default function CrmSettingsPage() {
 
 #### The Execution Flow Mechanism
 By strictly adhering to this law, you guarantee the following MACH workflow:
-1. The `<SettingsRenderer />` requests the Python schema via `/api/core/system-parameters/schema/?app={schemaKey}`.
-2. It requests the saved database values via `/api/core/system-parameters/?prefix={schemaKey}`.
+1. The `<SettingsRenderer />` requests the Python schema via `/api/base/system-parameters/schema/?app={schemaKey}`.
+2. It requests the saved database values via `/api/base/system-parameters/?prefix={schemaKey}`.
 3. It automatically groups the fields, renders the exact UI elements, and manages the Odoo-style "Unsaved Changes" save/discard state without any manual frontend coding.
 
 ## Rule 61: The Universal Dependency Law (Data Gravity Override)
@@ -724,3 +724,36 @@ To maintain Tier-1 Micro-SaaS decoupling (mirroring platforms like CommerceTools
     *   **Browser Memory:** The uth app writes the JWT to localStorage. The core Axios client reads it blindly from localStorage.
     *   **URL Resolution:** The core engine identifies the active tenant blindly by reading the subdomain from window.location.hostname. 
     *   **Generic Contexts:** The core provides dumb, empty Context Providers (e.g. SessionContext). The uth app is responsible for mutating the state inside that generic slot.
+
+
+## Rule 70: The Master Data vs. Stateless Enum Law (Configuration Data)
+**CRITICAL INSTRUCTION FOR ALL AI AGENTS:**
+When building configurations or system options (e.g., Paper Formats, Tax Rates, Unit of Measures), you must strictly evaluate whether the data is a stateless string or a mathematical structure. You are forbidden from hardcoding structural configurations directly into Python API Views.
+
+**The Monolithic Fallacy (Hardcoded APIs):**
+Lazy development often leads to returning static arrays from an API endpoint (e.g., `return Response({'formats': ['A4', 'Letter']})`). This is an anti-pattern. In a multi-tenant SaaS, tenant configurations are highly variable. A Japanese tenant may need "JIS B5", or an e-commerce tenant may need a custom "Zebra 4x6" label. Hardcoding blocks extensibility.
+
+**The Tier-1 MACH Standard:**
+You must split configuration into two distinct buckets:
+
+1. **Stateless Settings (`SystemParameter`):** 
+   If the configuration is a pure, flat boolean, string, or integer (e.g., `company.use_dark_mode = True`, or `reports.default_format_id = 5`), it belongs in the `settings_schema.py` registry and is saved as a `SystemParameter` (See Rule 52).
+   
+2. **Master Data Models (Structural Configuration):** 
+   If a configuration possesses mathematical properties, logic, or requires tenant-level customization (e.g., a **Paper Format** needs `height`, `width`, `margin_top`, `dpi`), it **MUST** be built as a full physical database model (inheriting from `TenantAwareModel`).
+   * *The Global Fallback:* Master Data models should allow global default seeding (`tenant_id = NULL`) so all tenants inherit the baseline (e.g., standard A4), while allowing specific tenants to create their own rows.
+
+**The Master Data Placement Matrix (Shared Kernel vs. Bounded Context):**
+Once you determine a configuration must be a Master Data Model, you must strictly route it using Domain-Driven Design (DDD) principles:
+
+1.  **Domain-Specific Master Data (Bounded Context):** 
+    If the structural model is primarily consumed by a single domain, it belongs strictly to that domain's module. The ase kernel must remain pure. 
+    *   *Example:* PaperFormat belongs to 
+eports.
+    *   *Example:* TaxBracket belongs to ccounting. 
+    *   *Example:* LeadStage belongs to crm.
+
+2.  **Universal Master Data (The Shared Kernel / Rule 61 Override):**
+    If the structural model is a fundamental reality of business physics required by 3 or more isolated Layer 3 apps, you are strictly forbidden from placing it in a business app. Doing so creates a catastrophic dependency chokepoint (e.g., if Currency is in ccounting, then sales and inventory are forced to depend on ccounting).
+    *   These universal models must collapse into the Layer 1 Kernel (ase).
+    *   *Examples of Universal Master Data:* Currency, Country, UnitOfMeasure, Language.

@@ -6,8 +6,8 @@ Charter §11: Remote sessions and security transitions are fully audited.
 from django.db import transaction
 from django.utils import timezone
 import secrets
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
 from ..domain.models import (
     Alert, Incident, ThreatIntelligence, LogAnalysis,
     Workspace, ManagedEndpoint, CloudApp, SystemMonitor,

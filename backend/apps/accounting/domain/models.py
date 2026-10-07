@@ -1,8 +1,8 @@
-from apps.core.validators import validate_document_file
+from apps.base.validators import validate_document_file
 import uuid
 from django.db import models
 from django.utils import timezone
-from apps.core.domain.models import BaseModel, TenantAwareModel
+from apps.base.domain.models import BaseModel, TenantAwareModel
 from django.conf import settings
 import datetime
 
@@ -425,7 +425,7 @@ class DeferredRevenue(TenantAwareModel):
 
 
 class ExchangeRate(TenantAwareModel):
-    currency = models.ForeignKey('core.Currency', on_delete=models.CASCADE, related_name='exchange_rates')
+    currency = models.ForeignKey('base.Currency', on_delete=models.CASCADE, related_name='exchange_rates')
     date = models.DateField(default=timezone.now)
     rate = models.DecimalField(max_digits=15, decimal_places=6, help_text="Rate against base currency")
 
@@ -567,7 +567,7 @@ class BillLine(TenantAwareModel):
 class AnalyticAccount(TenantAwareModel):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=20)
-    partner = models.ForeignKey('core.Partner', on_delete=models.SET_NULL, null=True, blank=True)
+    partner = models.ForeignKey('base.Partner', on_delete=models.SET_NULL, null=True, blank=True)
     project = models.ForeignKey('projects.Project', on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -628,7 +628,7 @@ class AccountJournal(TenantAwareModel):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=10)
     journal_type = models.CharField(max_length=20, choices=[('sale','Sales'),('purchase','Purchase'),('cash','Cash'),('bank','Bank'),('general','Miscellaneous')], default='general')
-    currency = models.ForeignKey('core.Currency', on_delete=models.SET_NULL, null=True, blank=True)
+    currency = models.ForeignKey('base.Currency', on_delete=models.SET_NULL, null=True, blank=True)
     default_account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name='default_journals')
     is_active = models.BooleanField(default=True)
 

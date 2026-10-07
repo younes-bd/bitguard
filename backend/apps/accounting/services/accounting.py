@@ -6,9 +6,9 @@ from ..domain.models import VendorBill
 from django.db import transaction
 from django.db.models import Sum, Q
 from django.utils import timezone
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
-from apps.core.domain.models import Currency
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
+from apps.base.domain.models import Currency
 from ..domain.models import (
     Invoice, Payment, Expense, TaxConfig, GeneralLedger,
     Account, JournalEntry, BankAccount, BankTransaction, FixedAsset,
@@ -49,7 +49,7 @@ class InvoiceService(BaseService):
     @classmethod
     def auto_number(cls, request, doc_type='standard'):
         """Generate next sequential invoice number per tenant and type."""
-        from apps.core.domain.models import Tenant
+        from apps.base.domain.models import Tenant
         with transaction.atomic():
             tenant = cls.get_tenant_context(request)
             request.tenant = Tenant.objects.select_for_update().get(id=tenant.id)
@@ -1040,7 +1040,7 @@ class VendorBillService:
 class DashboardService(BaseService):
     @classmethod
     def get_dashboard_stats(cls, request):
-        from apps.core.domain.models import Currency
+        from apps.base.domain.models import Currency
         from ..domain.models import Invoice, Expense
         from django.db.models import Sum
         tenant = cls.get_tenant_context(request)
@@ -1080,7 +1080,7 @@ class DashboardService(BaseService):
 
     @classmethod
     def get_monthly_financials(cls, request):
-        from apps.core.domain.models import Currency
+        from apps.base.domain.models import Currency
         from ..domain.models import Invoice, Expense
         from django.db.models import Sum
         from django.db.models.functions import TruncMonth
@@ -1116,7 +1116,7 @@ class DashboardService(BaseService):
 
     @classmethod
     def get_finance_report(cls, request):
-        from apps.core.domain.models import Currency
+        from apps.base.domain.models import Currency
         from ..domain.models import Invoice, Expense
         from django.db.models import Sum, Count, Q
         tenant = cls.get_tenant_context(request)
@@ -1146,7 +1146,7 @@ class DashboardService(BaseService):
     def export_invoices_csv(cls, request):
         import csv
         import io
-        from apps.core.domain.models import Currency
+        from apps.base.domain.models import Currency
         from ..domain.models import Invoice
         tenant = cls.get_tenant_context(request)
         output = io.StringIO()
@@ -1162,7 +1162,7 @@ class DashboardService(BaseService):
 
     @classmethod
     def get_aged_receivables(cls, request):
-        from apps.core.domain.models import Currency
+        from apps.base.domain.models import Currency
         from ..domain.models import Invoice
         from datetime import date
         tenant = cls.get_tenant_context(request)
@@ -1201,7 +1201,7 @@ class DashboardService(BaseService):
 
     @classmethod
     def get_aged_payables(cls, request):
-        from apps.core.domain.models import Currency
+        from apps.base.domain.models import Currency
 
         from datetime import date
         tenant = cls.get_tenant_context(request)

@@ -4,7 +4,7 @@
  * Mirrors Odoo's mail.thread / mail.activity.mixin REST API.
  * All methods accept a `model` param in dot-notation: 'crm.Deal', 'helpdesk.Ticket', etc.
  *
- * Endpoints (all under /api/v1/core/):
+ * Endpoints (all under /api/v1/base/):
  *   GET  chatter/?model=&object_id=   → Full chatter summary (messages + activities + followers + log)
  *   POST messages/                    → Post a message or internal note
  *   POST activities/                  → Schedule an activity

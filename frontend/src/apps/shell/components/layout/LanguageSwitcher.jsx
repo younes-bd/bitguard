@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { settingsService } from '../../../../apps/system/api/settingsService';
+import { languageService } from '@/apps/base/api/languageService';
+
 
 const LanguageSwitcher = () => {
     const { i18n } = useTranslation();
@@ -11,7 +12,7 @@ const LanguageSwitcher = () => {
 
     useEffect(() => {
         // Fetch active languages from Django
-        settingsService.getLanguages().then(res => {
+        languageService.getLanguages().then(res => {
             const data = res.data?.results || res.data || [];
             if (data.length > 0) {
                 setLanguages(data.filter(l => l.is_active));

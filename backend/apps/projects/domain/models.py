@@ -1,7 +1,7 @@
-from apps.core.validators import validate_document_file
+from apps.base.validators import validate_document_file
 from django.db import models
 from django.conf import settings
-from apps.core.domain.models import BaseModel, TenantAwareModel
+from apps.base.domain.models import BaseModel, TenantAwareModel
 
 
 class Project(TenantAwareModel):

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Plus, Search, Edit2, Trash2, X, CheckCircle2, RefreshCw } from 'lucide-react';
 import client from '@/core/api/client';
 import toast from 'react-hot-toast';
@@ -126,7 +126,7 @@ export default function IncomingMailServersPage() {
                                     </td>
                                     <td className="px-6 py-4 text-slate-400 font-mono text-xs">{server.server}</td>
                                     <td className="px-4 py-4 text-slate-400">{server.port}</td>
-                                    <td className="px-4 py-4 text-slate-500 text-xs">{server.last_fetch ? new Date(server.last_fetch).toLocaleString() : 'â€”'}</td>
+                                    <td className="px-4 py-4 text-slate-500 text-xs">{server.last_fetch ? new Date(server.last_fetch).toLocaleString() : '—'}</td>
                                     <td className="px-4 py-4">
                                         {server.is_active ? (
                                             <span className="text-emerald-500 text-xs font-bold uppercase tracking-wider flex items-center gap-1"><CheckCircle2 size={12} /> Active</span>
@@ -167,7 +167,7 @@ export default function IncomingMailServersPage() {
                                     <option value="pop3">POP3</option>
                                 </select>
                             </div>
-                            {[['Name / Label', 'name', 'text', 'e.g. Support Inbox'], ['Server Address', 'server', 'text', 'e.g. imap.gmail.com'], ['Port', 'port', 'number', '993'], ['Username', 'user', 'text', 'support@company.com'], ['Password', 'password', 'password', 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢']].map(([label, key, type, ph]) => (
+                            {[['Name / Label', 'name', 'text', 'e.g. Support Inbox'], ['Server Address', 'server', 'text', 'e.g. imap.gmail.com'], ['Port', 'port', 'number', '993'], ['Username', 'user', 'text', 'support@company.com'], ['Password', 'password', 'password', '••••••••']].map(([label, key, type, ph]) => (
                                 <div key={key}>
                                     <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{label}</label>
                                     <input type={type} value={form[key]} onChange={e => setForm(p => ({ ...p, [key]: type === 'number' ? Number(e.target.value) : e.target.value }))} placeholder={ph}

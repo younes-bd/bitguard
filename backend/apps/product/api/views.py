@@ -5,7 +5,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from ..domain.models import (
     Category, Product, ProductAttribute, ProductAttributeValue,
     ProductVariant, ProductReview, ProductTag

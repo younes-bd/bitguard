@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CommandCenter from './CommandCenter';
-import { analyticsService } from '../../../core/api/analyticsService';
+import { analyticsService } from '@/apps/base/api/analyticsService';
 import React from 'react';
 
 // Mock the dashboard service

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SuspenseComponent } from '../../../../core/registry/ComponentRegistry';
 import { useNavigate } from 'react-router-dom';
 import { salesService } from '../../api/salesService';
@@ -117,8 +117,8 @@ const QuotationCreatePage = () => {
                 <select name="currency" value={formData.currency} onChange={handleChange}
                   className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-3 text-white focus:border-purple-500 outline-none appearance-none">
                   <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (â‚¬)</option>
-                  <option value="GBP">GBP (Â£)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
                 </select>
               </div>
             </div>

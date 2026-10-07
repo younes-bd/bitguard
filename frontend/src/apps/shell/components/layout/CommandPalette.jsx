@@ -1,8 +1,9 @@
+import { moduleService } from '@/apps/base/api/moduleService';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Command, ArrowRight } from 'lucide-react';
 import { useManifest } from '../../../../core/hooks/useManifest';
-import { settingsService } from '../../../../apps/system/api/settingsService';
+
 import * as LucideIcons from 'lucide-react';
 
 export default function CommandPalette() {
@@ -16,7 +17,7 @@ export default function CommandPalette() {
     const [apps, setApps] = useState([]);
     
     useEffect(() => {
-        settingsService.getModules().then(res => {
+        moduleService.getModules().then(res => {
             const modules = Array.isArray(res) ? res : res.results || [];
             setApps(modules.filter(m => m.is_installed));
         }).catch(console.error);
@@ -88,6 +89,7 @@ export default function CommandPalette() {
             setIsSearching(true);
             try {
                 // We need to import analyticsService at the top of the file.
+
                 // Assuming it's imported correctly.
                 const { analyticsService } = await import('../../../../apps/analytics/api/analyticsService');
                 const results = await analyticsService.globalSearch(searchTerm);

@@ -2,7 +2,7 @@ import apiClient from '../../../core/api/client';
 
 export const analyticsService = {
     getMetrics: async (params) => {
-        return await apiClient.get('core/analytics/global/', { params });
+        return await apiClient.get('base/analytics/global/', { params });
     },
     getSystemHealth: async () => {
         // Core analytics already returns system_health, but if a separate health check is needed:

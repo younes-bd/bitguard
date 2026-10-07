@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import manufacturingService from '../../api/manufacturingService';
 import DataTable from '../../../../apps/shell/components/ui/views/DataTable';

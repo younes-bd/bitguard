@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from apps.tenants.domain.models import Tenant
-from apps.core.domain.models import Partner
+from apps.base.domain.models import Partner
 from apps.users.domain.models import TenantMembership
 
 User = get_user_model()

@@ -3,7 +3,7 @@ Purchase Models — Supplier and Procurement Management.
 """
 from django.db import models
 from django.conf import settings
-from apps.core.domain.models import BaseModel, TenantAwareModel
+from apps.base.domain.models import BaseModel, TenantAwareModel
 from django.utils import timezone
 
 

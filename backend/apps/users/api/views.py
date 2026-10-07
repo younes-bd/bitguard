@@ -1,10 +1,10 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from apps.core.utils.response import standard_response
-from apps.core.permissions import HasRole, IsSuperAdmin, IsPlatformAdmin
+from apps.base.utils.response import standard_response
+from apps.base.permissions import HasRole, IsSuperAdmin, IsPlatformAdmin
 from django.contrib.contenttypes.models import ContentType
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -202,7 +202,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def lock(self, request, pk=None):
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         user = self.get_object()
         user.is_locked = True
         user.save()
@@ -211,7 +211,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def unlock(self, request, pk=None):
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         user = self.get_object()
         user.is_locked = False
         user.failed_login_attempts = 0
@@ -238,8 +238,8 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def activity(self, request):
-        from apps.core.domain.models import SystemEventLog
-        from apps.core.api.serializers import SystemEventSerializer
+        from apps.base.domain.models import SystemEventLog
+        from apps.base.api.serializers import SystemEventSerializer
         
         logs = SystemEventLog.objects.filter(user=request.user).order_by('-created_at')[:20]
         serializer = SystemEventSerializer(logs, many=True)
@@ -264,7 +264,7 @@ class UserViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def mfa_verify(self, request):
         import pyotp
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         user = request.user
         token = request.data.get('token')
         totp = pyotp.TOTP(user.mfa_secret)

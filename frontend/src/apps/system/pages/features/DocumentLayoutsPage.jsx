@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { parameterService } from '../../../core/api/parameterService';
-import { settingsService } from '../../api/settingsService';
+import { parameterService } from '@/apps/base/api/parameterService';
+
 import toast from 'react-hot-toast';
 import { FileText, Save, Loader2 } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 import EsgDashboardPage from '../pages/EsgDashboardPage';
 

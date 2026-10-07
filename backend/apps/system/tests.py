@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from apps.core.domain.models import SystemParameter
-from apps.core.domain.models import SystemEventLog
+from apps.base.domain.models import SystemParameter
+from apps.base.domain.models import SystemEventLog
 from apps.tenants.domain.models import Tenant
 from apps.users.domain.models import TenantMembership
 

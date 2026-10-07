@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, status, pagination, views
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.http import FileResponse
 from apps.documents.domain.models import DocumentWorkspace, Tag, Document, DocumentVersion
-from apps.core.domain.models import Attachment
+from apps.base.domain.models import Attachment
 from .serializers import DocumentWorkspaceSerializer, TagSerializer, DocumentSerializer, DocumentVersionSerializer
 
 class DocumentWorkspaceViewSet(TenantScopedMixin, viewsets.ModelViewSet):

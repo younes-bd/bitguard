@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { sectionService } from '../../../core/api/sectionService';
-import { moduleService } from '../../../core/api/moduleService';
+import { sectionService } from '@/apps/base/api/sectionService';
+import { moduleService } from '@/apps/base/api/moduleService';
 import client from '../../../../core/api/client';
 
 import toast from 'react-hot-toast';

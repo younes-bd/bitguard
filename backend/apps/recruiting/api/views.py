@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.recruiting.domain.models import JobPosition, JobApplication, JobApplicant
 from apps.recruiting.api.serializers import JobPositionSerializer, JobApplicationSerializer, JobApplicantSerializer
 

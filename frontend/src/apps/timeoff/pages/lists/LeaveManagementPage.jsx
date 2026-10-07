@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Clock, Filter, Plus, Download } from 'lucide-react';
 import { holidaysService } from '@/apps/timeoff/api/holidaysService';
 import { reportsService } from '@/apps/reports/api/reportsService';
@@ -118,7 +118,7 @@ const LeaveManagementPage = () => {
                             <div>
                                 <p className="text-white font-semibold">{leave.employee?.first_name} {leave.employee?.last_name}</p>
                                 <p className="text-slate-400 text-xs mt-0.5">
-                                    {leave.leave_type ?? leave.type} Ãƒâ€šÃ‚Â· {leave.start_date} ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ {leave.end_date}
+                                    {leave.leave_type ?? leave.type} Ã‚Â· {leave.start_date} Ã¢â€ â€™ {leave.end_date}
                                 </p>
                                 {leave.reason && <p className="text-slate-500 text-xs mt-1 italic">"{leave.reason}"</p>}
                             </div>

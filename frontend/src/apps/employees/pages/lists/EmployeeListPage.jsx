@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plus, User, Building2, Inbox, Phone, ChevronRight, Edit2, Trash2, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { employeesService } from '../../api/employeesService';
@@ -136,9 +136,9 @@ const EmployeeListPage = () => {
                                         <span className="text-white font-medium">{emp.first_name} {emp.last_name}</span>
                                     </div>
                                 </td>
-                                <td className="px-5 py-4 text-slate-300">{emp.department?.name ?? emp.department ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
-                                <td className="px-5 py-4 text-slate-400">{emp.job_title ?? emp.role ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
-                                <td className="px-5 py-4 text-slate-400">{emp.email ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                                <td className="px-5 py-4 text-slate-300">{emp.department?.name ?? emp.department ?? 'Ã¢â‚¬â€'}</td>
+                                <td className="px-5 py-4 text-slate-400">{emp.job_title ?? emp.role ?? 'Ã¢â‚¬â€'}</td>
+                                <td className="px-5 py-4 text-slate-400">{emp.email ?? 'Ã¢â‚¬â€'}</td>
                                 <td className="px-5 py-4">{statusBadge(emp.status)}</td>
                                 <td className="px-5 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

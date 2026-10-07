@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import client from '@/core/api/client';
 import { Mail, Plus, Pencil, Trash2, Loader2, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';

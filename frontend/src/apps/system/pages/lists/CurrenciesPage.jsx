@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { currencyService } from '../../../core/api/currencyService';
+import { currencyService } from '@/apps/base/api/currencyService';
 import { DollarSign, Search, CheckCircle2, XCircle, Plus, Edit, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

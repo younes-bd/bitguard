@@ -21,8 +21,8 @@ export default function SettingsRenderer({ schemaKey, title }) {
             
             try {
                 const [schemaRes, valuesRes] = await Promise.allSettled([
-                    apiClient.get(`/api/core/system-parameters/schema/?app=${schemaKey}`),
-                    apiClient.get(`/api/core/system-parameters/?prefix=${schemaKey}`)
+                    apiClient.get(`/api/base/system-parameters/schema/?app=${schemaKey}`),
+                    apiClient.get(`/api/base/system-parameters/?prefix=${schemaKey}`)
                 ]);
                 
                 if (!isMounted) return;
@@ -98,7 +98,7 @@ export default function SettingsRenderer({ schemaKey, title }) {
         }
         
         try {
-            await apiClient.post('/api/core/system-parameters/batch_update/', { updates });
+            await apiClient.post('/api/base/system-parameters/batch_update/', { updates });
             toast.success('Settings saved successfully');
             setOriginalValues(draftValues);
         } catch (err) {

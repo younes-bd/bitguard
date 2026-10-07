@@ -1,5 +1,5 @@
 from django.db import models
-from apps.core.domain.models import BaseModel, TenantAwareModel, ChatterMixin
+from apps.base.domain.models import BaseModel, TenantAwareModel, ChatterMixin
 from django.conf import settings
 
 
@@ -127,7 +127,7 @@ class Client(ChatterMixin, TenantAwareModel):
     ]
     name = models.CharField(max_length=255)
     partner = models.OneToOneField(
-        'core.Partner', on_delete=models.CASCADE,
+        'base.Partner', on_delete=models.CASCADE,
         null=True, blank=True, related_name='crm_client_profile'
     )
     client_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='business')

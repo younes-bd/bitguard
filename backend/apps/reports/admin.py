@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .domain.models import ReportTemplate, GeneratedReport, ReportEngineSettings
+from .domain.models import ReportTemplate, GeneratedReport, PaperFormat
 
 @admin.register(ReportTemplate)
 class ReportTemplateAdmin(admin.ModelAdmin):
@@ -13,7 +13,8 @@ class GeneratedReportAdmin(admin.ModelAdmin):
     list_filter = ('tenant', 'status', 'record_model')
     search_fields = ('record_id', 'template__name')
 
-@admin.register(ReportEngineSettings)
-class ReportEngineSettingsAdmin(admin.ModelAdmin):
-    list_display = ('tenant', 'paper_format', 'created_at')
-    list_filter = ('tenant', 'paper_format')
+@admin.register(PaperFormat)
+class PaperFormatAdmin(admin.ModelAdmin):
+    list_display = ('name', 'tenant', 'is_global', 'page_width', 'page_height', 'created_at')
+    list_filter = ('tenant', 'is_global')
+    search_fields = ('name',)

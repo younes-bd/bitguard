@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { accountingService } from '../../api/accountingService';
 import { expenseService } from '../../../expenses/api/expenseService';
 import {
@@ -122,9 +122,9 @@ const ExpenseListPage = () => {
                                 <h3 className="text-white font-medium">{exp.title}</h3>
                                 <div className="text-sm text-slate-400 flex items-center gap-2">
                                     <span className="capitalize">{exp.category}</span>
-                                    <span>Ã¢â‚¬Â¢</span>
+                                    <span>â€¢</span>
                                     <span>{exp.incurred_date}</span>
-                                    <span>Ã¢â‚¬Â¢</span>
+                                    <span>â€¢</span>
                                     <span className="text-slate-500">by {exp.user_name || 'User'}</span>
                                 </div>
                             </div>

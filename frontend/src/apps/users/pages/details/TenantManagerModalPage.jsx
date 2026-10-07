@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { moduleService } from '../../../core/api/moduleService';
+import { moduleService } from '@/apps/base/api/moduleService';
 import { X, Building2, Globe, CreditCard, ShieldCheck, Save, Loader2, Check } from 'lucide-react';
 import client from '@/core/api/client';
 

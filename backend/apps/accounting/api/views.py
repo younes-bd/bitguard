@@ -1,10 +1,10 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from apps.core.services.audit import AuditService
+from apps.base.services.audit import AuditService
 
 from ..domain.models import (
     Invoice, Payment, Expense, TaxConfig, GeneralLedger,
@@ -98,7 +98,7 @@ class PaymentViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     def get_queryset(self): return Payment.objects.filter(tenant=getattr(self.request, 'tenant', None))
     def perform_create(self, serializer):
         payment = serializer.save()
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         AuditService.log_action(self.request.user, 'PAYMENT_RECEIVED', f"Payment {payment.id} received", payment)
 
 class ExpenseViewSet(TenantScopedMixin, viewsets.ModelViewSet):

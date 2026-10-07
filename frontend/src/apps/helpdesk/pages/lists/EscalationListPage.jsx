@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertOctagon, Clock, User, ArrowUpCircle, CheckCircle, UserPlus, Loader2 } from 'lucide-react';
 import helpdeskService from '../../api/helpdeskService';
 import { usersService } from '../../../users/api/usersService';
@@ -112,12 +112,12 @@ const EscalationListPage = () => {
                                 <div>
                                     <div className="text-white font-semibold">{esc.subject}</div>
                                     <div className="flex items-center gap-4 mt-1.5">
-                                        <span className="text-slate-400 text-xs">{esc.client ?? 'â€”'}</span>
+                                        <span className="text-slate-400 text-xs">{esc.client ?? '—'}</span>
                                         <span className="flex items-center gap-1 text-slate-500 text-xs">
                                             <User size={10} /> {esc.assigned_to ?? 'Unassigned'}
                                         </span>
                                         <span className="flex items-center gap-1 text-slate-500 text-xs">
-                                            <Clock size={10} /> {esc.created_at?.split('T')[0] ?? 'â€”'}
+                                            <Clock size={10} /> {esc.created_at?.split('T')[0] ?? '—'}
                                         </span>
                                     </div>
                                 </div>

@@ -4,7 +4,7 @@ from io import BytesIO
 from django.conf import settings
 from django.template import Context, Template
 from django.core.files.base import ContentFile
-from apps.core.domain.models import Attachment
+from apps.base.domain.models import Attachment
 from django.contrib.contenttypes.models import ContentType
 import logging
 

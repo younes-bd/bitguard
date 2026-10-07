@@ -1,4 +1,4 @@
-from apps.core.services.core import BaseService
+from apps.base.services.core import BaseService
 from ..domain.models import Campaign, CampaignInteraction
 
 class CampaignService(BaseService):

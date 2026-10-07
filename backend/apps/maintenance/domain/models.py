@@ -4,7 +4,7 @@ Tracks hardware/software assets for BitGuard and managed clients.
 """
 from django.db import models
 from django.conf import settings
-from apps.core.domain.models import BaseModel, TenantAwareModel
+from apps.base.domain.models import BaseModel, TenantAwareModel
 
 
 class Asset(TenantAwareModel):

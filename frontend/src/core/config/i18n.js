@@ -11,7 +11,7 @@ i18n
     fallbackLng: 'en',
     debug: true,
     backend: {
-      loadPath: '/api/v1/core/translations/locales/?lng={{lng}}',
+      loadPath: '/api/v1/base/translations/locales/?lng={{lng}}',
     },
     interpolation: {
       escapeValue: false, // React already safeguards from XSS

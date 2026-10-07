@@ -1,4 +1,4 @@
-﻿import client from '@/core/api/client';
+import client from '@/core/api/client';
 
 export const userService = {
     // --- Profile ---

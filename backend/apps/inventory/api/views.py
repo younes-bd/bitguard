@@ -1,13 +1,13 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 """Inventory Views"""
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from apps.core.utils.response import standard_response
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
+from apps.base.utils.response import standard_response
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
 from ..domain.models import (
     Warehouse, InventoryItem, GoodsReceipt, GoodsReceiptLine, 
     InventoryMove, InventoryAdjustment, ReorderRule,

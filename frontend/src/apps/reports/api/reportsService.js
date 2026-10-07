@@ -1,4 +1,4 @@
-﻿import client from '@/core/api/client';
+import client from '@/core/api/client';
 
 const reportsService = {
     // Templates
@@ -53,19 +53,29 @@ const reportsService = {
         return response.data;
     },
 
-    // Settings
-    getSettings: async () => {
-        const response = await client.get('/reports/settings/');
+    // Paper Formats
+    getPaperFormats: async () => {
+        const response = await client.get('/reports/paper-formats/');
         return response.data;
     },
     
-    updateSettings: async (id, data) => {
-        const response = await client.patch(`/reports/settings/${id}/`, data);
+    getPaperFormat: async (id) => {
+        const response = await client.get(`/reports/paper-formats/${id}/`);
         return response.data;
     },
     
-    createSettings: async (data) => {
-        const response = await client.post('/reports/settings/', data);
+    createPaperFormat: async (data) => {
+        const response = await client.post('/reports/paper-formats/', data);
+        return response.data;
+    },
+    
+    updatePaperFormat: async (id, data) => {
+        const response = await client.patch(`/reports/paper-formats/${id}/`, data);
+        return response.data;
+    },
+
+    deletePaperFormat: async (id) => {
+        const response = await client.delete(`/reports/paper-formats/${id}/`);
         return response.data;
     }
 };

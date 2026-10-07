@@ -1,8 +1,8 @@
+import { scheduledActionService } from '@/apps/base/api/scheduledActionService';
 import React, { useState, useEffect } from 'react';
-import { scheduledActionService } from '../../../core/api/scheduledActionService';
-import { coreService } from '../../../core/api/coreService';
+import { baseService } from '@/apps/base/api/baseService';
 import { Play, Clock, CheckCircle2, XCircle, Search, Calendar, Power, X } from 'lucide-react';
-import { settingsService } from '../../api/settingsService';
+
 import toast from 'react-hot-toast';
 
 export default function ScheduledActionsPage() {
@@ -26,7 +26,7 @@ export default function ScheduledActionsPage() {
         try {
             const [res, modelsRes] = await Promise.all([
                 scheduledActionService.getScheduledActions(),
-                coreService.getContentTypes().catch(() => ({ data: [] }))
+                baseService.getContentTypes().catch(() => ({ data: [] }))
             ]);
             
             const d = res.data;

@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from ..domain.models import FieldIntervention
@@ -9,5 +9,5 @@ class FieldInterventionViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        from apps.core.services.core import BaseService
+        from apps.base.services.core import BaseService
         return BaseService.filter_by_context(FieldIntervention.objects.all(), self.request)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.documents.domain.models import DocumentWorkspace, Tag, Document, DocumentVersion
-from apps.core.api.serializers import AttachmentSerializer
+from apps.base.api.serializers import AttachmentSerializer
 
 class DocumentWorkspaceSerializer(serializers.ModelSerializer):
     class Meta:

@@ -3,8 +3,8 @@ Support Service Layer — Charter §8, §11 Compliance
 Helpdesk Ticketing with tenant isolation and full audit tracing.
 """
 from django.db import transaction
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
 from ..domain.models import Ticket, TicketMessage, KnowledgeArticle
 
 

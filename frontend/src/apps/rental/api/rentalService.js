@@ -1,4 +1,4 @@
-﻿import apiClient from '@/core/api/client';
+import apiClient from '@/core/api/client';
 
 const rentalService = {
   getOrders: (params) => apiClient.get('/rental/orders/', { params }).then(r => r.data),

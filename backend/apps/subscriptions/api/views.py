@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 import json
 from django.conf import settings
 from django.http import HttpResponse

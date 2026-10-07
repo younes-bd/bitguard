@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { sequenceService } from '../../../core/api/sequenceService';
+import { sequenceService } from '@/apps/base/api/sequenceService';
 import { Layers, Plus, Search, Edit2, Trash2, X, Loader2 } from 'lucide-react';
 import client from '@/core/api/client';
 

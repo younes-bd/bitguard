@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard, Download, ShieldCheck, CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 
@@ -135,7 +135,7 @@ const ClientPortalInvoicePage = () => {
                                     <div key={i} className="flex justify-between items-start group">
                                         <div>
                                             <div className="text-white font-bold group-hover:text-blue-400 transition-colors">{item.description}</div>
-                                            <div className="text-sm text-slate-500">Qty: {item.quantity} Ãƒâ€” ${(Number(item.unit_price)).toLocaleString()}</div>
+                                            <div className="text-sm text-slate-500">Qty: {item.quantity} Ã— ${(Number(item.unit_price)).toLocaleString()}</div>
                                         </div>
                                         <div className="text-white font-mono">${(Number(item.total)).toLocaleString()}</div>
                                     </div>

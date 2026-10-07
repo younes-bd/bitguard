@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/core/hooks/useAuth';
 import { useTenant } from '@/core/context/TenantContext';
 import client from '@/core/api/client';
-import { languageService } from '@/apps/core/api/languageService';
-import { coreService } from '@/apps/core/api/coreService';
+import { languageService } from '@/apps/base/api/languageService';
+import { baseService } from '@/apps/base/api/baseService';
 import toast from 'react-hot-toast';
 import { User, Inbox, Phone, Shield, Key, Clock, LogIn, Camera, Globe, SlidersHorizontal, CheckCircle2, XCircle, Smartphone, Loader2, Briefcase } from 'lucide-react';
 
@@ -25,7 +25,7 @@ const UserProfilePage = () => {
     useEffect(() => {
         Promise.all([
             languageService.getLanguages(),
-            client.get('core/config-options/', { params: { type: 'timezone' } }) // Bypass coreService temporarily if it doesn't support params
+            client.get('base/config-options/', { params: { type: 'timezone' } }) // Bypass baseService temporarily if it doesn't support params
         ]).then(([langRes, tzRes]) => {
             const langData = Array.isArray(langRes.data?.results) ? langRes.data.results : (Array.isArray(langRes.data) ? langRes.data : []);
             setLanguages(langData);

@@ -10,8 +10,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.conf import settings
-from apps.core.utils.response import standard_response
-from apps.core.services.audit import AuditService
+from apps.base.utils.response import standard_response
+from apps.base.services.audit import AuditService
 from ..api.serializers import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,

@@ -2,7 +2,7 @@ from celery import shared_task
 from django.utils import timezone
 from apps.inventory.domain.models import ReorderRule, InventoryItem
 from apps.procurement.domain.models import PurchaseOrder, PurchaseOrderLine
-from apps.core.domain.models import Tenant
+from apps.base.domain.models import Tenant
 
 @shared_task
 def run_reordering_rules():

@@ -1,5 +1,6 @@
+import { socSettingsService } from '@/apps/soc/api/socSettingsService';
 import React, { useState, useEffect } from 'react';
-import { settingsService } from '../../../system/api/settingsService';
+
 import {
     ComputerDesktopIcon,
     PlusIcon,
@@ -15,7 +16,7 @@ const RemoteSupportPage = () => {
     const fetchSessions = async () => {
         setLoading(true);
         try {
-            const data = await settingsService.getRemoteSessions();
+            const data = await socSettingsService.getRemoteSessions();
             setSessions(Array.isArray(data) ? data : (data?.results || data?.data || []));
         } catch (error) {
             console.error("Failed to fetch remote sessions", error);
@@ -32,7 +33,7 @@ const RemoteSupportPage = () => {
     const handleCreateSession = async () => {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         try {
-            await settingsService.createRemoteSession({
+            await socSettingsService.createRemoteSession({
                 session_code: code,
                 status: 'active'
             });

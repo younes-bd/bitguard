@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, permissions, filters
 from ..domain.models import Post, Category, Comment
 from ..api.serializers import PostSerializer, CategorySerializer, CommentSerializer

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { LayoutDashboard, Sparkles, Activity, Box, CheckCircle, AlertOctagon, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import manufacturingService from '../../api/manufacturingService';

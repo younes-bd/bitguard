@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.equity.domain.models import ShareClass, Shareholder
 from apps.equity.api.serializers import ShareClassSerializer, ShareholderSerializer
 

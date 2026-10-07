@@ -10,6 +10,6 @@ class HelpdeskConfig(AppConfig):
         import apps.helpdesk.infrastructure.signals
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('helpdesk/', 'apps.helpdesk.api.urls')
 

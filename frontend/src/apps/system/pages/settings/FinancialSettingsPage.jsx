@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, DollarSign, Plus, Edit2, Trash2 } from 'lucide-react';
-import { currencyService } from '../../../core/api/currencyService';
-import { bankAccountService } from '../../../core/api/bankAccountService';
+import { currencyService } from '@/apps/base/api/currencyService';
+import { bankAccountService } from '@/apps/base/api/bankAccountService';
 import toast from 'react-hot-toast';
 
 // Dumb Component: Currency Manager

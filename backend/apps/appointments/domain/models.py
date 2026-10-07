@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from apps.core.domain.models import BaseModel, TenantAwareModel
+from apps.base.domain.models import BaseModel, TenantAwareModel
 
 class AppointmentType(TenantAwareModel):
     name = models.CharField(max_length=255)

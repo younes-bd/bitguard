@@ -1,5 +1,6 @@
+import { socSettingsService } from '@/apps/soc/api/socSettingsService';
 import React, { useState, useEffect } from 'react';
-import { settingsService } from '../../../system/api/settingsService';
+
 import {
     ServerStackIcon,
     SignalIcon,
@@ -16,8 +17,8 @@ const PlatformDashboardPage = () => {
         setLoading(true);
         try {
             const [monitorsData, networkData] = await Promise.all([
-                settingsService.getSystemMonitors(),
-                settingsService.getNetworkEvents({ limit: 10 })
+                socSettingsService.getSystemMonitors(),
+                socSettingsService.getNetworkEvents({ limit: 10 })
             ]);
             setMonitors(monitorsData.results || monitorsData);
             setNetworkEvents(networkData.results || networkData);

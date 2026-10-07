@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.core.domain.models import Attachment
+from apps.base.domain.models import Attachment
 from apps.documents.domain.models import Document, DocumentWorkspace
 import logging
 

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, Plus, Search, Edit2, Trash2, X, CheckCircle2, ShieldAlert, TestTube } from 'lucide-react';
 import client from '@/core/api/client';
 import toast from 'react-hot-toast';
@@ -160,7 +160,7 @@ export default function OutgoingMailServersPage() {
                             <button onClick={() => setIsModalOpen(false)}><X size={20} className="text-slate-400 hover:text-white" /></button>
                         </div>
                         <div className="p-6 space-y-4">
-                            {[['Description / Label', 'name', 'text', 'e.g. SendGrid Production'], ['SMTP Server Host', 'smtp_host', 'text', 'e.g. smtp.sendgrid.net'], ['SMTP Port', 'smtp_port', 'number', '587'], ['Username / Login', 'smtp_user', 'text', 'apikey'], ['Password', 'smtp_password', 'password', 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢'], ['Priority (sequence)', 'sequence', 'number', '10']].map(([label, key, type, ph]) => (
+                            {[['Description / Label', 'name', 'text', 'e.g. SendGrid Production'], ['SMTP Server Host', 'smtp_host', 'text', 'e.g. smtp.sendgrid.net'], ['SMTP Port', 'smtp_port', 'number', '587'], ['Username / Login', 'smtp_user', 'text', 'apikey'], ['Password', 'smtp_password', 'password', '••••••••'], ['Priority (sequence)', 'sequence', 'number', '10']].map(([label, key, type, ph]) => (
                                 <div key={key}>
                                     <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{label}</label>
                                     <input type={type} value={form[key]} onChange={e => setForm(p => ({ ...p, [key]: type === 'number' ? Number(e.target.value) : e.target.value }))} placeholder={ph}

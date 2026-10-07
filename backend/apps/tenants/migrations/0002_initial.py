@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
+        ('base', '0001_initial'),
         ('tenants', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -29,6 +29,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tenant',
             name='partner',
-            field=models.ForeignKey(blank=True, help_text='The core Partner that owns this SaaS workspace.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='saas_tenants', to='core.partner'),
+            field=models.ForeignKey(blank=True, help_text='The core Partner that owns this SaaS workspace.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='saas_tenants', to='base.partner'),
         ),
     ]

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Server, Cloud, Headphones, Package, ArrowRight, Search, Loader2 } from 'lucide-react';
 import client from '@/core/api/client';

@@ -1,6 +1,6 @@
 from django.utils import timezone
 from ..domain.models import Employee, LeaveRequest, TimeEntry
-from apps.core.services import AuditService
+from apps.base.services import AuditService
 
 class HRMService:
     @staticmethod

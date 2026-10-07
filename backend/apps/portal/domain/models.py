@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 
 class PortalAccess(TenantAwareModel):
     """Tracks which client users have portal access — Odoo equivalent of res.partner portal flag"""

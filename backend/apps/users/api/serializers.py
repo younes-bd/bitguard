@@ -2,7 +2,7 @@ from apps.users.domain.models import RecordRule
 from rest_framework import serializers
 from ..domain.models import User, Role, RolePermission
 from django.contrib.contenttypes.models import ContentType
-from apps.core.domain.models import Partner
+from apps.base.domain.models import Partner
 
 class RoleSerializer(serializers.ModelSerializer):
     user_count = serializers.IntegerField(read_only=True, required=False)

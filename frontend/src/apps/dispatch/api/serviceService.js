@@ -1,7 +1,7 @@
-﻿import client from '@/core/api/client';
+import client from '@/core/api/client';
 
 /**
- * ITSM Service â€” connects to /api/services/
+ * ITSM Service — connects to /api/services/
  * Backend registers: changes (ChangeRequest), tasks (ChangeTask)
  */
 class ServiceService {

@@ -1,5 +1,5 @@
 from django.db import models
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 
 class ShareClass(TenantAwareModel):
     name = models.CharField(max_length=100) # e.g. Common, Preferred

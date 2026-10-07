@@ -1,4 +1,4 @@
-from apps.core.models import TenantAwareModel
+from apps.base.models import TenantAwareModel
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -73,7 +73,6 @@ class OutgoingMailServer(TenantAwareModel):
     sequence = models.PositiveIntegerField(default=10, help_text="Priority order â€” lower = higher priority")
 
     class Meta:
-        db_table = 'base_setup_outgoingmailserver'
         verbose_name = "Outgoing Mail Server"
         verbose_name_plural = "Outgoing Mail Servers"
         ordering = ['sequence', 'name']
@@ -98,7 +97,6 @@ class IncomingMailServer(TenantAwareModel):
     last_fetch = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        db_table = 'base_setup_incomingmailserver'
         verbose_name = "Incoming Mail Server"
         verbose_name_plural = "Incoming Mail Servers"
         ordering = ['name']
@@ -123,7 +121,6 @@ class EmailTemplate(TenantAwareModel):
     partner_to = models.CharField(max_length=255, blank=True)
     
     class Meta:
-        db_table = 'base_setup_emailtemplate'
         verbose_name = "Email Template"
         ordering = ['name']
     

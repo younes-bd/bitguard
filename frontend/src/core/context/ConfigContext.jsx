@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { companyService } from '@/apps/core/api/companyService';
+import { companyService } from '@/apps/base/api/companyService';
 import i18n from '../config/i18n';
 
 const ConfigContext = createContext(null);

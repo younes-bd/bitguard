@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.timeoff.domain.models import LeaveRequest, LeaveAllocation
 from apps.timeoff.api.serializers import LeaveRequestSerializer, LeaveAllocationSerializer
 

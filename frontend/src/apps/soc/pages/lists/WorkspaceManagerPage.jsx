@@ -1,5 +1,6 @@
+import { socSettingsService } from '@/apps/soc/api/socSettingsService';
 import React, { useState, useEffect } from 'react';
-import { settingsService } from '../../../system/api/settingsService';
+
 import {
     Squares2X2Icon,
     PlusIcon,
@@ -17,7 +18,7 @@ const WorkspaceManagerPage = () => {
     const fetchWorkspaces = async () => {
         setLoading(true);
         try {
-            const data = await settingsService.getWorkspaces();
+            const data = await socSettingsService.getWorkspaces();
             setWorkspaces(Array.isArray(data) ? data : (data?.results || data?.data || []));
         } catch (error) {
             console.error("Failed to fetch workspaces", error);
@@ -34,7 +35,7 @@ const WorkspaceManagerPage = () => {
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
-            await settingsService.createWorkspace({ name: newWorkspaceName });
+            await socSettingsService.createWorkspace({ name: newWorkspaceName });
             setNewWorkspaceName('');
             setIsModalOpen(false);
             fetchWorkspaces();
@@ -46,7 +47,7 @@ const WorkspaceManagerPage = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this workspace?")) return;
         try {
-            await settingsService.deleteWorkspace(id);
+            await socSettingsService.deleteWorkspace(id);
             setWorkspaces(prev => prev.filter(w => w.id !== id));
         } catch (error) {
             console.error("Failed to delete workspace", error);

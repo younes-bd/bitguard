@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
+        ('base', '0001_initial'),
         ('crm', '0001_initial'),
         ('tenants', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='client',
             name='partner',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='crm_client_profile', to='core.partner'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='crm_client_profile', to='base.partner'),
         ),
         migrations.AddField(
             model_name='client',

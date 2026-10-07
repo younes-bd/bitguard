@@ -9,6 +9,6 @@ class PayrollConfig(AppConfig):
         import apps.payroll.infrastructure.signals
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('payroll/', 'apps.payroll.api.urls')
 

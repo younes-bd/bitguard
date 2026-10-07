@@ -1,4 +1,4 @@
-﻿import client from '@/core/api/client';
+import client from '@/core/api/client';
 
 class PlanningService {
     async getShifts(params = {}) {

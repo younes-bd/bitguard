@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
 export default function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText = "Confirm", isDanger = false, loading = false }) {

@@ -1,4 +1,4 @@
-from apps.core.validators import validate_image_file
+from apps.base.validators import validate_image_file
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from django.urls import reverse
 from tinymce.models import HTMLField
 from taggit.managers import TaggableManager
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 
 class Category(TenantAwareModel):
     website = models.ForeignKey('website.Website', null=True, blank=True, on_delete=models.CASCADE, related_name='blog_categories')

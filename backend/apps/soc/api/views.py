@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 """
 SOC Views — Extended for Security Platform (SIEM/MDR/ITAM product).
 Charter §8: Views orchestrate; services decide.
@@ -24,7 +24,7 @@ from ..services import (
     WorkspaceService, ManagedEndpointService, CloudAppService, SystemMonitorService,
     NetworkEventService, CloudIntegrationService, RemoteSessionService,
 )
-from apps.core.permissions import HasRole, IsSuperAdmin
+from apps.base.permissions import HasRole, IsSuperAdmin
 
 
 # ─── Internal SOC ViewSets ───────────────────────────────────
@@ -229,7 +229,7 @@ class EventIngestView(viewsets.views.APIView):
             status='open'
         )
 
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         AuditService.log_action(
             request, 
             action="SIEM_EVENT_INGESTED", 

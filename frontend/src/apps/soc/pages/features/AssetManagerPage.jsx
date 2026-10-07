@@ -1,5 +1,6 @@
+import { socSettingsService } from '@/apps/soc/api/socSettingsService';
 import React, { useState, useEffect } from 'react';
-import { settingsService } from '../../../system/api/settingsService';
+
 import {
     ComputerDesktopIcon,
     ShieldCheckIcon,
@@ -16,7 +17,7 @@ const AssetManagerPage = () => {
     const fetchEndpoints = async () => {
         setLoading(true);
         try {
-            const data = await settingsService.getEndpoints();
+            const data = await socSettingsService.getEndpoints();
             setEndpoints(data);
 
             // Calculate stats
@@ -40,7 +41,7 @@ const AssetManagerPage = () => {
 
     const handleIsolate = async (id) => {
         try {
-            await settingsService.isolateEndpoint(id);
+            await socSettingsService.isolateEndpoint(id);
             // Optimistic update
             setEndpoints(prev => prev.map(e =>
                 e.id === id ? { ...e, status: 'isolated' } : e

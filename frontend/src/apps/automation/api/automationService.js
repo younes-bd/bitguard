@@ -1,4 +1,4 @@
-﻿import apiClient from '@/core/api/client';
+import apiClient from '@/core/api/client';
 
 export const automationService = {
     getActions: (params) => apiClient.get('automation/actions/', { params }),

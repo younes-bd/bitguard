@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from apps.users.domain.models import Role, RolePermission
 from apps.tenants.domain.models import Tenant
-from apps.core.domain.models import Partner
+from apps.base.domain.models import Partner
 from django.core.management import call_command
 
 User = get_user_model()

@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
-from apps.core.services.core_service import BaseService
-from apps.core.services.audit_service import AuditService
+from apps.base.services.core_service import BaseService
+from apps.base.services.audit_service import AuditService
 from apps.website.models import Page
 
 class PageService(BaseService):

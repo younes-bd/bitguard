@@ -46,12 +46,6 @@ export const usersService = {
         return response.data?.data ?? response.data;
     },
 
-    // --- Tenancy ---
-    getTenants: async (params = {}) => {
-        const response = await client.get('tenants/', { params });
-        return response.data?.data?.tenants ?? response.data?.results ?? response.data ?? [];
-    },
-
     // --- Access (Roles) ---
     getRoles: async () => {
         const response = await client.get('users/roles/');
@@ -84,7 +78,7 @@ export const usersService = {
         return response.data?.data ?? response.data;
     },
     getContentTypes: async () => {
-        const response = await client.get('core/content-types/');
+        const response = await client.get('base/content-types/');
         return response.data?.data ?? response.data;
     },
     getRolePermissionsMatrix: async () => {

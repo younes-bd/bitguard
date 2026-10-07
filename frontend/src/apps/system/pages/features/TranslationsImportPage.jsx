@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Upload, Import, Inbox, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
 import apiClient from '@/core/api/client';
@@ -83,7 +83,7 @@ export default function TranslationsImportPage() {
                                 <input 
                                     type="text" 
                                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                    placeholder="e.g. French / FranÃƒÂ§ais"
+                                    placeholder="e.g. French / FranÃ§ais"
                                     value={form.language_name}
                                     onChange={e => setForm({...form, language_name: e.target.value})}
                                     required

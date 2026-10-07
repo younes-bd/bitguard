@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { scheduledActionService } from '../../core/api/scheduledActionService';
-import { coreService } from '../../core/api/coreService';
+import { scheduledActionService } from '@/apps/base/api/scheduledActionService';
+import { baseService } from '@/apps/base/api/baseService';
 import { Loader2, Play, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import apiClient from '../../../core/api/client';
@@ -49,7 +49,7 @@ export default function SmartAutomationToggle({ configKey }) {
         const init = async () => {
             try {
                 // Fetch the registry
-                const regRes = await coreService.getScheduledRegistry();
+                const regRes = await baseService.getScheduledRegistry();
                 const rawData = regRes.data;
                 const configs = Array.isArray(rawData) ? rawData : (rawData?.results || rawData?.data || []);
                 const matchedConfig = configs.find(c => c.key === configKey);

@@ -1,9 +1,9 @@
 from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
-from apps.core.services.core import BaseService
-from apps.core.domain.models import SystemParameter
-from apps.core.domain.models import SystemEventLog
+from apps.base.services.core import BaseService
+from apps.base.domain.models import SystemParameter
+from apps.base.domain.models import SystemEventLog
 
 User = get_user_model()
 

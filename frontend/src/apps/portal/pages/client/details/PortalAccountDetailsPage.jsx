@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/core/hooks/useAuth';
 import { User, Mail, Phone, Building, Hash, MapPin, Loader2, Shield, Key, Smartphone } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -196,7 +196,7 @@ const PortalAccountDetailsPage = () => {
                                 <label className="text-sm font-medium text-slate-300">Current Password</label>
                                 <input 
                                     type="password" 
-                                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
+                                    placeholder="••••••••" 
                                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" 
                                     value={currentPassword}
                                     onChange={e => setCurrentPassword(e.target.value)}
@@ -207,7 +207,7 @@ const PortalAccountDetailsPage = () => {
                                 <label className="text-sm font-medium text-slate-300">New Password</label>
                                 <input 
                                     type="password" 
-                                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
+                                    placeholder="••••••••" 
                                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" 
                                     value={newPassword}
                                     onChange={e => setNewPassword(e.target.value)}
@@ -219,7 +219,7 @@ const PortalAccountDetailsPage = () => {
                                 <label className="text-sm font-medium text-slate-300">Confirm New Password</label>
                                 <input 
                                     type="password" 
-                                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
+                                    placeholder="••••••••" 
                                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" 
                                     value={confirmPassword}
                                     onChange={e => setConfirmPassword(e.target.value)}

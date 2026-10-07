@@ -1,4 +1,4 @@
-﻿import apiClient from '@/core/api/client';
+import apiClient from '@/core/api/client';
 
 const qualityService = {
   getAlerts: (params) => apiClient.get('/quality/alerts/', { params }).then(r => r.data),

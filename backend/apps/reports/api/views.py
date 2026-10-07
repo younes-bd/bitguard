@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,8 +9,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from apps.reports.domain.models import ReportTemplate, ReportTag, GeneratedReport, ReportEngineSettings
-from .serializers import ReportTemplateSerializer, GeneratedReportSerializer, ReportEngineSettingsSerializer, ReportTagSerializer
+from apps.reports.domain.models import ReportTemplate, ReportTag, GeneratedReport, PaperFormat
+from .serializers import ReportTemplateSerializer, GeneratedReportSerializer, PaperFormatSerializer, ReportTagSerializer
 from apps.reports.services.pdf_generator import ReportingService
 
 class ReportTemplateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
@@ -18,7 +18,7 @@ class ReportTemplateViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        from apps.core.services.core import BaseService
+        from apps.base.services.core import BaseService
         return BaseService.filter_by_context(ReportTemplate.objects.all(), self.request)
 
     @action(detail=True, methods=['post'])
@@ -36,7 +36,7 @@ class GeneratedReportViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        from apps.core.services.core import BaseService
+        from apps.base.services.core import BaseService
         return BaseService.filter_by_context(GeneratedReport.objects.all(), self.request)
     
     @action(detail=False, methods=['post'])
@@ -54,13 +54,16 @@ class GeneratedReportViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class ReportEngineSettingsViewSet(TenantScopedMixin, viewsets.ModelViewSet):
-    serializer_class = ReportEngineSettingsSerializer
+class PaperFormatViewSet(TenantScopedMixin, viewsets.ModelViewSet):
+    serializer_class = PaperFormatSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        from apps.core.services.core import BaseService
-        return BaseService.filter_by_context(ReportEngineSettings.objects.all(), self.request)
+        # Allow accessing global formats (tenant is null) and tenant-specific formats
+        from apps.base.services.core import BaseService
+        from django.db.models import Q
+        tenant = getattr(self.request, 'tenant', None)
+        return PaperFormat.objects.filter(Q(tenant=tenant) | Q(is_global=True))
 
 class ReportTagViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = ReportTag.objects.all()

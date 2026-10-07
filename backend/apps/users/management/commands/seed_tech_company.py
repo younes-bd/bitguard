@@ -4,7 +4,7 @@ from django.db import transaction
 from django.contrib.auth import get_user_model
 from apps.users.domain.models import Role, RolePermission, UserRole, TenantMembership
 from apps.tenants.domain.models import Tenant
-from apps.core.domain.models import Partner
+from apps.base.domain.models import Partner
 import uuid
 
 User = get_user_model()

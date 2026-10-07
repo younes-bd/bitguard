@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
+        ('base', '0001_initial'),
     ]
 
     operations = [
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
                 ('source_module', models.CharField(blank=True, help_text="e.g. 'accounting.Invoice'", max_length=100, null=True)),
                 ('source_id', models.CharField(blank=True, help_text='The primary key of the source record', max_length=255, null=True)),
                 ('expiry_date', models.DateField(blank=True, help_text='Optional expiration date for this document', null=True)),
-                ('attachment', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='edms_document', to='core.attachment')),
+                ('attachment', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='edms_document', to='base.attachment')),
             ],
             options={
                 'abstract': False,

@@ -1,4 +1,5 @@
-﻿import { useState, useEffect } from 'react';
+import { parameterService } from '@/apps/base/api/parameterService';
+import { useState, useEffect } from 'react';
 import client from '@/core/api/client';
 import toast from 'react-hot-toast';
 
@@ -9,7 +10,7 @@ export function useSettings(prefix = '') {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await client.get('core/parameters/');
+                const res = await parameterService.getSettings();
                 const data = res.data?.results || res.data || [];
                 const newSettings = {};
                 data.forEach(s => {
@@ -33,7 +34,7 @@ export function useSettings(prefix = '') {
         setSettings(prev => ({ ...prev, [key]: strValue }));
         
         try {
-            await client.post('core/parameters/batch_update/', {
+            await parameterService.updateBatch({
                 settings: { [key]: strValue }
             });
             toast.success('Setting updated');

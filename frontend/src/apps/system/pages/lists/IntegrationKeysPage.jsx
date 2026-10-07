@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { settingsService } from '../../api/settingsService';
+
 import { Search, Plus, Trash2, Key } from 'lucide-react';
 import client from '@/core/api/client';
 import toast from 'react-hot-toast';
+import { integrationKeyService } from '@/apps/system/api/integrationKeyService';
 
 export default function IntegrationKeysPage() {
   const [data, setData] = useState([]);
@@ -22,7 +23,7 @@ export default function IntegrationKeysPage() {
 
   const fetchKeys = async () => {
     try {
-      const response = await settingsService.getIntegrationKeys();
+      const response = await integrationKeyService.getIntegrationKeys();
       setData(response.data?.data || response.data?.results || response.data || []);
     } catch (error) {
       toast.error('Failed to load API keys');
@@ -43,7 +44,7 @@ export default function IntegrationKeysPage() {
         return;
     }
     try {
-        const response = await settingsService.createIntegrationKey(form);
+        const response = await integrationKeyService.createIntegrationKey(form);
         toast.success('Integration Key created successfully');
         setIsModalVisible(false);
         setCreatedKeySecret(response.data.raw_secret || response.data.key);
@@ -55,7 +56,7 @@ export default function IntegrationKeysPage() {
 
   const handleDelete = async (id) => {
     try {
-        await settingsService.deleteIntegrationKey(id);
+        await integrationKeyService.deleteIntegrationKey(id);
         toast.success('Integration Key deleted');
         fetchKeys();
     } catch (error) {

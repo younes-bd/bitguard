@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.expenses.domain.models import ExpenseReport
 from apps.expenses.api.serializers import ExpenseReportSerializer
 

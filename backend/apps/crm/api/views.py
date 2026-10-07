@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 """
 CRM Views — Charter §8, §9 Compliant
 Views orchestrate; services decide. All logic delegated to CRM service layer.
@@ -18,7 +18,7 @@ from ..api.serializers import (
 from ..services import ClientService, ContactService, LeadService, DealService, ActivityService
 
 
-from apps.core.api.mixins import ReportGenerateMixin
+from apps.base.api.mixins import ReportGenerateMixin
 
 class ClientViewSet(ReportGenerateMixin, TenantScopedMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]

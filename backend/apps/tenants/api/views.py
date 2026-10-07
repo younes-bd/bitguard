@@ -1,9 +1,9 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from django.db.models import Count
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
-from apps.core.utils.response import standard_response
-from apps.core.permissions import HasRole, IsSuperAdmin
+from apps.base.utils.response import standard_response
+from apps.base.permissions import HasRole, IsSuperAdmin
 from ..domain.models import Tenant
 from ..api.serializers import TenantSerializer
 from django.conf import settings
@@ -148,8 +148,8 @@ class TenantViewSet(TenantScopedMixin, viewsets.ModelViewSet):
 
 from ..domain.models import SecurityPolicy
 from .serializers import SecurityPolicySerializer
-from apps.core.api.mixins import TenantScopedMixin
-from apps.core.api.permissions import IsPlatformAdmin
+from apps.base.api.mixins import TenantScopedMixin
+from apps.base.api.permissions import IsPlatformAdmin
 
 class SecurityPolicyViewSet(TenantScopedMixin, viewsets.ModelViewSet):
     queryset = SecurityPolicy.objects.all().order_by('id')

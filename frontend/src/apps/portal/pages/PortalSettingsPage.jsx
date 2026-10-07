@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import SettingsRenderer from '@/apps/system/components/settings/SettingsRenderer';
 
 export default function PortalSettingsPage() {

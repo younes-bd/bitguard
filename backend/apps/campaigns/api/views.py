@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.campaigns.domain.models import Campaign, MailingList, MailingContact
 from apps.campaigns.api.serializers import CampaignSerializer, MailingListSerializer, MailingContactSerializer
 from apps.campaigns.services.campaign_service import CampaignService

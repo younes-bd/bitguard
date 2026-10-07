@@ -1,6 +1,6 @@
 from django.utils import timezone
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
 from ..domain.models import ApprovalRequest, ApprovalStep
 
 class ApprovalService(BaseService):

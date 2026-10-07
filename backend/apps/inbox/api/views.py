@@ -1,10 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import permissions
-from apps.core.api.permissions import IsPlatformAdmin
+from apps.base.api.permissions import IsPlatformAdmin
 from apps.inbox.domain.models import IncomingMailServer, OutgoingMailServer, EmailTemplate, MailAlias
 from apps.inbox.api.serializers import IncomingMailServerSerializer, OutgoingMailServerSerializer, EmailTemplateSerializer, MailAliasSerializer
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action

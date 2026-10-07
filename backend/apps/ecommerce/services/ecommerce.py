@@ -6,8 +6,8 @@ from ..domain.models import (
     StoreCustomization, CustomerProfile, Order, OrderTimeline,
     ShippingSetting, TrackingConfig, AddOn, SubscriptionPlan, Subscription, StoreSetting
 )
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 

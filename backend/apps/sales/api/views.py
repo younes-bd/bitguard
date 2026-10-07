@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework import viewsets, permissions, status
@@ -8,7 +8,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 
-from apps.core.services.audit import AuditService
+from apps.base.services.audit import AuditService
 
 from ..domain.models import SalesOrder, SalesOrderLine, SalesTeam, Pricelist, QuotationTemplate
 from .serializers import (SalesOrderSerializer, SalesOrderLineSerializer, 

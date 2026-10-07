@@ -13,11 +13,11 @@ class EmployeesConfig(AppConfig):
         import apps.employees.infrastructure.signals
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('employees/', 'apps.employees.api.urls')
 
     def _register_automations(self):
-        from apps.core.registry import register_scheduled_action
+        from apps.base.registry import register_scheduled_action
         register_scheduled_action({
             'key': 'employee_appraisal_reminder',
             'model_name': 'employees.Appraisal',
@@ -32,7 +32,7 @@ class EmployeesConfig(AppConfig):
 
     def _register_kpis(self):
         try:
-            from apps.core.registry import kpi_registry
+            from apps.base.registry import kpi_registry
             from apps.employees.services.kpi import get_kpis
             kpi_registry.register('hr', get_kpis)
         except ImportError:

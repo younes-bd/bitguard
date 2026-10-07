@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, ShieldCheck, Mail, ShieldAlert, Plus, Search } from 'lucide-react';
 import { portalService } from '../../../api/portalService';
 import client from '@/core/api/client';

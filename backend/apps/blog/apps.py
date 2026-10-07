@@ -8,6 +8,6 @@ class BlogConfig(AppConfig):
         self._register_api_routes()
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('blog/', 'apps.blog.api.urls')
 

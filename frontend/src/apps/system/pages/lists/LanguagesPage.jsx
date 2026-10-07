@@ -1,7 +1,7 @@
+import { languageService } from '@/apps/base/api/languageService';
 import React, { useState, useEffect } from 'react';
-import { languageService } from '../../../core/api/languageService';
 import { Globe, Plus, CheckCircle2, XCircle, Search, Languages as LanguagesIcon, Edit, X } from 'lucide-react';
-import { settingsService } from '../../api/settingsService';
+
 import toast from 'react-hot-toast';
 
 export default function LanguagesPage() {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { moduleService } from '../../core/api/moduleService';
+import { moduleService } from '@/apps/base/api/moduleService';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
     Search, Server, Users, Filter, ShieldCheck, LifeBuoy, Briefcase, CreditCard, PieChart,

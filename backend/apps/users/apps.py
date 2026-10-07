@@ -9,6 +9,6 @@ class UsersConfig(AppConfig):
         import apps.users.infrastructure.signals
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('users/', 'apps.users.api.urls')
 

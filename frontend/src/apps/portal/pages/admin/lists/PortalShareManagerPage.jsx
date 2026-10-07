@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Share2, FileText, Globe, Search, Plus, Trash2 } from 'lucide-react';
 import { portalService } from '../../../api/portalService';
 import client from '@/core/api/client';

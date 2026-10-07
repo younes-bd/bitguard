@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.core.domain.models import SystemParameter
+from apps.base.domain.models import SystemParameter
 
 DEFAULTS = [
     # Accounting

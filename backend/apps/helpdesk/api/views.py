@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 """
 Support Views — Charter §8, §9 Compliant
 Ticket views delegate all mutations to TicketService.
@@ -34,7 +34,7 @@ class TicketViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         """Resolves a ticket with audit logging."""
         ticket = self.get_object()
         TicketService.resolve_ticket(request, ticket)
-        from apps.core.services.audit import AuditService
+        from apps.base.services.audit import AuditService
         AuditService.log_action(request.user, 'HELPDESK_TICKET_CLOSED', f"Ticket {ticket.id} closed", ticket)
         return Response({'status': 'resolved'})
 
@@ -61,7 +61,7 @@ class TicketViewSet(TenantScopedMixin, viewsets.ModelViewSet):
             ticket.stage = stage
             if stage.is_closed:
                 ticket.status = 'closed'
-                from apps.core.services.audit import AuditService
+                from apps.base.services.audit import AuditService
                 AuditService.log_action(request.user, 'HELPDESK_TICKET_CLOSED', f"Ticket {ticket.id} closed via stage", ticket)
             ticket.save()
             return Response(TicketSerializer(ticket).data)
@@ -110,7 +110,7 @@ class TicketViewSet(TenantScopedMixin, viewsets.ModelViewSet):
         ticket = self.get_object()
         try:
             TicketService.escalate_to_problem(request, ticket)
-            from apps.core.services.audit import AuditService
+            from apps.base.services.audit import AuditService
             AuditService.log_action(request.user, 'HELPDESK_TICKET_ESCALATED', f"Ticket {ticket.id} escalated", ticket)
             return Response({'status': 'escalated', 'problem_id': ticket.problem.id})
         except Exception as e:

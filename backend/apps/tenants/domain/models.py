@@ -1,13 +1,13 @@
-from apps.core.validators import validate_image_file
+from apps.base.validators import validate_image_file
 from django.db import models
-from apps.core.domain.models import UUIDModel
+from apps.base.domain.models import UUIDModel
 
 def default_modules():
     return ["core"]
 
 class Tenant(UUIDModel):
     name = models.CharField(max_length=255)
-    partner = models.ForeignKey('core.Partner', on_delete=models.SET_NULL, null=True, blank=True, related_name='saas_tenants', help_text="The core Partner that owns this SaaS workspace.")
+    partner = models.ForeignKey('base.Partner', on_delete=models.SET_NULL, null=True, blank=True, related_name='saas_tenants', help_text="The core Partner that owns this SaaS workspace.")
     domain = models.CharField(max_length=255, unique=True, help_text="Subdomain or custom domain")
     subscription_plan = models.CharField(max_length=100, default='free')
     is_active = models.BooleanField(default=True)

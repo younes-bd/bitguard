@@ -1,7 +1,7 @@
-from apps.core.validators import validate_document_file, validate_image_file
+from apps.base.validators import validate_document_file, validate_image_file
 from django.db import models
 from django.conf import settings
-from apps.core.models import TenantAwareModel
+from apps.base.models import TenantAwareModel
 
 
 class ProductTag(TenantAwareModel):
@@ -80,8 +80,8 @@ class Product(TenantAwareModel):
     sku = models.CharField(max_length=100, blank=True, null=True)  # Legacy, use internal_reference
     
     # Unit of Measure
-    uom = models.ForeignKey('core.UoM', on_delete=models.SET_NULL, null=True, blank=True, related_name='products_as_uom')
-    uom_po = models.ForeignKey('core.UoM', on_delete=models.SET_NULL, null=True, blank=True, related_name='products_as_uom_po')
+    uom = models.ForeignKey('base.UoM', on_delete=models.SET_NULL, null=True, blank=True, related_name='products_as_uom')
+    uom_po = models.ForeignKey('base.UoM', on_delete=models.SET_NULL, null=True, blank=True, related_name='products_as_uom_po')
 
     # Relations
     website = models.ForeignKey(

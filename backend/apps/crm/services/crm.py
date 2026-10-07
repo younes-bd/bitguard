@@ -4,9 +4,9 @@ All business logic lives here; views orchestrate, services decide.
 """
 from django.db import transaction
 from django.db.models import Sum
-from apps.core.services.core import BaseService
-from apps.core.services.audit import AuditService
-from apps.core.signals import lifecycle_transition
+from apps.base.services.core import BaseService
+from apps.base.services.audit import AuditService
+from apps.base.signals import lifecycle_transition
 from ..domain.models import Client, Contact, Lead, Deal, Activity
 
 

@@ -1,6 +1,6 @@
-from apps.core.validators import validate_document_file
+from apps.base.validators import validate_document_file
 from django.db import models
-from apps.core.domain.models import TenantAwareModel
+from apps.base.domain.models import TenantAwareModel
 from apps.employees.domain.models import Employee, Department
 
 class JobPosition(TenantAwareModel):

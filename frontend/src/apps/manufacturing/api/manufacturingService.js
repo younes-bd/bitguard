@@ -1,4 +1,4 @@
-﻿import apiClient from '@/core/api/client';
+import apiClient from '@/core/api/client';
 
 const manufacturingService = {
   getOrders: (params) => apiClient.get('/manufacturing/orders/', { params }).then(r => r.data?.data ?? r.data),

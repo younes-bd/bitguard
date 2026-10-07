@@ -18,7 +18,7 @@ from django.db import transaction
 
 from apps.tenants.models import Tenant
 from apps.users.models import Role, UserRole
-from apps.core.models import Partner
+from apps.base.models import Partner
 from apps.crm.models import Client, Contact, Lead, Deal, Activity
 from apps.accounting.models import Invoice, Payment, Expense
 from apps.soc.models import Alert, Incident, ThreatIntelligence, LogAnalysis
@@ -289,7 +289,7 @@ def main():
         tenant = create_tenant()
         
         # Set thread local tenant for abstract TenantAwareModels
-        from apps.core.middleware import _thread_locals
+        from apps.base.middleware import _thread_locals
         _thread_locals.tenant = tenant
 
         admin = create_users_and_roles(tenant)

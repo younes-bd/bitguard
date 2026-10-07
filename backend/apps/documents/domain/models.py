@@ -2,10 +2,10 @@ from django.db import models
 from django.conf import settings
 import uuid
 import logging
-from apps.core.domain.models import TenantAwareModel, Attachment
+from apps.base.domain.models import TenantAwareModel, Attachment
 
 logger = logging.getLogger(__name__)
-from apps.core.domain.models import TenantAwareModel, Attachment
+from apps.base.domain.models import TenantAwareModel, Attachment
 
 class DocumentWorkspace(TenantAwareModel):
     """

@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
 import { LayoutDashboard } from 'lucide-react';
-import { settingsService } from '../../apps/system/api/settingsService';
+import { moduleService } from '@/apps/base/api/moduleService';
+
 
 export default function MyAppsViewPage() {
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        settingsService.getModules()
+        moduleService.getModules()
             .then(res => {
                 const modules = res.data?.results || res.data || [];
                 // Only show installed, application-type modules that have URLs

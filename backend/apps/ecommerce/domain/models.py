@@ -1,8 +1,8 @@
-from apps.core.validators import validate_document_file, validate_image_file
+from apps.base.validators import validate_document_file, validate_image_file
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from apps.core.models import TenantAwareModel
+from apps.base.models import TenantAwareModel
 
 class StoreCustomization(TenantAwareModel):
     active_theme = models.CharField(max_length=50, default='default')

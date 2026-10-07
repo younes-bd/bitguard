@@ -1,6 +1,7 @@
+import { backupService } from '@/apps/base/api/backupService';
 import React, { useState, useEffect } from 'react';
-import { databaseBackupService } from '../../../core/api/databaseBackupService';
-import { settingsService } from '../../api/settingsService';
+import { databaseBackupService } from '@/apps/base/api/databaseBackupService';
+
 import { Database, Plus, Loader2, Download, Trash2, Search, Play } from 'lucide-react';
 import toast from 'react-hot-toast';
 

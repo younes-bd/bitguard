@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Calendar, DollarSign, Building2, Download, Printer, CheckCircle, Clock } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import signService from '../../api/signService';

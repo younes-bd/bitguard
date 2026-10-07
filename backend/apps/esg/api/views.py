@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.esg.domain.models import EsgMetric, EsgTarget
 from apps.esg.api.serializers import EsgMetricSerializer, EsgTargetSerializer
 

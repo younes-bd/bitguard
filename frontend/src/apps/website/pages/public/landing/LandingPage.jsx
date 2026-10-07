@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import client from '@/core/api/client';
 import SolutionReveal from '../../../components/SolutionReveal';
 import PageMeta from '../../../../../apps/shell/components/ui/PageMeta';
-import '../../../../../apps/shell/styles/landing.css';
+import '../../../styles/landing.css';
 
 // Static color map to prevent Tailwind purge in production builds
 const COLOR_MAP = {

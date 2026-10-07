@@ -5,11 +5,11 @@ export const analyticsService = {
     // Core Board Metrics
     // ---------------------------------------------------------
     getMetrics: async (params) => {
-        const response = await apiClient.get('core/command-center/global/', { params });
+        const response = await apiClient.get('base/command-center/global/', { params });
         return response.data?.data ?? response.data ?? {};
     },
     getSystemHealth: async () => {
-        const response = await apiClient.get('core/command-center/system_health/');
+        const response = await apiClient.get('base/command-center/system_health/');
         return response.data?.data ?? response.data ?? {};
     },
     getMrr: async () => {
@@ -17,7 +17,7 @@ export const analyticsService = {
         return response.data?.data ?? response.data ?? {};
     },
     getRecentActivity: async (limit = 8) => {
-        const response = await apiClient.get(`core/system-events/?limit=${limit}`);
+        const response = await apiClient.get(`base/system-events/?limit=${limit}`);
         return response.data?.results ?? response.data ?? [];
     },
 
@@ -39,8 +39,6 @@ export const analyticsService = {
     getCrmReport: (params) => apiClient.get('board/crm/', { params }).then(res => res.data?.data ?? res.data),
     getSupportReport: (params) => apiClient.get('board/support/', { params }).then(res => res.data?.data ?? res.data),
     getSecurityReport: (params) => apiClient.get('board/security/', { params }).then(res => res.data?.data ?? res.data),
-    
-    // Fixed domain-specific aggregation views
     getFinanceReport: (params) => apiClient.get('board/finance/', { params }).then(r => r.data?.data ?? r.data),
     getEmployeesmReport: (params) => apiClient.get('board/hrm/', { params }).then(r => r.data?.data ?? r.data),
     getProjectsReport: (params) => apiClient.get('board/projects-report/', { params }).then(r => r.data?.data ?? r.data),
@@ -48,3 +46,21 @@ export const analyticsService = {
 
 export default analyticsService;
 
+export const commandCenterService = {
+  getSystemStatus: async () => {
+    try {
+      const res = await apiClient.get('base/command-center/system_health/');
+      return { 
+        systems: [
+          { name: 'API Server', status: 'Operational', uptime: res.data.api_uptime || '100%' },
+          { name: 'Database', status: 'Operational', load: res.data.db_load || 'Normal' }
+        ], 
+        incidents: [], 
+        overallStatus: 'Operational',
+        active_sessions: res.data.active_sessions || 0
+      };
+    } catch (err) {
+      return { systems: [], incidents: [], overallStatus: 'Degraded' };
+    }
+  }
+};

@@ -9,7 +9,7 @@ django.setup()
 
 from apps.inbox.routing import websocket_urlpatterns as notif_urls
 from apps.discuss.routing import websocket_urlpatterns as discuss_urls
-from apps.core.middleware.websockets import JWTAuthMiddlewareStack
+from apps.base.middleware.websockets import JWTAuthMiddlewareStack
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),

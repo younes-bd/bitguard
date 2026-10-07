@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Target, Users, Mail, Activity, Save } from 'lucide-react';
 import { useSettings } from '../../../system/hooks/useSettings';
 import { toast } from 'react-hot-toast';

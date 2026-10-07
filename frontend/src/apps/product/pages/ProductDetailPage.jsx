@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import productService from '../api/productService';
-import { coreService } from '../../core/api/coreService';
+import { baseService } from '@/apps/base/api/baseService';
 
 const TABS = [
   { id: 'general', label: 'General', icon: Package },
@@ -51,7 +51,7 @@ export default function ProductDetailPage() {
 
   const loadUoms = async () => {
     try {
-      const res = await coreService.getUoMs();
+      const res = await baseService.getUoMs();
       setUoms(res.data?.results || res.data || []);
     } catch (e) {
       console.error(e);

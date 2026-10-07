@@ -2,7 +2,7 @@ import uuid
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from apps.core.domain.models import BaseModel, TenantAwareModel, UUIDModel
+from apps.base.domain.models import BaseModel, TenantAwareModel, UUIDModel
 from django.contrib.contenttypes.models import ContentType
 
 class Role(UUIDModel):
@@ -78,7 +78,7 @@ class User(AbstractUser, UUIDModel):
     )
     date_format = models.CharField(max_length=50, blank=True, null=True, help_text="Optional date format override")
 
-    partner = models.OneToOneField('core.Partner', on_delete=models.CASCADE, null=True, blank=True, related_name='user')
+    partner = models.OneToOneField('base.Partner', on_delete=models.CASCADE, null=True, blank=True, related_name='user')
 
     class Meta:
         verbose_name = 'User'

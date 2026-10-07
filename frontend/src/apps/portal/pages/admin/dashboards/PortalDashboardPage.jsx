@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink, Users, Settings, Activity, ShieldCheck, Globe, Link as LinkIcon, Share2, Plus } from 'lucide-react';
 import { portalService } from '../../../api/portalService';
 import client from '@/core/api/client';

@@ -59,7 +59,7 @@ const SecurityPolicyPage = () => {
             if (policy.id) {
                 await securityPolicyService.updatePolicy(policy.id, policy);
             } else {
-                const created = await usersService.createSecurityPolicy(policy);
+                const created = await securityPolicyService.createPolicy(policy);
                 setPolicy(prev => ({ ...prev, id: created.id }));
             }
             toast.success("Security Policy updated successfully");

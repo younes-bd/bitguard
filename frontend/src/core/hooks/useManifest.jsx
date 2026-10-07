@@ -33,8 +33,8 @@ export const ManifestProvider = ({ children }) => {
         }
         try {
             const [modulesRes, sectionsRes] = await Promise.all([
-                client.get('core/modules/?limit=200'),
-                client.get('core/sections/').catch(() => ({ data: [] }))
+                client.get('base/modules/?limit=200'),
+                client.get('base/sections/').catch(() => ({ data: [] }))
             ]);
             
             const payload = modulesRes?.data ?? modulesRes;

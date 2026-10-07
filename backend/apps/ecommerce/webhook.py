@@ -27,7 +27,7 @@ def stripe_webhook(request):
                 order = Order.objects.get(stripe_session=session.id)
                 
                 # Workflow Engine transition
-                from apps.core.services.workflow import WorkflowEngine
+                from apps.base.services.workflow import WorkflowEngine
                 WorkflowEngine.transition(order, 'paid', order.user, request=request, reason="Stripe Webhook: Payment Success")
                 
                 # Emit Signal
@@ -76,7 +76,7 @@ def stripe_webhook(request):
                 )
                 
                 # Workflow Engine
-                from apps.core.services.workflow import WorkflowEngine
+                from apps.base.services.workflow import WorkflowEngine
                 WorkflowEngine.transition(sub, 'active', user, request=request, reason="Stripe Webhook: Subscription Started")
                 
                 # Emit Signal
@@ -94,7 +94,7 @@ def stripe_webhook(request):
         try:
             sub = Subscription.objects.get(stripe_subscription_id=stripe_sub_id)
             if sub.status != new_status:
-                from apps.core.services.workflow import WorkflowEngine
+                from apps.base.services.workflow import WorkflowEngine
                 # Map stripe status to enterprise service status
                 target_state = 'active' if new_status == 'active' else 'suspended'
                 if new_status == 'canceled': target_state = 'completed'

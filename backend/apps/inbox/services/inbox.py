@@ -1,5 +1,5 @@
 from ..domain.models import Notification
-from apps.core.services.core import BaseService
+from apps.base.services.core import BaseService
 
 class NotificationService(BaseService):
     """

@@ -1,4 +1,4 @@
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from apps.planning.domain.models import Shift, PlanningRole, ShiftTemplate

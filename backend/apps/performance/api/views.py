@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from apps.core.api.mixins import TenantScopedMixin
+from apps.base.api.mixins import TenantScopedMixin
 from apps.performance.domain.models import Appraisal, PerformanceAppraisal, PerformanceReview
 from apps.performance.api.serializers import AppraisalSerializer, PerformanceAppraisalSerializer, PerformanceReviewSerializer
 

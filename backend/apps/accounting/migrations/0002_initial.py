@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('accounting', '0001_initial'),
-        ('core', '0001_initial'),
+        ('base', '0001_initial'),
         ('crm', '0001_initial'),
         ('procurement', '0001_initial'),
         ('product', '0001_initial'),
@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='analyticaccount',
             name='partner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.partner'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='base.partner'),
         ),
         migrations.AddField(
             model_name='analyticaccount',

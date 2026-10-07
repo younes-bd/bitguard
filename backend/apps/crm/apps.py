@@ -9,6 +9,6 @@ class CrmConfig(AppConfig):
         import apps.crm.infrastructure.signals
 
     def _register_api_routes(self):
-        from apps.core.registry import register
+        from apps.base.registry import register
         register('crm/', 'apps.crm.api.urls')
 
